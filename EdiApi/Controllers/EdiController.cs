@@ -13,9 +13,10 @@ namespace EdiApi.Controllers
         // GET api/values
         [HttpGet]
         [Route("~/Edi/Form830")] // De modo que se expone https://localhost:44373/Edi/Form830
-        public ActionResult<IEnumerable<string>> Form830()
+        public ActionResult<string> Form830()
         {
-            return new string[] { "value1", "value2" };
+            LearRep830 Rep830O = new LearRep830();
+            return Rep830O.ToString();
         }
 
         [HttpGet]
