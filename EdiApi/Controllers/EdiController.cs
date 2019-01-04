@@ -8,10 +8,11 @@ namespace EdiApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ValuesController : ControllerBase
+    public class EdiController : ControllerBase
     {
         // GET api/values
         [HttpGet]
+        [Route("api/values")]
         public ActionResult<IEnumerable<string>> Get()
         {
             return new string[] { "value1", "value2" };
