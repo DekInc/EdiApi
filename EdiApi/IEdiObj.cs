@@ -5,14 +5,15 @@ using System.Threading.Tasks;
 
 namespace EdiApi
 {
-    public class EdiBase
+    public class EdiBase : EdiCommon
     {
         public string NotUsed { set; get; } = "";
         public IEnumerable<string> Orden { set; get; }
         //public EdiBase(IEnumerable<string> _Orden) { Orden = _Orden; }
+        public EdiBase(string _SegmentTerminator) : base(_SegmentTerminator) { }
         public string Ts()
         {
-            return EdiCommon.Ts(this, Orden);
+            return base.Ts(this, Orden);
         }
     }
 }

@@ -10,7 +10,7 @@ namespace EdiApi
         public string Init { get; set; } = "IEA";
         public string SegmentCount { get; set; } = "1"; //Entre ISA e IEA
         public string ControlNumber { get; set; } = "2";
-        public ISATrailer(UInt16 RepType, string _ControlNumber)
+        public ISATrailer(UInt16 RepType, string _ControlNumber) : base("")
         {
             Orden = new string[]{
                 "Init",
@@ -35,17 +35,17 @@ namespace EdiApi
         public string InterchangeSenderIdQualifier { get; set; } = "ZZ";
         public string InterchangeSenderId { get; set; } = "GLC503";
         public string InterchangeReceiverIdQualifier { get; set; } = "ZZ";
-        public string InterchangeReceiverId { get; set; } = "LEAR";
+        public string InterchangeReceiverId { get; set; } = "HN02NC72       ";
         public string InterchangeDate { get; set; } = "YYMMDD";
         public string InterchangeTime { get; set; } = "HHMM";
         public string InterchangeControlStandardsId { get; set; } = "U";
-        public string InterchangeControlVersion { get; set; } = "2040";
-        public string InterchangeControlNumber { get; set; } = "b";
+        public string InterchangeControlVersion { get; set; } = "00204";
+        public string InterchangeControlNumber { get; set; } = "000002409";
         public string AcknowledgmentRequested { get; set; } = "0";
         public string UsageIndicator { get; set; } = "T"; // T o P
-        public string ComponentElementSeparator { get; set; } = ">";
+        public string ComponentElementSeparator { get; set; } = "<";
         public ISATrailer ISATrailerO { get; set; }
-        public ISA(UInt16 _RepType, string _ControlNumber = "000000001")
+        public ISA(UInt16 _RepType, string _ControlNumber = "000000001") : base("")
         {
             RepType = _RepType;
             switch (_RepType)
@@ -73,7 +73,7 @@ namespace EdiApi
         public string Init { get; set; } = "GE";
         public string SegmentCount { get; set; } = "0";
         public string ControlNumber { get; set; } = "1";
-        public GSTrailer(UInt16 RepType, string _ControlNumber)
+        public GSTrailer(UInt16 RepType, string _ControlNumber) : base("")
         {
             Orden = new string[]{
                 "Init",
@@ -100,7 +100,7 @@ namespace EdiApi
         public string ResponsibleAgencyCode { get; set; } = "6";
         public string Version { get; set; } = "7";
         public GSTrailer GSTrailerO { get; set; }
-        public GS(UInt16 _RepType, string _ControlNumber = "000000001")
+        public GS(UInt16 _RepType, string _ControlNumber = "000000001") : base("")
         {
             RepType = _RepType;
             Orden = new string[]{
@@ -125,7 +125,7 @@ namespace EdiApi
         public string Init { get; set; } = "SE";
         public string SegmentCount { get; set; } = "1";
         public string ControlNumber { get; set; } = "1";        
-        public STTrailer(UInt16 RepType, string _ControlNumber)
+        public STTrailer(UInt16 RepType, string _ControlNumber) : base("")
         {
             Orden = new string[]{
                 "Init",
@@ -147,7 +147,7 @@ namespace EdiApi
         public string IdCode { get; set; } = "0";
         public string ControlNumber { get; set; } = "1";
         public STTrailer StTrailerO { get; set; }
-        public ST(UInt16 _RepType, string _ControlNumber = "000000001")
+        public ST(UInt16 _RepType, string _ControlNumber = "000000001") : base("")
         {
             RepType = _RepType;
             Orden = new string[]{
@@ -168,7 +168,23 @@ namespace EdiApi
     {
         static UInt16 RepType { set; get; } = 0;
         static string ControlNumber { set; get; } = "000000001";
-        public ISA ISAO { get; set; } = new ISA(RepType, ControlNumber);
+        public ISA ISAO { get; set; } = new ISA(RepType, ControlNumber) {
+            AuthorizationInformationQualifier = "00",
+            AuthorizationInformation = "          ",
+            SecurityInformationQualifier = "00",
+            SecurityInformation = "          ",
+            InterchangeSenderIdQualifier = "ZZ",
+            InterchangeSenderId = "GLC503",
+            InterchangeReceiverIdQualifier = "ZZ",
+            InterchangeReceiverId = "HN02NC72       ",
+            InterchangeDate = "YYMMDD",
+            InterchangeTime = "HHMM",
+            InterchangeControlStandardsId = "U",
+            InterchangeControlVersion = "00204",
+            InterchangeControlNumber = "000002409",
+            AcknowledgmentRequested = "0",
+            UsageIndicator = "T",
+        };
         public GS GSO { get; set; } = new GS(RepType, ControlNumber);
         public ST STO { get; set; } = new ST(RepType, ControlNumber);
         public override string ToString()

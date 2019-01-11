@@ -5,17 +5,18 @@ using System.Threading.Tasks;
 
 namespace EdiApi
 {
-    public static class EdiCommon
+    public class EdiCommon
     {
-        public static string SegmentTerminator { get; set; } = "~";
-        public static string ElementTerminator { get; set; } = "*";
-        public static string CompositeTerminator { get; set; } = ">";
-        public static string Ts(object O, IEnumerable<string> Orden)
+        public string SegmentTerminator { get; set; } = "~";
+        public string ElementTerminator { get; set; } = "*";
+        public string CompositeTerminator { get; set; } = ">";
+        public EdiCommon(string _SegmentTerminator) { SegmentTerminator = _SegmentTerminator; }
+        public string Ts(object O, IEnumerable<string> Orden)
         {
             string Ret = string.Empty;
             foreach (string OrdenO in Orden)
-                Ret += O.GetType().GetProperty(OrdenO).GetValue(O, null) + EdiCommon.ElementTerminator;
-            Ret = Ret.TrimEnd(EdiCommon.ElementTerminator[0]) + EdiCommon.SegmentTerminator + Environment.NewLine;
+                Ret += O.GetType().GetProperty(OrdenO).GetValue(O, null) + ElementTerminator;
+            Ret = Ret.TrimEnd(ElementTerminator[0]) + SegmentTerminator + Environment.NewLine;
             return Ret;
         }
     }
