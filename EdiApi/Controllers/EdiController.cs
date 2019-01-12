@@ -20,11 +20,12 @@ namespace EdiApi.Controllers
             try
             {
                 LearIsa LearIsaO = DbO.LearIsa.Where(I => I.Id == Tipo).FirstOrDefault();
-                //if (LearIsaO == null)
+                LearGs LearGsO = DbO.LearGs.Where(G => G.IdIsa == Tipo).FirstOrDefault();
+                //if (LearIsaO == null || LearGsO == null)
                 //{
                 //    return new RetReporte() { Info = new RetInfo() { CodError = 1, Mensaje = "Tipo de reporte inválido." } };
                 //}
-                LearRep830 Rep830O = new LearRep830(0, 1, LearIsaO);
+                LearRep830 Rep830O = new LearRep830(0, 2, LearIsaO, LearGsO);
                 //return new RetReporte() { EdiFile = Rep830O.ToString() };
                 return Rep830O.ToString();
             }
@@ -45,23 +46,36 @@ namespace EdiApi.Controllers
         //[Route("~/Edi/CrearDB")]
         public ActionResult<string> CrearDB()
         {
-            LearIsa LN = new LearIsa()
-            {
-                AuthorizationInformationQualifier = "00",
-                AuthorizationInformation = "          ",
-                SecurityInformationQualifier = "00",
-                SecurityInformation = "          ",
-                InterchangeSenderIdQualifier = "ZZ",
-                InterchangeSenderId = "GLC503",
-                InterchangeReceiverIdQualifier = "ZZ",
-                InterchangeReceiverId = "HN02NC72       ",
-                InterchangeControlStandardsId = "U",
-                InterchangeControlVersion = "00204",
-                AcknowledgmentRequested = "0",
-                UsageIndicator = "T", // T o P
-                ComponentElementSeparator = "<",
+            //LearIsa LN = new LearIsa()
+            //{
+            //    AuthorizationInformationQualifier = "00",
+            //    AuthorizationInformation = "          ",
+            //    SecurityInformationQualifier = "00",
+            //    SecurityInformation = "          ",
+            //    InterchangeSenderIdQualifier = "ZZ",
+            //    InterchangeSenderId = "GLC503",
+            //    InterchangeReceiverIdQualifier = "ZZ",
+            //    InterchangeReceiverId = "HN02NC72       ",
+            //    InterchangeControlStandardsId = "U",
+            //    InterchangeControlVersion = "00204",
+            //    AcknowledgmentRequested = "0",
+            //    UsageIndicator = "T", // T o P
+            //    ComponentElementSeparator = "<",
+            //    InterchangeDate = "yyMMdd",
+            //    InterchangeTime = "HHmm"
+            //};
+            //DbO.LearIsa.Add(LN);
+            LearGs LearGsO = new LearGs() {
+                FunctionalIdCode = "SH",
+                ApplicationSenderCode = "GLC503",
+                ApplicationReceiverCode = "HN02NC72",
+                GsDate = "yyMMdd",
+                GsTime = "HHmm",
+                ResponsibleAgencyCode = "X",
+                Version = "002040",
+                IdIsa = 1
             };
-            DbO.LearIsa.Add(LN);
+            DbO.LearGs.Add(LearGsO);
             DbO.SaveChanges();
             return "";
         }

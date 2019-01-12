@@ -5,6 +5,11 @@ namespace EdiApi.Models
 {
     public partial class LearIsa
     {
+        public LearIsa()
+        {
+            LearGs = new HashSet<LearGs>();
+        }
+
         public int Id { get; set; }
         public string InterchangeSenderIdQualifier { get; set; }
         public string InterchangeSenderId { get; set; }
@@ -19,5 +24,10 @@ namespace EdiApi.Models
         public string InterchangeControlStandardsId { get; set; }
         public string AcknowledgmentRequested { get; set; }
         public string ComponentElementSeparator { get; set; }
+        public string SegmentTerminator { get; set; }
+        public string InterchangeDate { get; set; }
+        public string InterchangeTime { get; set; }
+
+        public ICollection<LearGs> LearGs { get; set; }
     }
 }

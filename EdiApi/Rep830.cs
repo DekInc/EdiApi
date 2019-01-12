@@ -11,7 +11,7 @@ namespace EdiApi
         public string Init { get; set; } = "IEA";
         public string SegmentCount { get; set; } = "1"; //Entre ISA e IEA
         public string ControlNumber { get; set; } = "2";
-        public ISATrailer(UInt16 RepType, string _ControlNumber) : base("")
+        public ISATrailer(UInt16 RepType, string _SegmentTerminator, string _ControlNumber) : base(_SegmentTerminator)
         {
             Orden = new string[]{
                 "Init",
@@ -46,14 +46,14 @@ namespace EdiApi
         public string UsageIndicator { get; set; } = "T"; // T o P
         public string ComponentElementSeparator { get; set; } = "<";
         public ISATrailer ISATrailerO { get; set; }
-        public ISA(UInt16 _RepType, string _ControlNumber = "000000001") : base("")
+        public ISA(UInt16 _RepType, string _SegmentTerminator, string _ControlNumber = "000000001") : base(_SegmentTerminator)
         {
             RepType = _RepType;
             switch (_RepType)
             {
                 case 0:
                     InterchangeControlNumber = _ControlNumber;
-                    ISATrailerO = new ISATrailer(RepType, _ControlNumber);
+                    ISATrailerO = new ISATrailer(RepType, SegmentTerminator, _ControlNumber);
                     Orden = new string[]{
                         "Init",
                         "AuthorizationInformationQualifier", "AuthorizationInformation",
@@ -74,7 +74,7 @@ namespace EdiApi
         public string Init { get; set; } = "GE";
         public string SegmentCount { get; set; } = "0";
         public string ControlNumber { get; set; } = "1";
-        public GSTrailer(UInt16 RepType, string _ControlNumber) : base("")
+        public GSTrailer(UInt16 RepType, string _SegmentTerminator, string _ControlNumber) : base(_SegmentTerminator)
         {
             Orden = new string[]{
                 "Init",
@@ -101,9 +101,10 @@ namespace EdiApi
         public string ResponsibleAgencyCode { get; set; } = "6";
         public string Version { get; set; } = "7";
         public GSTrailer GSTrailerO { get; set; }
-        public GS(UInt16 _RepType, string _ControlNumber = "000000001") : base("")
+        public GS(UInt16 _RepType, string _SegmentTerminator, string _ControlNumber = "000000001") : base(_SegmentTerminator)
         {
             RepType = _RepType;
+            GroupControlNumber = _ControlNumber;
             Orden = new string[]{
                 "Init",
                 "FunctionalIdCode", "ApplicationSenderCode",
@@ -115,7 +116,7 @@ namespace EdiApi
             {
                 case 0:
                     //ControlNumber = _ControlNumber;
-                    GSTrailerO = new GSTrailer(RepType, _ControlNumber);
+                    GSTrailerO = new GSTrailer(RepType, SegmentTerminator, _ControlNumber);
                     break;
             }            
         }
@@ -126,7 +127,7 @@ namespace EdiApi
         public string Init { get; set; } = "SE";
         public string SegmentCount { get; set; } = "1";
         public string ControlNumber { get; set; } = "1";        
-        public STTrailer(UInt16 RepType, string _ControlNumber) : base("")
+        public STTrailer(UInt16 RepType, string _SegmentTerminator, string _ControlNumber) : base(_SegmentTerminator)
         {
             Orden = new string[]{
                 "Init",
@@ -148,7 +149,7 @@ namespace EdiApi
         public string IdCode { get; set; } = "0";
         public string ControlNumber { get; set; } = "1";
         public STTrailer StTrailerO { get; set; }
-        public ST(UInt16 _RepType, string _ControlNumber = "000000001") : base("")
+        public ST(UInt16 _RepType, string _SegmentTerminator, string _ControlNumber = "000000001") : base(_SegmentTerminator)
         {
             RepType = _RepType;
             Orden = new string[]{
@@ -159,7 +160,7 @@ namespace EdiApi
                 case 0:
                     IdCode = "830";
                     ControlNumber = _ControlNumber;
-                    StTrailerO = new STTrailer(RepType, ControlNumber);
+                    StTrailerO = new STTrailer(RepType, SegmentTerminator, ControlNumber);
                     break;
             }
         }
@@ -169,16 +170,18 @@ namespace EdiApi
     {
         static UInt16 RepType { set; get; } = 0;
         public LearIsa LearIsaO { get; set; }
+        public LearGs LearGsO { get; set; }
         static string ControlNumber { set; get; } = "000000001";
         public ISA ISAO { get; set; }
         public GS GSO { get; set; }
         public ST STO { get; set; }
-        public LearRep830(UInt16 _RepType, int _ControlNumber, LearIsa _LearIsaO)
+        public LearRep830(UInt16 _RepType, int _ControlNumber, LearIsa _LearIsaO, LearGs _LearGsO)
         {
             RepType = _RepType;
             ControlNumber = $"{_ControlNumber:D9}";
             LearIsaO = _LearIsaO;
-            ISAO = new ISA(RepType, ControlNumber)
+            LearGsO = _LearGsO;
+            ISAO = new ISA(RepType, LearIsaO.SegmentTerminator, ControlNumber)
             {
                 AuthorizationInformationQualifier = LearIsaO.AuthorizationInformationQualifier,
                 AuthorizationInformation = LearIsaO.AuthorizationInformation,
@@ -188,15 +191,23 @@ namespace EdiApi
                 InterchangeSenderId = LearIsaO.InterchangeSenderId,
                 InterchangeReceiverIdQualifier = LearIsaO.InterchangeReceiverIdQualifier,
                 InterchangeReceiverId = LearIsaO.InterchangeReceiverId,
-                InterchangeDate = DateTime.Now.ToString("yyMMdd"),
-                InterchangeTime = DateTime.Now.ToString("HHmm"),
+                InterchangeDate = DateTime.Now.ToString(LearIsaO.InterchangeDate),
+                InterchangeTime = DateTime.Now.ToString(LearIsaO.InterchangeTime),
                 InterchangeControlStandardsId = LearIsaO.InterchangeControlStandardsId,
                 InterchangeControlVersion = LearIsaO.InterchangeControlVersion,
                 AcknowledgmentRequested = LearIsaO.AcknowledgmentRequested,
                 UsageIndicator = LearIsaO.UsageIndicator,
             };
-            GSO = new GS(RepType, ControlNumber);
-            STO = new ST(RepType, ControlNumber);
+            GSO = new GS(RepType, LearIsaO.SegmentTerminator, ControlNumber) {
+                FunctionalIdCode = LearGsO.FunctionalIdCode,
+                ApplicationSenderCode = LearGsO.ApplicationSenderCode,
+                ApplicationReceiverCode = LearGsO.ApplicationReceiverCode,
+                GsDate = DateTime.Now.ToString(LearGsO.GsDate),
+                GsTime = DateTime.Now.ToString(LearGsO.GsTime),
+                ResponsibleAgencyCode = LearGsO.ResponsibleAgencyCode,
+                Version = LearGsO.Version
+            };
+            STO = new ST(RepType, LearIsaO.SegmentTerminator, ControlNumber);
         }
         public override string ToString()
         {
