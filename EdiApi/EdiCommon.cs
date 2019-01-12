@@ -15,7 +15,7 @@ namespace EdiApi
         {
             string Ret = string.Empty;
             foreach (string OrdenO in Orden)
-                Ret += O.GetType().GetProperty(OrdenO).GetValue(O, null) + ElementTerminator;
+                Ret += $"{O.GetType().GetProperty(OrdenO).GetValue(O, null)}{ElementTerminator}";
             Ret = Ret.TrimEnd(ElementTerminator[0]) + SegmentTerminator + Environment.NewLine;
             return Ret;
         }

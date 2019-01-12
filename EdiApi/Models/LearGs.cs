@@ -5,6 +5,11 @@ namespace EdiApi.Models
 {
     public partial class LearGs
     {
+        public LearGs()
+        {
+            LearBfr = new HashSet<LearBfr>();
+        }
+
         public int Id { get; set; }
         public string FunctionalIdCode { get; set; }
         public string ApplicationSenderCode { get; set; }
@@ -17,5 +22,6 @@ namespace EdiApi.Models
         public int IdIsa { get; set; }
 
         public LearIsa IdIsaNavigation { get; set; }
+        public ICollection<LearBfr> LearBfr { get; set; }
     }
 }

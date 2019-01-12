@@ -19,13 +19,25 @@ namespace EdiApi.Controllers
         {
             try
             {
-                LearIsa LearIsaO = DbO.LearIsa.Where(I => I.Id == Tipo).FirstOrDefault();
-                LearGs LearGsO = DbO.LearGs.Where(G => G.IdIsa == Tipo).FirstOrDefault();
+                LearIsa LearIsaO = DbO.LearIsa
+                    .Where(I => I.Id == Tipo)
+                    .OrderByDescending(Io => Io.Id).LastOrDefault();
+                LearGs LearGsO = DbO.LearGs
+                    .Where(G => G.IdIsa == Tipo)
+                    .OrderByDescending(Go => Go.Id).LastOrDefault();
                 //if (LearIsaO == null || LearGsO == null)
                 //{
                 //    return new RetReporte() { Info = new RetInfo() { CodError = 1, Mensaje = "Tipo de reporte inválido." } };
                 //}
-                LearRep830 Rep830O = new LearRep830(0, 2, LearIsaO, LearGsO);
+                LearBfr LearBfr830O = new LearBfr
+                {
+                    IdGs = LearGsO.Id
+                };
+                DbO.LearBfr.Add(LearBfr830O);
+                DbO.SaveChanges();
+                LearRep830 Rep830O = new LearRep830(0, LearBfr830O.Id, ref LearIsaO, ref LearGsO, ref LearBfr830O);
+                DbO.LearBfr.Update(LearBfr830O);
+                DbO.SaveChanges();
                 //return new RetReporte() { EdiFile = Rep830O.ToString() };
                 return Rep830O.ToString();
             }

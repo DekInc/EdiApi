@@ -15,8 +15,10 @@ namespace EdiApi.Models
         {
         }
 
+        public virtual DbSet<LearBfr> LearBfr { get; set; }
         public virtual DbSet<LearGs> LearGs { get; set; }
         public virtual DbSet<LearIsa> LearIsa { get; set; }
+        public virtual DbSet<LearLin> LearLin { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -27,6 +29,43 @@ namespace EdiApi.Models
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<LearBfr>(entity =>
+            {
+                entity.ToTable("Lear_Bfr");
+
+                entity.Property(e => e.ContractNumber).HasMaxLength(30);
+
+                entity.Property(e => e.ForecastGenerationDate).HasMaxLength(6);
+
+                entity.Property(e => e.ForecastHorizonEnd).HasMaxLength(6);
+
+                entity.Property(e => e.ForecastHorizonStart).HasMaxLength(6);
+
+                entity.Property(e => e.ForecastOrderNumber).HasMaxLength(30);
+
+                entity.Property(e => e.ForecastQuantityQualifier).HasMaxLength(1);
+
+                entity.Property(e => e.ForecastTypeQualifier).HasMaxLength(2);
+
+                entity.Property(e => e.ForecastUpdatedDate).HasMaxLength(6);
+
+                entity.Property(e => e.IdGs).HasColumnName("Id_Gs");
+
+                entity.Property(e => e.PurchaseOrderNumber).HasMaxLength(22);
+
+                entity.Property(e => e.ReleaseNumber).HasMaxLength(4);
+
+                entity.Property(e => e.Time).HasMaxLength(4);
+
+                entity.Property(e => e.TransactionSetPurposeCode).HasMaxLength(2);
+
+                entity.HasOne(d => d.IdGsNavigation)
+                    .WithMany(p => p.LearBfr)
+                    .HasForeignKey(d => d.IdGs)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Lear_Bfr_LEAR_GS");
+            });
+
             modelBuilder.Entity<LearGs>(entity =>
             {
                 entity.ToTable("LEAR_GS");
@@ -99,6 +138,33 @@ namespace EdiApi.Models
                 entity.Property(e => e.UsageIndicator)
                     .HasMaxLength(1)
                     .IsUnicode(false);
+            });
+
+            modelBuilder.Entity<LearLin>(entity =>
+            {
+                entity.ToTable("LEAR_LIN");
+
+                entity.Property(e => e.AssignedIdentification).HasMaxLength(6);
+
+                entity.Property(e => e.IdBfr).HasColumnName("Id_Bfr");
+
+                entity.Property(e => e.ProductId).HasMaxLength(22);
+
+                entity.Property(e => e.ProductIdQualifier).HasMaxLength(2);
+
+                entity.Property(e => e.ProductPurchaseId).HasMaxLength(30);
+
+                entity.Property(e => e.ProductPurchaseIdQualifier).HasMaxLength(2);
+
+                entity.Property(e => e.ProductRefId).HasMaxLength(30);
+
+                entity.Property(e => e.ProductRefIdQualifier).HasMaxLength(2);
+
+                entity.HasOne(d => d.IdBfrNavigation)
+                    .WithMany(p => p.LearLin)
+                    .HasForeignKey(d => d.IdBfr)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_LEAR_LIN_LEAR_LIN");
             });
         }
     }
