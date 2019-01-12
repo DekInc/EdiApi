@@ -7,6 +7,7 @@ namespace EdiApi
 {
     public class EdiBase : EdiCommon
     {
+        public string EdiStr { set; get; } = "";
         public string NotUsed { set; get; } = "";
         public IEnumerable<string> Orden { set; get; }
         //public EdiBase(IEnumerable<string> _Orden) { Orden = _Orden; }
@@ -14,6 +15,6 @@ namespace EdiApi
         public string Ts()
         {
             return base.Ts(this, Orden);
-        }
+        }        
     }
 }

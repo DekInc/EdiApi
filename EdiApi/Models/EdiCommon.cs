@@ -8,7 +8,7 @@ namespace EdiApi
     public class EdiCommon
     {
         public string SegmentTerminator { get; set; } = "~";
-        public string ElementTerminator { get; set; } = "*";
+        public static string ElementTerminator { get; set; } = "*";
         public string CompositeTerminator { get; set; } = ">";
         public EdiCommon(string _SegmentTerminator) { SegmentTerminator = _SegmentTerminator; }
         public string Ts(object O, IEnumerable<string> Orden)

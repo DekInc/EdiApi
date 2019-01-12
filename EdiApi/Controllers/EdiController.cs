@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using EdiApi.Models;
+using System.IO;
 
 namespace EdiApi.Controllers
 {
@@ -52,7 +53,12 @@ namespace EdiApi.Controllers
         [HttpGet]
         //[Route("~/Edi/Form856")]
         public ActionResult<IEnumerable<string>> Form856()
-        {            
+        {
+            LearRep856 LearRep856O = new LearRep856();
+            StreamReader Rep856File = new StreamReader("F856_048700342.txt");
+            while (!Rep856File.EndOfStream)
+                LearRep856O.EdiFile.Add(Rep856File.ReadLine());
+            Rep856File.Close();
             return new string[] { "value5", "value4" };
         }
         [HttpGet]
@@ -78,18 +84,18 @@ namespace EdiApi.Controllers
             //    InterchangeTime = "HHmm"
             //};
             //DbO.LearIsa.Add(LN);
-            LearGs LearGsO = new LearGs() {
-                FunctionalIdCode = "SH",
-                ApplicationSenderCode = "GLC503",
-                ApplicationReceiverCode = "HN02NC72",
-                GsDate = "yyMMdd",
-                GsTime = "HHmm",
-                ResponsibleAgencyCode = "X",
-                Version = "002040",
-                IdIsa = 1
-            };
-            DbO.LearGs.Add(LearGsO);
-            DbO.SaveChanges();
+            //LearGs LearGsO = new LearGs() {
+            //    FunctionalIdCode = "SH",
+            //    ApplicationSenderCode = "GLC503",
+            //    ApplicationReceiverCode = "HN02NC72",
+            //    GsDate = "yyMMdd",
+            //    GsTime = "HHmm",
+            //    ResponsibleAgencyCode = "X",
+            //    Version = "002040",
+            //    IdIsa = 1
+            //};
+            //DbO.LearGs.Add(LearGsO);
+            //DbO.SaveChanges();
             return "";
         }
     }
