@@ -1,4 +1,5 @@
-﻿using System;
+﻿using EdiApi.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -167,26 +168,36 @@ namespace EdiApi
     public class LearRep830
     {
         static UInt16 RepType { set; get; } = 0;
+        public LearIsa LearIsaO { get; set; }
         static string ControlNumber { set; get; } = "000000001";
-        public ISA ISAO { get; set; } = new ISA(RepType, ControlNumber) {
-            AuthorizationInformationQualifier = "00",
-            AuthorizationInformation = "          ",
-            SecurityInformationQualifier = "00",
-            SecurityInformation = "          ",
-            InterchangeSenderIdQualifier = "ZZ",
-            InterchangeSenderId = "GLC503",
-            InterchangeReceiverIdQualifier = "ZZ",
-            InterchangeReceiverId = "HN02NC72       ",
-            InterchangeDate = "YYMMDD",
-            InterchangeTime = "HHMM",
-            InterchangeControlStandardsId = "U",
-            InterchangeControlVersion = "00204",
-            InterchangeControlNumber = "000002409",
-            AcknowledgmentRequested = "0",
-            UsageIndicator = "T",
-        };
-        public GS GSO { get; set; } = new GS(RepType, ControlNumber);
-        public ST STO { get; set; } = new ST(RepType, ControlNumber);
+        public ISA ISAO { get; set; }
+        public GS GSO { get; set; }
+        public ST STO { get; set; }
+        public LearRep830(UInt16 _RepType, int _ControlNumber, LearIsa _LearIsaO)
+        {
+            RepType = _RepType;
+            ControlNumber = $"{_ControlNumber:D9}";
+            LearIsaO = _LearIsaO;
+            ISAO = new ISA(RepType, ControlNumber)
+            {
+                AuthorizationInformationQualifier = LearIsaO.AuthorizationInformationQualifier,
+                AuthorizationInformation = LearIsaO.AuthorizationInformation,
+                SecurityInformationQualifier = LearIsaO.SecurityInformationQualifier,
+                SecurityInformation = LearIsaO.SecurityInformation,
+                InterchangeSenderIdQualifier = LearIsaO.InterchangeSenderIdQualifier,
+                InterchangeSenderId = LearIsaO.InterchangeSenderId,
+                InterchangeReceiverIdQualifier = LearIsaO.InterchangeReceiverIdQualifier,
+                InterchangeReceiverId = LearIsaO.InterchangeReceiverId,
+                InterchangeDate = DateTime.Now.ToString("yyMMdd"),
+                InterchangeTime = DateTime.Now.ToString("HHmm"),
+                InterchangeControlStandardsId = LearIsaO.InterchangeControlStandardsId,
+                InterchangeControlVersion = LearIsaO.InterchangeControlVersion,
+                AcknowledgmentRequested = LearIsaO.AcknowledgmentRequested,
+                UsageIndicator = LearIsaO.UsageIndicator,
+            };
+            GSO = new GS(RepType, ControlNumber);
+            STO = new ST(RepType, ControlNumber);
+        }
         public override string ToString()
         {
             string Ret = string.Empty;
