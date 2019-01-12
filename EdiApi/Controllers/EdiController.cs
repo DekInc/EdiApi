@@ -35,6 +35,7 @@ namespace EdiApi.Controllers
                 };
                 DbO.LearBfr.Add(LearBfr830O);
                 DbO.SaveChanges();
+                
                 LearRep830 Rep830O = new LearRep830(0, LearBfr830O.Id, ref LearIsaO, ref LearGsO, ref LearBfr830O);
                 DbO.LearBfr.Update(LearBfr830O);
                 DbO.SaveChanges();

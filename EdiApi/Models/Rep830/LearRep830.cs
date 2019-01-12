@@ -24,6 +24,11 @@ namespace EdiApi
         public N1830 N1O { get; set; }
         public N4830 N4O { get; set; }
         public SDP830 SDPO { get; set; }
+        public FST830 FSTO { get; set; }
+        public ATH830 ATHO { get; set; }
+        public SHP830 SHPO { get; set; }
+        public NTE830 NTEO { get; set; }
+        public CTT830 CTTO { get; set; }
         public LearRep830(UInt16 _RepType, int _ControlNumber, ref LearIsa _LearIsaO, ref LearGs _LearGsO, ref LearBfr _LearBfrO)
         {
             RepType = _RepType;
@@ -113,6 +118,33 @@ namespace EdiApi
                 CalendarPatternCode = "", // ????
                 PatternTimeCode = "A" // A, F, G, Y ????
             };
+            FSTO = new FST830(LearIsaO.SegmentTerminator)
+            {
+                Quantity = "",
+                ForecastQualifier = "C",
+                ForecastTimingQualifier = "W",
+                FstDate = ""
+            };
+            ATHO = new ATH830(LearIsaO.SegmentTerminator) {
+                ResourceAuthCode = "MT",
+                StartDate = DateTime.Now.AddDays(-7).ToString(LearIsaO.InterchangeDate),
+                Quantity = "0.0",
+                EndDate = DateTime.Now.ToString(LearIsaO.InterchangeDate)
+            };
+            SHPO = new SHP830(LearIsaO.SegmentTerminator) {
+                QuantityQualifier = "01",
+                Quantity = "01",
+                DateTimeQualifier = "011",
+                AccumulationStartDate = DateTime.Now.AddDays(-7).ToString(LearIsaO.InterchangeDate), // ojo
+                AccumulationTime = "",
+                AccumulationEndDate = "" //Solo si SHP03 = 051
+            };
+            NTEO = new NTE830(LearIsaO.SegmentTerminator) {
+                Message = "Free message"
+            };
+            CTTO = new CTT830(LearIsaO.SegmentTerminator) {
+                HashTotal = "1"
+            };            
         }
         public override string ToString()
         {
@@ -127,6 +159,11 @@ namespace EdiApi
             Ret += N1O.Ts();
             Ret += N4O.Ts();
             Ret += SDPO.Ts();
+            Ret += FSTO.Ts();
+            Ret += ATHO.Ts();
+            Ret += SHPO.Ts();
+            Ret += NTEO.Ts();
+            Ret += CTTO.Ts();
             Ret += STO.StTrailerO.Ts();
             Ret += GSO.GSTrailerO.Ts();
             Ret += ISAO.ISATrailerO.Ts();
