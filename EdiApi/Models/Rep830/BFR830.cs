@@ -7,7 +7,7 @@ namespace EdiApi
 {
     public class BFR830 : EdiBase
     {
-        public string Init { get; set; } = "BFR";
+        public const string Init = "BFR";
         public string TransactionSetPurposeCode { get; set; }
         public string ForecastOrderNumber { get; set; }
         public string ReleaseNumber { get; set; }
@@ -19,17 +19,15 @@ namespace EdiApi
         public string ForecastUpdatedDate { get; set; }
         public string ContractNumber { get; set; }
         public string PurchaseOrderNumber { get; set; }
-        public BFR830(string _SegmentTerminator) : base(_SegmentTerminator)
-        {
-            Orden = new string[]{
-                "Init",
-                "TransactionSetPurposeCode", "ForecastOrderNumber",
-                "ReleaseNumber", "ForecastTypeQualifier",
-                "ForecastQuantityQualifier", "ForecastHorizonStart",
-                "ForecastHorizonEnd", "ForecastGenerationDate",
-                "ForecastUpdatedDate", "ContractNumber",
-                "PurchaseOrderNumber"
-            };
-        }
+        public BFR830(string _SegmentTerminator) : base(_SegmentTerminator) { InitOrden(); }
+        public void InitOrden() => Orden = new string[]{
+            "Init",
+            "TransactionSetPurposeCode", "ForecastOrderNumber",
+            "ReleaseNumber", "ForecastTypeQualifier",
+            "ForecastQuantityQualifier", "ForecastHorizonStart",
+            "ForecastHorizonEnd", "ForecastGenerationDate",
+            "ForecastUpdatedDate", "ContractNumber",
+            "PurchaseOrderNumber"
+        };
     }
 }

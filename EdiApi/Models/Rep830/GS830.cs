@@ -18,17 +18,12 @@ namespace EdiApi
         public string ResponsibleAgencyCode { get; set; } = "6";
         public string Version { get; set; } = "7";
         public GSTrailer830 GSTrailerO { get; set; }
+        public GS830(string _SegmentTerminator) : base(_SegmentTerminator) { InitOrden(); }
         public GS830(UInt16 _RepType, string _SegmentTerminator, string _ControlNumber = "000000001") : base(_SegmentTerminator)
         {
             RepType = _RepType;
             GroupControlNumber = _ControlNumber;
-            Orden = new string[]{
-                "Init",
-                "FunctionalIdCode", "ApplicationSenderCode",
-                "ApplicationReceiverCode", "GsDate",
-                "GsTime", "GroupControlNumber",
-                "ResponsibleAgencyCode", "Version"
-            };
+            InitOrden();
             switch (_RepType)
             {
                 case 0:
@@ -37,5 +32,12 @@ namespace EdiApi
                     break;
             }
         }
+        private void InitOrden () => Orden = new string[]{
+            "Init",
+            "FunctionalIdCode", "ApplicationSenderCode",
+            "ApplicationReceiverCode", "GsDate",
+            "GsTime", "GroupControlNumber",
+            "ResponsibleAgencyCode", "Version"
+        };
     }
 }

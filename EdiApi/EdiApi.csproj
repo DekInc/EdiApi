@@ -5,10 +5,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="830_ejemplo.txt" />
     <None Remove="F856_048700342.txt" />
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="830_ejemplo.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="F856_048700342.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

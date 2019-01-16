@@ -10,14 +10,16 @@ namespace EdiApi
     public class LearRep830
     {
         static UInt16 RepType { set; get; } = 0;
+        public List<string> EdiFile { get; set; } = new List<string>();
+        static string EdiError { set; get; } = "";
         public LearIsa LearIsaO { get; set; }
         public LearGs LearGsO { get; set; }
         public LearBfr LearBfrO { get; set; }
         static string ControlNumber { set; get; } = "000000001";
-        public ISA830 ISAO { get; set; }
-        public GS830 GSO { get; set; }
-        public ST830 STO { get; set; }
-        public BFR830 BFRO { get; set; }
+        public ISA830 ISAO { get; set; } = new ISA830(EdiCommon.SegmentTerminator);
+        public GS830 GSO { get; set; } = new GS830(EdiCommon.SegmentTerminator);
+        public ST830 STO { get; set; } = new ST830(EdiCommon.SegmentTerminator);
+        public BFR830 BFRO { get; set; } = new BFR830(EdiCommon.SegmentTerminator);
         public LIN830 LINO { get; set; }
         public UIT830 UITO { get; set; }
         public PRS830 PRSO { get; set; }
@@ -29,6 +31,7 @@ namespace EdiApi
         public SHP830 SHPO { get; set; }
         public NTE830 NTEO { get; set; }
         public CTT830 CTTO { get; set; }
+        public LearRep830() { }
         public LearRep830(UInt16 _RepType, int _ControlNumber, ref LearIsa _LearIsaO, ref LearGs _LearGsO, ref LearBfr _LearBfrO)
         {
             RepType = _RepType;
@@ -144,7 +147,8 @@ namespace EdiApi
             };
             CTTO = new CTT830(LearIsaO.SegmentTerminator) {
                 HashTotal = "1"
-            };            
+            };
+            EdiError = CTTO.Validate();
         }
         public override string ToString()
         {
@@ -168,6 +172,37 @@ namespace EdiApi
             Ret += GSO.GSTrailerO.Ts();
             Ret += ISAO.ISATrailerO.Ts();
             return Ret;
+        }
+
+        public void Parse()
+        {
+            string Ident = "";
+            foreach (string EdiStr in EdiFile)
+            {
+                Ident = EdiStr.IndexOf(EdiCommon.ElementTerminator) > 0 ? EdiStr.Substring(0, EdiStr.IndexOf(EdiCommon.ElementTerminator)) : string.Empty;
+                if (Ident != string.Empty)
+                {
+                    switch (Ident)
+                    {
+                        case ISA856.Init:
+                            ISAO.Parse(EdiStr);
+                            break;
+                        case GS856.Init:
+                            GSO.Parse(EdiStr);
+                            break;
+                        case ST830.Init:
+                            STO.Parse(EdiStr);
+                            break;
+                        case BFR830.Init:
+                            BFRO.Parse(EdiStr);
+                            break;
+                        default:
+                            //Ret += STO.Ts();
+                            //Ret += BFRO.Ts();
+                            break;
+                    }
+                }
+            }
         }
     }
 }

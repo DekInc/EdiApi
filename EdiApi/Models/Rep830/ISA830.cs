@@ -26,6 +26,7 @@ namespace EdiApi
         public string UsageIndicator { get; set; } = "T"; // T o P
         public string ComponentElementSeparator { get; set; } = "<";
         public ISATrailer830 ISATrailerO { get; set; }
+        public ISA830(string _SegmentTerminator) : base(_SegmentTerminator) { InitOrden(); }
         public ISA830(UInt16 _RepType, string _SegmentTerminator, string _ControlNumber = "000000001") : base(_SegmentTerminator)
         {
             RepType = _RepType;
@@ -34,19 +35,20 @@ namespace EdiApi
                 case 0:
                     InterchangeControlNumber = _ControlNumber;
                     ISATrailerO = new ISATrailer830(RepType, SegmentTerminator, _ControlNumber);
-                    Orden = new string[]{
-                        "Init",
-                        "AuthorizationInformationQualifier", "AuthorizationInformation",
-                        "SecurityInformationQualifier", "SecurityInformation",
-                        "InterchangeSenderIdQualifier", "InterchangeSenderId",
-                        "InterchangeReceiverIdQualifier", "InterchangeReceiverId",
-                        "InterchangeDate", "InterchangeTime",
-                        "InterchangeControlStandardsId", "InterchangeControlVersion",
-                        "InterchangeControlNumber", "AcknowledgmentRequested",
-                        "UsageIndicator", "ComponentElementSeparator"
-                    };
+                    InitOrden();
                     break;
             }
         }
+        private void InitOrden() => Orden = new string[]{
+                "Init",
+                "AuthorizationInformationQualifier", "AuthorizationInformation",
+                "SecurityInformationQualifier", "SecurityInformation",
+                "InterchangeSenderIdQualifier", "InterchangeSenderId",
+                "InterchangeReceiverIdQualifier", "InterchangeReceiverId",
+                "InterchangeDate", "InterchangeTime",
+                "InterchangeControlStandardsId", "InterchangeControlVersion",
+                "InterchangeControlNumber", "AcknowledgmentRequested",
+                "UsageIndicator", "ComponentElementSeparator"
+            };
     }
 }
