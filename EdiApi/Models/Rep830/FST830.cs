@@ -7,7 +7,8 @@ namespace EdiApi
 {
     public class FST830 : EdiBase
     {
-        public string Init { get; set; } = "FST";
+        public const string Init = "FST";
+        public const string Self = "Forecast Schedule";
         public string Quantity { get; set; }
         public string ForecastQualifier { get; set; }
         public string ForecastTimingQualifier { get; set; }

@@ -8,6 +8,7 @@ namespace EdiApi
     public class BFR830 : EdiBase
     {
         public const string Init = "BFR";
+        public const string Self = "Beginning Segment for Planning Schedule";
         public string TransactionSetPurposeCode { get; set; }
         public string ForecastOrderNumber { get; set; }
         public string ReleaseNumber { get; set; }

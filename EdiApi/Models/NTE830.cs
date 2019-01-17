@@ -7,7 +7,8 @@ namespace EdiApi
 {
     public class NTE830 : EdiBase
     {
-        public string Init { get; set; } = "NTE";
+        public const string Init = "NTE";
+        public const string Self = "Note/Special Instruction";
         public string ReferenceCode { get; set; }
         public string Message { get; set; }
         public NTE830(string _SegmentTerminator) : base(_SegmentTerminator)

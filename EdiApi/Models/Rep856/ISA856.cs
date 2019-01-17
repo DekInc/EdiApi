@@ -47,7 +47,7 @@ namespace EdiApi
         [StringLength(maximumLength: 1, MinimumLength = 1)]
         public string UsageIndicator { get; set; } = "T"; // T o P
         [StringLength(maximumLength: 1, MinimumLength = 1)]
-        public string ComponentElementSeparator { get; set; } = "<";
+        public string ComponentElementSeparator { get; set; } = "<";        
         public ISATrailer856 ISATrailerO { get; set; }
         public ISA856() : base("") { }
         public ISA856(UInt16 _RepType, string _SegmentTerminator, string _ControlNumber = "000000001") : base(_SegmentTerminator)

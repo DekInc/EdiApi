@@ -7,7 +7,8 @@ namespace EdiApi
 {
     public class N4830 : EdiBase
     {
-        public string Init { get; set; } = "N4";
+        public const string Init = "N4";
+        public const string Self = "Geographic Location";
         public string CityName { get; set; }
         public string Province { get; set; }
         public string PostalCode { get; set; }

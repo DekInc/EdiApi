@@ -7,7 +7,8 @@ namespace EdiApi
 {
     public class UIT830 : EdiBase
     {
-        public string Init { get; set; } = "UIT";
+        public const string Init = "UIT";
+        public const string Self = "Unit Detail";
         public string UnitOfMeasure { get; set; }
         public UIT830(string _SegmentTerminator) : base(_SegmentTerminator)
         {

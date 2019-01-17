@@ -7,7 +7,8 @@ namespace EdiApi
 {
     public class N1830 : EdiBase
     {
-        public string Init { get; set; } = "N1";
+        public const string Init = "N1";
+        public const string Self = "Name of Material Release Issuer & the Supplier";
         public string OrganizationId { get; set; }
         public string Name { get; set; }
         public string IdCodeQualifier { get; set; }

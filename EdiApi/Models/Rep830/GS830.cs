@@ -8,7 +8,8 @@ namespace EdiApi
     public class GS830 : EdiBase
     {
         public UInt16 RepType { get; set; }
-        public string Init { get; set; } = "GS";
+        public const string Init = "GS";
+        public const string Self = "Functional Group Header";
         public string FunctionalIdCode { get; set; } = "0";
         public string ApplicationSenderCode { get; set; } = "1";
         public string ApplicationReceiverCode { get; set; } = "2";

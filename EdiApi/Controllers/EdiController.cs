@@ -48,8 +48,7 @@ namespace EdiApi.Controllers
                 while (!Rep830File.EndOfStream)
                     LearRep830O.EdiFile.Add(Rep830File.ReadLine());
                 Rep830File.Close();
-                LearRep830O.Parse();
-                return "";
+                return LearRep830O.Parse();
             }
             catch (Exception e1)
             {

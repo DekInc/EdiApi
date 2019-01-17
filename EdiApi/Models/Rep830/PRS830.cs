@@ -7,7 +7,8 @@ namespace EdiApi
 {
     public class PRS830 : EdiBase
     {
-        public string Init { get; set; } = "PRS";
+        public const string Init = "PRS";
+        public const string Self = "Part release status";
         public string StatusCode { get; set; }
         public PRS830(string _SegmentTerminator) : base(_SegmentTerminator)
         {
@@ -15,6 +16,6 @@ namespace EdiApi
                 "Init",
                 "StatusCode"
             };
-        }
+        }        
     }
 }

@@ -7,7 +7,8 @@ namespace EdiApi
 {
     public class ATH830 : EdiBase
     {
-        public string Init { get; set; } = "ATH";
+        public const string Init = "ATH";
+        public const string Self = "Resource Authorization";
         public string ResourceAuthCode { get; set; }
         public string StartDate { get; set; }
         public string Quantity { get; set; }

@@ -7,7 +7,8 @@ namespace EdiApi
 {
     public class SHP830 : EdiBase
     {
-        public string Init { get; set; } = "SHP";
+        public const string Init = "SHP";
+        public const string Self = "Shipped/Received Information";
         public string QuantityQualifier { get; set; }
         public string Quantity { get; set; }
         public string DateTimeQualifier { get; set; }
@@ -19,7 +20,8 @@ namespace EdiApi
             Orden = new string[]{
                 "Init",
                 "QuantityQualifier", "Quantity",
-                "DateTimeQualifier", "Date", "Time", "Date2"
+                "DateTimeQualifier", "AccumulationStartDate",
+                "AccumulationTime", "AccumulationEndDate"
             };
         }
     }

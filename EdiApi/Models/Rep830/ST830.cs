@@ -9,6 +9,7 @@ namespace EdiApi
     {
         public UInt16 RepType { get; set; }
         public const string Init = "ST";
+        public const string Self = "Transaction Set Header";
         public string IdCode { get; set; } = "0";
         public string ControlNumber { get; set; } = "1";
         public STTrailer830 StTrailerO { get; set; }

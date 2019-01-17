@@ -8,11 +8,59 @@ using System.ComponentModel;
 namespace EdiApi
 {
     [Browsable(true)]
-    public class EdiBase : EdiCommon
-    {        
-        public string NotUsed { set; get; } = "";        
-        //public EdiBase(IEnumerable<string> _Orden) { Orden = _Orden; }
-        public EdiBase(string _SegmentTerminator) : base(_SegmentTerminator) { }        
+    public class EdiBase
+    {
+        public int Hash { set; get; }
+        public int Di { set; get; }
+        public string NotUsed { set; get; } = "";
+        public string EdiStr { set; get; } = "";
+        public string[] EdiArray { set; get; }
+        public static string SegmentTerminator { get; set; } = "~";
+        public static string ElementTerminator { get; set; } = "*";
+        public string CompositeTerminator { get; set; } = ">";
+        public IEnumerable<string> Orden { set; get; }
+        public EdiBase Parent { get; set; }
+        public List<EdiBase> Childs { get; set; } = new List<EdiBase>();
+        public EdiBase(string _SegmentTerminator)
+        {
+            SegmentTerminator = _SegmentTerminator;
+        }
+        public string Ts()
+        {
+            string Ret = string.Empty;
+            foreach (string OrdenO in Orden)
+                Ret += $"{this.GetType().GetProperty(OrdenO).GetValue(this, null)}{ElementTerminator}";
+            Ret = Ret.TrimEnd(ElementTerminator[0]) + SegmentTerminator + Environment.NewLine;
+            return Ret;
+        }        
+        public bool Parse(string _EdiStr)
+        {
+            try
+            {
+                Di = 0;
+                Hash = GetHashCode();
+                EdiStr = _EdiStr;
+                EdiArray = EdiStr.Replace(SegmentTerminator, "").Split(ElementTerminator);
+                //if (Orden.Count() != EdiArray.Length)
+                //    return false;
+                foreach (string OrdenO in Orden)
+                {
+                    if (OrdenO != "Init")
+                    {
+                        Di++;
+                        if (Di == EdiArray.Length)
+                            break;
+                        this.GetType().GetProperty(OrdenO).SetValue(this, EdiArray[Di]);
+                    }
+                    //Ret += $"{this.GetType().GetProperty(OrdenO).GetValue(this, null)}{ElementTerminator}";
+                }
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }        
         public string Validate()
         {
             string Ret = "";
