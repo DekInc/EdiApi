@@ -5,6 +5,9 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using EdiApi.Models;
 using System.IO;
+using System.Net.Mail;
+using S22.Imap;
+using Microsoft.Extensions.Configuration;
 
 namespace EdiApi.Controllers
 {
@@ -13,10 +16,19 @@ namespace EdiApi.Controllers
     public class EdiController : ControllerBase
     {
         public readonly EdiDBContext DbO;
-        public EdiController(EdiDBContext _DbO) { DbO = _DbO; }
+        public readonly IConfiguration Config;
+        IConfiguration IMapConfig => Config.GetSection("IMapConfig");
+        string IMapHost => (string)IMapConfig.GetValue(typeof(string), "Host");
+        int IMapPort => Convert.ToInt32(IMapConfig.GetValue(typeof(string), "Port"));
+        bool IMapSSL => Convert.ToBoolean(IMapConfig.GetValue(typeof(string), "SSL"));
+        string IMapUser => (string)IMapConfig.GetValue(typeof(string), "User");
+        string IMapPassword => (string)IMapConfig.GetValue(typeof(string), "Password");
+        //public EdiController(EdiDBContext _DbO) { DbO = _DbO; }
+        public EdiController(EdiDBContext _DbO, IConfiguration _Config) { DbO = _DbO; Config = _Config; }        
+
         [HttpGet]
         //De modo que se expone https://localhost:44373/Edi/Form830
-        public ActionResult<string> Form830(int Tipo)
+        public ActionResult<RetReporte> Form830(int Tipo)
         {
             try
             {
@@ -44,16 +56,41 @@ namespace EdiApi.Controllers
                 //return new RetReporte() { EdiFile = Rep830O.ToString() };
                 //return Rep830O.ToString();
                 LearRep830 LearRep830O = new LearRep830();
-                StreamReader Rep830File = new StreamReader("830_ejemplo.txt");
-                while (!Rep830File.EndOfStream)
-                    LearRep830O.EdiFile.Add(Rep830File.ReadLine());
-                Rep830File.Close();
-                return LearRep830O.Parse();
+                //StreamReader Rep830File = new StreamReader("830_ejemplo.txt");
+                //while (!Rep830File.EndOfStream)
+                //    LearRep830O.EdiFile.Add(Rep830File.ReadLine());
+                //Rep830File.Close();
+                try
+                {
+                    using (ImapClient ImapClientO = new ImapClient(IMapHost, IMapPort, IMapUser, IMapPassword, AuthMethod.Login, IMapSSL))
+                    {
+                        IEnumerable<uint> uids = ImapClientO.Search(SearchCondition.Unseen());
+                        IEnumerable<MailMessage> ArrMessages = ImapClientO.GetMessages(uids);
+                        if (ArrMessages.Count() > 0)
+                        {
+                            MailMessage MailMessageO = ArrMessages.LastOrDefault();
+                            if (MailMessageO.Attachments.Count > 0)
+                            {
+                                StreamReader Rep830File = new StreamReader(MailMessageO.Attachments.FirstOrDefault().ContentStream);
+                                while (!Rep830File.EndOfStream)
+                                    LearRep830O.EdiFile.Add(Rep830File.ReadLine());
+                                Rep830File.Close();
+                            }
+                            else throw new Exception($"Error, el correo verificado no contiene ningún archivo. Subject = {MailMessageO.Subject}");
+                        }
+                        else throw new Exception($"Error, no hay correos sin procesar en la casilla.");
+                    }
+                }
+                catch (Exception ExMail)
+                {
+                    return new RetReporte() { Info = new RetInfo() { CodError = 1, Mensaje = ExMail.ToString() } };
+                }
+                return new RetReporte() { EdiFile = string.Join("", LearRep830O.EdiFile), Info = new RetInfo() { CodError = 0, Mensaje = "Todo ok" } };
             }
             catch (Exception e1)
             {
-                return "Error: " + e1.ToString();
-                //return new RetReporte() { Info = new RetInfo() { CodError = 1, Mensaje = e1.ToString() } };
+                //return "Error: " + e1.ToString();
+                return new RetReporte() { Info = new RetInfo() { CodError = 1, Mensaje = e1.ToString() } };
             }            
         }
 
@@ -67,6 +104,27 @@ namespace EdiApi.Controllers
                 LearRep856O.EdiFile.Add(Rep856File.ReadLine());
             Rep856File.Close();
             return new string[] { "value5", "value4" };
+        }
+        [HttpGet]
+        //[Route("~/Edi/Form856")]
+        public ActionResult<string> EnviarMail()
+        {   
+            using (ImapClient Client = new ImapClient(IMapHost, IMapPort, IMapUser, IMapPassword, AuthMethod.Login, IMapSSL))
+            {
+                MailMessage message = new MailMessage
+                {
+                    From = new MailAddress("EdiTest@dnecr.ml")
+                };
+                message.To.Add("KeyFireOne@gmail.com");
+                message.Subject = "EdiTest_Writting_5";
+                message.Body = "bla bla bla 5";
+                //Attachment attachment = new Attachment("some_image.png", "image/png");
+                //attachment.Name = "my_attached_image.png";
+                //message.Attachments.Add(attachment);
+                uint uid = Client.StoreMessage(message);
+                //Console.WriteLine("The UID of the stored mail message is " + uid);
+            }
+            return "Done";
         }
         [HttpGet]
         //[Route("~/Edi/CrearDB")]
