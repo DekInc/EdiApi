@@ -19,7 +19,8 @@ namespace EdiApi.Controllers
         public readonly IConfiguration Config;
         IConfiguration IMapConfig => Config.GetSection("IMapConfig");
         string IMapHost => (string)IMapConfig.GetValue(typeof(string), "Host");
-        int IMapPort => Convert.ToInt32(IMapConfig.GetValue(typeof(string), "Port"));
+        int IMapPortIn => Convert.ToInt32(IMapConfig.GetValue(typeof(string), "PortIn"));
+        int IMapPortOut => Convert.ToInt32(IMapConfig.GetValue(typeof(string), "PortOut"));
         bool IMapSSL => Convert.ToBoolean(IMapConfig.GetValue(typeof(string), "SSL"));
         string IMapUser => (string)IMapConfig.GetValue(typeof(string), "User");
         string IMapPassword => (string)IMapConfig.GetValue(typeof(string), "Password");
@@ -37,7 +38,7 @@ namespace EdiApi.Controllers
                 string MessageSubject = string.Empty;                
                 try
                 {
-                    StreamReader Rep830File = RepoMail.GetEdi830File(IMapHost, IMapPort, IMapUser, IMapPassword, IMapSSL, ref CodError, ref MessageSubject);
+                    StreamReader Rep830File = RepoMail.GetEdi830File(IMapHost, IMapPortIn, IMapPortOut, IMapUser, IMapPassword, IMapSSL, ref CodError, ref MessageSubject);
                     switch (CodError)
                     {
                         case -1:
@@ -77,7 +78,7 @@ namespace EdiApi.Controllers
         //[Route("~/Edi/Form856")]
         public ActionResult<string> EnviarMail()
         {   
-            using (ImapClient Client = new ImapClient(IMapHost, IMapPort, IMapUser, IMapPassword, AuthMethod.Login, IMapSSL))
+            using (ImapClient Client = new ImapClient(IMapHost, IMapPortIn, IMapUser, IMapPassword, AuthMethod.Login, IMapSSL))
             {
                 MailMessage message = new MailMessage
                 {

@@ -10,9 +10,9 @@ namespace EdiApi.Models
 {
     public static class RepoMail
     {
-        public static StreamReader GetEdi830File(string _IMapHost, int _IMapPort, string _IMapUser, string _IMapPassword, bool _IMapSSL, ref int _CodError, ref string _MessageSubject)
+        public static StreamReader GetEdi830File(string _IMapHost, int _IMapPortIn, int _IMapPortOut, string _IMapUser, string _IMapPassword, bool _IMapSSL, ref int _CodError, ref string _MessageSubject)
         {
-            using (ImapClient ImapClientO = new ImapClient(_IMapHost, _IMapPort, _IMapUser, _IMapPassword, AuthMethod.Login, _IMapSSL))
+            using (ImapClient ImapClientO = new ImapClient(_IMapHost, _IMapPortOut, _IMapUser, _IMapPassword, AuthMethod.Login, _IMapSSL))
             {
                 IEnumerable<uint> uids = ImapClientO.Search(SearchCondition.Unseen());
                 IEnumerable<MailMessage> ArrMessages = ImapClientO.GetMessages(uids);
