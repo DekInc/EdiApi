@@ -28,38 +28,11 @@ namespace EdiApi.Controllers
 
         [HttpGet]
         //De modo que se expone https://localhost:44373/Edi/Form830
-        public ActionResult<RetReporte> Form830(int Tipo)
+        public ActionResult<RetReporte> Form830()
         {
             try
-            {
-                //LearIsa LearIsaO = DbO.LearIsa
-                //    .Where(I => I.Id == Tipo)
-                //    .OrderByDescending(Io => Io.Id).LastOrDefault();
-                //LearGs LearGsO = DbO.LearGs
-                //    .Where(G => G.IdIsa == Tipo)
-                //    .OrderByDescending(Go => Go.Id).LastOrDefault();
-                //if (LearIsaO == null || LearGsO == null)
-                //{
-                //    return new RetReporte() { Info = new RetInfo() { CodError = 1, Mensaje = "Tipo de reporte inválido." } };
-                //}
-                //LearBfr LearBfr830O = new LearBfr
-                //{
-                //    IdGs = LearGsO.Id
-                //};
-                //DbO.LearBfr.Add(LearBfr830O);
-                //DbO.SaveChanges();
-
-                //LearRep830 Rep830O = new LearRep830(0, LearBfr830O.Id, ref LearIsaO, ref LearGsO, ref LearBfr830O);
-
-                //DbO.LearBfr.Update(LearBfr830O);
-                //DbO.SaveChanges();
-                //return new RetReporte() { EdiFile = Rep830O.ToString() };
-                //return Rep830O.ToString();
+            {                
                 LearRep830 LearRep830O = new LearRep830();
-                //StreamReader Rep830File = new StreamReader("830_ejemplo.txt");
-                //while (!Rep830File.EndOfStream)
-                //    LearRep830O.EdiFile.Add(Rep830File.ReadLine());
-                //Rep830File.Close();
                 try
                 {
                     using (ImapClient ImapClientO = new ImapClient(IMapHost, IMapPort, IMapUser, IMapPassword, AuthMethod.Login, IMapSSL))
@@ -74,22 +47,22 @@ namespace EdiApi.Controllers
                                 StreamReader Rep830File = new StreamReader(MailMessageO.Attachments.FirstOrDefault().ContentStream);
                                 while (!Rep830File.EndOfStream)
                                     LearRep830O.EdiFile.Add(Rep830File.ReadLine());
-                                Rep830File.Close();
+                                Rep830File.Close();                                
                             }
-                            else throw new Exception($"Error, el correo verificado no contiene ningún archivo. Subject = {MailMessageO.Subject}");
+                            else return new RetReporte() { Info = new RetInfo() { CodError = -1, Mensaje = $"Error, el correo verificado no contiene ningún archivo. Subject = {MailMessageO.Subject}." } };
                         }
-                        else throw new Exception($"Error, no hay correos sin procesar en la casilla.");
+                        else return new RetReporte() { Info = new RetInfo() { CodError = -2, Mensaje = $"Error, no hay correos a verificar." } };
                     }
                 }
                 catch (Exception ExMail)
                 {
                     return new RetReporte() { Info = new RetInfo() { CodError = 1, Mensaje = ExMail.ToString() } };
                 }
-                return new RetReporte() { EdiFile = string.Join("", LearRep830O.EdiFile), Info = new RetInfo() { CodError = 0, Mensaje = "Todo ok" } };
+                LearRep830O.Parse();
+                return new RetReporte() { EdiFile = string.Join("~", LearRep830O.EdiFile), Info = new RetInfo() { CodError = 0, Mensaje = "Todo OK" } };
             }
             catch (Exception e1)
             {
-                //return "Error: " + e1.ToString();
                 return new RetReporte() { Info = new RetInfo() { CodError = 1, Mensaje = e1.ToString() } };
             }            
         }
