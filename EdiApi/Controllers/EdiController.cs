@@ -33,26 +33,21 @@ namespace EdiApi.Controllers
             try
             {                
                 LearRep830 LearRep830O = new LearRep830();
+                int CodError = 0;
+                string MessageSubject = string.Empty;                
                 try
                 {
-                    using (ImapClient ImapClientO = new ImapClient(IMapHost, IMapPort, IMapUser, IMapPassword, AuthMethod.Login, IMapSSL))
+                    StreamReader Rep830File = RepoMail.GetEdi830File(IMapHost, IMapPort, IMapUser, IMapPassword, IMapSSL, ref CodError, ref MessageSubject);
+                    switch (CodError)
                     {
-                        IEnumerable<uint> uids = ImapClientO.Search(SearchCondition.Unseen());
-                        IEnumerable<MailMessage> ArrMessages = ImapClientO.GetMessages(uids);
-                        if (ArrMessages.Count() > 0)
-                        {
-                            MailMessage MailMessageO = ArrMessages.LastOrDefault();
-                            if (MailMessageO.Attachments.Count > 0)
-                            {
-                                StreamReader Rep830File = new StreamReader(MailMessageO.Attachments.FirstOrDefault().ContentStream);
-                                while (!Rep830File.EndOfStream)
-                                    LearRep830O.EdiFile.Add(Rep830File.ReadLine());
-                                Rep830File.Close();                                
-                            }
-                            else return new RetReporte() { Info = new RetInfo() { CodError = -1, Mensaje = $"Error, el correo verificado no contiene ningún archivo. Subject = {MailMessageO.Subject}." } };
-                        }
-                        else return new RetReporte() { Info = new RetInfo() { CodError = -2, Mensaje = $"Error, no hay correos a verificar." } };
+                        case -1:
+                            return new RetReporte() { Info = new RetInfo() { CodError = -1, Mensaje = $"Error, el correo verificado no contiene ningún archivo. Subject = {MessageSubject}." } };
+                        case -2:
+                            return new RetReporte() { Info = new RetInfo() { CodError = -2, Mensaje = $"Error, no hay correos a verificar." } };
                     }
+                    while (!Rep830File.EndOfStream)
+                        LearRep830O.EdiFile.Add(Rep830File.ReadLine());
+                    Rep830File.Close();
                 }
                 catch (Exception ExMail)
                 {
