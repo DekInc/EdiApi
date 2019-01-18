@@ -11,5 +11,13 @@ namespace EdiApi
         {
             _ListLIN.LastOrDefault().Childs.Add(_NewChild);
         }
+        public static void AddLastChild(this List<SDP830> _ListSDP, EdiBase _NewChild)
+        {
+            _ListSDP.LastOrDefault().Childs.Add(_NewChild);
+        }
+        public static void AddLastChild(this List<SHP830> _ListSHP, EdiBase _NewChild)
+        {
+            _ListSHP.LastOrDefault().Childs.Add(_NewChild);
+        }
     }
 }

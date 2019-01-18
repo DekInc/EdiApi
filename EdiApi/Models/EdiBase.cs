@@ -11,7 +11,7 @@ namespace EdiApi
     public class EdiBase
     {
         public int Hash { set; get; }
-        public int Di { set; get; }
+        public int Coli { set; get; }
         public string NotUsed { set; get; } = "";
         public string EdiStr { set; get; } = "";
         public string[] EdiArray { set; get; }
@@ -37,7 +37,7 @@ namespace EdiApi
         {
             try
             {
-                Di = 0;
+                Coli = 0;
                 Hash = GetHashCode();
                 EdiStr = _EdiStr;
                 EdiArray = EdiStr.Replace(SegmentTerminator, "").Split(ElementTerminator);
@@ -47,10 +47,10 @@ namespace EdiApi
                 {
                     if (OrdenO != "Init")
                     {
-                        Di++;
-                        if (Di == EdiArray.Length)
+                        Coli++;
+                        if (Coli == EdiArray.Length)
                             break;
-                        this.GetType().GetProperty(OrdenO).SetValue(this, EdiArray[Di]);
+                        this.GetType().GetProperty(OrdenO).SetValue(this, EdiArray[Coli]);
                     }
                     //Ret += $"{this.GetType().GetProperty(OrdenO).GetValue(this, null)}{ElementTerminator}";
                 }

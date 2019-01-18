@@ -12,7 +12,7 @@ namespace EdiApi
         public const string Self = "Transaction Set Header";
         public string IdCode { get; set; } = "0";
         public string ControlNumber { get; set; } = "1";
-        public STTrailer830 StTrailerO { get; set; }
+        public SE830 StTrailerO { get; set; }
         public ST830(string _SegmentTerminator) : base(_SegmentTerminator) { InitOrden(); }
         public ST830(UInt16 _RepType, string _SegmentTerminator, string _ControlNumber = "000000001") : base(_SegmentTerminator)
         {
@@ -23,7 +23,7 @@ namespace EdiApi
                 case 0:
                     IdCode = "830";
                     ControlNumber = _ControlNumber;
-                    StTrailerO = new STTrailer830(RepType, SegmentTerminator, ControlNumber);
+                    StTrailerO = new SE830(SegmentTerminator);
                     break;
             }
         }

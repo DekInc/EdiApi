@@ -26,7 +26,7 @@ namespace EdiApi
         public string AcknowledgmentRequested { get; set; } = "0";
         public string UsageIndicator { get; set; } = "T"; // T o P
         public string ComponentElementSeparator { get; set; } = "<";
-        public ISATrailer830 ISATrailerO { get; set; }        
+        public ISA830 ISATrailerO { get; set; }        
         public ISA830(string _SegmentTerminator) : base(_SegmentTerminator) { InitOrden(); }
         public ISA830(UInt16 _RepType, string _SegmentTerminator, string _ControlNumber = "000000001") : base(_SegmentTerminator)
         {
@@ -35,7 +35,7 @@ namespace EdiApi
             {
                 case 0:
                     InterchangeControlNumber = _ControlNumber;
-                    ISATrailerO = new ISATrailer830(RepType, SegmentTerminator, _ControlNumber);
+                    ISATrailerO = new ISA830(SegmentTerminator);
                     InitOrden();
                     break;
             }

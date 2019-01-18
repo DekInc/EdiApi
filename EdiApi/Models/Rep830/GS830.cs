@@ -18,7 +18,7 @@ namespace EdiApi
         public string GroupControlNumber { get; set; } = "5";
         public string ResponsibleAgencyCode { get; set; } = "6";
         public string Version { get; set; } = "7";
-        public GSTrailer830 GSTrailerO { get; set; }
+        public GE830 GSTrailerO { get; set; }
         public GS830(string _SegmentTerminator) : base(_SegmentTerminator) { InitOrden(); }
         public GS830(UInt16 _RepType, string _SegmentTerminator, string _ControlNumber = "000000001") : base(_SegmentTerminator)
         {
@@ -29,7 +29,7 @@ namespace EdiApi
             {
                 case 0:
                     //ControlNumber = _ControlNumber;
-                    GSTrailerO = new GSTrailer830(RepType, SegmentTerminator, _ControlNumber);
+                    GSTrailerO = new GE830(SegmentTerminator);
                     break;
             }
         }
