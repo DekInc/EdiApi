@@ -4,13 +4,14 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel;
+using System.Security.Cryptography;
 
 namespace EdiApi
 {
     [Browsable(true)]
     public class EdiBase
     {
-        public int Hash { set; get; }
+        public string Hash { set; get; }
         public int Coli { set; get; }
         public string NotUsed { set; get; } = "";
         public string EdiStr { set; get; } = "";
@@ -21,6 +22,7 @@ namespace EdiApi
         public IEnumerable<string> Orden { set; get; }
         public EdiBase Parent { get; set; }
         public List<EdiBase> Childs { get; set; } = new List<EdiBase>();
+        HashAlgorithm HashFact = new SHA1CryptoServiceProvider();
         public EdiBase(string _SegmentTerminator)
         {
             SegmentTerminator = _SegmentTerminator;
@@ -38,7 +40,7 @@ namespace EdiApi
             try
             {
                 Coli = 0;
-                Hash = GetHashCode();
+                Hash = Guid.NewGuid().ToString().Replace("-", "").Substring(0, 24) + DateTime.Now.Year.ToString();
                 EdiStr = _EdiStr;
                 EdiArray = EdiStr.Replace(SegmentTerminator, "").Split(ElementTerminator);
                 //if (Orden.Count() != EdiArray.Length)
