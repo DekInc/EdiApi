@@ -3,14 +3,8 @@ using System.Collections.Generic;
 
 namespace EdiApi.Models
 {
-    public partial class LearGs
+    public partial class LearGs830
     {
-        public LearGs()
-        {
-            LearBfr = new HashSet<LearBfr>();
-        }
-
-        public int Id { get; set; }
         public string FunctionalIdCode { get; set; }
         public string ApplicationSenderCode { get; set; }
         public string ApplicationReceiverCode { get; set; }
@@ -19,9 +13,7 @@ namespace EdiApi.Models
         public string GroupControlNumber { get; set; }
         public string ResponsibleAgencyCode { get; set; }
         public string Version { get; set; }
-        public int IdIsa { get; set; }
-
-        public LearIsa IdIsaNavigation { get; set; }
-        public ICollection<LearBfr> LearBfr { get; set; }
+        public string EdiStr { get; set; }
+        public string HashId { get; set; }
     }
 }

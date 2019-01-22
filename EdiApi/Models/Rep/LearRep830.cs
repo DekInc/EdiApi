@@ -12,9 +12,9 @@ namespace EdiApi
         static UInt16 RepType { set; get; } = 0;
         public List<string> EdiFile { get; set; } = new List<string>();
         static string EdiError { set; get; } = "";
-        public LearIsa LearIsaO { get; set; }
-        public LearGs LearGsO { get; set; }
-        public LearBfr LearBfrO { get; set; }
+        public LearIsa830 LearIsaO { get; set; }
+        public LearGs830 LearGsO { get; set; }
+        public LearBfr830 LearBfrO { get; set; }
         static string ControlNumber { set; get; } = "000000001";
         public ISA830 ISAO { get; set; } = new ISA830(EdiBase.SegmentTerminator);
         public GS830 GSO { get; set; } = new GS830(EdiBase.SegmentTerminator);
@@ -35,14 +35,14 @@ namespace EdiApi
         public NTE830 NTEO { get; set; }
         public CTT830 CTTO { get; set; }
         public LearRep830() { }
-        public LearRep830(UInt16 _RepType, int _ControlNumber, ref LearIsa _LearIsaO, ref LearGs _LearGsO, ref LearBfr _LearBfrO)
+        public LearRep830(UInt16 _RepType, int _ControlNumber, ref LearIsa830 _LearIsaO, ref LearGs830 _LearGsO, ref LearBfr830 _LearBfrO)
         {
             RepType = _RepType;
             ControlNumber = $"{_ControlNumber:D9}";
             LearIsaO = _LearIsaO;
             LearGsO = _LearGsO;
             LearBfrO = _LearBfrO;
-            ISAO = new ISA830(RepType, LearIsaO.SegmentTerminator, ControlNumber)
+            ISAO = new ISA830(RepType, ISA830.SegmentTerminator, ControlNumber)
             {
                 AuthorizationInformationQualifier = LearIsaO.AuthorizationInformationQualifier,
                 AuthorizationInformation = LearIsaO.AuthorizationInformation,
@@ -59,7 +59,7 @@ namespace EdiApi
                 AcknowledgmentRequested = LearIsaO.AcknowledgmentRequested,
                 UsageIndicator = LearIsaO.UsageIndicator,
             };
-            GSO = new GS830(RepType, LearIsaO.SegmentTerminator, ControlNumber) {
+            GSO = new GS830(RepType, ISA830.SegmentTerminator, ControlNumber) {
                 FunctionalIdCode = LearGsO.FunctionalIdCode,
                 ApplicationSenderCode = LearGsO.ApplicationSenderCode,
                 ApplicationReceiverCode = LearGsO.ApplicationReceiverCode,
@@ -68,7 +68,7 @@ namespace EdiApi
                 ResponsibleAgencyCode = LearGsO.ResponsibleAgencyCode,
                 Version = LearGsO.Version
             };
-            STO = new ST830(RepType, LearIsaO.SegmentTerminator, ControlNumber);
+            STO = new ST830(RepType, ISA830.SegmentTerminator, ControlNumber);
             LearBfrO.TransactionSetPurposeCode = "00";
             LearBfrO.ForecastOrderNumber = "";
             LearBfrO.ReleaseNumber = "0000";
@@ -80,8 +80,8 @@ namespace EdiApi
             LearBfrO.ForecastUpdatedDate = DateTime.Now.ToString(LearIsaO.InterchangeDate);
             LearBfrO.ContractNumber = "";
             LearBfrO.PurchaseOrderNumber = "";
-            LearBfrO.Time = DateTime.Now.ToString(LearIsaO.InterchangeTime);
-            BFRO = new BFR830(LearIsaO.SegmentTerminator) {
+            //LearBfrO.Time = DateTime.Now.ToString(LearIsaO.InterchangeTime);
+            BFRO = new BFR830(ISA830.SegmentTerminator) {
                 TransactionSetPurposeCode = LearBfrO.TransactionSetPurposeCode,
                 ForecastOrderNumber = LearBfrO.ForecastOrderNumber,
                 ReleaseNumber = LearBfrO.ReleaseNumber,
@@ -94,7 +94,7 @@ namespace EdiApi
                 ContractNumber = LearBfrO.ContractNumber,
                 PurchaseOrderNumber = LearBfrO.PurchaseOrderNumber                
             };
-            LINO = new LIN830(LearIsaO.SegmentTerminator) {
+            LINO = new LIN830(ISA830.SegmentTerminator) {
                 AssignedIdentification = "",
                 ProductIdQualifier = "BP",
                 ProductId = "",
@@ -103,41 +103,41 @@ namespace EdiApi
                 ProductPurchaseIdQualifier = "PO",
                 ProductPurchaseId = ""
             };
-            UITO = new UIT830(LearIsaO.SegmentTerminator) {
+            UITO = new UIT830(ISA830.SegmentTerminator) {
                 UnitOfMeasure = "EA"
             };
-            PRSO = new PRS830(LearIsaO.SegmentTerminator) {
+            PRSO = new PRS830(ISA830.SegmentTerminator) {
                 StatusCode = "7"
             };
-            N1O = new N1830(LearIsaO.SegmentTerminator) {
+            N1O = new N1830(ISA830.SegmentTerminator) {
                 OrganizationId = "ST", // ST o VN
                 Name = "", // ship to name
                 IdCodeQualifier = "92", //6 o 92
                 IdCode = "Avery?" //Plant code, lear
             };
-            N4O = new N4830(LearIsaO.SegmentTerminator) {
+            N4O = new N4830(ISA830.SegmentTerminator) {
                 LocationQualifier = "PL",
                 LocationId = "123" // 3 digits
             };
-            SDPO = new SDP830(LearIsaO.SegmentTerminator)
+            SDPO = new SDP830(ISA830.SegmentTerminator)
             {
                 CalendarPatternCode = "", // ????
                 PatternTimeCode = "A" // A, F, G, Y ????
             };
-            FSTO = new FST830(LearIsaO.SegmentTerminator)
+            FSTO = new FST830(ISA830.SegmentTerminator)
             {
                 Quantity = "",
                 ForecastQualifier = "C",
                 ForecastTimingQualifier = "W",
                 FstDate = ""
             };
-            ATHO = new ATH830(LearIsaO.SegmentTerminator) {
+            ATHO = new ATH830(ISA830.SegmentTerminator) {
                 ResourceAuthCode = "MT",
                 StartDate = DateTime.Now.AddDays(-7).ToString(LearIsaO.InterchangeDate),
                 Quantity = "0.0",
                 EndDate = DateTime.Now.ToString(LearIsaO.InterchangeDate)
             };
-            SHPO = new SHP830(LearIsaO.SegmentTerminator) {
+            SHPO = new SHP830(ISA830.SegmentTerminator) {
                 QuantityQualifier = "01",
                 Quantity = "01",
                 DateTimeQualifier = "011",
@@ -145,10 +145,10 @@ namespace EdiApi
                 AccumulationTime = "",
                 AccumulationEndDate = "" //Solo si SHP03 = 051
             };
-            NTEO = new NTE830(LearIsaO.SegmentTerminator) {
+            NTEO = new NTE830(ISA830.SegmentTerminator) {
                 Message = "Free message"
             };
-            CTTO = new CTT830(LearIsaO.SegmentTerminator) {
+            CTTO = new CTT830(ISA830.SegmentTerminator) {
                 HashTotal = "1"
             };
             EdiError = CTTO.Validate();

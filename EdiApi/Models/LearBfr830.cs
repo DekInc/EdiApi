@@ -3,14 +3,8 @@ using System.Collections.Generic;
 
 namespace EdiApi.Models
 {
-    public partial class LearBfr
+    public partial class LearBfr830
     {
-        public LearBfr()
-        {
-            LearLin = new HashSet<LearLin>();
-        }
-
-        public int Id { get; set; }
         public string TransactionSetPurposeCode { get; set; }
         public string ForecastOrderNumber { get; set; }
         public string ReleaseNumber { get; set; }
@@ -22,10 +16,7 @@ namespace EdiApi.Models
         public string ForecastUpdatedDate { get; set; }
         public string ContractNumber { get; set; }
         public string PurchaseOrderNumber { get; set; }
-        public string Time { get; set; }
-        public int IdGs { get; set; }
-
-        public LearGs IdGsNavigation { get; set; }
-        public ICollection<LearLin> LearLin { get; set; }
+        public string EdiStr { get; set; }
+        public string HashId { get; set; }
     }
 }
