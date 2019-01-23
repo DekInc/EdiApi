@@ -34,7 +34,8 @@ namespace EdiApi
         public SHP830 SHPO { get; set; }
         public NTE830 NTEO { get; set; }
         public CTT830 CTTO { get; set; }
-        public LearRep830() { }
+        public EdiDBContext DbO;
+        public LearRep830(ref EdiDBContext _DbO) { DbO = _DbO; }
         public LearRep830(UInt16 _RepType, int _ControlNumber, ref LearIsa830 _LearIsaO, ref LearGs830 _LearGsO, ref LearBfr830 _LearBfrO)
         {
             RepType = _RepType;
@@ -190,9 +191,9 @@ namespace EdiApi
             ListLIN.Clear();
             ListSDP.Clear();
             ListSHP.Clear();
-            ISA830 ISAO = new ISA830(EdiBase.SegmentTerminator);
-            GS830 GSO = new GS830(EdiBase.SegmentTerminator);
-            ST830 STO = new ST830(EdiBase.SegmentTerminator);
+            ISAO = new ISA830(EdiBase.SegmentTerminator);
+            GSO = new GS830(EdiBase.SegmentTerminator);
+            STO = new ST830(EdiBase.SegmentTerminator);
             string EdiStr = string.Empty;
             for (int Nr = 0; Nr < EdiFile.Count; Nr++)
             {
@@ -211,6 +212,7 @@ namespace EdiApi
                                 return ParseMenError2(GS830.Self, ISA830.Self, Nr);
                             if (!GSO.Parse(EdiStr))
                                 return ParseMenError1(GS830.Self, Nr, GSO.Coli);
+                            GSO.Parent = ISAO;
                             ISAO.Childs.Add(GSO);
                             break;
                         case ST830.Init:
@@ -218,6 +220,7 @@ namespace EdiApi
                                 return ParseMenError2(ST830.Self, GS830.Self, Nr);
                             if (!STO.Parse(EdiStr))
                                 return ParseMenError1(ST830.Self, Nr, STO.Coli);
+                            STO.Parent = ISAO;
                             ISAO.Childs.Add(STO);
                             break;
                         case BFR830.Init:
@@ -226,6 +229,7 @@ namespace EdiApi
                             BFR830 BFRnp = new BFR830(EdiBase.SegmentTerminator);
                             if (!BFRnp.Parse(EdiStr))
                                 return ParseMenError1(BFR830.Self, Nr, BFRnp.Coli);
+                            BFRnp.Parent = STO;
                             STO.Childs.Add(BFRnp);
                             break;
                         case NTE830.Init:
@@ -236,6 +240,7 @@ namespace EdiApi
                                 NTE830 NTEnp = new NTE830(EdiBase.SegmentTerminator);
                                 if (!NTEnp.Parse(EdiStr))
                                     return ParseMenError1(NTE830.Self, Nr, NTEnp.Coli);
+                                NTEnp.Parent = STO;
                                 STO.Childs.Add(NTEnp);
                             } else
                             {
@@ -244,6 +249,7 @@ namespace EdiApi
                                 NTE830 NTEnp = new NTE830(EdiBase.SegmentTerminator);
                                 if (!NTEnp.Parse(EdiStr))
                                     return ParseMenError1(NTE830.Self, Nr, NTEnp.Coli);
+                                NTEnp.Parent = ListLIN.LastOrDefault();
                                 ListLIN.AddLastChild(NTEnp);
                             }
                             break;
@@ -255,6 +261,7 @@ namespace EdiApi
                                 N1830 N1np = new N1830(EdiBase.SegmentTerminator);
                                 if (!N1np.Parse(EdiStr))
                                     return ParseMenError1(N1830.Self, Nr, N1np.Coli);
+                                N1np.Parent = STO;
                                 STO.Childs.Add(N1np);
                             } else
                             {
@@ -263,6 +270,7 @@ namespace EdiApi
                                 N1830 N1np = new N1830(EdiBase.SegmentTerminator);
                                 if (!N1np.Parse(EdiStr))
                                     return ParseMenError1(N1830.Self, Nr, N1np.Coli);
+                                N1np.Parent = ListLIN.LastOrDefault();
                                 ListLIN.AddLastChild(N1np);
                             }
                             break;
@@ -274,6 +282,7 @@ namespace EdiApi
                                 N4830 N4np = new N4830(EdiBase.SegmentTerminator);
                                 if (!N4np.Parse(EdiStr))
                                     return ParseMenError1(N4830.Self, Nr, N4np.Coli);
+                                N4np.Parent = STO;
                                 STO.Childs.Add(N4np);
                             } else
                             {
@@ -282,6 +291,7 @@ namespace EdiApi
                                 N4830 N4np = new N4830(EdiBase.SegmentTerminator);
                                 if (!N4np.Parse(EdiStr))
                                     return ParseMenError1(N4830.Self, Nr, N4np.Coli);
+                                N4np.Parent = ListLIN.LastOrDefault();
                                 ListLIN.AddLastChild(N4np);
                             }
                             break;
@@ -291,6 +301,7 @@ namespace EdiApi
                             LIN830 LINnp = new LIN830(EdiBase.SegmentTerminator);
                             if (!LINnp.Parse(EdiStr))
                                 return ParseMenError1(LIN830.Self, Nr, LINnp.Coli);
+                            LINnp.Parent = STO;
                             STO.Childs.Add(LINnp);
                             ListLIN.Add(LINnp);
                             break;
@@ -300,6 +311,7 @@ namespace EdiApi
                             UIT830 UITnp = new UIT830(EdiBase.SegmentTerminator);
                             if (!UITnp.Parse(EdiStr))
                                 return ParseMenError1(UIT830.Self, Nr, UITnp.Coli);
+                            UITnp.Parent = ListLIN.LastOrDefault();
                             ListLIN.AddLastChild(UITnp);
                             break;
                         case PRS830.Init:
@@ -308,6 +320,7 @@ namespace EdiApi
                             PRS830 PRSnp = new PRS830(EdiBase.SegmentTerminator);
                             if (!PRSnp.Parse(EdiStr))
                                 return ParseMenError1(PRS830.Self, Nr, PRSnp.Coli);
+                            PRSnp.Parent = ListLIN.LastOrDefault();
                             ListLIN.AddLastChild(PRSnp);
                             break;
                         case SDP830.Init:
@@ -316,6 +329,7 @@ namespace EdiApi
                             SDP830 SDPnp = new SDP830(EdiBase.SegmentTerminator);
                             if (!SDPnp.Parse(EdiStr))
                                 return ParseMenError1(SDP830.Self, Nr, SDPnp.Coli);
+                            SDPnp.Parent = ListLIN.LastOrDefault();
                             ListLIN.AddLastChild(SDPnp);
                             ListSDP.Add(SDPnp);
                             break;
@@ -326,9 +340,15 @@ namespace EdiApi
                             if (!FSTnp.Parse(EdiStr))
                                 return ParseMenError1(FST830.Self, Nr, FSTnp.Coli);
                             if (ListSDP.Count == 0)
+                            {
+                                FSTnp.Parent = ListLIN.LastOrDefault();
                                 ListLIN.AddLastChild(FSTnp);
+                            }
                             else
+                            {
+                                FSTnp.Parent = ListSDP.LastOrDefault();
                                 ListSDP.AddLastChild(FSTnp);
+                            }
                             break;
                         case ATH830.Init:
                             if (ListLIN.Count == 0)
@@ -336,6 +356,7 @@ namespace EdiApi
                             ATH830 ATHnp = new ATH830(EdiBase.SegmentTerminator);
                             if (!ATHnp.Parse(EdiStr))
                                 return ParseMenError1(ATH830.Self, Nr, ATHnp.Coli);
+                            ATHnp.Parent = ListLIN.LastOrDefault();
                             ListLIN.AddLastChild(ATHnp);
                             break;
                         case SHP830.Init:
@@ -344,6 +365,7 @@ namespace EdiApi
                             SHP830 SHPnp = new SHP830(EdiBase.SegmentTerminator);
                             if (!SHPnp.Parse(EdiStr))
                                 return ParseMenError1(SHP830.Self, Nr, SHPnp.Coli);
+                            SHPnp.Parent = ListLIN.LastOrDefault();
                             ListLIN.AddLastChild(SHPnp);
                             ListSHP.Add(SHPnp);
                             break;
@@ -354,9 +376,15 @@ namespace EdiApi
                             if (!REFnp.Parse(EdiStr))
                                 return ParseMenError1(REF830.Self, Nr, REFnp.Coli);
                             if (ListSHP.Count == 0)
+                            {
+                                REFnp.Parent = ListLIN.LastOrDefault();
                                 ListLIN.AddLastChild(REFnp);
+                            }
                             else
+                            {
+                                REFnp.Parent = ListSHP.LastOrDefault();
                                 ListSHP.AddLastChild(REFnp);
+                            }
                             break;
                         case CTT830.Init:
                             if (string.IsNullOrEmpty(ISAO.EdiStr))
@@ -364,6 +392,7 @@ namespace EdiApi
                             CTT830 CTTnp = new CTT830(EdiBase.SegmentTerminator);
                             if (!CTTnp.Parse(EdiStr))
                                 return ParseMenError1(CTT830.Self, Nr, CTTnp.Coli);
+                            CTTnp.Parent = ISAO;
                             ISAO.Childs.Add(CTTnp);
                             break;
                         case SE830.Init:
@@ -372,6 +401,7 @@ namespace EdiApi
                             SE830 SEnp = new SE830(EdiBase.SegmentTerminator);
                             if (!SEnp.Parse(EdiStr))
                                 return ParseMenError1(SE830.Self, Nr, SEnp.Coli);
+                            SEnp.Parent = ISAO;
                             ISAO.Childs.Add(SEnp);
                             break;
                         case GE830.Init:
@@ -380,6 +410,7 @@ namespace EdiApi
                             GE830 GEnp = new GE830(EdiBase.SegmentTerminator);
                             if (!GEnp.Parse(EdiStr))
                                 return ParseMenError1(GE830.Self, Nr, GEnp.Coli);
+                            GEnp.Parent = ISAO;
                             ISAO.Childs.Add(GEnp);
                             break;
                         case IEA830.Init:
@@ -388,6 +419,7 @@ namespace EdiApi
                             IEA830 IEAnp = new IEA830(EdiBase.SegmentTerminator);
                             if (!IEAnp.Parse(EdiStr))
                                 return ParseMenError1(IEA830.Self, Nr, IEAnp.Coli);
+                            IEAnp.Parent = ISAO;
                             ISAO.Childs.Add(IEAnp);
                             break;
                         default:
@@ -396,6 +428,15 @@ namespace EdiApi
                 }
             }
             return string.Empty;
+        }
+        public void SaveEdiPure(ref string _EdiPure)
+        {
+            DbO.LearPureEdi.Add(new LearPureEdi() { HashId = EdiBase.GetHashId(), EdiStr = _EdiPure });
+            DbO.SaveChanges();
+        }
+        public void SaveAll() {
+            ISAO.SaveAll(ref DbO);
+            DbO.SaveChanges();
         }
     }
 }

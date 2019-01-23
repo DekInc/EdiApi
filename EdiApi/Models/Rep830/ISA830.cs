@@ -2,9 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.ComponentModel.DataAnnotations;
 
 namespace EdiApi
-{
+{    
     public class ISA830 : EdiBase
     {
         public UInt16 RepType { get; set; }
