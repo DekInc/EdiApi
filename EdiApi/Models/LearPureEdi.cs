@@ -7,5 +7,9 @@ namespace EdiApi.Models
     {
         public string EdiStr { get; set; }
         public string HashId { get; set; }
+        public string Fingreso { get; set; }
+        public string Fprocesado { get; set; }
+        public bool Reprocesar { get; set; }
+        public string NombreArchivo { get; set; }
     }
 }

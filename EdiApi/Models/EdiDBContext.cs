@@ -34,7 +34,9 @@ namespace EdiApi.Models
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.EnableSensitiveDataLogging(true);
+            if (!optionsBuilder.IsConfigured)
+            {
+            }
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -266,7 +268,7 @@ namespace EdiApi.Models
 
                 entity.Property(e => e.CityName).HasMaxLength(19);
 
-                entity.Property(e => e.CountryCode).HasMaxLength(2);
+                entity.Property(e => e.CountryCode).HasMaxLength(4);
 
                 entity.Property(e => e.EdiStr)
                     .IsRequired()
@@ -330,6 +332,16 @@ namespace EdiApi.Models
                     .ValueGeneratedNever();
 
                 entity.Property(e => e.EdiStr).HasColumnType("text");
+
+                entity.Property(e => e.Fingreso)
+                    .HasColumnName("FIngreso")
+                    .HasMaxLength(16);
+
+                entity.Property(e => e.Fprocesado)
+                    .HasColumnName("FProcesado")
+                    .HasMaxLength(16);
+
+                entity.Property(e => e.NombreArchivo).HasMaxLength(256);
             });
 
             modelBuilder.Entity<LearRef830>(entity =>

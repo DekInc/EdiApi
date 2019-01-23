@@ -35,10 +35,10 @@ namespace EdiApi.Controllers
             {                
                 LearRep830 LearRep830O = new LearRep830(ref DbO);
                 int CodError = 0;
-                string MessageSubject = string.Empty, EdiPure = string.Empty;
+                string MessageSubject = string.Empty, EdiPure = string.Empty, FileName = string.Empty;
                 try
                 {
-                    StreamReader Rep830File = RepoMail.GetEdi830File(IMapHost, IMapPortIn, IMapPortOut, IMapUser, IMapPassword, IMapSSL, ref CodError, ref MessageSubject);
+                    StreamReader Rep830File = RepoMail.GetEdi830File(IMapHost, IMapPortIn, IMapPortOut, IMapUser, IMapPassword, IMapSSL, ref CodError, ref MessageSubject, ref FileName);
                     switch (CodError)
                     {
                         case -1:
@@ -51,16 +51,17 @@ namespace EdiApi.Controllers
                         LearRep830O.EdiFile.Add(Rep830File.ReadLine());
                         EdiPure += LearRep830O.EdiFile.LastOrDefault();
                     }
-                    Rep830File.Close();                    
+                    Rep830File.Close();
                 }
                 catch (Exception ExMail)
                 {
                     return new RetReporte() { Info = new RetInfo() { CodError = 1, Mensaje = ExMail.ToString() } };
-                }
+                }                
+                LearRep830O.SaveEdiPure(ref EdiPure, FileName);
                 LearRep830O.Parse();
-                LearRep830O.SaveEdiPure(ref EdiPure);
                 DbO.LearIsa830.LastOrDefault().ParentHashId = DbO.LearPureEdi.LastOrDefault().HashId;
                 LearRep830O.SaveAll();
+                LearRep830O.UpdateEdiPure();
                 return new RetReporte() { EdiFile = string.Join(Environment.NewLine, LearRep830O.EdiFile), Info = new RetInfo() { CodError = 0, Mensaje = "Todo OK" } };
             }
             catch (Exception e1)

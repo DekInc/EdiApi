@@ -10,7 +10,7 @@ namespace EdiApi.Models
 {
     public static class RepoMail
     {
-        public static StreamReader GetEdi830File(string _IMapHost, int _IMapPortIn, int _IMapPortOut, string _IMapUser, string _IMapPassword, bool _IMapSSL, ref int _CodError, ref string _MessageSubject)
+        public static StreamReader GetEdi830File(string _IMapHost, int _IMapPortIn, int _IMapPortOut, string _IMapUser, string _IMapPassword, bool _IMapSSL, ref int _CodError, ref string _MessageSubject, ref string _FileName)
         {
             using (ImapClient ImapClientO = new ImapClient(_IMapHost, _IMapPortIn, _IMapUser, _IMapPassword, AuthMethod.Login, _IMapSSL))
             {
@@ -22,6 +22,7 @@ namespace EdiApi.Models
                     _MessageSubject = MailMessageO.Subject;
                     if (MailMessageO.Attachments.Count > 0)
                     {
+                        _FileName = MailMessageO.Attachments.FirstOrDefault().Name;
                         return new StreamReader(MailMessageO.Attachments.FirstOrDefault().ContentStream);
                     }
                     else _CodError = -1;

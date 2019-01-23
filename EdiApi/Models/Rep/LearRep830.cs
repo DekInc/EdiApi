@@ -35,6 +35,7 @@ namespace EdiApi
         public NTE830 NTEO { get; set; }
         public CTT830 CTTO { get; set; }
         public EdiDBContext DbO;
+        public LearPureEdi LearPureEdiO { get; set; }
         public LearRep830(ref EdiDBContext _DbO) { DbO = _DbO; }
         public LearRep830(UInt16 _RepType, int _ControlNumber, ref LearIsa830 _LearIsaO, ref LearGs830 _LearGsO, ref LearBfr830 _LearBfrO)
         {
@@ -429,9 +430,23 @@ namespace EdiApi
             }
             return string.Empty;
         }
-        public void SaveEdiPure(ref string _EdiPure)
+        public void SaveEdiPure(ref string _EdiPure, string _FileName)
         {
-            DbO.LearPureEdi.Add(new LearPureEdi() { HashId = EdiBase.GetHashId(), EdiStr = _EdiPure });
+            LearPureEdiO = new LearPureEdi()
+            {
+                HashId = EdiBase.GetHashId(),
+                EdiStr = _EdiPure,
+                Fingreso = DateTime.Now.ToString("dd/MM/yyyy HH:mm"),
+                Reprocesar = false,
+                NombreArchivo = _FileName
+            };
+            DbO.LearPureEdi.Add(LearPureEdiO);
+            DbO.SaveChanges();
+        }
+        public void UpdateEdiPure()
+        {
+            LearPureEdiO.Fprocesado = DateTime.Now.ToString("dd/MM/yyyy HH:mm");
+            DbO.LearPureEdi.Update(LearPureEdiO);
             DbO.SaveChanges();
         }
         public void SaveAll() {
