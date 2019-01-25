@@ -11,5 +11,7 @@ namespace EdiApi.Models
         public string Fprocesado { get; set; }
         public bool Reprocesar { get; set; }
         public string NombreArchivo { get; set; }
+        public string Log { get; set; }
+        public int? CheckSeg { get; set; }
     }
 }

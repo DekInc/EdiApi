@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -10,13 +11,21 @@ namespace EdiApi
         public UInt16 RepType { get; set; }
         public const string Init = "GS";
         public const string Self = "Functional Group Header";
+        [StringLength(maximumLength: 2, MinimumLength = 0)]
         public string FunctionalIdCode { get; set; } = "0";
+        [StringLength(maximumLength: 15, MinimumLength = 0)]
         public string ApplicationSenderCode { get; set; } = "1";
+        [StringLength(maximumLength: 15, MinimumLength = 0)]
         public string ApplicationReceiverCode { get; set; } = "2";
+        [StringLength(maximumLength: 8, MinimumLength = 0)]
         public string GsDate { get; set; } = "3";
+        [StringLength(maximumLength: 8, MinimumLength = 0)]
         public string GsTime { get; set; } = "4";
+        [StringLength(maximumLength: 9, MinimumLength = 0)]
         public string GroupControlNumber { get; set; } = "5";
+        [StringLength(maximumLength: 2, MinimumLength = 0)]
         public string ResponsibleAgencyCode { get; set; } = "6";
+        [StringLength(maximumLength: 12, MinimumLength = 0)]
         public string Version { get; set; } = "7";
         public GE830 GSTrailerO { get; set; }
         public GS830(string _SegmentTerminator) : base(_SegmentTerminator) { InitOrden(); }

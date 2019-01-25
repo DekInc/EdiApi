@@ -5,13 +5,17 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="830_avanzado.txt" />
     <None Remove="830_ejemplo.txt" />
     <None Remove="F856_048700342.txt" />
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="830_avanzado.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="830_ejemplo.txt">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="F856_048700342.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -30,6 +34,7 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.1.1" />
     <PackageReference Include="S22.Imap.Core" Version="3.6.1" />
   </ItemGroup>
 

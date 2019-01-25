@@ -15,6 +15,7 @@ namespace EdiApi.Models
         {
         }
 
+        public virtual DbSet<EdiComs> EdiComs { get; set; }
         public virtual DbSet<LearAth830> LearAth830 { get; set; }
         public virtual DbSet<LearBfr830> LearBfr830 { get; set; }
         public virtual DbSet<LearFst830> LearFst830 { get; set; }
@@ -41,6 +42,17 @@ namespace EdiApi.Models
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<EdiComs>(entity =>
+            {
+                entity.Property(e => e.Freg)
+                    .HasColumnName("FReg")
+                    .HasMaxLength(16);
+
+                entity.Property(e => e.Log).HasColumnType("text");
+
+                entity.Property(e => e.Type).HasMaxLength(16);
+            });
+
             modelBuilder.Entity<LearAth830>(entity =>
             {
                 entity.HasKey(e => e.HashId);
@@ -169,7 +181,7 @@ namespace EdiApi.Models
 
                 entity.Property(e => e.AcknowledgmentRequested).HasMaxLength(1);
 
-                entity.Property(e => e.AuthorizationInformation).HasMaxLength(10);
+                entity.Property(e => e.AuthorizationInformation).HasMaxLength(18);
 
                 entity.Property(e => e.AuthorizationInformationQualifier).HasMaxLength(2);
 
@@ -340,6 +352,8 @@ namespace EdiApi.Models
                 entity.Property(e => e.Fprocesado)
                     .HasColumnName("FProcesado")
                     .HasMaxLength(16);
+
+                entity.Property(e => e.Log).HasColumnType("text");
 
                 entity.Property(e => e.NombreArchivo).HasMaxLength(256);
             });

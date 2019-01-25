@@ -8,10 +8,12 @@ using System.Threading.Tasks;
 
 namespace EdiApi.Models
 {
-    public static class RepoMail
+    public class ComRepoMail : Coms
     {
-        public static StreamReader GetEdi830File(string _IMapHost, int _IMapPortIn, int _IMapPortOut, string _IMapUser, string _IMapPassword, bool _IMapSSL, ref int _CodError, ref string _MessageSubject, ref string _FileName)
+        private const string Id = "IMAP";        
+        public static StreamReader GetEdi830File(string _IMapHost, int _IMapPortIn, int _IMapPortOut, string _IMapUser, string _IMapPassword, bool _IMapSSL, ref int _CodError, ref string _MessageSubject, ref string _FileName, ref EdiDBContext _DbO, object _MaxEdiComs)
         {
+            CheckMaxEdiComs(ref _DbO, _MaxEdiComs);
             using (ImapClient ImapClientO = new ImapClient(_IMapHost, _IMapPortIn, _IMapUser, _IMapPassword, AuthMethod.Login, _IMapSSL))
             {
                 IEnumerable<uint> uids = ImapClientO.Search(SearchCondition.Unseen());
@@ -23,11 +25,20 @@ namespace EdiApi.Models
                     if (MailMessageO.Attachments.Count > 0)
                     {
                         _FileName = MailMessageO.Attachments.FirstOrDefault().Name;
+                        AddComLog(ref _DbO, Id, $"Se obtuvo el archivo {_FileName}");
                         return new StreamReader(MailMessageO.Attachments.FirstOrDefault().ContentStream);
                     }
-                    else _CodError = -1;
+                    else
+                    {
+                        AddComLog(ref _DbO, Id, $"Error, el correo verificado no contiene ningún archivo. Subject = {_MessageSubject}.");
+                        _CodError = -1;
+                    }
                 }
-                else _CodError = -2;
+                else
+                {
+                    AddComLog(ref _DbO, Id, $"No hay correos a verificar.");
+                    _CodError = -2;
+                }
             }
             return null;
         }

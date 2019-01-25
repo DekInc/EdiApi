@@ -9,5 +9,6 @@ namespace EdiApi.Models
     {
         public int CodError { get; set; } = 0;
         public string Mensaje { get; set; } = string.Empty;
+        public double ResponseTimeSeconds { get; set; } = 0;
     }
 }

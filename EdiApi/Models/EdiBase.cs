@@ -40,6 +40,7 @@ namespace EdiApi
         {
             try
             {
+                EdiSec.CheckSeg++;
                 Coli = 0;
                 HashId = GetHashId();
                 EdiStr = _EdiStr;
@@ -66,12 +67,14 @@ namespace EdiApi
         }        
         public string Validate()
         {
-            string Ret = "";
+            string Ret = string.Empty;
             List<ValidationResult> LVal = new List<ValidationResult>();
             ValidationContext Context = new ValidationContext(this, null, null);
             Validator.TryValidateObject(this, Context, LVal, true);
             if (LVal.Count > 0)
                 Ret = string.Join(',', LVal);
+            if (!string.IsNullOrEmpty(Ret))
+                throw new Exception(Ret);
             return Ret;
         }
         public T Reflect<T>(T _Dest)
@@ -93,67 +96,54 @@ namespace EdiApi
         public void SaveAll(ref EdiDBContext _DbO) {
             try
             {
+                ApplicationSettings.SavedSegments++;
+                Validate();
                 switch (GetType().GetField("Init").GetRawConstantValue())
                 {
                     case ISA830.Init:
                         _DbO.LearIsa830.Add(Reflect(new LearIsa830()));
-                        _DbO.SaveChanges();
                         break;
                     case GS830.Init:
                         _DbO.LearGs830.Add(Reflect(new LearGs830()));
-                        _DbO.SaveChanges();
                         break;
                     case ST830.Init:
                         _DbO.LearSt830.Add(Reflect(new LearSt830()));
-                        _DbO.SaveChanges();
                         break;
                     case BFR830.Init:
                         _DbO.LearBfr830.Add(Reflect(new LearBfr830()));
-                        _DbO.SaveChanges();
                         break;
                     case NTE830.Init:
                         _DbO.LearNte830.Add(Reflect(new LearNte830()));
-                        _DbO.SaveChanges();
                         break;
                     case N1830.Init:
                         _DbO.LearN1830.Add(Reflect(new LearN1830()));
-                        _DbO.SaveChanges();
                         break;
                     case N4830.Init:
                         _DbO.LearN4830.Add(Reflect(new LearN4830()));
-                        _DbO.SaveChanges();
                         break;
                     case LIN830.Init:
                         _DbO.LearLin830.Add(Reflect(new LearLin830()));
-                        _DbO.SaveChanges();
                         break;
                     case UIT830.Init:
                         _DbO.LearUit830.Add(Reflect(new LearUit830()));
-                        _DbO.SaveChanges();
                         break;
                     case PRS830.Init:
                         _DbO.LearPrs830.Add(Reflect(new LearPrs830()));
-                        _DbO.SaveChanges();
                         break;
                     case SDP830.Init:
                         _DbO.LearSdp830.Add(Reflect(new LearSdp830()));
-                        _DbO.SaveChanges();
                         break;
                     case FST830.Init:
                         _DbO.LearFst830.Add(Reflect(new LearFst830()));
-                        _DbO.SaveChanges();
                         break;
                     case ATH830.Init:
                         _DbO.LearAth830.Add(Reflect(new LearAth830()));
-                        _DbO.SaveChanges();
                         break;
                     case SHP830.Init:
                         _DbO.LearShp830.Add(Reflect(new LearShp830())); _DbO.SaveChanges();
-                        _DbO.SaveChanges();
                         break;
                     case REF830.Init:
                         _DbO.LearRef830.Add(Reflect(new LearRef830()));
-                        _DbO.SaveChanges();
                         break;
                     //case CTT830.Init:
                     //    break;

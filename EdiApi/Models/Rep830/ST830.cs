@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -10,7 +11,9 @@ namespace EdiApi
         public UInt16 RepType { get; set; }
         public const string Init = "ST";
         public const string Self = "Transaction Set Header";
+        [StringLength(maximumLength: 3, MinimumLength = 0)]
         public string IdCode { get; set; } = "0";
+        [StringLength(maximumLength: 9, MinimumLength = 0)]
         public string ControlNumber { get; set; } = "1";
         public SE830 StTrailerO { get; set; }
         public ST830(string _SegmentTerminator) : base(_SegmentTerminator) { InitOrden(); }

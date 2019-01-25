@@ -8,6 +8,7 @@ using System.IO;
 using System.Net.Mail;
 using S22.Imap;
 using Microsoft.Extensions.Configuration;
+using Microsoft.EntityFrameworkCore;
 
 namespace EdiApi.Controllers
 {
@@ -16,57 +17,158 @@ namespace EdiApi.Controllers
     public class EdiController : ControllerBase
     {
         public EdiDBContext DbO;
+        public EdiDBContext DbOEx;
         public readonly IConfiguration Config;
         IConfiguration IMapConfig => Config.GetSection("IMapConfig");
+        IConfiguration IEdiFtpConfig => Config.GetSection("EdiFtp");
         string IMapHost => (string)IMapConfig.GetValue(typeof(string), "Host");
         int IMapPortIn => Convert.ToInt32(IMapConfig.GetValue(typeof(string), "PortIn"));
         int IMapPortOut => Convert.ToInt32(IMapConfig.GetValue(typeof(string), "PortOut"));
         bool IMapSSL => Convert.ToBoolean(IMapConfig.GetValue(typeof(string), "SSL"));
         string IMapUser => (string)IMapConfig.GetValue(typeof(string), "User");
         string IMapPassword => (string)IMapConfig.GetValue(typeof(string), "Password");
+        StreamReader Rep830File { set; get; }
         //public EdiController(EdiDBContext _DbO) { DbO = _DbO; }
         public EdiController(EdiDBContext _DbO, IConfiguration _Config) { DbO = _DbO; Config = _Config; }        
 
         [HttpGet]
-        //De modo que se expone https://localhost:44373/Edi/Form830
-        public ActionResult<RetReporte> Form830()
+        //De modo que se expone https://localhost:44373/Edi/TranslateForms830
+        public ActionResult<RetReporte> TranslateForms830()
         {
+            DateTime StartTime = DateTime.Now;
+            LearRep830 LearRep830O = new LearRep830(ref DbO);
             try
-            {                
-                LearRep830 LearRep830O = new LearRep830(ref DbO);
-                int CodError = 0;
+            {   
+                int CodError2 = 0;
                 string MessageSubject = string.Empty, EdiPure = string.Empty, FileName = string.Empty;
                 try
                 {
-                    StreamReader Rep830File = RepoMail.GetEdi830File(IMapHost, IMapPortIn, IMapPortOut, IMapUser, IMapPassword, IMapSSL, ref CodError, ref MessageSubject, ref FileName);
-                    switch (CodError)
+                    //StreamReader Rep830File = ComRepoMail.GetEdi830File(IMapHost, IMapPortIn, IMapPortOut, IMapUser, IMapPassword, IMapSSL, ref CodError, ref MessageSubject, ref FileName, ref DbO, Config.GetSection("MaxEdiComs").GetValue(typeof(string), "Value"));
+                    ComRepoFtp ComRepoFtpO = new ComRepoFtp(
+                        (string)IEdiFtpConfig.GetValue(typeof(string), "Host"),
+                        (string)IEdiFtpConfig.GetValue(typeof(string), "HostFailover"),
+                        (string)IEdiFtpConfig.GetValue(typeof(string), "EdiUser"),
+                        (string)IEdiFtpConfig.GetValue(typeof(string), "EdiPassword"),
+                        (string)IEdiFtpConfig.GetValue(typeof(string), "DirIn"),
+                        (string)IEdiFtpConfig.GetValue(typeof(string), "DirOut"),
+                        (string)IEdiFtpConfig.GetValue(typeof(string), "DirChecked"),
+                        Config.GetSection("MaxEdiComs").GetValue(typeof(string), "Value")
+                    );
+                    if (!ComRepoFtpO.Ping(ref DbO))
                     {
-                        case -1:
-                            return new RetReporte() { Info = new RetInfo() { CodError = -1, Mensaje = $"Error, el correo verificado no contiene ningún archivo. Subject = {MessageSubject}." } };
-                        case -2:
-                            return new RetReporte() { Info = new RetInfo() { CodError = -2, Mensaje = $"Error, no hay correos a verificar." } };
-                    }
-                    while (!Rep830File.EndOfStream)
+                        ComRepoFtpO.UseHost2 = true;
+                        if (!ComRepoFtpO.Ping(ref DbO))
+                        {
+                            return new RetReporte()
+                            {
+                                Info = new RetInfo()
+                                {
+                                    CodError = -3,
+                                    Mensaje = $"Error, no se puede conectar con el servidor FTP primario o secundario",
+                                    ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                                }
+                            };
+                        }
+                    }                    
+                    ComRepoFtpO.Get(ref DbO, ref CodError2, ref MessageSubject, ref FileName, ref EdiPure);
+                    //ComRepoFtpO.Put("830_avanzado.txt", @"E:\Documents\GLC\Codigo\EdiApi\EdiApi\830_avanzado.txt", ref DbO);
+                    switch (CodError2)
                     {
-                        LearRep830O.EdiFile.Add(Rep830File.ReadLine());
-                        EdiPure += LearRep830O.EdiFile.LastOrDefault();
+                        case -1:                            
+                            return new RetReporte() {
+                                Info = new RetInfo() {
+                                    CodError = -1,
+                                    Mensaje = $"Error, el correo verificado no contiene ningún archivo. Subject = {MessageSubject}.",
+                                    ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                                }
+                            };
+                        case -2:                            
+                            return new RetReporte() {
+                                Info = new RetInfo() {
+                                    CodError = -2,
+                                    Mensaje = $"Error, no hay correos a verificar.",
+                                    ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                                }
+                            };
+                        case -4:
+                        case -5:
+                        case -6:
+                        case -7:
+                        case -8:
+                        case -9:
+                        case -10:
+                        case -11:
+                            return new RetReporte()
+                            {
+                                Info = new RetInfo()
+                                {
+                                    CodError = CodError2,
+                                    Mensaje = MessageSubject,
+                                    ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                                }
+                            };
                     }
-                    Rep830File.Close();
+                    //while (!Rep830File.EndOfStream)
+                    //{
+                    //    EdiPure += Rep830File.ReadLine();
+                    //}
+                    LearRep830O.EdiFile = EdiPure.Split(EdiBase.SegmentTerminator).ToList();
+                    //Rep830File.Close();
+                    if (LearRep830O.EdiFile.LastOrDefault() == "") LearRep830O.EdiFile.RemoveAt(LearRep830O.EdiFile.Count - 1);
                 }
                 catch (Exception ExMail)
                 {
-                    return new RetReporte() { Info = new RetInfo() { CodError = 1, Mensaje = ExMail.ToString() } };
+                    return new RetReporte() {
+                        Info = new RetInfo() {
+                            CodError = 1,
+                            Mensaje = ExMail.ToString(),
+                            ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                        }
+                    };
                 }                
-                LearRep830O.SaveEdiPure(ref EdiPure, FileName);
+                LearRep830O.SaveEdiPure(ref EdiPure, FileName, LearRep830O.EdiFile.Count);
                 LearRep830O.Parse();
-                DbO.LearIsa830.LastOrDefault().ParentHashId = DbO.LearPureEdi.LastOrDefault().HashId;
                 LearRep830O.SaveAll();
+                if (DbO.LearIsa830.Count() > 0) DbO.LearIsa830.LastOrDefault().ParentHashId = LearRep830O.LearPureEdiO.HashId;
+                DbO.LearIsa830.Update(DbO.LearIsa830.LastOrDefault());
                 LearRep830O.UpdateEdiPure();
-                return new RetReporte() { EdiFile = string.Join(Environment.NewLine, LearRep830O.EdiFile), Info = new RetInfo() { CodError = 0, Mensaje = "Todo OK" } };
+                return new RetReporte() {
+                    EdiFile = string.Join(EdiBase.SegmentTerminator, LearRep830O.EdiFile),
+                    Info = new RetInfo() {
+                        CodError = 0,
+                        Mensaje = "Todo OK",
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
             }
             catch (Exception e1)
             {
-                return new RetReporte() { Info = new RetInfo() { CodError = 1, Mensaje = e1.ToString() } };
+                try
+                {
+                    LearRep830O.LearPureEdiO.Log = e1.ToString();
+                    DbContextOptionsBuilder<EdiDBContext> optionsBuilder = new DbContextOptionsBuilder<EdiDBContext>();
+                    optionsBuilder.UseSqlServer(Config.GetConnectionString("EdiDB"));
+                    DbOEx = new EdiDBContext(optionsBuilder.Options);                    
+                    DbOEx.LearPureEdi.Update(LearRep830O.LearPureEdiO);
+                    DbOEx.SaveChanges();
+                }
+                catch (Exception SevereEx)
+                {
+                    return new RetReporte() {
+                        Info = new RetInfo() {
+                            CodError = 1,
+                            Mensaje = "ERROR GRAVE DE BASE DE DATOS. " + SevereEx.ToString(),
+                            ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                        }
+                    };
+                }
+                return new RetReporte() {
+                    Info = new RetInfo() {
+                        CodError = 1,
+                        Mensaje = e1.ToString(),
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
             }            
         }
 

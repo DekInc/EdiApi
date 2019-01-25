@@ -10,6 +10,7 @@ namespace EdiApi
     public class LearRep830
     {
         static UInt16 RepType { set; get; } = 0;
+        static int CheckSeg { set; get; } = 0;
         public List<string> EdiFile { get; set; } = new List<string>();
         static string EdiError { set; get; } = "";
         public LearIsa830 LearIsaO { get; set; }
@@ -430,22 +431,25 @@ namespace EdiApi
             }
             return string.Empty;
         }
-        public void SaveEdiPure(ref string _EdiPure, string _FileName)
+        public void SaveEdiPure(ref string _EdiPure, string _FileName, int _CheckSeg)
         {
             LearPureEdiO = new LearPureEdi()
             {
                 HashId = EdiBase.GetHashId(),
                 EdiStr = _EdiPure,
-                Fingreso = DateTime.Now.ToString("dd/MM/yyyy HH:mm"),
-                Reprocesar = false,
-                NombreArchivo = _FileName
+                Fingreso = DateTime.Now.ToString(ApplicationSettings.DateTimeFormat),
+                Reprocesar = true,
+                NombreArchivo = _FileName,
+                CheckSeg = _CheckSeg                
             };
             DbO.LearPureEdi.Add(LearPureEdiO);
             DbO.SaveChanges();
         }
         public void UpdateEdiPure()
         {
-            LearPureEdiO.Fprocesado = DateTime.Now.ToString("dd/MM/yyyy HH:mm");
+            LearPureEdiO.Reprocesar = false;
+            LearPureEdiO.Fprocesado = DateTime.Now.ToString(ApplicationSettings.DateTimeFormat);
+            LearPureEdiO.Log = ApplicationSettings.SavedSegments.ToString() + " segmentos analizados, procesados y guardados";
             DbO.LearPureEdi.Update(LearPureEdiO);
             DbO.SaveChanges();
         }
