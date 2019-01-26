@@ -17,6 +17,11 @@ namespace CoreApiClient
             return await GetAsync<IEnumerable<LearPureEdi>>(CreateRequestUri(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Data/GetPureEdi")));
         }
 
+        public async Task<FE830Data> GetFE830Data(string HashId)
+        {
+            return await GetAsync<FE830Data>(CreateRequestUri(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Data/GetFE830Data"), $"HashId={HashId}"));
+        }
+
         //public async Task<List<UsersModel>> GetUsers()
         //{
         //    var requestUrl = CreateRequestUri(string.Format(System.Globalization.CultureInfo.InvariantCulture,

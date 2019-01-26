@@ -18,18 +18,20 @@ namespace EdiViewer.Controllers
             Config = _Config;
             ApplicationSettings.ApiUri = (string)EdiWebApiConfig.GetValue(typeof(string), "ApiUri");
         }
-
-        public async Task<IActionResult> Index()
-        {
-            RetReporte RetReporteO = await ApiClientFactory.Instance.TranslateForms830();
-            EdiViewerModel EdiViewerModelO = new EdiViewerModel();            
+        public async Task<IActionResult> Index(string HashId = "")
+        {            
+            EdiViewerModel EdiViewerModelO = new EdiViewerModel();
+            if (!string.IsNullOrEmpty(HashId))
+            {
+                FE830Data RetReporteO = await ApiClientFactory.Instance.GetFE830Data(HashId);
+            }
             return View(EdiViewerModelO);
         }
         public async Task<IActionResult> GetPureEdi()
         {
             try
             {
-                var dict = Request.Form.ToDictionary(x => x.Key, x => x.Value.ToString());
+                //var dict = Request.Form.ToDictionary(x => x.Key, x => x.Value.ToString());
                 var draw = HttpContext.Request.Form["draw"].FirstOrDefault();
                 // Skiping number of Rows count  
                 var start = Request.Form["start"].FirstOrDefault();
@@ -54,7 +56,6 @@ namespace EdiViewer.Controllers
                 {
                     IEPureEdi = IEPureEdi.Where(m => m.Fingreso == searchValue);
                 }
-
                 //total number of rows count   
                 recordsTotal = IEPureEdi.Count();
                 //Paging   

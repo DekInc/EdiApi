@@ -1,6 +1,7 @@
 ﻿body {
     padding-top: 50px;
     padding-bottom: 20px;
+    background-color: rgb(232, 216, 234);
 }
 
 /* Wrapping element */
@@ -30,9 +31,27 @@
 }
 
 #mainDiv{
-    width: 90vw;
+    padding-top: 15px;
+    margin: auto;    
+}
+
+.jumbotron {
+    border-top: 1px solid rgb(212, 206, 214);
+    border-left: 1px solid rgb(212, 206, 214);
+    border-radius: 20px !important;
+    background: linear-gradient(#eee, rgb(232, 232, 252)) !important;
 }
 
 #tblReportes{
     width: 100%;
+}
+
+#tblReportes thead{
+    background: rgb(204, 156, 183);
+}
+
+.container {
+    width: 100% !important;
+    margin-right: auto;
+    margin-left: auto;
 }

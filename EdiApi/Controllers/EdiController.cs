@@ -70,11 +70,12 @@ namespace EdiApi.Controllers
                             };
                         }
                     }                    
-                    ComRepoFtpO.Get(ref DbO, ref CodError2, ref MessageSubject, ref FileName, ref EdiPure);
-                    //ComRepoFtpO.Put("830_avanzado.txt", @"E:\Documents\GLC\Codigo\EdiApi\EdiApi\830_avanzado.txt", ref DbO);
+                    //ComRepoFtpO.Get(ref DbO, ref CodError2, ref MessageSubject, ref FileName, ref EdiPure);
+                    ComRepoMail.GetEdi830File(IMapHost, IMapPortIn, IMapPortOut, IMapUser, IMapPassword, IMapSSL, ref CodError2, ref MessageSubject, ref FileName, ref DbO, Config.GetSection("MaxEdiComs").GetValue(typeof(string), "Value"), ref EdiPure);
+                    //ComRepoFtpO.Put("830_ejemplo.txt", @"E:\Documents\GLC\Codigo\EdiApi\EdiApi\830_ejemplo.txt", ref DbO);
                     switch (CodError2)
                     {
-                        case -1:                            
+                        case -1:
                             return new RetReporte() {
                                 Info = new RetInfo() {
                                     CodError = -1,
@@ -107,13 +108,8 @@ namespace EdiApi.Controllers
                                     ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
                                 }
                             };
-                    }
-                    //while (!Rep830File.EndOfStream)
-                    //{
-                    //    EdiPure += Rep830File.ReadLine();
-                    //}
-                    LearRep830O.EdiFile = EdiPure.Split(EdiBase.SegmentTerminator).ToList();
-                    //Rep830File.Close();
+                    }                    
+                    LearRep830O.EdiFile = EdiPure.Split(EdiBase.SegmentTerminator).ToList();                    
                     if (LearRep830O.EdiFile.LastOrDefault() == "") LearRep830O.EdiFile.RemoveAt(LearRep830O.EdiFile.Count - 1);
                 }
                 catch (Exception ExMail)
@@ -125,12 +121,33 @@ namespace EdiApi.Controllers
                             ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
                         }
                     };
-                }                
+                }
                 LearRep830O.SaveEdiPure(ref EdiPure, FileName, LearRep830O.EdiFile.Count);
-                LearRep830O.Parse();
+                string ParseRet = LearRep830O.Parse();
+                if (!string.IsNullOrEmpty(ParseRet))
+                {
+                    LearRep830O.LearPureEdiO.Reprocesar = false;
+                    LearRep830O.LearPureEdiO.Fprocesado = DateTime.Now.ToString(ApplicationSettings.DateTimeFormat);
+                    LearRep830O.LearPureEdiO.Log = ParseRet;
+                    DbO.LearPureEdi.Update(LearRep830O.LearPureEdiO);
+                    DbO.SaveChanges();
+                    return new RetReporte()
+                    {
+                        Info = new RetInfo()
+                        {
+                            CodError = -12,
+                            Mensaje = ParseRet,
+                            ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                        }
+                    };
+                }
                 LearRep830O.SaveAll();
-                if (DbO.LearIsa830.Count() > 0) DbO.LearIsa830.LastOrDefault().ParentHashId = LearRep830O.LearPureEdiO.HashId;
-                DbO.LearIsa830.Update(DbO.LearIsa830.LastOrDefault());
+                if (LearRep830.LearIsa830root != null)
+                {
+                    LearRep830.LearIsa830root = DbO.LearIsa830.Where(L => L.HashId == LearRep830.LearIsa830root.HashId).FirstOrDefault();
+                    LearRep830.LearIsa830root.ParentHashId = LearRep830O.LearPureEdiO.HashId;
+                    DbO.LearIsa830.Update(LearRep830.LearIsa830root);
+                }                
                 LearRep830O.UpdateEdiPure();
                 return new RetReporte() {
                     EdiFile = string.Join(EdiBase.SegmentTerminator, LearRep830O.EdiFile),

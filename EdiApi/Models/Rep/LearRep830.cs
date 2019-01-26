@@ -18,6 +18,7 @@ namespace EdiApi
         public LearBfr830 LearBfrO { get; set; }
         static string ControlNumber { set; get; } = "000000001";
         public ISA830 ISAO { get; set; } = new ISA830(EdiBase.SegmentTerminator);
+        public static LearIsa830 LearIsa830root { set; get; }
         public GS830 GSO { get; set; } = new GS830(EdiBase.SegmentTerminator);
         public ST830 STO { get; set; } = new ST830(EdiBase.SegmentTerminator);
         public BFR830 BFRO { get; set; } = new BFR830(EdiBase.SegmentTerminator);

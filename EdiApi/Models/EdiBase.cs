@@ -101,7 +101,8 @@ namespace EdiApi
                 switch (GetType().GetField("Init").GetRawConstantValue())
                 {
                     case ISA830.Init:
-                        _DbO.LearIsa830.Add(Reflect(new LearIsa830()));
+                        LearRep830.LearIsa830root = Reflect(new LearIsa830());
+                        _DbO.LearIsa830.Add(LearRep830.LearIsa830root);
                         break;
                     case GS830.Init:
                         _DbO.LearGs830.Add(Reflect(new LearGs830()));
