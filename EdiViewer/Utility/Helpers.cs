@@ -27,5 +27,14 @@ namespace EdiViewer.Utility.Helper
             }
             return string.Empty;
         }
+        public static string CodeToStr(this IHtmlHelper htmlHelper, string _Str, string _Param, IEnumerable<ComModels.LearCodes> _LearCodes)
+        {
+            if (string.IsNullOrEmpty(_Param)) return string.Empty;
+            IEnumerable<ComModels.LearCodes> Lc = _LearCodes.Where(C => C.Str == _Str && C.Param == _Param);
+            if (Lc.Count() == 0)
+                return $"{_Param} - Valor no mapeado";
+            else
+                return Lc.FirstOrDefault().Value; // English
+        }
     }
 }

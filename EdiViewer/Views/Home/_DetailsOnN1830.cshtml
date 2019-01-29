@@ -1,9 +1,9 @@
-﻿@model Tuple<ComModels.LearN1830, IEnumerable<ComModels.EdiSegName>>
+﻿@model Tuple<ComModels.LearN1830, IEnumerable<ComModels.EdiSegName>, IEnumerable<ComModels.LearCodes>>
 <div class="row">
     <div class="col-sm">
         <div class="SegmentDataCol">
             <label>OrganizationId:</label>
-            @Model.Item1.OrganizationId
+            @Html.CodeToStr("N1.OrganizationId", Model.Item1.OrganizationId, Model.Item3)
         </div>
     </div>
     <div class="col-sm">
@@ -15,7 +15,7 @@
     <div class="col-sm">
         <div class="SegmentDataCol">
             <label>IdCodeQualifier:</label>
-            @Model.Item1.IdCodeQualifier
+            @Html.CodeToStr("N1.IdCodeQualifier", Model.Item1.IdCodeQualifier, Model.Item3)
         </div>
     </div>
     <div class="col-sm">

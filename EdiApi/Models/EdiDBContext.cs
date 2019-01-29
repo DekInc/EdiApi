@@ -19,6 +19,7 @@ namespace EdiApi.Models
         public virtual DbSet<EdiSegName> EdiSegName { get; set; }
         public virtual DbSet<LearAth830> LearAth830 { get; set; }
         public virtual DbSet<LearBfr830> LearBfr830 { get; set; }
+        public virtual DbSet<LearCodes> LearCodes { get; set; }
         public virtual DbSet<LearFst830> LearFst830 { get; set; }
         public virtual DbSet<LearGs830> LearGs830 { get; set; }
         public virtual DbSet<LearIsa830> LearIsa830 { get; set; }
@@ -131,6 +132,21 @@ namespace EdiApi.Models
                 entity.Property(e => e.ReleaseNumber).HasMaxLength(4);
 
                 entity.Property(e => e.TransactionSetPurposeCode).HasMaxLength(2);
+            });
+
+            modelBuilder.Entity<LearCodes>(entity =>
+            {
+                entity.ToTable("LEAR_CODES");
+
+                entity.Property(e => e.Param).HasMaxLength(128);
+
+                entity.Property(e => e.Str)
+                    .IsRequired()
+                    .HasMaxLength(128);
+
+                entity.Property(e => e.Value).HasMaxLength(256);
+
+                entity.Property(e => e.ValueEsp).HasMaxLength(256);
             });
 
             modelBuilder.Entity<LearFst830>(entity =>

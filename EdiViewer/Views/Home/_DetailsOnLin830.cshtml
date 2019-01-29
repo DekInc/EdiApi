@@ -2,7 +2,7 @@
 @using ComModels;
 
 <div class="card box-shadow">
-    <div class="card-header card-clin cursor" data-toggle="collapse" data-target="#@Model.Item1.HashId" aria-expanded="false" aria-controls="@Model.Item1.HashId">
+    <div class="card-header card-clin cursor" data-toggle="collapse" data-target="#@Model.Item1.HashId" aria-expanded="false" aria-controls="@Model.Item1.HashId" title="@Model.Item2.Where(Sn => Sn.Segment == "LIN").FirstOrDefault().DescEng">
         LIN - @Model.Item2.Where(Sn => Sn.Segment == "LIN").FirstOrDefault().Eng @Model.Item1.ProductId
     </div>
     <div class="collapse" id="@Model.Item1.HashId">
@@ -12,7 +12,7 @@
                     <div class="col-sm">
                         <div class="SegmentDataCol">
                             <label>ProductIdQualifier:</label>
-                            @Model.Item1.ProductIdQualifier
+                            @Html.CodeToStr("LIN.ProductIdQualifier", Model.Item1.ProductIdQualifier, Model.Item3.Data.ListCodes)
                         </div>
                     </div>
                     <div class="col-sm">
@@ -24,7 +24,7 @@
                     <div class="col-sm">
                         <div class="SegmentDataCol">
                             <label>ProductRefIdQualifier:</label>
-                            @Model.Item1.ProductRefIdQualifier
+                            @Html.CodeToStr("LIN.ProductRefIdQualifier", Model.Item1.ProductRefIdQualifier, Model.Item3.Data.ListCodes)
                         </div>
                     </div>
                     <div class="col-sm">
@@ -36,7 +36,7 @@
                     <div class="col-sm">
                         <div class="SegmentDataCol">
                             <label>ProductPurchaseIdQualifier:</label>
-                            @Model.Item1.ProductPurchaseIdQualifier
+                            @Html.CodeToStr("LIN.ProductPurchaseIdQualifier", Model.Item1.ProductPurchaseIdQualifier, Model.Item3.Data.ListCodes)
                         </div>
                     </div>
                     <div class="col-sm">
@@ -50,7 +50,7 @@
             @if (Model.Item3.Data.ListLinN1.Where(LN1 => LN1.ParentHashId == Model.Item1.HashId).Count() > 0)
             {
                 <div class="card box-shadow">
-                    <div class="card-header card-cn1 cursor" data-toggle="collapse" data-target="#@Model.Item3.Data.ListLinN1.Where(LN1 => LN1.ParentHashId == Model.Item1.HashId).FirstOrDefault().HashId" aria-expanded="false" aria-controls="@Model.Item3.Data.ListLinN1.Where(LN1 => LN1.ParentHashId == Model.Item1.HashId).FirstOrDefault().HashId">
+                    <div class="card-header card-cn1 cursor" data-toggle="collapse" data-target="#@Model.Item3.Data.ListLinN1.Where(LN1 => LN1.ParentHashId == Model.Item1.HashId).FirstOrDefault().HashId" aria-expanded="false" aria-controls="@Model.Item3.Data.ListLinN1.Where(LN1 => LN1.ParentHashId == Model.Item1.HashId).FirstOrDefault().HashId" title="@Model.Item2.Where(Sn => Sn.Segment == "N1").FirstOrDefault().DescEng">
                         N1 - @Model.Item2.Where(Sn => Sn.Segment == "N1").FirstOrDefault().Eng
                     </div>
                     <div class="collapse" id="@Model.Item3.Data.ListLinN1.Where(LN1 => LN1.ParentHashId == Model.Item1.HashId).FirstOrDefault().HashId">
@@ -59,9 +59,10 @@
                                 @foreach (LearN1830 N1 in Model.Item3.Data.ListLinN1.Where(LN1 => LN1.ParentHashId == Model.Item1.HashId))
                                 {
                                     @await Html.PartialAsync("_DetailsOnN1830",
-                                   new Tuple<LearN1830, IEnumerable<EdiSegName>>(
+                                   new Tuple<LearN1830, IEnumerable<EdiSegName>, IEnumerable<LearCodes>>(
                                        N1,
-                                       Model.Item2))
+                                       Model.Item2,
+                                       Model.Item3.Data.ListCodes))
                                 }
                             </div>
                         </div>
@@ -72,9 +73,10 @@
             @foreach (LearN4830 N4 in Model.Item3.Data.ListLinN4.Where(LN4 => LN4.ParentHashId == Model.Item1.HashId))
             {
                 @await Html.PartialAsync("_DetailsOnN4830",
-               new Tuple<LearN4830, IEnumerable<EdiSegName>>(
+               new Tuple<LearN4830, IEnumerable<EdiSegName>, IEnumerable<LearCodes>>(
                    N4,
-                   Model.Item2))
+                   Model.Item2,
+                   Model.Item3.Data.ListCodes))
                 <hr />
             }
             @foreach (LearNte830 Nte in Model.Item3.Data.ListLinNte.Where(LNte => LNte.ParentHashId == Model.Item1.HashId))
@@ -89,33 +91,36 @@
             @foreach (LearUit830 Uit in Model.Item3.Data.ListLinUit.Where(LNte => LNte.ParentHashId == Model.Item1.HashId))
             {
                 @await Html.PartialAsync("_DetailsOnUit830",
-               new Tuple<LearUit830, IEnumerable<EdiSegName>>(
+               new Tuple<LearUit830, IEnumerable<EdiSegName>, IEnumerable<LearCodes>>(
                    Uit,
-                   Model.Item2))
+                   Model.Item2,
+                   Model.Item3.Data.ListCodes))
                 <hr />
             }
             @foreach (LearPrs830 Prs in Model.Item3.Data.ListLinPrs.Where(LNte => LNte.ParentHashId == Model.Item1.HashId))
             {
                 @await Html.PartialAsync("_DetailsOnPrs830",
-               new Tuple<LearPrs830, IEnumerable<EdiSegName>>(
+               new Tuple<LearPrs830, IEnumerable<EdiSegName>, IEnumerable<LearCodes>>(
                    Prs,
-                   Model.Item2))
+                   Model.Item2,
+                   Model.Item3.Data.ListCodes))
                 <hr />
             }
             @foreach (LearSdp830 Sdp in Model.Item3.Data.ListLinSdp.Where(LNte => LNte.ParentHashId == Model.Item1.HashId))
             {
                 @await Html.PartialAsync("_DetailsOnSdp830",
-               new Tuple<LearSdp830, IEnumerable<EdiSegName>, IEnumerable<LearFst830>>(
+               new Tuple<LearSdp830, IEnumerable<EdiSegName>, IEnumerable<LearFst830>, IEnumerable<LearCodes>>(
                    Sdp,
                    Model.Item2,
-                   Model.Item3.Data.ListSdpFst.Where(F => F.ParentHashId == Sdp.HashId)))
+                   Model.Item3.Data.ListSdpFst.Where(F => F.ParentHashId == Sdp.HashId),
+                   Model.Item3.Data.ListCodes))
                 <hr />
             }
 
             @if (Model.Item3.Data.ListLinFst.Where(LNte => LNte.ParentHashId == Model.Item1.HashId).Count() > 0)
             {
                 <div class="card box-shadow">
-                    <div class="card-header card-cfst cursor" data-toggle="collapse" data-target="#@Model.Item3.Data.ListLinFst.Where(LNte => LNte.ParentHashId == Model.Item1.HashId).FirstOrDefault().HashId" aria-expanded="false" aria-controls="@Model.Item3.Data.ListLinFst.Where(LNte => LNte.ParentHashId == Model.Item1.HashId).FirstOrDefault().HashId">
+                    <div class="card-header card-cfst cursor" data-toggle="collapse" data-target="#@Model.Item3.Data.ListLinFst.Where(LNte => LNte.ParentHashId == Model.Item1.HashId).FirstOrDefault().HashId" aria-expanded="false" aria-controls="@Model.Item3.Data.ListLinFst.Where(LNte => LNte.ParentHashId == Model.Item1.HashId).FirstOrDefault().HashId" title="@Model.Item2.Where(Sn => Sn.Segment == "FST").FirstOrDefault().DescEng">
                         FST - @Model.Item2.Where(Sn => Sn.Segment == "FST").FirstOrDefault().Eng
                     </div>
                     <div class="collapse" id="@Model.Item3.Data.ListLinFst.Where(LNte => LNte.ParentHashId == Model.Item1.HashId).FirstOrDefault().HashId">
@@ -124,9 +129,10 @@
                                 @foreach (LearFst830 Fst in Model.Item3.Data.ListLinFst.Where(LNte => LNte.ParentHashId == Model.Item1.HashId))
                                 {
                                     @await Html.PartialAsync("_DetailsOnFst830",
-                                            new Tuple<LearFst830, IEnumerable<EdiSegName>>(
+                                            new Tuple<LearFst830, IEnumerable<EdiSegName>, IEnumerable<LearCodes>>(
                                                 Fst,
-                                                Model.Item2))
+                                                Model.Item2,
+                                                Model.Item3.Data.ListCodes))
                                 }
                             </div>
                         </div>
@@ -137,7 +143,7 @@
             @if (Model.Item3.Data.ListLinAth.Where(LNte => LNte.ParentHashId == Model.Item1.HashId).Count() > 0)
             {
                 <div class="card box-shadow">
-                    <div class="card-header card-cath cursor" data-toggle="collapse" data-target="#@Model.Item3.Data.ListLinAth.Where(LNte => LNte.ParentHashId == Model.Item1.HashId).FirstOrDefault().HashId" aria-expanded="false" aria-controls="@Model.Item3.Data.ListLinAth.Where(LNte => LNte.ParentHashId == Model.Item1.HashId).FirstOrDefault().HashId">
+                    <div class="card-header card-cath cursor" data-toggle="collapse" data-target="#@Model.Item3.Data.ListLinAth.Where(LNte => LNte.ParentHashId == Model.Item1.HashId).FirstOrDefault().HashId" aria-expanded="false" aria-controls="@Model.Item3.Data.ListLinAth.Where(LNte => LNte.ParentHashId == Model.Item1.HashId).FirstOrDefault().HashId" title="@Model.Item2.Where(Sn => Sn.Segment == "ATH").FirstOrDefault().DescEng">
                         ATH - @Model.Item2.Where(Sn => Sn.Segment == "ATH").FirstOrDefault().Eng
                     </div>
                     <div class="collapse" id="@Model.Item3.Data.ListLinAth.Where(LNte => LNte.ParentHashId == Model.Item1.HashId).FirstOrDefault().HashId">
@@ -145,9 +151,10 @@
                             @foreach (LearAth830 Ath in Model.Item3.Data.ListLinAth.Where(LNte => LNte.ParentHashId == Model.Item1.HashId))
                             {
                                 @await Html.PartialAsync("_DetailsOnAth830",
-                                        new Tuple<LearAth830, IEnumerable<EdiSegName>>(
+                                        new Tuple<LearAth830, IEnumerable<EdiSegName>, IEnumerable<LearCodes>>(
                                             Ath,
-                                            Model.Item2))
+                                            Model.Item2,
+                                            Model.Item3.Data.ListCodes))
                             }
                         </div>
                     </div>
@@ -157,7 +164,7 @@
             @if (Model.Item3.Data.ListLinShp.Where(LShp => LShp.ParentHashId == Model.Item1.HashId).Count() > 0)
             {
                 <div class="card box-shadow">
-                    <div class="card-header card-cshp cursor" data-toggle="collapse" data-target="#@Model.Item3.Data.ListLinShp.Where(LShp => LShp.ParentHashId == Model.Item1.HashId).FirstOrDefault().HashId" aria-expanded="false" aria-controls="@Model.Item3.Data.ListLinShp.Where(LShp => LShp.ParentHashId == Model.Item1.HashId).FirstOrDefault().HashId">
+                    <div class="card-header card-cshp cursor" data-toggle="collapse" data-target="#@Model.Item3.Data.ListLinShp.Where(LShp => LShp.ParentHashId == Model.Item1.HashId).FirstOrDefault().HashId" aria-expanded="false" aria-controls="@Model.Item3.Data.ListLinShp.Where(LShp => LShp.ParentHashId == Model.Item1.HashId).FirstOrDefault().HashId" title="@Model.Item2.Where(Sn => Sn.Segment == "SHP").FirstOrDefault().DescEng">
                         SHP - @Model.Item2.Where(Sn => Sn.Segment == "SHP").FirstOrDefault().Eng
                     </div>
                     <div class="collapse" id="@Model.Item3.Data.ListLinShp.Where(LShp => LShp.ParentHashId == Model.Item1.HashId).FirstOrDefault().HashId">
@@ -166,9 +173,10 @@
                                 @foreach (LearShp830 Shp in Model.Item3.Data.ListLinShp.Where(LShp => LShp.ParentHashId == Model.Item1.HashId))
                                 {
                                     @await Html.PartialAsync("_DetailsOnShp830",
-                                            new Tuple<LearShp830, IEnumerable<EdiSegName>>(
+                                            new Tuple<LearShp830, IEnumerable<EdiSegName>, IEnumerable<LearCodes>>(
                                                 Shp,
-                                                Model.Item2))
+                                                Model.Item2,
+                                                Model.Item3.Data.ListCodes))
                                     @foreach (LearRef830 Ref in Model.Item3.Data.ListShpRef.Where(R => R.ParentHashId == Shp.HashId))
                                     {
                                         @await Html.PartialAsync("_DetailsOnRef830",

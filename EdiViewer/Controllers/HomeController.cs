@@ -30,9 +30,11 @@ namespace EdiViewer.Controllers
                 return View(EdiDetailModelO);
             if (string.IsNullOrEmpty(HashId))
                 return View(EdiDetailModelO);
-            EdiDetailModelO.Data = await ApiClientFactory.Instance.GetFE830Data(HashId);
+            EdiDetailModelO.Data = await ApiClientFactory.Instance.GetFE830Data(HashId);            
             if (EdiDetailModelO.Data.ListSt == null)
                 return View(new EdiDetailModel());
+            EdiDetailModelO.Data.ListLinFst = EdiDetailModelO.Data.ListLinFst.OrderBy(O => O.FstDate);
+            EdiDetailModelO.Data.ListSdpFst = EdiDetailModelO.Data.ListSdpFst.OrderBy(O => O.FstDate);
             return View(EdiDetailModelO);
         }
         public async Task<IActionResult> GetPureEdi()

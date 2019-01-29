@@ -1,4 +1,4 @@
-﻿@model Tuple<ComModels.LearFst830, IEnumerable<ComModels.EdiSegName>>
+﻿@model Tuple<ComModels.LearFst830, IEnumerable<ComModels.EdiSegName>, IEnumerable<ComModels.LearCodes>>
 
 <div class="row">
     <div class="col-sm">
@@ -10,19 +10,19 @@
     <div class="col-sm">
         <div class="SegmentDataCol">
             <label>ForecastQualifier:</label>
-            @Model.Item1.ForecastQualifier
+            @Html.CodeToStr("FST.ForecastQualifier", Model.Item1.ForecastQualifier, Model.Item3)
         </div>
     </div>
     <div class="col-sm">
         <div class="SegmentDataCol">
             <label>ForecastTimingQualifier:</label>
-            @Model.Item1.ForecastTimingQualifier
+            @Html.CodeToStr("FST.ForecastTimingQualifier", Model.Item1.ForecastTimingQualifier, Model.Item3)
         </div>
     </div>
     <div class="col-sm">
         <div class="SegmentDataCol">
             <label>Date:</label>
-            @Model.Item1.FstDate
+            @Html.StrToDate(1, @Model.Item1.FstDate)
         </div>
     </div>
 </div>

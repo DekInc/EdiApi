@@ -1,16 +1,16 @@
-﻿@model Tuple<ComModels.LearAth830, IEnumerable<ComModels.EdiSegName>>
+﻿@model Tuple<ComModels.LearAth830, IEnumerable<ComModels.EdiSegName>, IEnumerable<ComModels.LearCodes>>
 <div class="container">
     <div class="row">
         <div class="col-sm">
             <div class="SegmentDataCol">
                 <label>ResourceAuthCode:</label>
-                @Model.Item1.ResourceAuthCode
+                @Html.CodeToStr("ATH.ResourceAuthCode", Model.Item1.ResourceAuthCode, Model.Item3)
             </div>
         </div>
         <div class="col-sm">
             <div class="SegmentDataCol">
                 <label>StartDate:</label>
-                @Model.Item1.StartDate
+                @Html.StrToDate(1, Model.Item1.StartDate)
             </div>
         </div>
         <div class="col-sm">
@@ -22,7 +22,7 @@
         <div class="col-sm">
             <div class="SegmentDataCol">
                 <label>EndDate:</label>
-                @Model.Item1.EndDate
+                @Html.StrToDate(1, Model.Item1.EndDate)                
             </div>
         </div>
     </div>

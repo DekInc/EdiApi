@@ -25,7 +25,9 @@
                 <li class="nav-item active">                    
                     <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                 </li>
-                <li></li>
+                <li class="nav-item active">
+                    <a class="nav-link" href="~/files/learspec830.pdf" >830 specs</a>
+                </li>
             </ul>
         </div>        
     </nav>
@@ -35,6 +37,11 @@
             <hr />
             <p>&copy; 2019 - EdiViewer</p>
         </div>
+        <script>
+            $(document).ready(function () {
+                $('.card-header').tooltip();
+            });            
+        </script>
     </div>
     @RenderSection("Scripts", required: false)
 </body>

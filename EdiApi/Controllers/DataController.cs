@@ -127,6 +127,7 @@ namespace EdiApi.Controllers
                                       where Fst.ParentHashId == Lin.HashId
                                       && Lin.ParentHashId == St.HashId
                                       && St.ParentHashId == FE830DataRet.ISA.HashId
+                                      orderby Fst.FstDate
                                       select Fst;
             FE830DataRet.ListSdpFst = from Fst in DbO.LearFst830
                                       from Sdp in DbO.LearSdp830
@@ -167,6 +168,9 @@ namespace EdiApi.Controllers
                                       && Lin.ParentHashId == St.HashId
                                       && St.ParentHashId == FE830DataRet.ISA.HashId
                                       select Ref;
+            FE830DataRet.ListCodes = from c in DbO.LearCodes
+                                     orderby c.Str, c.Param
+                                     select c;
             return FE830DataRet;
         }
     }

@@ -1,6 +1,6 @@
-﻿@model Tuple<ComModels.LearBfr830, IEnumerable<ComModels.EdiSegName>>
+﻿@model Tuple<ComModels.LearBfr830, IEnumerable<ComModels.EdiSegName>, IEnumerable<ComModels.LearCodes>>
     <div class="card box-shadow">
-    <div class="card-header card-cbfr cursor" data-toggle="collapse" data-target="#@Model.Item1.HashId" aria-expanded="false" aria-controls="@Model.Item1.HashId">
+    <div class="card-header card-cbfr cursor" data-toggle="collapse" data-target="#@Model.Item1.HashId" aria-expanded="false" aria-controls="@Model.Item1.HashId" title="@Model.Item2.Where(Sn => Sn.Segment == "BFR").FirstOrDefault().DescEng">
         BFR - @Model.Item2.Where(Sn => Sn.Segment == "BFR").FirstOrDefault().Eng
     </div>
     <div class="collapse" id="@Model.Item1.HashId">
@@ -10,7 +10,7 @@
                     <div class="col-sm">
                         <div class="SegmentDataCol">
                             <label>TransactionSetPurposeCode:</label>
-                            @Model.Item1.TransactionSetPurposeCode
+                            @Html.CodeToStr("BFR.TransactionSetPurposeCode", Model.Item1.TransactionSetPurposeCode, Model.Item3)
                         </div>
                     </div>
                     <div class="col-sm">
@@ -22,13 +22,13 @@
                     <div class="col-sm">
                         <div class="SegmentDataCol">
                             <label>ForecastTypeQualifier:</label>
-                            @Model.Item1.ForecastTypeQualifier
+                            @Html.CodeToStr("BFR.ForecastTypeQualifier", Model.Item1.ForecastTypeQualifier, Model.Item3)
                         </div>
                     </div>
                     <div class="col-sm">
                         <div class="SegmentDataCol">
                             <label>ForecastQuantityQualifier:</label>
-                            @Model.Item1.ForecastQuantityQualifier
+                            @Html.CodeToStr("BFR.ForecastQuantityQualifier", Model.Item1.ForecastQuantityQualifier, Model.Item3)
                         </div>
                     </div>
                     <div class="col-sm">

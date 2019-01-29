@@ -1,7 +1,7 @@
-﻿@model Tuple<ComModels.LearSdp830, IEnumerable<ComModels.EdiSegName>, IEnumerable<ComModels.LearFst830>>
+﻿@model Tuple<ComModels.LearSdp830, IEnumerable<ComModels.EdiSegName>, IEnumerable<ComModels.LearFst830>, IEnumerable<ComModels.LearCodes>>
 @using ComModels
 <div class="card box-shadow">
-    <div class="card-header card-csdp cursor" data-toggle="collapse" data-target="#@Model.Item1.HashId" aria-expanded="false" aria-controls="@Model.Item1.HashId">
+    <div class="card-header card-csdp cursor" data-toggle="collapse" data-target="#@Model.Item1.HashId" aria-expanded="false" aria-controls="@Model.Item1.HashId" title="@Model.Item2.Where(Sn => Sn.Segment == "SDP").FirstOrDefault().DescEng">
         SDP - @Model.Item2.Where(Sn => Sn.Segment == "SDP").FirstOrDefault().Eng
     </div>
     <div class="collapse" id="@Model.Item1.HashId">
@@ -11,13 +11,13 @@
                     <div class="col-sm">
                         <div class="SegmentDataCol">
                             <label>CalendarPatternCode:</label>
-                            @Model.Item1.CalendarPatternCode
+                            @Html.CodeToStr("SDP.CalendarPatternCode", Model.Item1.CalendarPatternCode, Model.Item4)
                         </div>
                     </div>
                     <div class="col-sm">
                         <div class="SegmentDataCol">
                             <label>PatternTimeCode:</label>
-                            @Model.Item1.PatternTimeCode
+                            @Html.CodeToStr("SDP.PatternTimeCode", Model.Item1.PatternTimeCode, Model.Item4)                            
                         </div>
                     </div>
                 </div>
@@ -25,7 +25,7 @@
             @if (Model.Item3.Count() > 0)
             {
                 <div class="card box-shadow">
-                    <div class="card-header card-cfst cursor" data-toggle="collapse" data-target="#@Model.Item3.FirstOrDefault().HashId" aria-expanded="false" aria-controls="@Model.Item3.FirstOrDefault().HashId">
+                    <div class="card-header card-cfst cursor" data-toggle="collapse" data-target="#@Model.Item3.FirstOrDefault().HashId" aria-expanded="false" aria-controls="@Model.Item3.FirstOrDefault().HashId" title="@Model.Item2.Where(Sn => Sn.Segment == "FST").FirstOrDefault().DescEng">
                         FST - @Model.Item2.Where(Sn => Sn.Segment == "FST").FirstOrDefault().Eng
                     </div>
                     <div class="collapse" id="@Model.Item3.FirstOrDefault().HashId">
@@ -34,9 +34,10 @@
                                 @foreach (LearFst830 Fst in Model.Item3)
                                 {
                                     @await Html.PartialAsync("_DetailsOnFst830",
-                                            new Tuple<LearFst830, IEnumerable<EdiSegName>>(
+                                            new Tuple<LearFst830, IEnumerable<EdiSegName>, IEnumerable<LearCodes>>(
                                                 Fst,
-                                                Model.Item2))
+                                                Model.Item2,
+                                                Model.Item4))
                                 }
                             </div>
                         </div>

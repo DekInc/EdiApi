@@ -1,10 +1,10 @@
-﻿@model Tuple<ComModels.LearShp830, IEnumerable<ComModels.EdiSegName>>
+﻿@model Tuple<ComModels.LearShp830, IEnumerable<ComModels.EdiSegName>, IEnumerable<ComModels.LearCodes>>
 @using ComModels
 <div class="row">
     <div class="col-sm">
         <div class="SegmentDataCol">
             <label>QuantityQualifier:</label>
-            @Model.Item1.QuantityQualifier
+            @Html.CodeToStr("SHP.QuantityQualifier", Model.Item1.QuantityQualifier, Model.Item3)
         </div>
     </div>
     <div class="col-sm">
@@ -16,13 +16,13 @@
     <div class="col-sm">
         <div class="SegmentDataCol">
             <label>DateTimeQualifier:</label>
-            @Model.Item1.DateTimeQualifier
+            @Html.CodeToStr("SHP.DateTimeQualifier", Model.Item1.DateTimeQualifier, Model.Item3)            
         </div>
     </div>
     <div class="col-sm">
         <div class="SegmentDataCol">
             <label>AccumulationStartDate:</label>
-            @Model.Item1.AccumulationStartDate
+            @Html.StrToDate(1, Model.Item1.AccumulationStartDate)
         </div>
     </div>
     <div class="col-sm">
@@ -34,7 +34,7 @@
     <div class="col-sm">
         <div class="SegmentDataCol">
             <label>AccumulationEndDate:</label>
-            @Model.Item1.AccumulationEndDate
+            @Html.StrToDate(1, Model.Item1.AccumulationEndDate)            
         </div>
     </div>
 </div>
