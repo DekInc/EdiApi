@@ -180,9 +180,10 @@
                                     @foreach (LearRef830 Ref in Model.Item3.Data.ListShpRef.Where(R => R.ParentHashId == Shp.HashId))
                                     {
                                         @await Html.PartialAsync("_DetailsOnRef830",
-                                       new Tuple<LearRef830, IEnumerable<EdiSegName>>(
+                                       new Tuple<LearRef830, IEnumerable<EdiSegName>, IEnumerable<LearCodes>>(
                                            Ref,
-                                           Model.Item2))
+                                           Model.Item2,
+                                           Model.Item3.Data.ListCodes))
                                     }
                                 }
                             </div>
@@ -194,9 +195,10 @@
             @foreach (LearRef830 Ref in Model.Item3.Data.ListLinRef.Where(LRef => LRef.ParentHashId == Model.Item1.HashId))
             {
                 @await Html.PartialAsync("_DetailsOnRef830",
-               new Tuple<LearRef830, IEnumerable<EdiSegName>>(
+               new Tuple<LearRef830, IEnumerable<EdiSegName>, IEnumerable<LearCodes>>(
                    Ref,
-                   Model.Item2))
+                   Model.Item2,
+                   Model.Item3.Data.ListCodes))
                 <hr />
             }
         </div>
