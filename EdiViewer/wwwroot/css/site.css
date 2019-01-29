@@ -1,7 +1,8 @@
 ﻿body {
     padding-top: 50px;
     padding-bottom: 20px;
-    background-color: rgb(232, 216, 234);
+    background-color: rgb(231, 225, 232);
+    line-height: 16pt;
 }
 
 /* Wrapping element */
@@ -29,29 +30,117 @@
         display: none;
     }
 }
-
-#mainDiv{
-    padding-top: 15px;
-    margin: auto;    
+#mainDiv{    
+    width: 100vw;
+    left: 0;
+    position: absolute;
 }
-
 .jumbotron {
     border-top: 1px solid rgb(212, 206, 214);
     border-left: 1px solid rgb(212, 206, 214);
     border-radius: 20px !important;
     background: linear-gradient(#eee, rgb(232, 232, 252)) !important;
 }
-
 #tblReportes{
     width: 100%;
 }
-
-#tblReportes thead{
-    background: rgb(204, 156, 183);
+#tblReportes thead {
+    background: linear-gradient(35deg, #c54062, #fbfcf2);
 }
-
+#tblReportes tbody {
+    cursor: pointer;
+}
 .container {
     width: 100% !important;
+    max-width: unset;
     margin-right: auto;
     margin-left: auto;
+}
+.tblDetails {
+    width: 100%;
+    border: 1px solid #000;
+}
+.SegmentDataCol {
+    border: 0px solid #999;
+}
+.cardMain {
+    margin-top: 10px;
+}
+.box-shadow {
+    box-shadow: 0 0.25rem 0.75rem rgba(0, 0, 0, .05);
+}
+label{
+    font-weight: bold;
+}
+.footer2 {
+    background: #fff;
+}
+.btn-link {
+    text-decoration: none;
+    font-weight: bold;
+    color: #000;
+}
+.card-header {
+    background-color: unset;
+    background: linear-gradient(35deg, #4b7099, #7ba0c9);
+    font-size: 13pt;
+    font-weight: bold;
+}
+.card-cbfr {
+    background-color: unset;
+    background: linear-gradient(35deg, #b6c9de, #e6f9fe);
+}
+.card-clin {
+    background-color: unset;
+    background: linear-gradient(35deg, #86a6c8, #b6d6f8);
+}
+.card-cn1 {
+    background-color: unset;
+    background: linear-gradient(35deg, #82b256, #b2e286);
+}
+.card-cn4 {
+    background-color: unset;
+    background: linear-gradient(35deg, #eef2c0, #fff6e5);
+}
+.card-cnte {
+    background-color: unset;
+    background: linear-gradient(35deg, #fde4b3, #ffe7b3);
+}
+.card-cuit {
+    background-color: unset;
+    background: linear-gradient(35deg, #fcd280, #fcf2b0);
+}
+.card-cprs {
+    background-color: unset;
+    background: linear-gradient(35deg, #fac04d, #faf07d);
+}
+.card-csdp {
+    background-color: unset;
+    background: linear-gradient(35deg, #c54062, #fbfcf2);
+}
+.card-cfst {
+    background-color: unset;
+    background: linear-gradient(35deg, #b7baa5, #e7ead5);
+}
+.card-cath {
+    background-color: unset;
+    background: linear-gradient(35deg, #939779, #c3c7a9);
+}
+.card-cshp {
+    background-color: unset;
+    background: linear-gradient(35deg, #6e754c, #9ea57c);
+}
+.card-cref {
+    background-color: unset;
+    background: linear-gradient(35deg, #fcd280, #fcf2b0);
+}
+.cursor {
+    cursor: pointer;
+}
+hr {
+    margin-top: 4px;
+    margin-bottom: 4px;
+}
+.hide_column {
+    display: none;
 }

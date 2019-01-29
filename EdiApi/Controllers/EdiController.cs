@@ -29,7 +29,48 @@ namespace EdiApi.Controllers
         string IMapPassword => (string)IMapConfig.GetValue(typeof(string), "Password");
         StreamReader Rep830File { set; get; }
         //public EdiController(EdiDBContext _DbO) { DbO = _DbO; }
-        public EdiController(EdiDBContext _DbO, IConfiguration _Config) { DbO = _DbO; Config = _Config; }        
+        public EdiController(EdiDBContext _DbO, IConfiguration _Config) { DbO = _DbO; Config = _Config; }
+        [HttpGet]
+        public ActionResult<RetReporte> EnviarEjemplo()
+        {
+            DateTime StartTime = DateTime.Now;
+            ComRepoFtp ComRepoFtpO = new ComRepoFtp(
+                        (string)IEdiFtpConfig.GetValue(typeof(string), "Host"),
+                        (string)IEdiFtpConfig.GetValue(typeof(string), "HostFailover"),
+                        (string)IEdiFtpConfig.GetValue(typeof(string), "EdiUser"),
+                        (string)IEdiFtpConfig.GetValue(typeof(string), "EdiPassword"),
+                        (string)IEdiFtpConfig.GetValue(typeof(string), "DirIn"),
+                        (string)IEdiFtpConfig.GetValue(typeof(string), "DirOut"),
+                        (string)IEdiFtpConfig.GetValue(typeof(string), "DirChecked"),
+                        Config.GetSection("MaxEdiComs").GetValue(typeof(string), "Value")
+                    );
+            if (!ComRepoFtpO.Ping(ref DbO))
+            {
+                ComRepoFtpO.UseHost2 = true;
+                if (!ComRepoFtpO.Ping(ref DbO))
+                {
+                    return new RetReporte()
+                    {
+                        Info = new RetInfo()
+                        {
+                            CodError = -3,
+                            Mensaje = $"Error, no se puede conectar con el servidor FTP primario o secundario",
+                            ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                        }
+                    };
+                }
+            }
+            ComRepoFtpO.Put("AEnviar.txt", @"E:\temp\AEnviar.txt", ref DbO);
+            return new RetReporte()
+            {
+                Info = new RetInfo()
+                {
+                    CodError = 0,
+                    Mensaje = "Todo ok",
+                    ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                }
+            };
+        }
 
         [HttpGet]
         //De modo que se expone https://localhost:44373/Edi/TranslateForms830
@@ -40,7 +81,8 @@ namespace EdiApi.Controllers
             try
             {   
                 int CodError2 = 0;
-                string MessageSubject = string.Empty, EdiPure = string.Empty, FileName = string.Empty;
+                string MessageSubject = string.Empty, FileName = string.Empty, EdiPureStr = string.Empty;
+                List<string> ListEdiPure = new List<string>();
                 try
                 {
                     //StreamReader Rep830File = ComRepoMail.GetEdi830File(IMapHost, IMapPortIn, IMapPortOut, IMapUser, IMapPassword, IMapSSL, ref CodError, ref MessageSubject, ref FileName, ref DbO, Config.GetSection("MaxEdiComs").GetValue(typeof(string), "Value"));
@@ -69,10 +111,9 @@ namespace EdiApi.Controllers
                                 }
                             };
                         }
-                    }                    
-                    //ComRepoFtpO.Get(ref DbO, ref CodError2, ref MessageSubject, ref FileName, ref EdiPure);
-                    ComRepoMail.GetEdi830File(IMapHost, IMapPortIn, IMapPortOut, IMapUser, IMapPassword, IMapSSL, ref CodError2, ref MessageSubject, ref FileName, ref DbO, Config.GetSection("MaxEdiComs").GetValue(typeof(string), "Value"), ref EdiPure);
-                    //ComRepoFtpO.Put("830_ejemplo.txt", @"E:\Documents\GLC\Codigo\EdiApi\EdiApi\830_ejemplo.txt", ref DbO);
+                    }
+                    ComRepoFtpO.Get(ref DbO, ref CodError2, ref MessageSubject, ref FileName, ref ListEdiPure);
+                    //ComRepoMail.GetEdi830File(IMapHost, IMapPortIn, IMapPortOut, IMapUser, IMapPassword, IMapSSL, ref CodError2, ref MessageSubject, ref FileName, ref DbO, Config.GetSection("MaxEdiComs").GetValue(typeof(string), "Value"), ref ListEdiPure);                    
                     switch (CodError2)
                     {
                         case -1:
@@ -108,8 +149,47 @@ namespace EdiApi.Controllers
                                     ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
                                 }
                             };
-                    }                    
-                    LearRep830O.EdiFile = EdiPure.Split(EdiBase.SegmentTerminator).ToList();                    
+                    }
+                    if (ListEdiPure.Count > 1)
+                    {
+                        if (ListEdiPure[1].Contains(EdiBase.SegmentTerminator))
+                        {
+                            ListEdiPure.ForEach(E => EdiPureStr += E);
+                            LearRep830O.EdiFile = EdiPureStr.Split(EdiBase.SegmentTerminator).ToList();
+                        }
+                        else
+                        {
+                            LearRep830O.EdiFile = ListEdiPure;
+                        }
+                    }
+                    else if(ListEdiPure.Count == 1) {
+                        if (ListEdiPure.FirstOrDefault().Contains(EdiBase.SegmentTerminator))
+                        {
+                            LearRep830O.EdiFile = ListEdiPure.FirstOrDefault().Split(EdiBase.SegmentTerminator).ToList();
+                        }
+                        else {
+                            return new RetReporte()
+                            {
+                                Info = new RetInfo()
+                                {
+                                    CodError = -13,
+                                    Mensaje = $"El archivo Edi {FileName} no contiene un separador de segmento válido, no se puede procesar.",
+                                    ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                                }
+                            };
+                        }
+                    } else
+                    {
+                        return new RetReporte()
+                        {
+                            Info = new RetInfo()
+                            {
+                                CodError = -14,
+                                Mensaje = $"El archivo Edi {FileName} no contiene ninguna linea de contenido.",
+                                ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                            }
+                        };
+                    }
                     if (LearRep830O.EdiFile.LastOrDefault() == "") LearRep830O.EdiFile.RemoveAt(LearRep830O.EdiFile.Count - 1);
                 }
                 catch (Exception ExMail)
@@ -122,7 +202,7 @@ namespace EdiApi.Controllers
                         }
                     };
                 }
-                LearRep830O.SaveEdiPure(ref EdiPure, FileName, LearRep830O.EdiFile.Count);
+                LearRep830O.SaveEdiPure(ref EdiPureStr, FileName, LearRep830O.EdiFile.Count);
                 string ParseRet = LearRep830O.Parse();
                 if (!string.IsNullOrEmpty(ParseRet))
                 {

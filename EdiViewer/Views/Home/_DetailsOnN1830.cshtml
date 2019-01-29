@@ -1,0 +1,28 @@
+﻿@model Tuple<ComModels.LearN1830, IEnumerable<ComModels.EdiSegName>>
+<div class="row">
+    <div class="col-sm">
+        <div class="SegmentDataCol">
+            <label>OrganizationId:</label>
+            @Model.Item1.OrganizationId
+        </div>
+    </div>
+    <div class="col-sm">
+        <div class="SegmentDataCol">
+            <label>Name:</label>
+            @Model.Item1.Name
+        </div>
+    </div>
+    <div class="col-sm">
+        <div class="SegmentDataCol">
+            <label>IdCodeQualifier:</label>
+            @Model.Item1.IdCodeQualifier
+        </div>
+    </div>
+    <div class="col-sm">
+        <div class="SegmentDataCol">
+            <label>IdCode:</label>
+            @Model.Item1.IdCode
+        </div>
+    </div>
+</div>
+

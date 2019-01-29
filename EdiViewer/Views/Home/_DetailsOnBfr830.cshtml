@@ -1,0 +1,74 @@
+﻿@model Tuple<ComModels.LearBfr830, IEnumerable<ComModels.EdiSegName>>
+    <div class="card box-shadow">
+    <div class="card-header card-cbfr cursor" data-toggle="collapse" data-target="#@Model.Item1.HashId" aria-expanded="false" aria-controls="@Model.Item1.HashId">
+        BFR - @Model.Item2.Where(Sn => Sn.Segment == "BFR").FirstOrDefault().Eng
+    </div>
+    <div class="collapse" id="@Model.Item1.HashId">
+        <div class="card-body">
+            <div class="container">
+                <div class="row">
+                    <div class="col-sm">
+                        <div class="SegmentDataCol">
+                            <label>TransactionSetPurposeCode:</label>
+                            @Model.Item1.TransactionSetPurposeCode
+                        </div>
+                    </div>
+                    <div class="col-sm">
+                        <div class="SegmentDataCol">
+                            <label>ReleaseNumber:</label>
+                            @Model.Item1.ReleaseNumber
+                        </div>
+                    </div>
+                    <div class="col-sm">
+                        <div class="SegmentDataCol">
+                            <label>ForecastTypeQualifier:</label>
+                            @Model.Item1.ForecastTypeQualifier
+                        </div>
+                    </div>
+                    <div class="col-sm">
+                        <div class="SegmentDataCol">
+                            <label>ForecastQuantityQualifier:</label>
+                            @Model.Item1.ForecastQuantityQualifier
+                        </div>
+                    </div>
+                    <div class="col-sm">
+                        <div class="SegmentDataCol">
+                            <label>ForecastHorizonStart:</label>
+                            @Html.StrToDate(1, Model.Item1.ForecastHorizonStart)
+                        </div>
+                    </div>
+                    <div class="col-sm">
+                        <div class="SegmentDataCol">
+                            <label>ForecastHorizonEnd:</label>
+                            @Html.StrToDate(1, Model.Item1.ForecastHorizonEnd)
+                        </div>
+                    </div>
+                    <div class="col-sm">
+                        <div class="SegmentDataCol">
+                            <label>ForecastGenerationDate:</label>
+                            @Html.StrToDate(1, Model.Item1.ForecastGenerationDate)
+                        </div>
+                    </div>
+                    <div class="col-sm">
+                        <div class="SegmentDataCol">
+                            <label>ForecastUpdatedDate:</label>
+                            @Html.StrToDate(1, Model.Item1.ForecastUpdatedDate)
+                        </div>
+                    </div>
+                    <div class="col-sm">
+                        <div class="SegmentDataCol">
+                            <label>ContractNumber:</label>
+                            @Model.Item1.ContractNumber
+                        </div>
+                    </div>
+                    <div class="col-sm">
+                        <div class="SegmentDataCol">
+                            <label>PurchaseOrderNumber:</label>
+                            @Model.Item1.PurchaseOrderNumber
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

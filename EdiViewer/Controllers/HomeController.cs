@@ -18,14 +18,22 @@ namespace EdiViewer.Controllers
             Config = _Config;
             ApplicationSettings.ApiUri = (string)EdiWebApiConfig.GetValue(typeof(string), "ApiUri");
         }
-        public async Task<IActionResult> Index(string HashId = "")
-        {            
-            EdiViewerModel EdiViewerModelO = new EdiViewerModel();
-            if (!string.IsNullOrEmpty(HashId))
-            {
-                FE830Data RetReporteO = await ApiClientFactory.Instance.GetFE830Data(HashId);
-            }
-            return View(EdiViewerModelO);
+        public IActionResult Index()
+        {
+            return View();
+        }
+        public async Task<IActionResult> Details(string HashId = "")
+        {
+            EdiDetailModel EdiDetailModelO = new EdiDetailModel();
+            IEnumerable<LearPureEdi> ListPureEdi = await ApiClientFactory.Instance.GetPureEdi(string.Empty);
+            if (ListPureEdi.FirstOrDefault().Log.Contains("error"))
+                return View(EdiDetailModelO);
+            if (string.IsNullOrEmpty(HashId))
+                return View(EdiDetailModelO);
+            EdiDetailModelO.Data = await ApiClientFactory.Instance.GetFE830Data(HashId);
+            if (EdiDetailModelO.Data.ListSt == null)
+                return View(new EdiDetailModel());
+            return View(EdiDetailModelO);
         }
         public async Task<IActionResult> GetPureEdi()
         {
@@ -50,7 +58,7 @@ namespace EdiViewer.Controllers
                 int recordsTotal = 0;
 
                 // Getting all Customer data  
-                IEnumerable<LearPureEdi> IEPureEdi = await ApiClientFactory.Instance.GetPureEdi();                
+                IEnumerable<LearPureEdi> IEPureEdi = await ApiClientFactory.Instance.GetPureEdi(string.Empty);                
                 //Search  
                 if (!string.IsNullOrEmpty(searchValue))
                 {

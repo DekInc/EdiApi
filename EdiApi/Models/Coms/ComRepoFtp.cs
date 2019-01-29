@@ -176,7 +176,7 @@ namespace EdiApi.Models
             return;
         }
 
-        public void Get(ref EdiDBContext _DbO, ref int _CodError, ref string _MessageSubject, ref string _FileName, ref string _EdiPure)
+        public void Get(ref EdiDBContext _DbO, ref int _CodError, ref string _MessageSubject, ref string _FileName, ref List<string> _EdiPure)
         {
             try
             {
@@ -235,7 +235,8 @@ namespace EdiApi.Models
                 ftpStream.Close();
                 ftpResponse.Close();
                 ftpRequest = null;
-                _EdiPure = System.Text.Encoding.UTF8.GetString(localFileStream.ToArray());
+                string EdiPure2 = System.Text.Encoding.UTF8.GetString(localFileStream.ToArray());
+                _EdiPure = EdiPure2.Split(EdiBase.SegmentTerminator).ToList();
                 AddComLog(ref _DbO, Id, $"Se obtuvo el archivo {_FileName} de ftp {(UseHost2 ? host2 : host)}");
                 return;
             }

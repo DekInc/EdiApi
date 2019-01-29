@@ -42,7 +42,7 @@ namespace EdiApi
             {
                 EdiSec.CheckSeg++;
                 Coli = 0;
-                HashId = GetHashId();
+                HashId = $"H{GetHashId()}";
                 EdiStr = _EdiStr;
                 EdiArray = EdiStr.Replace(SegmentTerminator, "").Split(ElementTerminator);
                 //if (Orden.Count() != EdiArray.Length)

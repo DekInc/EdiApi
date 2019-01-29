@@ -1,0 +1,50 @@
+﻿@model Tuple<ComModels.LearN4830, IEnumerable<ComModels.EdiSegName>>
+<div class="card box-shadow">
+    <div class="card-header card-cn4 cursor" data-toggle="collapse" data-target="#@Model.Item1.HashId" aria-expanded="false" aria-controls="@Model.Item1.HashId">
+        N4 - @Model.Item2.Where(Sn => Sn.Segment == "N4").FirstOrDefault().Eng
+    </div>
+    <div class="collapse" id="@Model.Item1.HashId">
+        <div class="card-body">
+            <div class="container">
+                <div class="row">
+                    <div class="col-sm">
+                        <div class="SegmentDataCol">
+                            <label>CityName:</label>
+                            @Model.Item1.CityName
+                        </div>
+                    </div>
+                    <div class="col-sm">
+                        <div class="SegmentDataCol">
+                            <label>Province:</label>
+                            @Model.Item1.Province
+                        </div>
+                    </div>
+                    <div class="col-sm">
+                        <div class="SegmentDataCol">
+                            <label>PostalCode:</label>
+                            @Model.Item1.PostalCode
+                        </div>
+                    </div>
+                    <div class="col-sm">
+                        <div class="SegmentDataCol">
+                            <label>CountryCode:</label>
+                            @Model.Item1.CountryCode
+                        </div>
+                    </div>
+                    <div class="col-sm">
+                        <div class="SegmentDataCol">
+                            <label>LocationQualifier:</label>
+                            @Model.Item1.LocationQualifier
+                        </div>
+                    </div>
+                    <div class="col-sm">
+                        <div class="SegmentDataCol">
+                            <label>LocationId:</label>
+                            @Model.Item1.LocationId
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

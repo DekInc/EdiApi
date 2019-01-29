@@ -12,9 +12,9 @@ namespace CoreApiClient
         {
             return await GetAsync<RetReporte>(CreateRequestUri(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Edi/TranslateForms830")));
         }
-        public async Task<IEnumerable<LearPureEdi>> GetPureEdi()
+        public async Task<IEnumerable<LearPureEdi>> GetPureEdi(string HashId)
         {
-            return await GetAsync<IEnumerable<LearPureEdi>>(CreateRequestUri(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Data/GetPureEdi")));
+            return await GetAsync<IEnumerable<LearPureEdi>>(CreateRequestUri(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Data/GetPureEdi"), $"HashId={HashId}"));
         }
 
         public async Task<FE830Data> GetFE830Data(string HashId)

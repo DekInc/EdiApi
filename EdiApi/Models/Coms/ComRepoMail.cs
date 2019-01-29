@@ -42,40 +42,48 @@ namespace EdiApi.Models
             }
             return null;
         }
-        public static void GetEdi830File(string _IMapHost, int _IMapPortIn, int _IMapPortOut, string _IMapUser, string _IMapPassword, bool _IMapSSL, ref int _CodError, ref string _MessageSubject, ref string _FileName, ref EdiDBContext _DbO, object _MaxEdiComs, ref string _EdiPure)
+        public static void GetEdi830File(string _IMapHost, int _IMapPortIn, int _IMapPortOut, string _IMapUser, string _IMapPassword, bool _IMapSSL, ref int _CodError, ref string _MessageSubject, ref string _FileName, ref EdiDBContext _DbO, object _MaxEdiComs, ref List<string> _EdiPure)
         {
             CheckMaxEdiComs(ref _DbO, _MaxEdiComs);
-            using (ImapClient ImapClientO = new ImapClient(_IMapHost, _IMapPortIn, _IMapUser, _IMapPassword, AuthMethod.Login, _IMapSSL))
+            try
             {
-                IEnumerable<uint> uids = ImapClientO.Search(SearchCondition.Unseen());
-                IEnumerable<MailMessage> ArrMessages = ImapClientO.GetMessages(uids);
-                if (ArrMessages.Count() > 0)
+                using (ImapClient ImapClientO = new ImapClient(_IMapHost, _IMapPortIn, _IMapUser, _IMapPassword, AuthMethod.Login, _IMapSSL))
                 {
-                    MailMessage MailMessageO = ArrMessages.LastOrDefault();
-                    _MessageSubject = MailMessageO.Subject;
-                    if (MailMessageO.Attachments.Count > 0)
+                    IEnumerable<uint> uids = ImapClientO.Search(SearchCondition.Unseen());
+                    IEnumerable<MailMessage> ArrMessages = ImapClientO.GetMessages(uids);
+                    if (ArrMessages.Count() > 0)
                     {
-                        _FileName = MailMessageO.Attachments.FirstOrDefault().Name;
-                        AddComLog(ref _DbO, Id, $"Se obtuvo el archivo {_FileName}");
-                        StreamReader Rep830File = new StreamReader(MailMessageO.Attachments.FirstOrDefault().ContentStream);
-                        while (!Rep830File.EndOfStream)
+                        MailMessage MailMessageO = ArrMessages.LastOrDefault();
+                        _MessageSubject = MailMessageO.Subject;
+                        if (MailMessageO.Attachments.Count > 0)
                         {
-                            _EdiPure += Rep830File.ReadLine();
+                            _FileName = MailMessageO.Attachments.FirstOrDefault().Name;
+                            AddComLog(ref _DbO, Id, $"Se obtuvo el archivo {_FileName}");
+                            StreamReader Rep830File = new StreamReader(MailMessageO.Attachments.FirstOrDefault().ContentStream);
+                            while (!Rep830File.EndOfStream)
+                            {
+                                _EdiPure.Add(Rep830File.ReadLine());
+                            }
+                            Rep830File.Close();
                         }
-                        Rep830File.Close();
+                        else
+                        {
+                            AddComLog(ref _DbO, Id, $"Error, el correo verificado no contiene ningún archivo. Subject = {_MessageSubject}.");
+                            _CodError = -1;
+                        }
                     }
                     else
                     {
-                        AddComLog(ref _DbO, Id, $"Error, el correo verificado no contiene ningún archivo. Subject = {_MessageSubject}.");
-                        _CodError = -1;
+                        AddComLog(ref _DbO, Id, $"No hay correos a verificar.");
+                        _CodError = -2;
                     }
                 }
-                else
-                {
-                    AddComLog(ref _DbO, Id, $"No hay correos a verificar.");
-                    _CodError = -2;
-                }
             }
+            catch (Exception Me1)
+            {
+                AddComLog(ref _DbO, Id, Me1.ToString());
+                throw Me1;
+            }            
         }
     }
 }

@@ -1,0 +1,29 @@
+﻿@model Tuple<ComModels.LearAth830, IEnumerable<ComModels.EdiSegName>>
+<div class="container">
+    <div class="row">
+        <div class="col-sm">
+            <div class="SegmentDataCol">
+                <label>ResourceAuthCode:</label>
+                @Model.Item1.ResourceAuthCode
+            </div>
+        </div>
+        <div class="col-sm">
+            <div class="SegmentDataCol">
+                <label>StartDate:</label>
+                @Model.Item1.StartDate
+            </div>
+        </div>
+        <div class="col-sm">
+            <div class="SegmentDataCol">
+                <label>Quantity:</label>
+                @Model.Item1.Quantity
+            </div>
+        </div>
+        <div class="col-sm">
+            <div class="SegmentDataCol">
+                <label>EndDate:</label>
+                @Model.Item1.EndDate
+            </div>
+        </div>
+    </div>
+</div>

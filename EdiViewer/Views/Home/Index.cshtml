@@ -1,15 +1,17 @@
 ﻿@model EdiViewer.Models.EdiViewerModel
 @{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Reportes 830 LEAR";
 }
 <div id="mainDiv">
-    <div class="jumbotron">
-        <div class="form-group">
-            <div>
-                <label for="ListEdiPure">Reportes</label>
-                <div class="container-fluid">
+    <div class="container">
+        <div class="card-deck cardMain">
+            <div class="card box-shadow">
+                <div class="card-header">
+                    <h4 class="my-0 font-weight-normal">Reportes 830</h4>
+                </div>
+                <div class="card-body">
                     <form id="formReportes">
-                        <table id="tblReportes" class="table table-striped table-bordered nowrap table-hover display" width="100%" cellspacing="0">
+                        <table id="tblReportes" class="table table-striped table-bordered nowrap table-hover display" cellspacing="0">
                             <thead>
                                 <tr>
                                     <th>HashId</th>
@@ -17,6 +19,7 @@
                                     <th>FIngreso</th>
                                     <th>FProcesado</th>
                                     <th>Reprocesar</th>
+                                    <th>Log</th>
                                 </tr>
                             </thead>
                         </table>
@@ -38,23 +41,31 @@
     }
     $(document).ready(function () {
         domtblReportes = $("#tblReportes").DataTable({
-            select: true,            
+            select: true,
+            responsive: true,
             "processing": true, // for show progress bar  
             "serverSide": true, // for process server side  
             "filter": false, // this is for disable filter (search box)  
             "orderMulti": false, // for disable multiple column at once  
-            "lengthMenu": [[5, 10, 15, -1], [5, 10, 15, "All"]],
+            "lengthMenu": [[15, 25, 35, 50, -1], [15, 25, 35, 50, "All"]],
             "ajax": {
                 "url": "@this.Url.Action("GetPureEdi")",
                 "type": "POST",
                 "datatype": "json"
-            },            
+            },
+            columnDefs: [
+                {
+                    targets: [0],
+                    className: "hide_column"
+                }
+            ],
             "columns": [
                 { "data": "hashId", "name": "HashId", "autoWidth": true, "defaultContent": "" },
                 { "data": "nombreArchivo", "name": "NombreArchivo", "autoWidth": true, "defaultContent": "" },
                 { "data": "fingreso", "name": "FIngreso", "autoWidth": true, "defaultContent": "" },
-                { "data": "fprocesado", "name": "FProcesado", "autoWidth": true, "defaultContent": "" },
-                { "data": "reprocesar", "name": "Reprocesar", "autoWidth": true, "defaultContent": "" }                
+                { "data": "fprocesado", "name": "FProcesado", "autoWidth": true, "defaultContent": "" },                
+                { "data": "reprocesar", "name": "Reprocesar", "autoWidth": true, "defaultContent": "" },
+                { "data": "log", "name": "Log", "autoWidth": true, "defaultContent": "" }
             ]
         });
         $('#tblReportes tbody').on('click', 'tr', function () {
@@ -65,7 +76,10 @@
                 domtblReportes.$('tr.selected').removeClass('selected');
                 $(this).addClass('selected');
                 //trigger update
-                window.location.href = '@this.Url.Action("Index")?HashId=' + $(this).closest("tr").find('td:eq(0)').text();
+                if ($(this).closest("tr").find('td:eq(5)').text().toLowerCase().includes('error')) {
+                    alert("El reporte contiene errores y no puede visualizarse");
+                } else 
+                window.location.href = '@this.Url.Action("Details")?HashId=' + $(this).closest("tr").find('td:eq(0)').text();
             }
         });
         HashId = $.urlParam('HashId');

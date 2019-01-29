@@ -1,0 +1,28 @@
+﻿@model Tuple<ComModels.LearFst830, IEnumerable<ComModels.EdiSegName>>
+
+<div class="row">
+    <div class="col-sm">
+        <div class="SegmentDataCol">
+            <label>Quantity:</label>
+            @Model.Item1.Quantity
+        </div>
+    </div>
+    <div class="col-sm">
+        <div class="SegmentDataCol">
+            <label>ForecastQualifier:</label>
+            @Model.Item1.ForecastQualifier
+        </div>
+    </div>
+    <div class="col-sm">
+        <div class="SegmentDataCol">
+            <label>ForecastTimingQualifier:</label>
+            @Model.Item1.ForecastTimingQualifier
+        </div>
+    </div>
+    <div class="col-sm">
+        <div class="SegmentDataCol">
+            <label>Date:</label>
+            @Model.Item1.FstDate
+        </div>
+    </div>
+</div>

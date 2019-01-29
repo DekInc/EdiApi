@@ -1,0 +1,48 @@
+﻿@model Tuple<ComModels.LearSdp830, IEnumerable<ComModels.EdiSegName>, IEnumerable<ComModels.LearFst830>>
+@using ComModels
+<div class="card box-shadow">
+    <div class="card-header card-csdp cursor" data-toggle="collapse" data-target="#@Model.Item1.HashId" aria-expanded="false" aria-controls="@Model.Item1.HashId">
+        SDP - @Model.Item2.Where(Sn => Sn.Segment == "SDP").FirstOrDefault().Eng
+    </div>
+    <div class="collapse" id="@Model.Item1.HashId">
+        <div class="card-body">
+            <div class="container">
+                <div class="row">
+                    <div class="col-sm">
+                        <div class="SegmentDataCol">
+                            <label>CalendarPatternCode:</label>
+                            @Model.Item1.CalendarPatternCode
+                        </div>
+                    </div>
+                    <div class="col-sm">
+                        <div class="SegmentDataCol">
+                            <label>PatternTimeCode:</label>
+                            @Model.Item1.PatternTimeCode
+                        </div>
+                    </div>
+                </div>
+            </div>
+            @if (Model.Item3.Count() > 0)
+            {
+                <div class="card box-shadow">
+                    <div class="card-header card-cfst cursor" data-toggle="collapse" data-target="#@Model.Item3.FirstOrDefault().HashId" aria-expanded="false" aria-controls="@Model.Item3.FirstOrDefault().HashId">
+                        FST - @Model.Item2.Where(Sn => Sn.Segment == "FST").FirstOrDefault().Eng
+                    </div>
+                    <div class="collapse" id="@Model.Item3.FirstOrDefault().HashId">
+                        <div class="card-body">
+                            <div class="container">
+                                @foreach (LearFst830 Fst in Model.Item3)
+                                {
+                                    @await Html.PartialAsync("_DetailsOnFst830",
+                                            new Tuple<LearFst830, IEnumerable<EdiSegName>>(
+                                                Fst,
+                                                Model.Item2))
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
