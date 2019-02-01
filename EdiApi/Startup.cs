@@ -28,6 +28,8 @@ namespace EdiApi
         {
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
             services.AddDbContext<Models.EdiDBContext>(options => options.UseSqlServer(Configuration.GetConnectionString("EdiDB")));
+            services.AddDbContext<Models.wmsContext>(options => options.UseSqlServer(Configuration.GetConnectionString("wmsDB")));
+            services.AddDbContext<Models.Remps_globalDB.Remps_globalContext>(options => options.UseSqlServer(Configuration.GetConnectionString("Remps_globalDB")));
             services.AddSingleton<IConfiguration>(Configuration);
         }
 

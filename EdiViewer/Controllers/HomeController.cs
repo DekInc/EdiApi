@@ -25,8 +25,8 @@ namespace EdiViewer.Controllers
         public async Task<IActionResult> Details(string HashId = "")
         {
             EdiDetailModel EdiDetailModelO = new EdiDetailModel();
-            IEnumerable<LearPureEdi> ListPureEdi = await ApiClientFactory.Instance.GetPureEdi(string.Empty);
-            if (ListPureEdi.FirstOrDefault().Log.Contains("error"))
+            Rep830Info Rep830InfoO = await ApiClientFactory.Instance.GetPureEdi(string.Empty);
+            if (Rep830InfoO.LearPureEdi.FirstOrDefault().Log.Contains("error"))
                 return View(EdiDetailModelO);
             if (string.IsNullOrEmpty(HashId))
                 return View(EdiDetailModelO);
@@ -60,16 +60,32 @@ namespace EdiViewer.Controllers
                 int recordsTotal = 0;
 
                 // Getting all Customer data  
-                IEnumerable<LearPureEdi> IEPureEdi = await ApiClientFactory.Instance.GetPureEdi(string.Empty);                
+                Rep830Info Rep830InfoO = await ApiClientFactory.Instance.GetPureEdi(string.Empty);                
                 //Search  
                 if (!string.IsNullOrEmpty(searchValue))
                 {
-                    IEPureEdi = IEPureEdi.Where(m => m.Fingreso == searchValue);
+                    Rep830InfoO.LearPureEdi = Rep830InfoO.LearPureEdi.Where(m => m.Fingreso == searchValue);
                 }
                 //total number of rows count   
-                recordsTotal = IEPureEdi.Count();
+                recordsTotal = Rep830InfoO.LearPureEdi.Count();
                 //Paging   
-                var data = IEPureEdi.Skip(skip).Take(pageSize).ToList();
+                var data = from Pe in Rep830InfoO.LearPureEdi
+                           from F in Rep830InfoO.From
+                           .Where(Fr => Fr.HashId == Pe.HashId).DefaultIfEmpty()
+                           from T in Rep830InfoO.To
+                           .Where(To => To.HashId == Pe.HashId).DefaultIfEmpty()
+                           select new {
+                               Pe.HashId,
+                               Pe.NombreArchivo,
+                               From = F?.Dest,
+                               To = T?.Dest,
+                               Pe.Fingreso,
+                               Pe.Fprocesado,
+                               Pe.Reprocesar,
+                               Pe.Log
+                           };
+
+                Rep830InfoO.LearPureEdi = Rep830InfoO.LearPureEdi.Skip(skip).Take(pageSize);
                 //Returning Json Data  
                 return Json(new { draw = draw, recordsFiltered = recordsTotal, recordsTotal = recordsTotal, data = data });
 

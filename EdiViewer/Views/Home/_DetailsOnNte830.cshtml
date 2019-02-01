@@ -1,4 +1,4 @@
-﻿@model Tuple<ComModels.LearNte830, IEnumerable<ComModels.EdiSegName>>
+﻿@model Tuple<ComModels.LearNte830, IEnumerable<ComModels.EdiSegName>, IEnumerable<ComModels.LearCodes>>
 <div class="card box-shadow">
     <div class="card-header card-cnte cursor" data-toggle="collapse" data-target="#@Model.Item1.HashId" aria-expanded="false" aria-controls="@Model.Item1.HashId" title="@Model.Item2.Where(Sn => Sn.Segment == "NTE").FirstOrDefault().DescEng">
         NTE - @Model.Item2.Where(Sn => Sn.Segment == "NTE").FirstOrDefault().Eng
@@ -9,13 +9,13 @@
                 <div class="row">
                     <div class="col-sm">
                         <div class="SegmentDataCol">
-                            <label>ReferenceCode:</label>
+                            @Html.ShowLabel("Data.NTE.ReferenceCode", Model.Item3)
                             @Model.Item1.ReferenceCode
                         </div>
                     </div>
                     <div class="col-sm">
                         <div class="SegmentDataCol">
-                            <label>Message:</label>
+                            @Html.ShowLabel("Data.NTE.Message", Model.Item3)
                             @Model.Item1.Message
                         </div>
                     </div>                    

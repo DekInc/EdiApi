@@ -13,27 +13,61 @@ namespace EdiApi.Controllers
     [ApiController]
     public class DataController : ControllerBase
     {
-        public EdiDBContext DbO;        
-        public DataController(EdiDBContext _DbO) { DbO = _DbO; }
+        public EdiDBContext DbO;
+        public wmsContext WmsDbO;
+        public static readonly string G1;
+        public Models.Remps_globalDB.Remps_globalContext Remps_globalDB;
+        public DataController(EdiDBContext _DbO, wmsContext _WmsDbO, Models.Remps_globalDB.Remps_globalContext _Remps_globalDB) {
+            DbO = _DbO;
+            WmsDbO = _WmsDbO;
+            Remps_globalDB = _Remps_globalDB;
+        }
+        private IEnumerable<Rep830InfoAux> GetIsaFromTo(IEnumerable<LearIsa830> _ListIsa, bool _From)
+        {
+            foreach (LearIsa830 IsaO in _ListIsa)
+            {
+                yield return new Rep830InfoAux()
+                {
+                    HashId = IsaO.ParentHashId,
+                    Dest = _From? IsaO.InterchangeSenderId : IsaO.InterchangeReceiverId
+                };
+            }
+        }
         [HttpGet]
-        public ActionResult<IEnumerable<LearPureEdi>> GetPureEdi(string HashId = "")
+        public ActionResult<Rep830Info> GetPureEdi(string HashId = "")
         {
             if (string.IsNullOrEmpty(HashId))
             {
-                IEnumerable<LearPureEdi> Ret = DbO.LearPureEdi
-                    .Where(P => !string.IsNullOrEmpty(P.NombreArchivo))
-                    .OrderByDescending(O => O.Fprocesado);
-                foreach (LearPureEdi LearPureEdiO in Ret)
+                Rep830Info Rep830InfoO = new Rep830Info();
+                IEnumerable<LearIsa830> ListIsa = (
+                    from Pe in DbO.LearPureEdi
+                    from Isa in DbO.LearIsa830
+                    where Isa.ParentHashId == Pe.HashId
+                    select Isa);
+                Rep830InfoO.From = GetIsaFromTo(ListIsa, true);
+                Rep830InfoO.To = GetIsaFromTo(ListIsa, false);
+                Rep830InfoO.LearPureEdi = from Pe in DbO.LearPureEdi
+                                          where !string.IsNullOrEmpty(Pe.NombreArchivo)
+                                          orderby Pe.Fingreso descending
+                                          select Pe;
+                foreach (LearPureEdi LearPureEdiO in Rep830InfoO.LearPureEdi)
                     LearPureEdiO.EdiStr = string.Empty;
-                return Ret.ToList();
+                return Rep830InfoO;
             } else
             {
-                IEnumerable<LearPureEdi> Ret = from Pe in DbO.LearPureEdi
+                Rep830Info Rep830InfoO = new Rep830Info();
+                IEnumerable<LearIsa830> ListIsa = (
+                    from Isa in DbO.LearIsa830
+                    where Isa.ParentHashId == HashId
+                    select Isa);
+                Rep830InfoO.From = GetIsaFromTo(ListIsa, true);
+                Rep830InfoO.To = GetIsaFromTo(ListIsa, false);
+                Rep830InfoO.LearPureEdi = from Pe in DbO.LearPureEdi
                                                where Pe.HashId == HashId
                                                select Pe;
-                foreach (LearPureEdi LearPureEdiO in Ret)
+                foreach (LearPureEdi LearPureEdiO in Rep830InfoO.LearPureEdi)
                     LearPureEdiO.EdiStr = string.Empty;
-                return Ret.ToList();
+                return Rep830InfoO;
             }
         }        
         [HttpGet]
@@ -172,6 +206,64 @@ namespace EdiApi.Controllers
                                      orderby c.Str, c.Param
                                      select c;
             return FE830DataRet;
+        }
+        delegate void del(int i);
+        [HttpGet]
+        public ActionResult<string> TestThisService()
+        {
+            int? a = 10;
+            int? b = 11;
+            int? c = 12;
+            a = null;
+            int? d = a ?? b ?? c;
+            int a5 = 5;
+            string Ret = "";
+            if (Convert.ToBoolean((.002f) - (.1f)))
+                Ret = "Hello";
+            else if (a5 == 5)
+                Ret = "World";
+            else Ret = "Bye";
+            return $"Funciona ok {d.ToString()} {Ret}";
+        }
+        [HttpGet]
+        public ActionResult<string> GetSN() {
+            var ListTsql = from T in WmsDbO.Transacciones
+                       from B in WmsDbO.Bodegas
+                       from L in WmsDbO.Locations
+                       from Y in WmsDbO.Paises
+                       from P in WmsDbO.Pedido
+                       from D in WmsDbO.DtllDespacho
+                       from D2 in WmsDbO.Despachos
+                       from E in WmsDbO.Estatus
+                       from S in WmsDbO.SysTempSalidas
+                       from Ii in WmsDbO.ItemInventario
+                       from I in WmsDbO.Inventario
+                       //from G in WmsDbO.g
+                       where T.BodegaId == B.BodegaId
+                       && L.Locationid == B.Locationid
+                       && Y.Paisid == L.Paisid
+                       && P.PedidoId == T.PedidoId
+                       && D.TransaccionId == T.TransaccionId
+                       && D2.DespachoId == D.DespachoId
+                       && E.EstatusId == T.EstatusId
+                       && S.PedidoId == P.PedidoId
+                       && Ii.ItemInventarioId == S.ItemInventarioId
+                       && I.InventarioId == S.InventarioId
+                       select T.AduFro;
+
+            return ListTsql.Count().ToString();
+        }
+        public static byte[] a2212121(System.IO.Stream input)
+        {
+            System.Collections.Stack st = new System.Collections.Stack();
+            st.Push("Csss");
+            st.Push(6.5);
+            st.Push(8);
+            using (System.IO.MemoryStream ms = new System.IO.MemoryStream())
+            {
+                input.CopyTo(ms);
+                return ms.ToArray();
+            }
         }
     }
 }

@@ -10,14 +10,14 @@
                 <div class="row">
                     <div class="col-sm">
                         <div class="SegmentDataCol">
-                            <label>CalendarPatternCode:</label>
+                            @Html.ShowLabel("Data.SDP.CalendarPatternCode", Model.Item4)
                             @Html.CodeToStr("SDP.CalendarPatternCode", Model.Item1.CalendarPatternCode, Model.Item4)
                         </div>
                     </div>
                     <div class="col-sm">
                         <div class="SegmentDataCol">
-                            <label>PatternTimeCode:</label>
-                            @Html.CodeToStr("SDP.PatternTimeCode", Model.Item1.PatternTimeCode, Model.Item4)                            
+                            @Html.ShowLabel("Data.SDP.PatternTimeCode", Model.Item4)
+                            @Html.CodeToStr("SDP.PatternTimeCode", Model.Item1.PatternTimeCode, Model.Item4)
                         </div>
                     </div>
                 </div>
@@ -31,13 +31,36 @@
                     <div class="collapse" id="@Model.Item3.FirstOrDefault().HashId">
                         <div class="card-body">
                             <div class="container">
-                                @foreach (LearFst830 Fst in Model.Item3)
+                                <div class="row">
+                                    <div class="col-sm">
+                                        <div class="SegmentDataCol">
+                                            @Html.ShowLabel("Data.FST.Quantity", Model.Item4)
+                                        </div>
+                                    </div>
+                                    <div class="col-sm">
+                                        <div class="SegmentDataCol">
+                                            @Html.ShowLabel("Data.FST.ForecastQualifier", Model.Item4)
+                                        </div>
+                                    </div>
+                                    <div class="col-sm">
+                                        <div class="SegmentDataCol">
+                                            @Html.ShowLabel("Data.FST.ForecastTimingQualifier", Model.Item4)
+                                        </div>
+                                    </div>
+                                    <div class="col-sm">
+                                        <div class="SegmentDataCol">
+                                            @Html.ShowLabel("Data.FST.FstDate", Model.Item4)
+                                        </div>
+                                    </div>
+                                </div>
+                                @for (int i = 0; i < Model.Item3.Count(); i++)
                                 {
                                     @await Html.PartialAsync("_DetailsOnFst830",
-                                            new Tuple<LearFst830, IEnumerable<EdiSegName>, IEnumerable<LearCodes>>(
-                                                Fst,
+                                            new Tuple<LearFst830, IEnumerable<EdiSegName>, IEnumerable<LearCodes>, int>(
+                                                Model.Item3.ElementAt(i),
                                                 Model.Item2,
-                                                Model.Item4))
+                                                Model.Item4,
+                                                i))
                                 }
                             </div>
                         </div>

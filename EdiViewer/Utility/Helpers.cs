@@ -36,5 +36,32 @@ namespace EdiViewer.Utility.Helper
             else
                 return Lc.FirstOrDefault().Value; // English
         }
+        public static object ShowLabel(this IHtmlHelper htmlHelper, string _ObjectLabel, IEnumerable<ComModels.LearCodes> _LearCodes)
+        {
+            var Div = new TagBuilder("span");
+            Div.AddCssClass("dtColName");
+            if (string.IsNullOrEmpty(_ObjectLabel)) return string.Empty;
+            IEnumerable<ComModels.LearCodes> Lc = _LearCodes.Where(C => C.Str == _ObjectLabel);
+            if (Lc.Count() == 0)
+                Div.InnerHtml.AppendHtml($"[{_ObjectLabel}] - valor no mapeado<br/>");
+            else
+            {
+                if (ApplicationSettings.English)
+                {
+                    if (string.IsNullOrEmpty(Lc.FirstOrDefault().Value))
+                        Div.InnerHtml.AppendHtml($"[{_ObjectLabel}] - valor no mapeado<br/>");
+                    else
+                        Div.InnerHtml.AppendHtml($"{Lc.FirstOrDefault().Value}<br/>"); // English
+                }
+                else
+                {
+                    if (string.IsNullOrEmpty(Lc.FirstOrDefault().ValueEsp))
+                        Div.InnerHtml.AppendHtml($"[{_ObjectLabel}] - valor no mapeado<br/>");
+                    else
+                        Div.InnerHtml.AppendHtml($"{Lc.FirstOrDefault().ValueEsp}<br/>"); // Spanish
+                }
+            }
+            return Div;
+        }
     }
 }

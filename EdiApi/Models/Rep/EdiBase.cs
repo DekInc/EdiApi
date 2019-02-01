@@ -116,7 +116,7 @@ namespace EdiApi
                     case NTE830.Init:
                         _DbO.LearNte830.Add(Reflect(new LearNte830()));
                         break;
-                    case N1830.Init:
+                    case N1856.Init:
                         _DbO.LearN1830.Add(Reflect(new LearN1830()));
                         break;
                     case N4830.Init:
@@ -160,7 +160,7 @@ namespace EdiApi
             }
             catch (Exception eFb1) 
             {
-                throw new Exception($"Error al guardar {GetType().GetField("Init").GetRawConstantValue() } {eFb1.ToString()}");
+                throw new Exception($"Error al guardar {GetType().GetField("Init").GetRawConstantValue() } {eFb1.ToString()}. Error en linea {EdiStr}");
             }            
             foreach (EdiBase ChildO in this.Childs)
                 ChildO.SaveAll(ref _DbO);

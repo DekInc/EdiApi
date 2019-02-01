@@ -11,37 +11,37 @@
                 <div class="row">
                     <div class="col-sm">
                         <div class="SegmentDataCol">
-                            <label>ProductIdQualifier:</label>
+                            @Html.ShowLabel("Data.LIN.ProductIdQualifier", Model.Item3.Data.ListCodes)
                             @Html.CodeToStr("LIN.ProductIdQualifier", Model.Item1.ProductIdQualifier, Model.Item3.Data.ListCodes)
                         </div>
                     </div>
                     <div class="col-sm">
                         <div class="SegmentDataCol">
-                            <label>ProductId:</label>
+                            @Html.ShowLabel("Data.LIN.ProductId", Model.Item3.Data.ListCodes)
                             @Model.Item1.ProductId
                         </div>
                     </div>
                     <div class="col-sm">
                         <div class="SegmentDataCol">
-                            <label>ProductRefIdQualifier:</label>
+                            @Html.ShowLabel("Data.LIN.ProductRefIdQualifier", Model.Item3.Data.ListCodes)
                             @Html.CodeToStr("LIN.ProductRefIdQualifier", Model.Item1.ProductRefIdQualifier, Model.Item3.Data.ListCodes)
                         </div>
                     </div>
                     <div class="col-sm">
                         <div class="SegmentDataCol">
-                            <label>ProductRefId:</label>
+                            @Html.ShowLabel("Data.LIN.ProductRefId", Model.Item3.Data.ListCodes)
                             @Model.Item1.ProductRefId
                         </div>
                     </div>
                     <div class="col-sm">
                         <div class="SegmentDataCol">
-                            <label>ProductPurchaseIdQualifier:</label>
+                            @Html.ShowLabel("Data.LIN.ProductPurchaseIdQualifier", Model.Item3.Data.ListCodes)
                             @Html.CodeToStr("LIN.ProductPurchaseIdQualifier", Model.Item1.ProductPurchaseIdQualifier, Model.Item3.Data.ListCodes)
                         </div>
                     </div>
                     <div class="col-sm">
                         <div class="SegmentDataCol">
-                            <label>ProductPurchaseId:</label>
+                            @Html.ShowLabel("Data.LIN.ProductPurchaseId", Model.Item3.Data.ListCodes)
                             @Model.Item1.ProductPurchaseId
                         </div>
                     </div>
@@ -82,9 +82,10 @@
             @foreach (LearNte830 Nte in Model.Item3.Data.ListLinNte.Where(LNte => LNte.ParentHashId == Model.Item1.HashId))
             {
                 @await Html.PartialAsync("_DetailsOnNte830",
-               new Tuple<LearNte830, IEnumerable<EdiSegName>>(
+               new Tuple<LearNte830, IEnumerable<EdiSegName>, IEnumerable<LearCodes>>(
                    Nte,
-                   Model.Item2))
+                   Model.Item2,
+                   Model.Item3.Data.ListCodes))
                 <hr />
             }
 
@@ -126,6 +127,28 @@
                     <div class="collapse" id="@Model.Item3.Data.ListLinFst.Where(LNte => LNte.ParentHashId == Model.Item1.HashId).FirstOrDefault().HashId">
                         <div class="card-body">
                             <div class="container">
+                                <div class="row">
+                                    <div class="col-sm">
+                                        <div class="SegmentDataCol">
+                                            @Html.ShowLabel("Data.FST.Quantity", Model.Item3.Data.ListCodes)
+                                        </div>
+                                    </div>
+                                    <div class="col-sm">
+                                        <div class="SegmentDataCol">
+                                            @Html.ShowLabel("Data.FST.ForecastQualifier", Model.Item3.Data.ListCodes)
+                                        </div>
+                                    </div>
+                                    <div class="col-sm">
+                                        <div class="SegmentDataCol">
+                                            @Html.ShowLabel("Data.FST.ForecastTimingQualifier", Model.Item3.Data.ListCodes)
+                                        </div>
+                                    </div>
+                                    <div class="col-sm">
+                                        <div class="SegmentDataCol">
+                                            @Html.ShowLabel("Data.FST.FstDate", Model.Item3.Data.ListCodes)
+                                        </div>
+                                    </div>
+                                </div>
                                 @foreach (LearFst830 Fst in Model.Item3.Data.ListLinFst.Where(LNte => LNte.ParentHashId == Model.Item1.HashId))
                                 {
                                     @await Html.PartialAsync("_DetailsOnFst830",

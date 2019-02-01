@@ -9,19 +9,19 @@
                 <div class="row">
                     <div class="col-sm">
                         <div class="SegmentDataCol">
-                            <label>RefNumberQualifier:</label>
+                            @Html.ShowLabel("Data.REF.RefNumberQualifier", Model.Item3)
                             @Html.CodeToStr("REF.RefNumberQualifier", Model.Item1.RefNumberQualifier, Model.Item3)
                         </div>
                     </div>
                     <div class="col-sm">
                         <div class="SegmentDataCol">
-                            <label>RefNumber:</label>
+                            @Html.ShowLabel("Data.REF.RefNumber", Model.Item3)
                             @Model.Item1.RefNumber
                         </div>
                     </div>
                     <div class="col-sm">
                         <div class="SegmentDataCol">
-                            <label>Description:</label>
+                            @Html.ShowLabel("Data.REF.Description", Model.Item3)
                             @Model.Item1.Description
                         </div>
                     </div>                    

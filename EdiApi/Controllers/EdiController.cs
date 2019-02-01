@@ -112,8 +112,8 @@ namespace EdiApi.Controllers
                             };
                         }
                     }
-                    ComRepoFtpO.Get(ref DbO, ref CodError2, ref MessageSubject, ref FileName, ref ListEdiPure);
-                    //ComRepoMail.GetEdi830File(IMapHost, IMapPortIn, IMapPortOut, IMapUser, IMapPassword, IMapSSL, ref CodError2, ref MessageSubject, ref FileName, ref DbO, Config.GetSection("MaxEdiComs").GetValue(typeof(string), "Value"), ref ListEdiPure);                    
+                    //ComRepoFtpO.Get(ref DbO, ref CodError2, ref MessageSubject, ref FileName, ref ListEdiPure);
+                    ComRepoMail.GetEdi830File(IMapHost, IMapPortIn, IMapPortOut, IMapUser, IMapPassword, IMapSSL, ref CodError2, ref MessageSubject, ref FileName, ref DbO, Config.GetSection("MaxEdiComs").GetValue(typeof(string), "Value"), ref ListEdiPure);
                     switch (CodError2)
                     {
                         case -1:

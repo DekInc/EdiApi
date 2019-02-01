@@ -9,8 +9,8 @@ namespace EdiApi
     public class LearRep856
     {
         public List<string> EdiFile { get; set; }
-        public ISA856 ISAO { get; set; } = new ISA856();
-        public GS856 GSO { get; set; } = new GS856();
+        public ISA856 ISAO { get; set; } = new ISA856(EdiBase.SegmentTerminator);
+        public GS856 GSO { get; set; } = new GS856(EdiBase.SegmentTerminator);
         public LearRep856()
         {
         }

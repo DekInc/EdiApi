@@ -9,37 +9,37 @@
                 <div class="row">
                     <div class="col-sm">
                         <div class="SegmentDataCol">
-                            <label>CityName:</label>
+                            @Html.ShowLabel("Data.N4.CityName", Model.Item3)
                             @Model.Item1.CityName
                         </div>
                     </div>
                     <div class="col-sm">
                         <div class="SegmentDataCol">
-                            <label>Province:</label>
+                            @Html.ShowLabel("Data.N4.Province", Model.Item3)
                             @Model.Item1.Province
                         </div>
                     </div>
                     <div class="col-sm">
                         <div class="SegmentDataCol">
-                            <label>PostalCode:</label>
+                            @Html.ShowLabel("Data.N4.PostalCode", Model.Item3)
                             @Model.Item1.PostalCode
                         </div>
                     </div>
                     <div class="col-sm">
                         <div class="SegmentDataCol">
-                            <label>CountryCode:</label>
+                            @Html.ShowLabel("Data.N4.CountryCode", Model.Item3)
                             @Model.Item1.CountryCode
                         </div>
                     </div>
                     <div class="col-sm">
                         <div class="SegmentDataCol">
-                            <label>LocationQualifier:</label>
-                            @Html.CodeToStr("N4.LocationQualifier", Model.Item1.LocationQualifier, Model.Item3)                            
+                            @Html.ShowLabel("Data.N4.LocationQualifier", Model.Item3)
+                            @Html.CodeToStr("N4.LocationQualifier", Model.Item1.LocationQualifier, Model.Item3)
                         </div>
                     </div>
                     <div class="col-sm">
                         <div class="SegmentDataCol">
-                            <label>LocationId:</label>
+                            @Html.ShowLabel("Data.N4.LocationId", Model.Item3)
                             @Model.Item1.LocationId
                         </div>
                     </div>

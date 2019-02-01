@@ -3,38 +3,38 @@
 <div class="row">
     <div class="col-sm">
         <div class="SegmentDataCol">
-            <label>QuantityQualifier:</label>
+            @Html.ShowLabel("Data.SHP.QuantityQualifier", Model.Item3)
             @Html.CodeToStr("SHP.QuantityQualifier", Model.Item1.QuantityQualifier, Model.Item3)
         </div>
     </div>
     <div class="col-sm">
         <div class="SegmentDataCol">
-            <label>Quantity:</label>
+            @Html.ShowLabel("Data.SHP.Quantity", Model.Item3)
             @Model.Item1.Quantity
         </div>
     </div>
     <div class="col-sm">
         <div class="SegmentDataCol">
-            <label>DateTimeQualifier:</label>
-            @Html.CodeToStr("SHP.DateTimeQualifier", Model.Item1.DateTimeQualifier, Model.Item3)            
+            @Html.ShowLabel("Data.SHP.DateTimeQualifier", Model.Item3)
+            @Html.CodeToStr("SHP.DateTimeQualifier", Model.Item1.DateTimeQualifier, Model.Item3)
         </div>
     </div>
     <div class="col-sm">
         <div class="SegmentDataCol">
-            <label>AccumulationStartDate:</label>
+            @Html.ShowLabel("Data.SHP.AccumulationStartDate", Model.Item3)
             @Html.StrToDate(1, Model.Item1.AccumulationStartDate)
         </div>
     </div>
     <div class="col-sm">
         <div class="SegmentDataCol">
-            <label>AccumulationTime:</label>
+            @Html.ShowLabel("Data.SHP.AccumulationTime", Model.Item3)
             @Model.Item1.AccumulationTime
         </div>
     </div>
     <div class="col-sm">
         <div class="SegmentDataCol">
-            <label>AccumulationEndDate:</label>
-            @Html.StrToDate(1, Model.Item1.AccumulationEndDate)            
+            @Html.ShowLabel("Data.SHP.AccumulationEndDate", Model.Item3)
+            @Html.StrToDate(1, Model.Item1.AccumulationEndDate)
         </div>
     </div>
 </div>

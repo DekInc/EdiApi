@@ -1,27 +1,22 @@
-﻿@model Tuple<ComModels.LearFst830, IEnumerable<ComModels.EdiSegName>, IEnumerable<ComModels.LearCodes>>
-
-<div class="row">
+﻿@model Tuple<ComModels.LearFst830, IEnumerable<ComModels.EdiSegName>, IEnumerable<ComModels.LearCodes>, int>
+<div class="row separator @(Model.Item4 % 2 == 0? "rowOdd" : "row")">
     <div class="col-sm">
         <div class="SegmentDataCol">
-            <label>Quantity:</label>
             @Model.Item1.Quantity
         </div>
     </div>
     <div class="col-sm">
         <div class="SegmentDataCol">
-            <label>ForecastQualifier:</label>
             @Html.CodeToStr("FST.ForecastQualifier", Model.Item1.ForecastQualifier, Model.Item3)
         </div>
     </div>
     <div class="col-sm">
         <div class="SegmentDataCol">
-            <label>ForecastTimingQualifier:</label>
             @Html.CodeToStr("FST.ForecastTimingQualifier", Model.Item1.ForecastTimingQualifier, Model.Item3)
         </div>
     </div>
     <div class="col-sm">
         <div class="SegmentDataCol">
-            <label>Date:</label>
             @Html.StrToDate(1, @Model.Item1.FstDate)
         </div>
     </div>

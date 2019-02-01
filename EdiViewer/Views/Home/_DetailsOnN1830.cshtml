@@ -2,25 +2,25 @@
 <div class="row">
     <div class="col-sm">
         <div class="SegmentDataCol">
-            <label>OrganizationId:</label>
+            @Html.ShowLabel("Data.N1.OrganizationId", Model.Item3)
             @Html.CodeToStr("N1.OrganizationId", Model.Item1.OrganizationId, Model.Item3)
         </div>
     </div>
     <div class="col-sm">
         <div class="SegmentDataCol">
-            <label>Name:</label>
+            @Html.ShowLabel("Data.N1.Name", Model.Item3)
             @Model.Item1.Name
         </div>
     </div>
     <div class="col-sm">
         <div class="SegmentDataCol">
-            <label>IdCodeQualifier:</label>
+            @Html.ShowLabel("Data.N1.IdCodeQualifier", Model.Item3)
             @Html.CodeToStr("N1.IdCodeQualifier", Model.Item1.IdCodeQualifier, Model.Item3)
         </div>
     </div>
     <div class="col-sm">
         <div class="SegmentDataCol">
-            <label>IdCode:</label>
+            @Html.ShowLabel("Data.N1.IdCode", Model.Item3)
             @Model.Item1.IdCode
         </div>
     </div>

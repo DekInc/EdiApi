@@ -44,10 +44,10 @@
 #tblReportes{
     width: 100%;
 }
-#tblReportes thead {
+.tblReportes thead {
     background: linear-gradient(35deg, #c54062, #fbfcf2);
 }
-#tblReportes tbody {
+.tblReportes tbody {
     cursor: pointer;
 }
 .container {
@@ -79,6 +79,9 @@ label{
     text-decoration: none;
     font-weight: bold;
     color: #000;
+}
+.card {
+    margin-bottom: 10px !important;
 }
 .card-header {
     background-color: unset;
@@ -143,4 +146,17 @@ hr {
 }
 .hide_column {
     display: none;
+}
+.SegmentDataCol label::after {
+    content: "\A";
+}
+.dtColName {
+    font-weight: bold;
+}
+.separator {
+    border-bottom: 1px solid #999;
+    line-height: 1.5em;
+}
+.rowOdd {
+    background: #f3eac9;
 }

@@ -9,7 +9,7 @@
                 <div class="row">
                     <div class="col-sm">
                         <div class="SegmentDataCol">
-                            <label>StatusCode:</label>
+                            @Html.ShowLabel("Data.PRS.StatusCode", Model.Item3)
                             @Html.CodeToStr("PRS.StatusCode", Model.Item1.StatusCode, Model.Item3)
                         </div>
                     </div>

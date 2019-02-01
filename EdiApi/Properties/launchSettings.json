@@ -12,7 +12,7 @@
     "IIS Express": {
       "commandName": "IISExpress",
       "launchBrowser": true,
-      "launchUrl": "Edi/Form8XX",
+      "launchUrl": "Data/TestThisService",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
@@ -20,7 +20,7 @@
     "EdiApi": {
       "commandName": "Project",
       "launchBrowser": true,
-      "launchUrl": "Edi/Form8XX",
+      "launchUrl": "Data/TestThisService",
       "applicationUrl": "https://localhost:5001;http://localhost:5000",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"

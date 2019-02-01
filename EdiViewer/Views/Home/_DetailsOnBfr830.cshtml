@@ -9,61 +9,61 @@
                 <div class="row">
                     <div class="col-sm">
                         <div class="SegmentDataCol">
-                            <label>TransactionSetPurposeCode:</label>
+                            @Html.ShowLabel("Data.BFR.TransactionSetPurposeCode", Model.Item3)
                             @Html.CodeToStr("BFR.TransactionSetPurposeCode", Model.Item1.TransactionSetPurposeCode, Model.Item3)
                         </div>
                     </div>
                     <div class="col-sm">
                         <div class="SegmentDataCol">
-                            <label>ReleaseNumber:</label>
+                            @Html.ShowLabel("Data.BFR.ReleaseNumber", Model.Item3)
                             @Model.Item1.ReleaseNumber
                         </div>
                     </div>
                     <div class="col-sm">
                         <div class="SegmentDataCol">
-                            <label>ForecastTypeQualifier:</label>
+                            @Html.ShowLabel("Data.BFR.ForecastTypeQualifier", Model.Item3)
                             @Html.CodeToStr("BFR.ForecastTypeQualifier", Model.Item1.ForecastTypeQualifier, Model.Item3)
                         </div>
                     </div>
                     <div class="col-sm">
                         <div class="SegmentDataCol">
-                            <label>ForecastQuantityQualifier:</label>
+                            @Html.ShowLabel("Data.BFR.ForecastQuantityQualifier", Model.Item3)
                             @Html.CodeToStr("BFR.ForecastQuantityQualifier", Model.Item1.ForecastQuantityQualifier, Model.Item3)
                         </div>
                     </div>
                     <div class="col-sm">
                         <div class="SegmentDataCol">
-                            <label>ForecastHorizonStart:</label>
+                            @Html.ShowLabel("Data.BFR.ForecastHorizonStart", Model.Item3)
                             @Html.StrToDate(1, Model.Item1.ForecastHorizonStart)
                         </div>
                     </div>
                     <div class="col-sm">
                         <div class="SegmentDataCol">
-                            <label>ForecastHorizonEnd:</label>
+                            @Html.ShowLabel("Data.BFR.ForecastHorizonEnd", Model.Item3)
                             @Html.StrToDate(1, Model.Item1.ForecastHorizonEnd)
                         </div>
                     </div>
                     <div class="col-sm">
                         <div class="SegmentDataCol">
-                            <label>ForecastGenerationDate:</label>
+                            @Html.ShowLabel("Data.BFR.ForecastGenerationDate", Model.Item3)
                             @Html.StrToDate(1, Model.Item1.ForecastGenerationDate)
                         </div>
                     </div>
                     <div class="col-sm">
                         <div class="SegmentDataCol">
-                            <label>ForecastUpdatedDate:</label>
+                            @Html.ShowLabel("Data.BFR.ForecastUpdatedDate", Model.Item3)
                             @Html.StrToDate(1, Model.Item1.ForecastUpdatedDate)
                         </div>
                     </div>
                     <div class="col-sm">
                         <div class="SegmentDataCol">
-                            <label>ContractNumber:</label>
+                            @Html.ShowLabel("Data.BFR.ContractNumber", Model.Item3)
                             @Model.Item1.ContractNumber
                         </div>
                     </div>
                     <div class="col-sm">
                         <div class="SegmentDataCol">
-                            <label>PurchaseOrderNumber:</label>
+                            @Html.ShowLabel("Data.BFR.PurchaseOrderNumber", Model.Item3)
                             @Model.Item1.PurchaseOrderNumber
                         </div>
                     </div>

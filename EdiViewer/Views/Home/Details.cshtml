@@ -16,44 +16,44 @@
                         <div class="row">
                             <div class="col-sm">
                                 <div class="SegmentDataCol">
-                                    <label asp-for="Data.ISA.InterchangeSenderId">Origen de reporte:</label>
+                                    @Html.ShowLabel("Data.ISA.InterchangeSenderId", Model.Data.ListCodes)
                                     @Model.Data.ISA.InterchangeSenderId
                                 </div>
                             </div>
                             <div class="col-sm">
                                 <div class="SegmentDataCol">
-                                    <label asp-for="Data.ISA.InterchangeReceiverId">Destino de datos:</label>
+                                    @Html.ShowLabel("Data.ISA.InterchangeReceiverId", Model.Data.ListCodes)
                                     @Model.Data.ISA.InterchangeReceiverId
                                 </div>
                             </div>
                             <div class="col-sm">
                                 <div class="SegmentDataCol">
-                                    <label asp-for="Data.ISA.InterchangeDate">Fecha:</label>
+                                    @Html.ShowLabel("Data.ISA.InterchangeDate", Model.Data.ListCodes)
                                     @Html.StrToDate(0, Model.Data.ISA.InterchangeDate, Model.Data.ISA.InterchangeTime)
                                 </div>
-                            </div>                            
+                            </div>
                             <div class="col-sm">
                                 <div class="SegmentDataCol">
-                                    <label asp-for="Data.ISA.InterchangeControlVersion">Versión:</label>
+                                    @Html.ShowLabel("Data.ISA.InterchangeControlVersion", Model.Data.ListCodes)
                                     @Model.Data.ISA.InterchangeControlVersion
                                 </div>
                             </div>
                             <div class="col-sm">
                                 <div class="SegmentDataCol">
-                                    <label asp-for="Data.ISA.InterchangeControlVersion">Número reporte:</label>
+                                    @Html.ShowLabel("Data.ISA.InterchangeControlNumber", Model.Data.ListCodes)
                                     @Model.Data.ISA.InterchangeControlNumber
                                 </div>
                             </div>
                             <div class="col-sm">
                                 <div class="SegmentDataCol">
-                                    <label asp-for="Data.GS.FunctionalIdCode">Functional Code:</label>
+                                    @Html.ShowLabel("Data.GS.FunctionalIdCode", Model.Data.ListCodes)
                                     @Html.CodeToStr("GS.FunctionalIdCode", Model.Data.GS.FunctionalIdCode, Model.Data.ListCodes)
                                 </div>
                             </div>
                             <div class="col-sm">
                                 <div class="SegmentDataCol">
-                                    <label asp-for="Data.ISA.UsageIndicator">Testing o producción:</label>
-                                    @Model.Data.ISA.UsageIndicator
+                                    @Html.ShowLabel("Data.ISA.UsageIndicator", Model.Data.ListCodes)
+                                    @Html.CodeToStr("ISA.UsageIndicator", @Model.Data.ISA.UsageIndicator, Model.Data.ListCodes)
                                 </div>
                             </div>
                         </div>
@@ -104,9 +104,10 @@
                         @foreach (LearNte830 Nte in Model.Data.ListStNte)
                         {
                             @await Html.PartialAsync("_DetailsOnNte830",
-                           new Tuple<LearNte830, IEnumerable<EdiSegName>>(
+                           new Tuple<LearNte830, IEnumerable<EdiSegName>, IEnumerable<LearCodes>>(
                                Nte,
-                               Model.Data.ListEdiSegName))
+                               Model.Data.ListEdiSegName,
+                               Model.Data.ListCodes))
                             <hr />
                         }
                         @foreach (LearLin830 Lin in Model.Data.ListStLin)
@@ -122,10 +123,5 @@
                 </div>
             </div>
         </div>
-    </div>
-    <hr />
-    <div>
-        @Html.ActionLink("Edit", "Edit", new { /* id = Model.PrimaryKey */ }) |
-        <a asp-action="Index">Back to List</a>
     </div>
 </div>
