@@ -11,7 +11,7 @@ namespace EdiApi.Controllers
 {
     [Route("[controller]/[action]")]
     [ApiController]
-    public class DataController : ControllerBase
+    public class DataController : Controller
     {
         public EdiDBContext DbO;
         public wmsContext WmsDbO;
@@ -22,54 +22,43 @@ namespace EdiApi.Controllers
             WmsDbO = _WmsDbO;
             Remps_globalDbO = _Remps_globalDB;            
             
-        }
-        private IEnumerable<Rep830InfoAux> GetIsaFromTo(IEnumerable<LearIsa830> _ListIsa, bool _From)
+        }        
+        private IEnumerable<Rep830Info> GetExToIe(Exception E1)
         {
-            foreach (LearIsa830 IsaO in _ListIsa)
-            {
-                yield return new Rep830InfoAux()
-                {
-                    HashId = IsaO.ParentHashId,
-                    Dest = _From? IsaO.InterchangeSenderId : IsaO.InterchangeReceiverId
-                };
-            }
+            yield return new Rep830Info() { errorMessage = E1.ToString() };
         }
         [HttpGet]
-        public ActionResult<Rep830Info> GetPureEdi(string HashId = "")
-        {
-            if (string.IsNullOrEmpty(HashId))
+        public IEnumerable<Rep830Info> GetPureEdi(string HashId = "")
+        {   
+            try
             {
-                Rep830Info Rep830InfoO = new Rep830Info();
-                IEnumerable<LearIsa830> ListIsa = (
-                    from Pe in DbO.LearPureEdi
-                    from Isa in DbO.LearIsa830
-                    where Isa.ParentHashId == Pe.HashId
-                    select Isa);
-                Rep830InfoO.From = GetIsaFromTo(ListIsa, true);
-                Rep830InfoO.To = GetIsaFromTo(ListIsa, false);
-                Rep830InfoO.LearPureEdi = from Pe in DbO.LearPureEdi
-                                          where !string.IsNullOrEmpty(Pe.NombreArchivo)
-                                          orderby Pe.Fingreso descending
-                                          select Pe;
-                foreach (LearPureEdi LearPureEdiO in Rep830InfoO.LearPureEdi)
-                    LearPureEdiO.EdiStr = string.Empty;
-                return Rep830InfoO;
-            } else
+                int LcCount = DbO.LearCodes.Where(Lc => Lc.Str == "GS.FunctionalIdCode").Count();
+                LcCount++;
+                IEnumerable<Rep830Info> LRet =
+                        from Pe in DbO.LearPureEdi
+                        from IsaF in DbO.LearIsa830
+                        where IsaF.ParentHashId == Pe.HashId
+                        && (string.IsNullOrEmpty(HashId) || Pe.HashId == HashId)
+                        && !string.IsNullOrEmpty(Pe.NombreArchivo)
+                        orderby Pe.Fingreso descending
+                        select new Rep830Info()
+                        {
+                            From = IsaF.InterchangeSenderId,
+                            To = IsaF.InterchangeReceiverId,
+                            HashId = Pe.HashId,
+                            Fingreso = Pe.Fingreso,
+                            Fprocesado = Pe.Fprocesado,
+                            Reprocesar = Pe.Reprocesar,
+                            NombreArchivo = Pe.NombreArchivo,
+                            Log = Pe.Log,
+                            CheckSeg = Pe.CheckSeg,
+                            NumReporte = IsaF.InterchangeControlNumber
+                        };
+                return LRet;
+            }
+            catch (Exception e1)
             {
-                Rep830Info Rep830InfoO = new Rep830Info();
-                IEnumerable<LearIsa830> ListIsa = (
-                    from Isa in DbO.LearIsa830
-                    where Isa.ParentHashId == HashId
-                    select Isa);
-                Rep830InfoO.From = GetIsaFromTo(ListIsa, true);
-                Rep830InfoO.To = GetIsaFromTo(ListIsa, false);
-                Rep830InfoO.LearPureEdi = from Pe in DbO.LearPureEdi
-                                               where Pe.HashId == HashId
-                                               orderby Pe.Fingreso descending
-                                               select Pe;
-                foreach (LearPureEdi LearPureEdiO in Rep830InfoO.LearPureEdi)
-                    LearPureEdiO.EdiStr = string.Empty;
-                return Rep830InfoO;
+                return (GetExToIe(e1));
             }
         }        
         [HttpGet]

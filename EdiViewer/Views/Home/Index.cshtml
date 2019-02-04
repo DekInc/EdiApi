@@ -16,6 +16,7 @@
                                 <tr>
                                     <th>HashId</th>
                                     <th>NombreArchivo</th>
+                                    <th>Num reporte</th>
                                     <th>Origen</th>
                                     <th>Destino</th>
                                     <th>FIngreso</th>
@@ -47,6 +48,7 @@
         domtblReportes = $("#tblReportes").DataTable({
             select: true,
             responsive: false,
+            destroy: true,
             "scrollX": true,
             "processing": true, // for show progress bar  
             "serverSide": true, // for process server side  
@@ -56,8 +58,17 @@
             "ajax": {
                 "url": "@this.Url.Action("GetPureEdi")",
                 "type": "POST",
-                "datatype": "json"
+                "datatype": "json",
+                "dataSrc": function (json) {
+                    if (json.recordsTotal == 0) {
+                        console.log(json);
+                        alert(json.data[0].errorMessage);
+                        return json.data;
+                    }                    
+                    return json.data;
+                }
             },
+            "order": [[5, "desc"]],
             //columnDefs: [
             //    {
             //        targets: [0],
@@ -67,6 +78,7 @@
             "columns": [
                 { "data": "hashId", "name": "HashId", "autoWidth": true, "defaultContent": "" },
                 { "data": "nombreArchivo", "name": "NombreArchivo", "autoWidth": true, "defaultContent": "" },
+                { "data": "numReporte", "name": "numReporte", "autoWidth": true, "defaultContent": "" },
                 { "data": "from", "name": "Origen", "autoWidth": true, "defaultContent": "" },
                 { "data": "to", "name": "Destino", "autoWidth": true, "defaultContent": "" },
                 { "data": "fingreso", "name": "FIngreso", "autoWidth": true, "defaultContent": "" },

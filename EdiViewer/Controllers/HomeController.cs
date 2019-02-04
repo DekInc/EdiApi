@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using EdiViewer.Models;
@@ -25,12 +26,12 @@ namespace EdiViewer.Controllers
         public async Task<IActionResult> Details(string HashId = "")
         {
             EdiDetailModel EdiDetailModelO = new EdiDetailModel();
-            Rep830Info Rep830InfoO = await ApiClientFactory.Instance.GetPureEdi(string.Empty);
-            if (Rep830InfoO.LearPureEdi.FirstOrDefault().Log.Contains("error"))
+            IEnumerable<Rep830Info> Rep830InfoO = await ApiClientFactory.Instance.GetPureEdi(HashId);
+            if (Rep830InfoO.FirstOrDefault().Log.Contains("error"))
                 return View(EdiDetailModelO);
             if (string.IsNullOrEmpty(HashId))
                 return View(EdiDetailModelO);
-            EdiDetailModelO.Data = await ApiClientFactory.Instance.GetFE830Data(HashId);            
+            EdiDetailModelO.Data = await ApiClientFactory.Instance.GetFE830Data(HashId);
             if (EdiDetailModelO.Data.ListSt == null)
                 return View(new EdiDetailModel());
             EdiDetailModelO.Data.ListLinFst = EdiDetailModelO.Data.ListLinFst.OrderBy(O => O.FstDate);
@@ -60,39 +61,24 @@ namespace EdiViewer.Controllers
                 int recordsTotal = 0;
 
                 // Getting all Customer data  
-                Rep830Info Rep830InfoO = await ApiClientFactory.Instance.GetPureEdi(string.Empty);                
-                //Search  
-                if (!string.IsNullOrEmpty(searchValue))
-                {
-                    Rep830InfoO.LearPureEdi = Rep830InfoO.LearPureEdi.Where(m => m.Fingreso == searchValue);
+                IEnumerable<Rep830Info> Rep830InfoO = await ApiClientFactory.Instance.GetPureEdi(string.Empty);
+                if (!string.IsNullOrEmpty(Rep830InfoO.FirstOrDefault().errorMessage)) {
+                    return Json(new { draw = 0, recordsFiltered = 0, recordsTotal = 0, data = Rep830InfoO });
                 }
-                //total number of rows count   
-                recordsTotal = Rep830InfoO.LearPureEdi.Count();
-                //Paging   
-                var data = from Pe in Rep830InfoO.LearPureEdi
-                           from F in Rep830InfoO.From
-                           .Where(Fr => Fr.HashId == Pe.HashId).DefaultIfEmpty()
-                           from T in Rep830InfoO.To
-                           .Where(To => To.HashId == Pe.HashId).DefaultIfEmpty()
-                           select new {
-                               Pe.HashId,
-                               Pe.NombreArchivo,
-                               From = F?.Dest,
-                               To = T?.Dest,
-                               Pe.Fingreso,
-                               Pe.Fprocesado,
-                               Pe.Reprocesar,
-                               Pe.Log
-                           };
-
-                Rep830InfoO.LearPureEdi = Rep830InfoO.LearPureEdi.Skip(skip).Take(pageSize);
+                if (!(string.IsNullOrEmpty(sortColumn) && string.IsNullOrEmpty(sortColumnDirection)))
+                {
+                    Rep830InfoO = Rep830InfoO.AsQueryable().OrderBy(sortColumn + " " + sortColumnDirection);
+                }
+                //total number of rows count
+                recordsTotal = Rep830InfoO.Count();
+                Rep830InfoO = Rep830InfoO.Skip(skip).Take(pageSize);
                 //Returning Json Data  
-                return Json(new { draw = draw, recordsFiltered = recordsTotal, recordsTotal = recordsTotal, data = data });
+                return Json(new { draw = draw, recordsFiltered = recordsTotal, recordsTotal = recordsTotal, data = Rep830InfoO });
 
             }
             catch (Exception e1)
             {
-                return Json(new { ExcepError = e1.ToString() });
+                return Json(new { draw = 0, recordsFiltered = 0, recordsTotal = 0, data = new Rep830Info() { errorMessage = e1.ToString() } });
             }
         }
 

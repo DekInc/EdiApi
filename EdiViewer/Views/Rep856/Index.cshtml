@@ -93,7 +93,7 @@
                 "url": "@this.Url.Action("GetGridData")?destino=" + destinoDef,
                 "type": "POST",
                 "datatype": "json",
-                "dataSrc": function (json) {                    
+                "dataSrc": function (json) {
                     $.each(json.data, function (i, item) {
                         var isExist = !!$('#cbTo option').filter(function () {
                             return $(this).attr('value').toLowerCase() === item.destino.toLowerCase();
