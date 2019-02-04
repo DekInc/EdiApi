@@ -1,0 +1,189 @@
+﻿@{
+    ViewData["Title"] = "Despachos Edi Form 856";
+}
+<div id="mainDiv">
+    <div class="container">
+        <div class="card-deck cardMain">
+            <div class="card box-shadow">
+                <div class="card-header">
+                    <h4 class="my-0 font-weight-normal">Reportes 856 - Despachos</h4>
+                </div>
+                <div class="card-body">
+                    <form id="formSearch">
+                        <div class="container">
+                            <div class="row">
+                                <div class="col-sm">
+                                    <label>Destino</label><br/>
+                                    <select id="cbTo" name="cbTo">
+                                    </select>
+                                </div>                                
+                            </div>
+                        </div>
+                    </form>
+                    <div class="clearfix"></div>
+                    <br />
+                    <form id="formReportes" accept-charset="UTF-8" method="post" asp-action="Details">
+                        <table id="tblReportes" class="table table-striped table-bordered nowrap table-hover display tblReportes" cellspacing="0">
+                            <thead>
+                                <tr>
+                                    <th></th>
+                                    <th>DespachoId</th>
+                                    <th>Fecha creación</th>
+                                    <th>Container</th>
+                                    <th>CodProducto</th>
+                                    <th>Producto</th>
+                                    <th>Orden de compra</th>
+                                    <th>Destino</th>
+                                    <th>Doc transporte</th>
+                                    <th>Fecha doc transporte</th>
+                                    <th>Marchamo</th>
+                                    <th>Notas</th>
+                                    <th>Conductor</th>
+                                    <th>Doc conductor</th>
+                                    <th>IdCompanyTransport</th>
+                                    <th>IdConsignee</th>
+                                    <th>Id Cliente</th>
+                                    <th>Código</th>
+                                    <th>Nom cliente</th>
+                                    <th>País origen</th>
+                                    <th>Cantidad</th>
+                                    <th>Bultos</th>
+                                    <th>Peso</th>
+                                    <th>Volumen</th>
+                                    <th>Valor total</th>
+                                    <th>Tipo bulto</th>
+                                    <th>Unidad de medida</th>
+                                </tr>
+                            </thead>
+                        </table>
+                        <br />
+                        <br />
+                        <button class="btn btn-primary" type="submit">Enviar formulario</button>
+                        <br />
+                        <br />
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    var domtblReportes = null;
+    var HashId = '';
+    $.urlParam = function (name) {
+        var results = new RegExp('[\?&]' + name + '=([^&#]*)').exec(window.location.href);
+        if (results == null) {
+            return null;
+        }
+        return decodeURI(results[1]) || 0;
+    }
+    function fillTblReportes(destinoDef) {
+        $('#cbTo').empty();
+        domtblReportes = $("#tblReportes").DataTable({
+            select: true,
+            responsive: false,
+            destroy: true,
+            "scrollX": true,
+            "processing": true, // for show progress bar  
+            "serverSide": true, // for process server side  
+            "filter": false, // this is for disable filter (search box)  
+            "orderMulti": false, // for disable multiple column at once  
+            "lengthMenu": [[15, 25, 35, 50], [15, 25, 35, 50]],
+            "ajax": {
+                "url": "@this.Url.Action("GetGridData")?destino=" + destinoDef,
+                "type": "POST",
+                "datatype": "json",
+                "dataSrc": function (json) {                    
+                    $.each(json.data, function (i, item) {
+                        var isExist = !!$('#cbTo option').filter(function () {
+                            return $(this).attr('value').toLowerCase() === item.destino.toLowerCase();
+                        }).length;
+                        if (!isExist) {
+                            if (destinoDef == 'null') {
+                                $('#cbTo').append($('<option>', {
+                                    value: item.destino,
+                                    text: item.destino,
+                                    selected: false
+                                }));
+                            } else {
+                                var selectedD = false;
+                                if (destinoDef == item.destino)
+                                    selectedD = true;
+                                $('#cbTo').append($('<option>', {
+                                    value: item.destino,
+                                    text: item.destino,
+                                    selected: selectedD
+                                }));
+                            }
+                        }
+                    });
+                    $('#cbTo').append($('<option>', {
+                        value: '',
+                        text: '',
+                        selected: true
+                    }));
+                    var options = $("#cbTo option");
+                    options.detach().sort(function (a, b) {
+                        var at = $(a).text();
+                        var bt = $(b).text();
+                        return (at > bt) ? 1 : ((at < bt) ? -1 : 0);
+                    });
+                    options.appendTo("#cbTo");                    
+                    return json.data;
+                }
+            },          
+            columnDefs: [
+                {
+                    render: function (data, type, full, meta) {
+                        return "<div class='text-wrap width-200'>" + data + "</div>";
+                    },
+                    targets: 5
+                }
+            ],
+            "columns": [
+                {
+                    data: "active",
+                    render: function (data, type, row) {
+                        if (type === 'display') {
+                            return '<input id="chkS' + row.despachoId + '|[' + row.codProducto.replace(/ /g, 'º') + ']' + '" name="chkS' + row.despachoId + '|[' + row.codProducto.replace(/ /g, 'º') + ']' + '" type="checkbox" class="editor-active">';
+                        }
+                        return data;
+                    },
+                    className: "dt-body-center"
+                },
+                { "data": "despachoId", "name": "despachoId", "autoWidth": true, "defaultContent": "" },
+                { "data": "fechaSalidaStr", "name": "fechaSalidaStr", "autoWidth": true, "defaultContent": "" },
+                { "data": "noContenedor", "name": "noContenedor", "autoWidth": true, "defaultContent": "" },
+                { "data": "codProducto", "name": "codProducto", "autoWidth": true, "defaultContent": "" },
+                { "data": "producto", "name": "producto", "autoWidth": true, "defaultContent": "" },
+                { "data": "numeroOc", "name": "numeroOc", "autoWidth": true, "defaultContent": "" },                
+                { "data": "destino", "name": "destino", "autoWidth": true, "defaultContent": "" },
+                { "data": "documentoFiscal", "name": "documentoFiscal", "autoWidth": true, "defaultContent": "" },
+                { "data": "fechaDocFiscalStr", "name": "fechaDocFiscalStr", "autoWidth": true, "defaultContent": "" },
+                { "data": "noMarchamo", "name": "noMarchamo", "autoWidth": true, "defaultContent": "" },
+                { "data": "observacion", "name": "observacion", "autoWidth": true, "defaultContent": "" },
+                { "data": "motorista", "name": "motorista", "autoWidth": true, "defaultContent": "" },
+                { "data": "documentoMotorista", "name": "documentoMotorista", "autoWidth": true, "defaultContent": "" },
+                { "data": "transportistaid", "name": "transportistaid", "autoWidth": true, "defaultContent": "" },
+                { "data": "destinoid", "name": "destinoid", "autoWidth": true, "defaultContent": "" },
+                { "data": "idclient", "name": "idclient", "autoWidth": true, "defaultContent": "" },
+                { "data": "code", "name": "code", "autoWidth": true, "defaultContent": "" },
+                { "data": "businessname", "name": "businessname", "autoWidth": true, "defaultContent": "" },
+                { "data": "countryOrigin", "name": "countryOrigin", "autoWidth": true, "defaultContent": "" },
+                { "data": "quantity", "name": "quantity", "autoWidth": true, "defaultContent": "" },
+                { "data": "bulks", "name": "bulks", "autoWidth": true, "defaultContent": "" },
+                { "data": "weight", "name": "weight", "autoWidth": true, "defaultContent": "" },
+                { "data": "volume", "name": "volume", "autoWidth": true, "defaultContent": "" },
+                { "data": "totalValue", "name": "totalValue", "autoWidth": true, "defaultContent": "" },
+                { "data": "tipoBulto", "name": "tipoBulto", "autoWidth": true, "defaultContent": "" },                
+                { "data": "unidadDeMedida", "name": "unidadDeMedida", "autoWidth": true, "defaultContent": "" }
+            ]
+        });
+    }
+    $('#cbTo').on("change", function () {
+        fillTblReportes($('#cbTo').val());
+    });
+    $(document).ready(function () {
+        fillTblReportes('null');
+    });
+</script>

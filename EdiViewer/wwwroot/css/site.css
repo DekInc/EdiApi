@@ -31,7 +31,7 @@
     }
 }
 #mainDiv{    
-    width: 100vw;
+    width: 99vw;
     left: 0;
     position: absolute;
 }
@@ -159,4 +159,13 @@ hr {
 }
 .rowOdd {
     background: #f3eac9;
+}
+#cbTo {
+    min-width: 320px;
+}
+.text-wrap {
+    white-space: normal;
+}
+.width-200 {
+    width: 280px;
 }

@@ -13,6 +13,7 @@ namespace EdiApi.Models
         public wmsContext(DbContextOptions<wmsContext> options)
             : base(options)
         {
+            
         }
 
         public virtual DbSet<Aduana> Aduana { get; set; }
