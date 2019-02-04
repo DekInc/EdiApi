@@ -237,6 +237,8 @@ namespace EdiApi.Models
                 ftpRequest = null;
                 string EdiPure2 = System.Text.Encoding.UTF8.GetString(localFileStream.ToArray());
                 _EdiPure = EdiPure2.Split(EdiBase.SegmentTerminator).ToList();
+                if (_EdiPure.Count == 1)
+                    _EdiPure = EdiPure2.Split('\n').ToList();
                 AddComLog(ref _DbO, Id, $"Se obtuvo el archivo {_FileName} de ftp {(UseHost2 ? host2 : host)}");
                 return;
             }

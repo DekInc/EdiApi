@@ -180,9 +180,13 @@
             ]
         });
     }
-    $('#cbTo').on("change", function () {
+    $('#cbTo').on("select", function () {
         fillTblReportes($('#cbTo').val());
     });
+    //$('#cbTo').on("click", function () {
+    //    if ($('#cbTo').val() == '')
+    //        fillTblReportes('null');
+    //});
     $(document).ready(function () {
         fillTblReportes('null');
     });

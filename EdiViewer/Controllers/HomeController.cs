@@ -92,7 +92,7 @@ namespace EdiViewer.Controllers
             }
             catch (Exception e1)
             {
-                throw e1;
+                return Json(new { ExcepError = e1.ToString() });
             }
         }
 

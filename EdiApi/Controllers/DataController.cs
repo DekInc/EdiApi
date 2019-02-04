@@ -65,6 +65,7 @@ namespace EdiApi.Controllers
                 Rep830InfoO.To = GetIsaFromTo(ListIsa, false);
                 Rep830InfoO.LearPureEdi = from Pe in DbO.LearPureEdi
                                                where Pe.HashId == HashId
+                                               orderby Pe.Fingreso descending
                                                select Pe;
                 foreach (LearPureEdi LearPureEdiO in Rep830InfoO.LearPureEdi)
                     LearPureEdiO.EdiStr = string.Empty;
