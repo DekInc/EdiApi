@@ -89,6 +89,10 @@
             "filter": false, // this is for disable filter (search box)  
             "orderMulti": false, // for disable multiple column at once  
             "lengthMenu": [[15, 25, 35, 50], [15, 25, 35, 50]],
+            "language":
+            {
+                "processing": "<div class='divAjax'>Obteniendo datos<br /><img style='width:50px; height:50px;' src='images/ajax.gif' /></div>",
+            },
             "ajax": {
                 "url": "@this.Url.Action("GetGridData")?destino=" + destinoDef,
                 "type": "POST",

@@ -55,6 +55,10 @@
             "filter": false, // this is for disable filter (search box)  
             "orderMulti": false, // for disable multiple column at once  
             "lengthMenu": [[15, 25, 35, 50], [15, 25, 35, 50]],
+            "language":
+            {
+                "processing": "<div class='divAjax'>Obteniendo datos<br /><img style='width:50px; height:50px;' src='images/ajax.gif' /></div>",
+            },
             "ajax": {
                 "url": "@this.Url.Action("GetPureEdi")",
                 "type": "POST",
@@ -69,12 +73,12 @@
                 }
             },
             "order": [[5, "desc"]],
-            //columnDefs: [
-            //    {
-            //        targets: [0],
-            //        className: "hide_column"
-            //    }
-            //],
+            /*columnDefs: [
+                {
+                    targets: [0],
+                    className: "hide_column"
+                }
+            ],*/
             "columns": [
                 { "data": "hashId", "name": "HashId", "autoWidth": true, "defaultContent": "" },
                 { "data": "nombreArchivo", "name": "NombreArchivo", "autoWidth": true, "defaultContent": "" },

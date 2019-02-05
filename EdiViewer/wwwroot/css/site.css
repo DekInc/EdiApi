@@ -1,4 +1,8 @@
-﻿body {
+﻿* {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+body {
     padding-top: 50px;
     padding-bottom: 20px;
     background-color: rgb(231, 225, 232);
@@ -168,4 +172,27 @@ hr {
 }
 .width-200 {
     width: 280px;
+}
+/*Bugfix Jquery.DataTables*/
+.dataTables_scrollHead, .dataTables_scrollHeadInner, .dataTables_scrollBody, .table {
+    display: inline-block;
+    border: unset;
+}
+table.dataTable thead th, table.dataTable thead td {
+    border-bottom: unset;
+}
+.divAjax {
+    font-family:'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+    width: 230px;
+    height: 100px;
+    margin: 0 auto;
+    border: 1px solid #000;
+    font-weight: bold;
+    color: #fff;
+    padding-top: 15px;
+    padding-bottom: 5px;
+    z-index: 1000;
+    display: block;
+    position: relative;
+    background: linear-gradient(rgb(0, 0, 0), rgba(255, 232, 252, 0.5)) !important;
 }
