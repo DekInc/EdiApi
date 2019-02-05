@@ -98,6 +98,16 @@
                 "type": "POST",
                 "datatype": "json",
                 "dataSrc": function (json) {
+                    if (json.data[0].despachoId == 0) {
+                        if (json.data[0].errorMessage != '') {
+                            alert(json.data[0].errorMessage);
+                            return null;
+                        }
+                    }
+                    if (json.errorMessage != '') {
+                        alert(json.errorMessage);
+                        return null;
+                    }
                     $.each(json.data, function (i, item) {
                         var isExist = !!$('#cbTo option').filter(function () {
                             return $(this).attr('value').toLowerCase() === item.destino.toLowerCase();
@@ -132,7 +142,9 @@
                         var bt = $(b).text();
                         return (at > bt) ? 1 : ((at < bt) ? -1 : 0);
                     });
-                    options.appendTo("#cbTo");                    
+                    options.appendTo("#cbTo");
+                    if (destinoDef != 'null')
+                        $('#cbTo').val(destinoDef);
                     return json.data;
                 }
             },          
@@ -184,14 +196,25 @@
             ]
         });
     }
-    $('#cbTo').on("select", function () {
+    $('#cbTo').on("change", function () {
         fillTblReportes($('#cbTo').val());
     });
     //$('#cbTo').on("click", function () {
     //    if ($('#cbTo').val() == '')
     //        fillTblReportes('null');
-    //});
+    //});    
     $(document).ready(function () {
         fillTblReportes('null');
+        $('#tblReportes tbody').on('click', 'tr', function () {
+            if ($(this).hasClass('selected')) {
+                $(this).removeClass('selected');
+            }
+            else {
+                domtblReportes.$('tr.selected').removeClass('selected');
+                $(this).addClass('selected');
+                //trigger update
+                $($(this).closest("tr").find('td:eq(0)').find('input')[0]).prop('checked', !$($(this).closest("tr").find('td:eq(0)').find('input')[0]).prop('checked'));
+            }
+        });
     });
 </script>

@@ -9,14 +9,14 @@ namespace ComModels
     {
         public int DespachoId { get; set; }
         public DateTime? FechaSalida { get; set; }
-        public string FechaSalidaStr => FechaSalida.Value.ToString(ApplicationSettings.DateTimeFormat);
+        public string FechaSalidaStr => FechaSalida?.ToString(ApplicationSettings.DateTimeFormat);
         public string NoContenedor { get; set; }
         public string Motorista { get; set; }
         public string DocumentoMotorista { get; set; }
         public string Destino { get; set; }
         public string DocumentoFiscal { get; set; }
         public DateTime? FechaDocFiscal { get; set; }
-        public string FechaDocFiscalStr => FechaDocFiscal.Value.ToString(ApplicationSettings.DateTimeFormat);
+        public string FechaDocFiscalStr => FechaDocFiscal?.ToString(ApplicationSettings.DateTimeFormat);
         public string NoMarchamo { get; set; }
         public string Observacion { get; set; }
         public int? Transportistaid { get; set; }
@@ -47,5 +47,6 @@ namespace ComModels
         public string NomBodega { get; set; }
         public string Nompais { get; set; }
         public long? IdRcontrol { get; set; }
+        public string errorMessage { get; set; }
     }
 }

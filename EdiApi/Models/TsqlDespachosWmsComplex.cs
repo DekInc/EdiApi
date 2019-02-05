@@ -45,5 +45,6 @@ namespace EdiApi.Models
         public string NomBodega { get; set; }
         public string Nompais { get; set; }
         public long? IdRcontrol { get; set; }
+        public string errorMessage { get; set; }
     }
 }

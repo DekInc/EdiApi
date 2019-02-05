@@ -13,21 +13,17 @@ namespace EdiViewer.Controllers
         {
             return View();
         }
-        public async Task<IActionResult> Details()
+        public async Task<IActionResult> SendForm()
         {
             IEnumerable<TsqlDespachosWmsComplex> TsqlDespachosWmsComplexO;
             List<string[]> ListSelected = new List<string[]>();
             Microsoft.AspNetCore.Http.IFormCollection formCollection = HttpContext.Request.Form;
             foreach(string FormPara in formCollection.Keys)
-            {
                 if (FormPara.StartsWith("chkS"))
-                {
                     ListSelected.Add(FormPara.Replace("chkS", "").Split('|'));
-                }
-            }
             if (ListSelected.Count > 0)
             {
-                IEnumerable<string> ListDispatch = ListSelected.Select(O1 => O1.FirstOrDefault()).ToArray();
+                IEnumerable<string> ListDispatch = ListSelected.Select(O1 => O1.FirstOrDefault()).Distinct();
                 IEnumerable<string> ListProducts = ListSelected.Select(O1 => O1.LastOrDefault()).ToArray();
                 TsqlDespachosWmsComplexO = await ApiClientFactory.Instance.GetSN(ListDispatch, ListProducts);
                 return View(TsqlDespachosWmsComplexO);
@@ -58,22 +54,31 @@ namespace EdiViewer.Controllers
 
                 // Getting all Customer data  
                 IEnumerable<TsqlDespachosWmsComplex> TsqlDespachosWmsComplexO = await ApiClientFactory.Instance.GetSN();
+                if (TsqlDespachosWmsComplexO.Count() == 1)
+                {
+                    if (TsqlDespachosWmsComplexO.FirstOrDefault().DespachoId == 0)
+                    {
+                        if (string.IsNullOrEmpty(TsqlDespachosWmsComplexO.FirstOrDefault().errorMessage))
+                        {
+                            return Json(new { draw = 0, recordsFiltered = 0, recordsTotal = 0, errorMessage = TsqlDespachosWmsComplexO.FirstOrDefault().errorMessage });
+                        }
+                    }
+                }
                 //Search  
                 if (!string.IsNullOrEmpty(destino))
                 {
                     TsqlDespachosWmsComplexO = TsqlDespachosWmsComplexO.Where(Co => Co.Destino == destino);
                 }
-                //total number of rows count   
+                //total number of rows count
                 recordsTotal = TsqlDespachosWmsComplexO.Count();
-                //Paging 
+                //Paging
                 TsqlDespachosWmsComplexO = TsqlDespachosWmsComplexO.Skip(skip).Take(pageSize);
-                //Returning Json Data  
-                return Json(new { draw = draw, recordsFiltered = recordsTotal, recordsTotal = recordsTotal, data = TsqlDespachosWmsComplexO });
-
+                //Returning Json Data
+                return Json(new { draw = draw, recordsFiltered = recordsTotal, recordsTotal = recordsTotal, data = TsqlDespachosWmsComplexO, errorMessage = "" });
             }
             catch (Exception e1)
             {
-                throw e1;
+                return Json(new { draw = 0, recordsFiltered = 0, recordsTotal = 0, errorMessage = e1.ToString() });
             }
         }
     }
