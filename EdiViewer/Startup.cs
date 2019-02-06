@@ -31,8 +31,11 @@ namespace EdiViewer
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
 
-
+            services.AddMemoryCache();
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+            ApplicationSettings.ApiUri = (string)Configuration.GetSection("EdiWebApi").GetValue(typeof(string), "ApiUri");
+            services.AddSingleton<Utility.Scheduling.Interfaces.IScheduledTask, Utility.Scheduling.GetEdi830Task>();
+            services.AddScheduler();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
