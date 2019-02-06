@@ -2,6 +2,11 @@
 <div class="row separator @(Model.Item4 % 2 == 0? "rowOdd" : "row")">
     <div class="col-sm">
         <div class="SegmentDataCol">
+            @Html.StrToDate(1, @Model.Item1.FstDate)
+        </div>
+    </div>
+    <div class="col-sm">
+        <div class="SegmentDataCol">
             @Model.Item1.Quantity
         </div>
     </div>
@@ -14,10 +19,5 @@
         <div class="SegmentDataCol">
             @Html.CodeToStr("FST.ForecastTimingQualifier", Model.Item1.ForecastTimingQualifier, Model.Item3)
         </div>
-    </div>
-    <div class="col-sm">
-        <div class="SegmentDataCol">
-            @Html.StrToDate(1, @Model.Item1.FstDate)
-        </div>
-    </div>
+    </div>    
 </div>

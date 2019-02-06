@@ -61,7 +61,7 @@ namespace EdiApi.Controllers
                     };
                 }
             }
-            ComRepoFtpO.Put("AEnviar.txt", @"E:\temp\AEnviar.txt", ref DbO);
+            ComRepoFtpO.Put("AEnviar.txt", @"C:\temp\AEnviar.txt", ref DbO);
             return new RetReporte()
             {
                 Info = new RetInfo()
