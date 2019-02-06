@@ -1,4 +1,5 @@
-﻿using System;
+﻿using EdiApi.Models.EdiDB;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -13,20 +14,20 @@ namespace EdiApi.Models
     public class ComRepoFtp : Coms
     {
         private const string Id = "FTP";
-        private string host = null;
-        private string host2 = null;
-        private string user = null;
-        private string pass = null;
-        private string DirIn = null;
-        private string DirOut = null;
-        private string DirChecked = null;
+        private readonly string host = null;
+        private readonly string host2 = null;
+        private readonly string user = null;
+        private readonly string pass = null;
+        private readonly string DirIn = null;
+        private readonly string DirOut = null;
+        private readonly string DirChecked = null;
         public bool UseHost2 = false;
         object MaxEdiComs { set; get; }
         public string[] Files { set; get; }
         private FtpWebRequest ftpRequest = null;
         private FtpWebResponse ftpResponse = null;
         private Stream ftpStream = null;
-        private int bufferSize = 2048;
+        private const int bufferSize = 2048;
         /* Construct Object */
         public ComRepoFtp(string hostIP, string hostIP2, string userName, string password, string _DirIn, string _DireOut, string _DirChecked, object _MaxEdiComs) {
             host = hostIP;
@@ -252,7 +253,7 @@ namespace EdiApi.Models
         }
 
         /* Download File */
-        public void download(string remoteFile, string localFile)
+        public void Download(string remoteFile, string localFile)
         {
             try
             {
@@ -296,7 +297,7 @@ namespace EdiApi.Models
         }
 
         /* Upload File */
-        public void upload(string remoteFile, string localFile)
+        public void Upload(string remoteFile, string localFile)
         {
             try
             {
@@ -337,7 +338,7 @@ namespace EdiApi.Models
         }
 
         /* Delete File */
-        public void delete(string deleteFile)
+        public void Delete(string deleteFile)
         {
             try
             {
@@ -362,7 +363,7 @@ namespace EdiApi.Models
         }
 
         /* Rename File */
-        public void rename(string currentFileNameAndPath, string newFileName)
+        public void Rename(string currentFileNameAndPath, string newFileName)
         {
             try
             {
@@ -389,7 +390,7 @@ namespace EdiApi.Models
         }
 
         /* Create a New Directory on the FTP Server */
-        public void createDirectory(string newDirectory)
+        public void CreateDirectory(string newDirectory)
         {
             try
             {
@@ -414,7 +415,7 @@ namespace EdiApi.Models
         }
 
         /* Get the Date/Time a File was Created */
-        public string getFileCreatedDateTime(string fileName)
+        public string GetFileCreatedDateTime(string fileName)
         {
             try
             {
@@ -453,7 +454,7 @@ namespace EdiApi.Models
         }
 
         /* Get the Size of a File */
-        public string getFileSize(string fileName)
+        public string GetFileSize(string fileName)
         {
             try
             {
@@ -492,7 +493,7 @@ namespace EdiApi.Models
         }
 
         /* List Directory Contents File/Folder Name Only */
-        public string[] directoryListSimple(string directory)
+        public string[] DirectoryListSimple(string directory)
         {
             try
             {
@@ -532,7 +533,7 @@ namespace EdiApi.Models
         }
 
         /* List Directory Contents in Detail (Name, Size, Created, etc.) */
-        public string[] directoryListDetailed(string directory)
+        public string[] DirectoryListDetailed(string directory)
         {
             try
             {

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace EdiApi.Models.EdiDB
 {
-    public partial class LearGs830
+    public partial class LearGs856
     {
         public string FunctionalIdCode { get; set; }
         public string ApplicationSenderCode { get; set; }

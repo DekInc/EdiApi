@@ -1,4 +1,5 @@
 ﻿using EdiApi.Models;
+using EdiApi.Models.EdiDB;
 using System;
 using System.Collections.Generic;
 using System.Linq;

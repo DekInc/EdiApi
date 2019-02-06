@@ -1,4 +1,5 @@
-﻿using S22.Imap;
+﻿using EdiApi.Models.EdiDB;
+using S22.Imap;
 using System;
 using System.Collections.Generic;
 using System.IO;

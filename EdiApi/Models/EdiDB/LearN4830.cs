@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace EdiApi.Models
+namespace EdiApi.Models.EdiDB
 {
     public partial class LearN4830
     {

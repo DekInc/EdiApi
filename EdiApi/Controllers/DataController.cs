@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using EdiApi.Models;
+using EdiApi.Models.EdiDB;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
@@ -505,18 +506,6 @@ namespace EdiApi.Controllers
             {
                 return GetExToIe2(e1);
             }            
-        }
-        public static byte[] a2212121(System.IO.Stream input)
-        {
-            System.Collections.Stack st = new System.Collections.Stack();
-            st.Push("Csss");
-            st.Push(6.5);
-            st.Push(8);
-            using (System.IO.MemoryStream ms = new System.IO.MemoryStream())
-            {
-                input.CopyTo(ms);
-                return ms.ToArray();
-            }
         }
     }
 }

@@ -9,6 +9,7 @@ using System.Net.Mail;
 using S22.Imap;
 using Microsoft.Extensions.Configuration;
 using Microsoft.EntityFrameworkCore;
+using EdiApi.Models.EdiDB;
 
 namespace EdiApi.Controllers
 {

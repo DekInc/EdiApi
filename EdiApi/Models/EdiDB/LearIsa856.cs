@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace EdiApi.Models.EdiDB
 {
-    public partial class LearIsa830
+    public partial class LearIsa856
     {
         public string AuthorizationInformationQualifier { get; set; }
         public string AuthorizationInformation { get; set; }

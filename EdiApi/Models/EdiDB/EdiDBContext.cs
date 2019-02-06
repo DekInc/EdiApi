@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 
-namespace EdiApi.Models
+namespace EdiApi.Models.EdiDB
 {
     public partial class EdiDBContext : DbContext
     {
@@ -19,20 +19,37 @@ namespace EdiApi.Models
         public virtual DbSet<EdiSegName> EdiSegName { get; set; }
         public virtual DbSet<LearAth830> LearAth830 { get; set; }
         public virtual DbSet<LearBfr830> LearBfr830 { get; set; }
+        public virtual DbSet<LearBsn856> LearBsn856 { get; set; }
+        public virtual DbSet<LearCld856> LearCld856 { get; set; }
         public virtual DbSet<LearCodes> LearCodes { get; set; }
+        public virtual DbSet<LearCtt856> LearCtt856 { get; set; }
+        public virtual DbSet<LearDtm856> LearDtm856 { get; set; }
+        public virtual DbSet<LearEtd856> LearEtd856 { get; set; }
         public virtual DbSet<LearFst830> LearFst830 { get; set; }
         public virtual DbSet<LearGs830> LearGs830 { get; set; }
+        public virtual DbSet<LearGs856> LearGs856 { get; set; }
+        public virtual DbSet<LearHlol856> LearHlol856 { get; set; }
+        public virtual DbSet<LearHlsl856> LearHlsl856 { get; set; }
         public virtual DbSet<LearIsa830> LearIsa830 { get; set; }
+        public virtual DbSet<LearIsa856> LearIsa856 { get; set; }
         public virtual DbSet<LearLin830> LearLin830 { get; set; }
+        public virtual DbSet<LearLin856> LearLin856 { get; set; }
+        public virtual DbSet<LearMea856> LearMea856 { get; set; }
         public virtual DbSet<LearN1830> LearN1830 { get; set; }
+        public virtual DbSet<LearN1856> LearN1856 { get; set; }
         public virtual DbSet<LearN4830> LearN4830 { get; set; }
         public virtual DbSet<LearNte830> LearNte830 { get; set; }
         public virtual DbSet<LearPrs830> LearPrs830 { get; set; }
         public virtual DbSet<LearPureEdi> LearPureEdi { get; set; }
         public virtual DbSet<LearRef830> LearRef830 { get; set; }
+        public virtual DbSet<LearRef856> LearRef856 { get; set; }
         public virtual DbSet<LearSdp830> LearSdp830 { get; set; }
         public virtual DbSet<LearShp830> LearShp830 { get; set; }
+        public virtual DbSet<LearSn1856> LearSn1856 { get; set; }
         public virtual DbSet<LearSt830> LearSt830 { get; set; }
+        public virtual DbSet<LearTd1856> LearTd1856 { get; set; }
+        public virtual DbSet<LearTd3856> LearTd3856 { get; set; }
+        public virtual DbSet<LearTd5856> LearTd5856 { get; set; }
         public virtual DbSet<LearUit830> LearUit830 { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -134,9 +151,59 @@ namespace EdiApi.Models
                 entity.Property(e => e.TransactionSetPurposeCode).HasMaxLength(2);
             });
 
+            modelBuilder.Entity<LearBsn856>(entity =>
+            {
+                entity.HasKey(e => e.HashId);
+
+                entity.ToTable("LEAR_BSN856");
+
+                entity.Property(e => e.HashId)
+                    .HasMaxLength(128)
+                    .ValueGeneratedNever();
+
+                entity.Property(e => e.BsnDate).HasMaxLength(6);
+
+                entity.Property(e => e.BsnTime).HasMaxLength(4);
+
+                entity.Property(e => e.EdiStr).HasColumnType("text");
+
+                entity.Property(e => e.ParentHashId)
+                    .IsRequired()
+                    .HasMaxLength(128);
+
+                entity.Property(e => e.ShipIdentification).HasMaxLength(30);
+
+                entity.Property(e => e.TransactionSetPurposeCode).HasMaxLength(2);
+            });
+
+            modelBuilder.Entity<LearCld856>(entity =>
+            {
+                entity.HasKey(e => e.HashId);
+
+                entity.ToTable("LEAR_CLD856");
+
+                entity.Property(e => e.HashId)
+                    .HasMaxLength(128)
+                    .ValueGeneratedNever();
+
+                entity.Property(e => e.EdiStr).HasColumnType("text");
+
+                entity.Property(e => e.NumberOfCustomerLoads).HasMaxLength(2);
+
+                entity.Property(e => e.PackagingCode).HasMaxLength(6);
+
+                entity.Property(e => e.ParentHashId).HasMaxLength(128);
+
+                entity.Property(e => e.UnitsShipped).HasMaxLength(30);
+            });
+
             modelBuilder.Entity<LearCodes>(entity =>
             {
                 entity.ToTable("LEAR_CODES");
+
+                entity.HasIndex(e => new { e.Str, e.Param })
+                    .HasName("IX_LEAR_CODES_unique")
+                    .IsUnique();
 
                 entity.Property(e => e.Param).HasMaxLength(128);
 
@@ -147,6 +214,71 @@ namespace EdiApi.Models
                 entity.Property(e => e.Value).HasMaxLength(256);
 
                 entity.Property(e => e.ValueEsp).HasMaxLength(256);
+            });
+
+            modelBuilder.Entity<LearCtt856>(entity =>
+            {
+                entity.HasKey(e => e.HashId);
+
+                entity.ToTable("LEAR_CTT856");
+
+                entity.Property(e => e.HashId)
+                    .HasMaxLength(128)
+                    .ValueGeneratedNever();
+
+                entity.Property(e => e.EdiStr).HasColumnType("text");
+
+                entity.Property(e => e.NumberOfLineItems).HasMaxLength(32);
+
+                entity.Property(e => e.ParentHashId)
+                    .IsRequired()
+                    .HasMaxLength(128);
+            });
+
+            modelBuilder.Entity<LearDtm856>(entity =>
+            {
+                entity.HasKey(e => e.HashId);
+
+                entity.ToTable("LEAR_DTM856");
+
+                entity.Property(e => e.HashId)
+                    .HasMaxLength(128)
+                    .ValueGeneratedNever();
+
+                entity.Property(e => e.DateTimeQualifier).HasMaxLength(3);
+
+                entity.Property(e => e.DtmDate).HasMaxLength(6);
+
+                entity.Property(e => e.DtmTime).HasMaxLength(4);
+
+                entity.Property(e => e.EdiStr).HasColumnType("text");
+
+                entity.Property(e => e.ParentHashId).HasMaxLength(128);
+            });
+
+            modelBuilder.Entity<LearEtd856>(entity =>
+            {
+                entity.HasKey(e => e.HashId);
+
+                entity.ToTable("LEAR_ETD856");
+
+                entity.Property(e => e.HashId)
+                    .HasMaxLength(128)
+                    .ValueGeneratedNever();
+
+                entity.Property(e => e.EdiStr).HasColumnType("text");
+
+                entity.Property(e => e.ExcessTransportationReasonCode).HasMaxLength(2);
+
+                entity.Property(e => e.ExcessTransportationResponsibilityCode).HasMaxLength(1);
+
+                entity.Property(e => e.ParentHashId)
+                    .IsRequired()
+                    .HasMaxLength(128);
+
+                entity.Property(e => e.ReferenceNumber).HasMaxLength(30);
+
+                entity.Property(e => e.ReferenceNumberQualifier).HasMaxLength(2);
             });
 
             modelBuilder.Entity<LearFst830>(entity =>
@@ -203,11 +335,131 @@ namespace EdiApi.Models
                 entity.Property(e => e.Version).HasMaxLength(12);
             });
 
+            modelBuilder.Entity<LearGs856>(entity =>
+            {
+                entity.HasKey(e => e.HashId);
+
+                entity.ToTable("LEAR_GS856");
+
+                entity.Property(e => e.HashId)
+                    .HasMaxLength(128)
+                    .ValueGeneratedNever();
+
+                entity.Property(e => e.ApplicationReceiverCode).HasMaxLength(15);
+
+                entity.Property(e => e.ApplicationSenderCode).HasMaxLength(15);
+
+                entity.Property(e => e.EdiStr).HasColumnType("text");
+
+                entity.Property(e => e.FunctionalIdCode).HasMaxLength(2);
+
+                entity.Property(e => e.GroupControlNumber).HasMaxLength(9);
+
+                entity.Property(e => e.GsDate).HasMaxLength(8);
+
+                entity.Property(e => e.GsTime).HasMaxLength(8);
+
+                entity.Property(e => e.ParentHashId).HasMaxLength(128);
+
+                entity.Property(e => e.ResponsibleAgencyCode).HasMaxLength(2);
+
+                entity.Property(e => e.Version).HasMaxLength(12);
+            });
+
+            modelBuilder.Entity<LearHlol856>(entity =>
+            {
+                entity.HasKey(e => e.HashId);
+
+                entity.ToTable("LEAR_HLOL856");
+
+                entity.Property(e => e.HashId)
+                    .HasMaxLength(128)
+                    .ValueGeneratedNever();
+
+                entity.Property(e => e.EdiStr).HasColumnType("text");
+
+                entity.Property(e => e.HierarchicalIdNumber).HasMaxLength(12);
+
+                entity.Property(e => e.HierarchicalLevelCode).HasMaxLength(2);
+
+                entity.Property(e => e.HierarchicalParentIdNumber).HasMaxLength(12);
+
+                entity.Property(e => e.ParentHashId).HasMaxLength(128);
+            });
+
+            modelBuilder.Entity<LearHlsl856>(entity =>
+            {
+                entity.HasKey(e => e.HashId);
+
+                entity.ToTable("LEAR_HLSL856");
+
+                entity.Property(e => e.HashId)
+                    .HasMaxLength(128)
+                    .ValueGeneratedNever();
+
+                entity.Property(e => e.EdiStr).HasColumnType("text");
+
+                entity.Property(e => e.HierarchicalIdNumber).HasMaxLength(12);
+
+                entity.Property(e => e.HierarchicalLevelCode).HasMaxLength(2);
+
+                entity.Property(e => e.ParentHashId)
+                    .IsRequired()
+                    .HasMaxLength(128);
+            });
+
             modelBuilder.Entity<LearIsa830>(entity =>
             {
                 entity.HasKey(e => e.HashId);
 
                 entity.ToTable("LEAR_ISA830");
+
+                entity.Property(e => e.HashId)
+                    .HasMaxLength(128)
+                    .ValueGeneratedNever();
+
+                entity.Property(e => e.AcknowledgmentRequested).HasMaxLength(1);
+
+                entity.Property(e => e.AuthorizationInformation).HasMaxLength(18);
+
+                entity.Property(e => e.AuthorizationInformationQualifier).HasMaxLength(2);
+
+                entity.Property(e => e.ComponentElementSeparator).HasMaxLength(1);
+
+                entity.Property(e => e.EdiStr).HasColumnType("text");
+
+                entity.Property(e => e.InterchangeControlNumber).HasMaxLength(9);
+
+                entity.Property(e => e.InterchangeControlStandardsId).HasMaxLength(1);
+
+                entity.Property(e => e.InterchangeControlVersion).HasMaxLength(5);
+
+                entity.Property(e => e.InterchangeDate).HasMaxLength(6);
+
+                entity.Property(e => e.InterchangeReceiverId).HasMaxLength(15);
+
+                entity.Property(e => e.InterchangeReceiverIdQualifier).HasMaxLength(2);
+
+                entity.Property(e => e.InterchangeSenderId).HasMaxLength(15);
+
+                entity.Property(e => e.InterchangeSenderIdQualifier).HasMaxLength(2);
+
+                entity.Property(e => e.InterchangeTime).HasMaxLength(4);
+
+                entity.Property(e => e.ParentHashId).HasMaxLength(128);
+
+                entity.Property(e => e.SecurityInformation).HasMaxLength(10);
+
+                entity.Property(e => e.SecurityInformationQualifier).HasMaxLength(2);
+
+                entity.Property(e => e.UsageIndicator).HasMaxLength(1);
+            });
+
+            modelBuilder.Entity<LearIsa856>(entity =>
+            {
+                entity.HasKey(e => e.HashId);
+
+                entity.ToTable("LEAR_ISA856");
 
                 entity.Property(e => e.HashId)
                     .HasMaxLength(128)
@@ -279,6 +531,110 @@ namespace EdiApi.Models
                 entity.Property(e => e.ProductRefIdQualifier).HasMaxLength(2);
             });
 
+            modelBuilder.Entity<LearLin856>(entity =>
+            {
+                entity.HasKey(e => e.HashId);
+
+                entity.ToTable("LEAR_LIN856");
+
+                entity.Property(e => e.HashId)
+                    .HasMaxLength(128)
+                    .ValueGeneratedNever();
+
+                entity.Property(e => e.EdiStr).HasColumnType("text");
+
+                entity.Property(e => e.ParentHashId)
+                    .IsRequired()
+                    .HasMaxLength(128);
+
+                entity.Property(e => e.ProductId1).HasMaxLength(30);
+
+                entity.Property(e => e.ProductId10).HasMaxLength(30);
+
+                entity.Property(e => e.ProductId11).HasMaxLength(30);
+
+                entity.Property(e => e.ProductId12).HasMaxLength(30);
+
+                entity.Property(e => e.ProductId13).HasMaxLength(30);
+
+                entity.Property(e => e.ProductId14).HasMaxLength(30);
+
+                entity.Property(e => e.ProductId15).HasMaxLength(30);
+
+                entity.Property(e => e.ProductId16).HasMaxLength(30);
+
+                entity.Property(e => e.ProductId2).HasMaxLength(30);
+
+                entity.Property(e => e.ProductId3).HasMaxLength(30);
+
+                entity.Property(e => e.ProductId4).HasMaxLength(30);
+
+                entity.Property(e => e.ProductId5).HasMaxLength(30);
+
+                entity.Property(e => e.ProductId6).HasMaxLength(30);
+
+                entity.Property(e => e.ProductId7).HasMaxLength(30);
+
+                entity.Property(e => e.ProductId8).HasMaxLength(30);
+
+                entity.Property(e => e.ProductId9).HasMaxLength(30);
+
+                entity.Property(e => e.ProductIdQualifier1).HasMaxLength(2);
+
+                entity.Property(e => e.ProductIdQualifier10).HasMaxLength(2);
+
+                entity.Property(e => e.ProductIdQualifier11).HasMaxLength(2);
+
+                entity.Property(e => e.ProductIdQualifier12).HasMaxLength(2);
+
+                entity.Property(e => e.ProductIdQualifier13).HasMaxLength(2);
+
+                entity.Property(e => e.ProductIdQualifier14).HasMaxLength(2);
+
+                entity.Property(e => e.ProductIdQualifier15).HasMaxLength(2);
+
+                entity.Property(e => e.ProductIdQualifier16).HasMaxLength(2);
+
+                entity.Property(e => e.ProductIdQualifier2).HasMaxLength(2);
+
+                entity.Property(e => e.ProductIdQualifier3).HasMaxLength(2);
+
+                entity.Property(e => e.ProductIdQualifier4).HasMaxLength(2);
+
+                entity.Property(e => e.ProductIdQualifier5).HasMaxLength(2);
+
+                entity.Property(e => e.ProductIdQualifier6).HasMaxLength(2);
+
+                entity.Property(e => e.ProductIdQualifier7).HasMaxLength(2);
+
+                entity.Property(e => e.ProductIdQualifier8).HasMaxLength(2);
+
+                entity.Property(e => e.ProductIdQualifier9).HasMaxLength(2);
+            });
+
+            modelBuilder.Entity<LearMea856>(entity =>
+            {
+                entity.HasKey(e => e.HashId);
+
+                entity.ToTable("LEAR_MEA856");
+
+                entity.Property(e => e.HashId)
+                    .HasMaxLength(128)
+                    .ValueGeneratedNever();
+
+                entity.Property(e => e.EdiStr).HasColumnType("text");
+
+                entity.Property(e => e.MeasurementDimensionQualifier).HasMaxLength(3);
+
+                entity.Property(e => e.MeasurementReferenceIdCode).HasMaxLength(2);
+
+                entity.Property(e => e.MeasurementValue).HasMaxLength(10);
+
+                entity.Property(e => e.ParentHashId).HasMaxLength(128);
+
+                entity.Property(e => e.UnitOfMeasure).HasMaxLength(2);
+            });
+
             modelBuilder.Entity<LearN1830>(entity =>
             {
                 entity.HasKey(e => e.HashId);
@@ -298,6 +654,27 @@ namespace EdiApi.Models
                 entity.Property(e => e.Name).HasMaxLength(35);
 
                 entity.Property(e => e.OrganizationId).HasMaxLength(2);
+
+                entity.Property(e => e.ParentHashId).HasMaxLength(128);
+            });
+
+            modelBuilder.Entity<LearN1856>(entity =>
+            {
+                entity.HasKey(e => e.HashId);
+
+                entity.ToTable("LEAR_N1856");
+
+                entity.Property(e => e.HashId)
+                    .HasMaxLength(128)
+                    .ValueGeneratedNever();
+
+                entity.Property(e => e.EdiStr).HasColumnType("text");
+
+                entity.Property(e => e.EntityIdentifierCode).HasMaxLength(2);
+
+                entity.Property(e => e.IdCode).HasMaxLength(17);
+
+                entity.Property(e => e.IdCodeQualifier).HasMaxLength(2);
 
                 entity.Property(e => e.ParentHashId).HasMaxLength(128);
             });
@@ -413,6 +790,25 @@ namespace EdiApi.Models
                 entity.Property(e => e.RefNumberQualifier).HasMaxLength(2);
             });
 
+            modelBuilder.Entity<LearRef856>(entity =>
+            {
+                entity.HasKey(e => e.HashId);
+
+                entity.ToTable("LEAR_REF856");
+
+                entity.Property(e => e.HashId)
+                    .HasMaxLength(128)
+                    .ValueGeneratedNever();
+
+                entity.Property(e => e.EdiStr).HasColumnType("text");
+
+                entity.Property(e => e.ParentHashId).HasMaxLength(128);
+
+                entity.Property(e => e.ReferenceNumber).HasMaxLength(2);
+
+                entity.Property(e => e.ReferenceNumberQualifier).HasMaxLength(2);
+            });
+
             modelBuilder.Entity<LearSdp830>(entity =>
             {
                 entity.HasKey(e => e.HashId);
@@ -459,6 +855,27 @@ namespace EdiApi.Models
                 entity.Property(e => e.QuantityQualifier).HasMaxLength(2);
             });
 
+            modelBuilder.Entity<LearSn1856>(entity =>
+            {
+                entity.HasKey(e => e.HashId);
+
+                entity.ToTable("LEAR_SN1856");
+
+                entity.Property(e => e.HashId)
+                    .HasMaxLength(128)
+                    .ValueGeneratedNever();
+
+                entity.Property(e => e.EdiStr).HasColumnType("text");
+
+                entity.Property(e => e.NumberOfUnitsShipped).HasMaxLength(10);
+
+                entity.Property(e => e.ParentHashId).HasMaxLength(128);
+
+                entity.Property(e => e.QuantityShipped).HasMaxLength(9);
+
+                entity.Property(e => e.UnitOfMeasurementCode).HasMaxLength(2);
+            });
+
             modelBuilder.Entity<LearSt830>(entity =>
             {
                 entity.HasKey(e => e.HashId);
@@ -476,6 +893,73 @@ namespace EdiApi.Models
                 entity.Property(e => e.IdCode).HasMaxLength(3);
 
                 entity.Property(e => e.ParentHashId).HasMaxLength(128);
+            });
+
+            modelBuilder.Entity<LearTd1856>(entity =>
+            {
+                entity.HasKey(e => e.HashId);
+
+                entity.ToTable("LEAR_TD1856");
+
+                entity.Property(e => e.HashId)
+                    .HasMaxLength(128)
+                    .ValueGeneratedNever();
+
+                entity.Property(e => e.EdiStr).HasColumnType("text");
+
+                entity.Property(e => e.LadingQuantity).HasMaxLength(7);
+
+                entity.Property(e => e.PackagingCode).HasMaxLength(5);
+
+                entity.Property(e => e.ParentHashId).HasMaxLength(128);
+            });
+
+            modelBuilder.Entity<LearTd3856>(entity =>
+            {
+                entity.HasKey(e => e.HashId);
+
+                entity.ToTable("LEAR_TD3856");
+
+                entity.Property(e => e.HashId)
+                    .HasMaxLength(128)
+                    .ValueGeneratedNever();
+
+                entity.Property(e => e.EdiStr).HasColumnType("text");
+
+                entity.Property(e => e.EquipmentDescriptionCode).HasMaxLength(2);
+
+                entity.Property(e => e.EquipmentInitial).HasMaxLength(4);
+
+                entity.Property(e => e.EquipmentNumber).HasMaxLength(10);
+
+                entity.Property(e => e.ParentHashId).HasMaxLength(128);
+            });
+
+            modelBuilder.Entity<LearTd5856>(entity =>
+            {
+                entity.HasKey(e => e.HashId);
+
+                entity.ToTable("LEAR_TD5856");
+
+                entity.Property(e => e.HashId)
+                    .HasMaxLength(128)
+                    .ValueGeneratedNever();
+
+                entity.Property(e => e.EdiStr).HasColumnType("text");
+
+                entity.Property(e => e.IdCodeQualifier).HasMaxLength(2);
+
+                entity.Property(e => e.IdentificationCode).HasMaxLength(17);
+
+                entity.Property(e => e.LocationIdentifier).HasMaxLength(7);
+
+                entity.Property(e => e.LocationQualifier).HasMaxLength(2);
+
+                entity.Property(e => e.ParentHashId).HasMaxLength(128);
+
+                entity.Property(e => e.RoutingSequenceCode).HasMaxLength(2);
+
+                entity.Property(e => e.TransportationMethodCode).HasMaxLength(2);
             });
 
             modelBuilder.Entity<LearUit830>(entity =>

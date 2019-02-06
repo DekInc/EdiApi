@@ -1,4 +1,65 @@
 ﻿
-@*
-    For more information on enabling MVC for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
-*@
+@{
+    ViewData["Title"] = "Detalle de reporte 856 LEAR";
+}
+<div id="mainDiv">
+    <div class="container">
+        <div class="card-deck cardMain">
+            <div class="card box-shadow">
+                <div class="card-header" data-togle="tooltip" data-html="true" title="Model.Data.ListEdiSegName.Where(Sn => Sn.Segment == "ISA").FirstOrDefault().DescEng">
+                    ISA - Model.Data.ListEdiSegName.Where(Sn => Sn.Segment == "ISA").FirstOrDefault().Eng
+                </div>
+                <div class="card-body">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-sm">
+                                <div class="SegmentDataCol">
+                                    Html.ShowLabel("Data.ISA.InterchangeSenderId", Model.Data.ListCodes)
+                                    Model.Data.ISA.InterchangeSenderId
+                                </div>
+                            </div>
+                            <div class="col-sm">
+                                <div class="SegmentDataCol">
+                                    Html.ShowLabel("Data.ISA.InterchangeReceiverId", Model.Data.ListCodes)
+                                    Model.Data.ISA.InterchangeReceiverId
+                                </div>
+                            </div>
+                            <div class="col-sm">
+                                <div class="SegmentDataCol">
+                                    Html.ShowLabel("Data.ISA.InterchangeDate", Model.Data.ListCodes)
+                                    Html.StrToDate(0, Model.Data.ISA.InterchangeDate, Model.Data.ISA.InterchangeTime)
+                                </div>
+                            </div>
+                            <div class="col-sm">
+                                <div class="SegmentDataCol">
+                                    Html.ShowLabel("Data.ISA.InterchangeControlVersion", Model.Data.ListCodes)
+                                    Model.Data.ISA.InterchangeControlVersion
+                                </div>
+                            </div>
+                            <div class="col-sm">
+                                <div class="SegmentDataCol">
+                                    Html.ShowLabel("Data.ISA.InterchangeControlNumber", Model.Data.ListCodes)
+                                    Model.Data.ISA.InterchangeControlNumber
+                                </div>
+                            </div>
+                            <div class="col-sm">
+                                <div class="SegmentDataCol">
+                                    Html.ShowLabel("Data.GS.FunctionalIdCode", Model.Data.ListCodes)
+                                    Html.CodeToStr("GS.FunctionalIdCode", Model.Data.GS.FunctionalIdCode, Model.Data.ListCodes)
+                                </div>
+                            </div>
+                            <div class="col-sm">
+                                <div class="SegmentDataCol">
+                                    Html.ShowLabel("Data.ISA.UsageIndicator", Model.Data.ListCodes)
+                                    Html.CodeToStr("ISA.UsageIndicator", Model.Data.ISA.UsageIndicator, Model.Data.ListCodes)
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <hr />
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

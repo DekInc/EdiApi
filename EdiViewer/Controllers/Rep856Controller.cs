@@ -60,7 +60,7 @@ namespace EdiViewer.Controllers
                     {
                         if (string.IsNullOrEmpty(TsqlDespachosWmsComplexO.FirstOrDefault().errorMessage))
                         {
-                            return Json(new { draw = 0, recordsFiltered = 0, recordsTotal = 0, errorMessage = TsqlDespachosWmsComplexO.FirstOrDefault().errorMessage });
+                            return Json(new { draw = 0, recordsFiltered = 0, recordsTotal = 0, TsqlDespachosWmsComplexO.FirstOrDefault().errorMessage });
                         }
                     }
                 }
@@ -74,7 +74,7 @@ namespace EdiViewer.Controllers
                 //Paging
                 TsqlDespachosWmsComplexO = TsqlDespachosWmsComplexO.Skip(skip).Take(pageSize);
                 //Returning Json Data
-                return Json(new { draw = draw, recordsFiltered = recordsTotal, recordsTotal = recordsTotal, data = TsqlDespachosWmsComplexO, errorMessage = "" });
+                return Json(new { draw, recordsFiltered = recordsTotal, recordsTotal, data = TsqlDespachosWmsComplexO, errorMessage = "" });
             }
             catch (Exception e1)
             {

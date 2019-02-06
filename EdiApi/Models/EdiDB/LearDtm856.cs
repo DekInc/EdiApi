@@ -3,10 +3,11 @@ using System.Collections.Generic;
 
 namespace EdiApi.Models.EdiDB
 {
-    public partial class LearSdp830
+    public partial class LearDtm856
     {
-        public string CalendarPatternCode { get; set; }
-        public string PatternTimeCode { get; set; }
+        public string DateTimeQualifier { get; set; }
+        public string DtmDate { get; set; }
+        public string DtmTime { get; set; }
         public string EdiStr { get; set; }
         public string HashId { get; set; }
         public string ParentHashId { get; set; }
