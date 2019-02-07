@@ -54,17 +54,20 @@ namespace EdiViewer.Controllers
 
                 // Getting all Customer data  
                 IEnumerable<TsqlDespachosWmsComplex> TsqlDespachosWmsComplexO = await ApiClientFactory.Instance.GetSN();
+                IEnumerable<string> ListTo = (from D in TsqlDespachosWmsComplexO
+                                             orderby D.Destino
+                                             select D.Destino).Distinct();
                 if (TsqlDespachosWmsComplexO.Count() == 1)
                 {
                     if (TsqlDespachosWmsComplexO.FirstOrDefault().DespachoId == 0)
                     {
                         if (string.IsNullOrEmpty(TsqlDespachosWmsComplexO.FirstOrDefault().errorMessage))
                         {
-                            return Json(new { draw = 0, recordsFiltered = 0, recordsTotal = 0, TsqlDespachosWmsComplexO.FirstOrDefault().errorMessage });
+                            return Json(new { draw = 0, recordsFiltered = 0, recordsTotal = 0, TsqlDespachosWmsComplexO.FirstOrDefault().errorMessage, ListTo });
                         }
                     }
                 }
-                //Search  
+                //Search                
                 if (!string.IsNullOrEmpty(destino))
                 {
                     TsqlDespachosWmsComplexO = TsqlDespachosWmsComplexO.Where(Co => Co.Destino == destino);
@@ -74,11 +77,11 @@ namespace EdiViewer.Controllers
                 //Paging
                 TsqlDespachosWmsComplexO = TsqlDespachosWmsComplexO.Skip(skip).Take(pageSize);
                 //Returning Json Data
-                return Json(new { draw, recordsFiltered = recordsTotal, recordsTotal, data = TsqlDespachosWmsComplexO, errorMessage = "" });
+                return Json(new { draw, recordsFiltered = recordsTotal, recordsTotal, data = TsqlDespachosWmsComplexO, errorMessage = "", ListTo });
             }
             catch (Exception e1)
             {
-                return Json(new { draw = 0, recordsFiltered = 0, recordsTotal = 0, errorMessage = e1.ToString() });
+                return Json(new { draw = 0, recordsFiltered = 0, recordsTotal = 0, errorMessage = e1.ToString(), ListTo = "" });
             }
         }
     }

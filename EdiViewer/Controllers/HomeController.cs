@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using EdiViewer.Models;
 using Microsoft.Extensions.Configuration;
 using ComModels;
+using Microsoft.AspNetCore.Http;
 
 namespace EdiViewer.Controllers
 {
@@ -73,7 +74,7 @@ namespace EdiViewer.Controllers
                 recordsTotal = Rep830InfoO.Count();
                 Rep830InfoO = Rep830InfoO.Skip(skip).Take(pageSize);
                 //Returning Json Data  
-                return Json(new { draw = draw, recordsFiltered = recordsTotal, recordsTotal = recordsTotal, data = Rep830InfoO });
+                return Json(new { draw, recordsFiltered = recordsTotal, recordsTotal, data = Rep830InfoO });
 
             }
             catch (Exception e1)

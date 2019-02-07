@@ -108,24 +108,24 @@
                         alert(json.errorMessage);
                         return null;
                     }
-                    $.each(json.data, function (i, item) {
+                    $.each(json.listTo, function (i, item) {
                         var isExist = !!$('#cbTo option').filter(function () {
-                            return $(this).attr('value').toLowerCase() === item.destino.toLowerCase();
+                            return $(this).attr('value').toLowerCase() === item.toLowerCase();
                         }).length;
                         if (!isExist) {
                             if (destinoDef == 'null') {
                                 $('#cbTo').append($('<option>', {
-                                    value: item.destino,
-                                    text: item.destino,
+                                    value: item,
+                                    text: item,
                                     selected: false
                                 }));
                             } else {
                                 var selectedD = false;
-                                if (destinoDef == item.destino)
+                                if (destinoDef == item)
                                     selectedD = true;
                                 $('#cbTo').append($('<option>', {
-                                    value: item.destino,
-                                    text: item.destino,
+                                    value: item,
+                                    text: item,
                                     selected: selectedD
                                 }));
                             }

@@ -32,6 +32,8 @@ namespace EdiViewer
             });
 
             services.AddMemoryCache();
+            services.AddSession();
+            //services.AddDistributedMemoryCache();
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
             ApplicationSettings.ApiUri = (string)Configuration.GetSection("EdiWebApi").GetValue(typeof(string), "ApiUri");
             services.AddSingleton<Utility.Scheduling.Interfaces.IScheduledTask, Utility.Scheduling.GetEdi830Task>();
@@ -41,6 +43,7 @@ namespace EdiViewer
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
+            app.UseSession();
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -49,10 +52,9 @@ namespace EdiViewer
             {
                 app.UseExceptionHandler("/Home/Error");
                 app.UseHsts();
-            }
-
+            }            
             app.UseHttpsRedirection();
-            app.UseStaticFiles();
+            app.UseStaticFiles();            
             app.UseCookiePolicy();
 
             app.UseMvc(routes =>
