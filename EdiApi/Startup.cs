@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using EdiApi.Models.EdiDB;
+using EdiApi.Models.WmsDB;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -29,7 +30,7 @@ namespace EdiApi
         {
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
             services.AddDbContext<EdiDBContext>(options => options.UseSqlServer(Configuration.GetConnectionString("EdiDB"), opt => opt.CommandTimeout((int)TimeSpan.FromMinutes(10).TotalSeconds)));
-            services.AddDbContext<Models.wmsContext>(options => options.UseSqlServer(Configuration.GetConnectionString("wmsDB"), opt => opt.CommandTimeout((int)TimeSpan.FromMinutes(10).TotalSeconds)));
+            services.AddDbContext<WmsContext>(options => options.UseSqlServer(Configuration.GetConnectionString("wmsDB"), opt => opt.CommandTimeout((int)TimeSpan.FromMinutes(10).TotalSeconds)));
             services.AddDbContext<Models.Remps_globalDB.Remps_globalContext>(options => options.UseSqlServer(Configuration.GetConnectionString("Remps_globalDB"), opt => opt.CommandTimeout((int)TimeSpan.FromMinutes(10).TotalSeconds)));
             services.AddSingleton<IConfiguration>(Configuration);
         }

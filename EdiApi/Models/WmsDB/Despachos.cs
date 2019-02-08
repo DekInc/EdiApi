@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace EdiApi.Models
+namespace EdiApi.Models.WmsDB
 {
     public partial class Despachos
     {
@@ -28,11 +28,6 @@ namespace EdiApi.Models
         public string Observacion { get; set; }
         public int? Transportistaid { get; set; }
         public int? Destinoid { get; set; }
-        public int? Edistatus { get; set; }
-        public DateTime? EdistatusDate { get; set; }
-        public int? Ediuser { get; set; }
-        public int? Ediprocess { get; set; }
-        public DateTime? EdiprocessDate { get; set; }
 
         public Transportista Transportista { get; set; }
         public ICollection<DtllDespacho> DtllDespacho { get; set; }

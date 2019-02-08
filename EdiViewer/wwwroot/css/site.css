@@ -48,6 +48,7 @@ body {
 }
 #tblReportes{
     width: 100%;
+    text-align: left;
 }
 .tblReportes thead {
     background: linear-gradient(35deg, #c54062, #fbfcf2);
@@ -196,4 +197,12 @@ table.dataTable thead th, table.dataTable thead td {
     display: block;
     position: relative;
     background: linear-gradient(rgb(0, 0, 0), rgba(255, 232, 252, 0.5)) !important;
+}
+.cardContent {
+    /*position: relative;
+    display: inline-block;
+    margin: 0 auto;*/
+}
+.hideCol{
+    display: none;
 }

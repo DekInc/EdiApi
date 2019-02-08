@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
 using ComModels;
 using Microsoft.AspNetCore.Mvc;
@@ -53,24 +54,35 @@ namespace EdiViewer.Controllers
                 int recordsTotal = 0;
 
                 // Getting all Customer data  
-                IEnumerable<TsqlDespachosWmsComplex> TsqlDespachosWmsComplexO = await ApiClientFactory.Instance.GetSN();
+                IEnumerable<TsqlDespachosWmsComplex> TsqlDespachosWmsComplexO;
+                if (string.IsNullOrEmpty(destino))
+                {
+                    TsqlDespachosWmsComplexO = await ApiClientFactory.Instance.GetSN();
+                    HttpContext.Session.SetObjSession("TsqlDespachosWmsComplexO", TsqlDespachosWmsComplexO);
+                }
+                else
+                    TsqlDespachosWmsComplexO = HttpContext.Session.GetObjSession<IEnumerable<TsqlDespachosWmsComplex>>("TsqlDespachosWmsComplexO");                
                 IEnumerable<string> ListTo = (from D in TsqlDespachosWmsComplexO
-                                             orderby D.Destino
-                                             select D.Destino).Distinct();
+                                             orderby D.CodProducto
+                                             select D.CodProducto).Distinct();
                 if (TsqlDespachosWmsComplexO.Count() == 1)
                 {
                     if (TsqlDespachosWmsComplexO.FirstOrDefault().DespachoId == 0)
                     {
-                        if (string.IsNullOrEmpty(TsqlDespachosWmsComplexO.FirstOrDefault().errorMessage))
+                        if (string.IsNullOrEmpty(TsqlDespachosWmsComplexO.FirstOrDefault().ErrorMessage))
                         {
-                            return Json(new { draw = 0, recordsFiltered = 0, recordsTotal = 0, TsqlDespachosWmsComplexO.FirstOrDefault().errorMessage, ListTo });
+                            return Json(new { draw = 0, recordsFiltered = 0, recordsTotal = 0, TsqlDespachosWmsComplexO.FirstOrDefault().ErrorMessage, ListTo });
                         }
                     }
                 }
                 //Search                
                 if (!string.IsNullOrEmpty(destino))
                 {
-                    TsqlDespachosWmsComplexO = TsqlDespachosWmsComplexO.Where(Co => Co.Destino == destino);
+                    TsqlDespachosWmsComplexO = TsqlDespachosWmsComplexO.Where(Co => Co.CodProducto == destino);
+                }
+                if (!(string.IsNullOrEmpty(sortColumn) && string.IsNullOrEmpty(sortColumnDirection)))
+                {
+                    TsqlDespachosWmsComplexO = TsqlDespachosWmsComplexO.AsQueryable().OrderBy(sortColumn + " " + sortColumnDirection);
                 }
                 //total number of rows count
                 recordsTotal = TsqlDespachosWmsComplexO.Count();

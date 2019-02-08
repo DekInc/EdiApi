@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace EdiApi.Models
+namespace EdiApi.Models.WmsDB
 {
     public partial class PedidoxOperario
     {

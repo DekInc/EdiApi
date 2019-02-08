@@ -1,10 +1,10 @@
-﻿@model Tuple<ComModels.LearSdp830, IEnumerable<ComModels.EdiSegName>, IEnumerable<ComModels.LearFst830>, IEnumerable<ComModels.LearCodes>>
+﻿@model Tuple<ComModels.LearSdp830, IEnumerable<ComModels.EdiSegName>, IEnumerable<ComModels.LearFst830>, IEnumerable<ComModels.LearCodes>, IEnumerable<LearUit830>, IEnumerable<LearShp830>>
 @using ComModels
 <div class="card box-shadow">
     <div class="card-header card-csdp cursor" data-toggle="collapse" data-target="#@Model.Item1.HashId" aria-expanded="false" aria-controls="@Model.Item1.HashId" title="@Model.Item2.Where(Sn => Sn.Segment == "SDP").FirstOrDefault().DescEng">
         SDP - @Model.Item2.Where(Sn => Sn.Segment == "SDP").FirstOrDefault().Eng
     </div>
-    <div class="collapse" id="@Model.Item1.HashId">
+    <div class="show" id="@Model.Item1.HashId">
         <div class="card-body">
             <div class="container">
                 <div class="row">
@@ -28,13 +28,23 @@
                     <div class="card-header card-cfst cursor" data-toggle="collapse" data-target="#@Model.Item3.FirstOrDefault().HashId" aria-expanded="false" aria-controls="@Model.Item3.FirstOrDefault().HashId" title="@Model.Item2.Where(Sn => Sn.Segment == "FST").FirstOrDefault().DescEng">
                         FST - @Model.Item2.Where(Sn => Sn.Segment == "FST").FirstOrDefault().Eng
                     </div>
-                    <div class="collapse" id="@Model.Item3.FirstOrDefault().HashId">
+                    <div class="show" id="@Model.Item3.FirstOrDefault().HashId">
                         <div class="card-body">
                             <div class="container">
                                 <div class="row">
                                     <div class="col-sm">
                                         <div class="SegmentDataCol">
+                                            @Html.ShowLabel("Data.FST.FstDate", Model.Item4)
+                                        </div>
+                                    </div>
+                                    <div class="col-sm">
+                                        <div class="SegmentDataCol">
                                             @Html.ShowLabel("Data.FST.Quantity", Model.Item4)
+                                        </div>
+                                    </div>
+                                    <div class="col-sm">
+                                        <div class="SegmentDataCol font-weight-bold">
+                                            Cantidad calculada a enviar
                                         </div>
                                     </div>
                                     <div class="col-sm">
@@ -47,20 +57,17 @@
                                             @Html.ShowLabel("Data.FST.ForecastTimingQualifier", Model.Item4)
                                         </div>
                                     </div>
-                                    <div class="col-sm">
-                                        <div class="SegmentDataCol">
-                                            @Html.ShowLabel("Data.FST.FstDate", Model.Item4)
-                                        </div>
-                                    </div>
                                 </div>
                                 @for (int i = 0; i < Model.Item3.Count(); i++)
                                 {
                                     @await Html.PartialAsync("_DetailsOnFst830",
-                                            new Tuple<LearFst830, IEnumerable<EdiSegName>, IEnumerable<LearCodes>, int>(
+                                            new Tuple<LearFst830, IEnumerable<EdiSegName>, IEnumerable<LearCodes>, int, IEnumerable<LearUit830>, IEnumerable<LearShp830>>(
                                                 Model.Item3.ElementAt(i),
                                                 Model.Item2,
                                                 Model.Item4,
-                                                i))
+                                                i,
+                                                Model.Item5,
+                                                Model.Item6))
                                 }
                             </div>
                         </div>

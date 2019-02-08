@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using EdiApi.Models;
 using EdiApi.Models.EdiDB;
+using EdiApi.Models.WmsDB;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
@@ -15,10 +16,10 @@ namespace EdiApi.Controllers
     public class DataController : Controller
     {
         public EdiDBContext DbO;
-        public wmsContext WmsDbO;
+        public WmsContext WmsDbO;
         public Models.Remps_globalDB.Remps_globalContext Remps_globalDbO;
         public static readonly string G1;        
-        public DataController(EdiDBContext _DbO, wmsContext _WmsDbO, Models.Remps_globalDB.Remps_globalContext _Remps_globalDB) {
+        public DataController(EdiDBContext _DbO, WmsContext _WmsDbO, Models.Remps_globalDB.Remps_globalContext _Remps_globalDB) {
             DbO = _DbO;
             WmsDbO = _WmsDbO;
             Remps_globalDbO = _Remps_globalDB;            
@@ -30,7 +31,7 @@ namespace EdiApi.Controllers
         }
         private IEnumerable<TsqlDespachosWmsComplex> GetExToIe2(Exception E1)
         {
-            yield return new TsqlDespachosWmsComplex() { errorMessage = E1.ToString() };
+            yield return new TsqlDespachosWmsComplex() { ErrorMessage = E1.ToString() };
         }
         [HttpGet]
         public IEnumerable<Rep830Info> GetPureEdi(string HashId = "")
@@ -57,7 +58,8 @@ namespace EdiApi.Controllers
                             NombreArchivo = Pe.NombreArchivo,
                             Log = Pe.Log,
                             CheckSeg = Pe.CheckSeg,
-                            NumReporte = IsaF.InterchangeControlNumber
+                            NumReporte = IsaF.InterchangeControlNumber,
+                            Estado = Pe.Log.Contains("segmentos analizados, procesados y guardados")? "Exitoso" : "Error"                            
                         };
                 return LRet;
             }
@@ -225,130 +227,194 @@ namespace EdiApi.Controllers
         public IEnumerable<TsqlDespachosWmsComplex> GetSN() {
             try
             {
-                List<TsqlDespachosWmsComplex> ListDespachosWms = (
-                from T in WmsDbO.Transacciones
-                from B in WmsDbO.Bodegas
-                from L in WmsDbO.Locations
-                from Y in WmsDbO.Paises
-                from P in WmsDbO.Pedido
-                from D in WmsDbO.DtllDespacho
-                from D2 in WmsDbO.Despachos
-                from E in WmsDbO.Estatus
-                from S in WmsDbO.SysTempSalidas
-                from Ii in WmsDbO.ItemInventario
-                from I in WmsDbO.Inventario
-                from Um in WmsDbO.UnidadMedida
-                where T.BodegaId == B.BodegaId
-                && L.Locationid == B.Locationid
-                && Y.Paisid == L.Paisid
-                && P.PedidoId == T.PedidoId
-                && D.TransaccionId == T.TransaccionId
-                && D2.DespachoId == D.DespachoId
-                && E.EstatusId == T.EstatusId
-                && S.PedidoId == P.PedidoId
-                && Ii.ItemInventarioId == S.ItemInventarioId
-                && I.InventarioId == S.InventarioId
-                && T.EstatusId == 9
-                && T.FechaTransaccion > DateTime.Now.AddMonths(-1)
-                && Um.UnidadMedidaId == I.TipoBulto
-                group new { T, B, L, Y, P, D, D2, E, S, Ii, I }
-                by new
-                {
-                    D2.DespachoId,
-                    D2.FechaSalida,
-                    D2.NoContenedor,
-                    D2.Motorista,
-                    D2.DocumentoMotorista,
-                    D2.Destino,
-                    D2.DocumentoFiscal,
-                    D2.FechaDocFiscal,
-                    D2.NoMarchamo,
-                    D2.Observacion,
-                    D2.Transportistaid,
-                    D2.Destinoid,
+                List<string> ListProductosPendientes =
+                    (from Pe in DbO.LearPureEdi
+                     from I in DbO.LearIsa830
+                     from St in DbO.LearSt830
+                     from L in DbO.LearLin830
+                     where !Pe.Shp
+                     && I.ParentHashId == Pe.HashId
+                     && St.ParentHashId == I.HashId
+                     && L.ParentHashId == St.HashId
+                     orderby L.ProductId ascending
+                     select L.ProductId).Distinct().ToList();
 
-                    I.TipoBulto,
-                    Ii.CodProducto,
-                    Ii.Descripcion,
-                    Ii.NumeroOc,
-                    Um.UnidadMedida1,
+                IEnumerable<TsqlDespachosWmsComplex> ListDespachosWms = (
+                    from D in WmsDbO.Despachos
+                    from DD in WmsDbO.DtllDespacho
+                    from T in WmsDbO.Transacciones
+                    from P in WmsDbO.Pedido
+                    from S in WmsDbO.SysTempSalidas
+                    from PR in WmsDbO.Producto
+                    from CL in WmsDbO.Clientes
+                    from I in WmsDbO.Inventario
+                    from UM in WmsDbO.UnidadMedida
+                    from PP in ListProductosPendientes
+                    where PR.CodProducto == S.CodProducto
+                    && S.PedidoId == T.PedidoId
+                    && P.PedidoId == T.PedidoId
+                    && T.TransaccionId == DD.TransaccionId
+                    && DD.DespachoId == D.DespachoId
+                    && CL.ClienteId == T.ClienteId
+                    && I.InventarioId == S.InventarioId
+                    && UM.UnidadMedidaId == I.TipoBulto
+                    && T.EstatusId == 9
+                    && T.FechaTransaccion > DateTime.Now.AddDays(-15)
+                    && PR.CodProducto == PP
+                    group new { D, DD, T, P, S, PR, CL, I, UM, PP }
+                    by new {
+                        D.DespachoId,
+                        D.FechaSalida,
+                        PR.CodProducto,
+                        PR.Descripcion,
+                        CL.Nombre,
+                        UM.UnidadMedida1,
+                        D.Destino
+                    }
+                    into Grp
+                    select new TsqlDespachosWmsComplex() {
+                        DespachoId = Grp.Key.DespachoId,
+                        FechaSalida = Grp.Key.FechaSalida,
+                        CodProducto = Grp.Key.CodProducto,
+                        Producto = Grp.Key.Descripcion,
+                        Cliente = Grp.Key.Nombre,
+                        Quantity = Grp.Sum(Col => Col.S.Cantidad),
+                        Weight = Grp.Sum(ColO => ColO.S.Cantidad * ColO.I.Peso / ColO.I.CantidadInicial),
+                        Volume = Grp.Sum(ColO => ColO.S.Cantidad * ColO.I.Volumen / ColO.I.CantidadInicial),
+                        Bulks = Grp.Sum(ColO => ColO.S.Cantidad * (double)ColO.I.Articulos / ColO.I.CantidadInicial),
+                        TotalValue = Grp.Sum(ColO2 => ColO2.S.Cantidad * ColO2.S.Precio),
+                        UnidadDeMedida = Grp.Key.UnidadMedida1,
+                        Destino = Grp.Key.Destino
+                    });
 
-                    T.NoTransaccion,
-                    T.ClienteId,
-                    E.Estatus1,
+                //List < TsqlDespachosWmsComplex > ListDespachosWms = (
+                //from T in WmsDbO.Transacciones
+                //from B in WmsDbO.Bodegas
+                //from L in WmsDbO.Locations
+                //from Y in WmsDbO.Paises
+                //from P in WmsDbO.Pedido
+                //from D in WmsDbO.DtllDespacho
+                //from D2 in WmsDbO.Despachos
+                //from E in WmsDbO.Estatus
+                //from S in WmsDbO.SysTempSalidas
+                //from Ii in WmsDbO.ItemInventario
+                //from I in WmsDbO.Inventario
+                //from Um in WmsDbO.UnidadMedida
+                //from Cl in WmsDbO.Clientes
+                //where T.BodegaId == B.BodegaId
+                //&& L.Locationid == B.Locationid
+                //&& Y.Paisid == L.Paisid
+                //&& P.PedidoId == T.PedidoId
+                //&& D.TransaccionId == T.TransaccionId
+                //&& D2.DespachoId == D.DespachoId
+                //&& E.EstatusId == T.EstatusId
+                //&& S.PedidoId == P.PedidoId
+                //&& Ii.ItemInventarioId == S.ItemInventarioId
+                //&& I.InventarioId == S.InventarioId
+                //&& T.ClienteId == T.ClienteId
+                //&& T.EstatusId == 9
+                //&& T.FechaTransaccion > DateTime.Now.AddMonths(-1)
+                //&& Um.UnidadMedidaId == I.TipoBulto
+                //group new { T, B, L, Y, P, D, D2, E, S, Ii, I }
+                //by new
+                //{
+                //    D2.DespachoId,
+                //    D2.FechaSalida,
+                //    D2.NoContenedor,
+                //    D2.Motorista,
+                //    D2.DocumentoMotorista,
+                //    D2.Destino,
+                //    D2.DocumentoFiscal,
+                //    D2.FechaDocFiscal,
+                //    D2.NoMarchamo,
+                //    D2.Observacion,
+                //    D2.Transportistaid,
+                //    D2.Destinoid,
 
-                    B.BodegaId,
-                    B.NomBodega,
-                    Y.Nompais,
-                    T.IdRcontrol,
-                }
-                into Grp
-                orderby Grp.Key.FechaSalida descending, Grp.Key.Destino ascending, Grp.Key.CodProducto ascending
-                select new TsqlDespachosWmsComplex()
-                {
-                    DespachoId = Grp.Key.DespachoId,
-                    FechaSalida = Grp.Key.FechaSalida,
-                    NoContenedor = Grp.Key.NoContenedor,
-                    Motorista = Grp.Key.Motorista,
-                    DocumentoMotorista = Grp.Key.DocumentoMotorista,
-                    Destino = Grp.Key.Destino,
-                    DocumentoFiscal = Grp.Key.DocumentoFiscal,
-                    FechaDocFiscal = Grp.Key.FechaDocFiscal,
-                    NoMarchamo = Grp.Key.NoMarchamo,
-                    Observacion = Grp.Key.Observacion,
-                    Transportistaid = Grp.Key.Transportistaid,
-                    Destinoid = Grp.Key.Destinoid,
+                //    I.TipoBulto,
+                //    Ii.CodProducto,
+                //    Ii.Descripcion,
+                //    Ii.NumeroOc,
+                //    Um.UnidadMedida1,
 
-                    Quantity = Grp.Sum(Col => Col.S.Cantidad),
-                    Bulks = Grp.Sum(ColO => ColO.S.Cantidad * (double)ColO.I.Articulos / ColO.I.CantidadInicial),
-                    Weight = Grp.Sum(ColO => ColO.S.Cantidad * ColO.I.Peso / ColO.I.CantidadInicial),
-                    Volume = Grp.Sum(ColO => ColO.S.Cantidad * ColO.I.Volumen / ColO.I.CantidadInicial),
-                    TotalValue = Grp.Sum(ColO2 => ColO2.S.Cantidad * ColO2.S.Precio),
+                //    T.NoTransaccion,
+                //    T.ClienteId,
+                //    E.Estatus1,
 
-                    TipoBulto = Grp.Key.TipoBulto,
-                    CodProducto = Grp.Key.CodProducto,
-                    Producto = Grp.Key.Descripcion,
-                    NumeroOc = Grp.Key.NumeroOc,
-                    UnidadDeMedida = Grp.Key.UnidadMedida1,
+                //    B.BodegaId,
+                //    B.NomBodega,
+                //    Y.Nompais,
+                //    T.IdRcontrol,
+                //    Cl.Nombre
+                //}
+                //into Grp
+                //orderby Grp.Key.FechaSalida descending, Grp.Key.Destino ascending, Grp.Key.CodProducto ascending
+                //select new TsqlDespachosWmsComplex()
+                //{
+                //    DespachoId = Grp.Key.DespachoId,
+                //    FechaSalida = Grp.Key.FechaSalida,
+                //    NoContenedor = Grp.Key.NoContenedor,
+                //    Motorista = Grp.Key.Motorista,
+                //    DocumentoMotorista = Grp.Key.DocumentoMotorista,
+                //    Destino = Grp.Key.Destino,
+                //    DocumentoFiscal = Grp.Key.DocumentoFiscal,
+                //    FechaDocFiscal = Grp.Key.FechaDocFiscal,
+                //    NoMarchamo = Grp.Key.NoMarchamo,
+                //    Observacion = Grp.Key.Observacion,
+                //    Transportistaid = Grp.Key.Transportistaid,
+                //    Destinoid = Grp.Key.Destinoid,
 
-                    NoTransaccion = Grp.Key.NoTransaccion,
-                    ClienteId = Grp.Key.ClienteId,
-                    Estatus1 = Grp.Key.Estatus1,
+                //    Quantity = Grp.Sum(Col => Col.S.Cantidad),
+                //    Bulks = Grp.Sum(ColO => ColO.S.Cantidad * (double)ColO.I.Articulos / ColO.I.CantidadInicial),
+                //    Weight = Grp.Sum(ColO => ColO.S.Cantidad * ColO.I.Peso / ColO.I.CantidadInicial),
+                //    Volume = Grp.Sum(ColO => ColO.S.Cantidad * ColO.I.Volumen / ColO.I.CantidadInicial),
+                //    TotalValue = Grp.Sum(ColO2 => ColO2.S.Cantidad * ColO2.S.Precio),
 
-                    BodegaId = Grp.Key.BodegaId,
-                    NomBodega = Grp.Key.NomBodega,
-                    Nompais = Grp.Key.Nompais,
-                    IdRcontrol = Grp.Key.IdRcontrol
-                }).ToList();
-                List<Models.Remps_globalDB.GlbClient> LGlbClient =
-                    (from C in Remps_globalDbO.GlbClient
-                     from R in ListDespachosWms
-                     where C.IdClient == R.ClienteId
-                     select C).ToList();
-                List<Models.Remps_globalDB.GlbCountry> LGlbCountry =
-                    (from U in Remps_globalDbO.GlbCountry
-                     from R in ListDespachosWms
-                     where U.Name.Equals(R.Nompais, StringComparison.OrdinalIgnoreCase)
-                     select U).ToList();
+                //    TipoBulto = Grp.Key.TipoBulto,
+                //    CodProducto = Grp.Key.CodProducto,
+                //    Producto = Grp.Key.Descripcion,
+                //    NumeroOc = Grp.Key.NumeroOc,
+                //    UnidadDeMedida = Grp.Key.UnidadMedida1,
+
+                //    NoTransaccion = Grp.Key.NoTransaccion,
+                //    ClienteId = Grp.Key.ClienteId,
+                //    Estatus1 = Grp.Key.Estatus1,
+
+                //    BodegaId = Grp.Key.BodegaId,
+                //    NomBodega = Grp.Key.NomBodega,
+                //    Nompais = Grp.Key.Nompais,
+                //    IdRcontrol = Grp.Key.IdRcontrol,
+                //    Cliente = Grp.Key.Nombre
+                //}).ToList();
+                //List<Models.Remps_globalDB.GlbClient> LGlbClient =
+                //    (from C in Remps_globalDbO.GlbClient
+                //     from R in ListDespachosWms
+                //     where C.IdClient == R.ClienteId
+                //     select C).ToList();
+                //List<Models.Remps_globalDB.GlbCountry> LGlbCountry =
+                //    (from U in Remps_globalDbO.GlbCountry
+                //     from R in ListDespachosWms
+                //     where U.Name.Equals(R.Nompais, StringComparison.OrdinalIgnoreCase)
+                //     select U).ToList();
                 //List<Models.Remps_globalDB.GlbClientIntegration> LGlbClientIntegration =
                 //    (from G in Remps_globalDbO.GlbClientIntegration
                 //    from R in ListDespachosWms
                 //    where G.IdWms == R.ClienteId
                 //    select G).ToList();
-                foreach (TsqlDespachosWmsComplex D in ListDespachosWms)
-                {
-                    foreach (Models.Remps_globalDB.GlbClient C in LGlbClient)
-                    {
-                        D.idclient = C.IdClient;
-                        D.code = C.Code;
-                        D.businessname = C.BusinessName;
-                    }
-                    foreach (Models.Remps_globalDB.GlbCountry U in LGlbCountry)
-                    {
-                        D.IdCountryOrigin = U.IdCountry;
-                        D.CountryOrigin = U.Name;
-                    }
-                }
+                //foreach (TsqlDespachosWmsComplex D in ListDespachosWms)
+                //{
+                //    foreach (Models.Remps_globalDB.GlbClient C in LGlbClient)
+                //    {
+                //        D.Idclient = C.IdClient;
+                //        D.Code = C.Code;
+                //        D.Businessname = C.BusinessName;
+                //    }
+                //    foreach (Models.Remps_globalDB.GlbCountry U in LGlbCountry)
+                //    {
+                //        D.IdCountryOrigin = U.IdCountry;
+                //        D.CountryOrigin = U.Name;
+                //    }
+                //}
                 return ListDespachosWms;
             }
             catch (Exception e1)
@@ -490,9 +556,9 @@ namespace EdiApi.Controllers
                 {
                     foreach (Models.Remps_globalDB.GlbClient C in LGlbClient)
                     {
-                        D.idclient = C.IdClient;
-                        D.code = C.Code;
-                        D.businessname = C.BusinessName;
+                        D.Idclient = C.IdClient;
+                        D.Code = C.Code;
+                        D.Businessname = C.BusinessName;
                     }
                     foreach (Models.Remps_globalDB.GlbCountry U in LGlbCountry)
                     {

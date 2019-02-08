@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace EdiApi.Models
+namespace EdiApi.Models.WmsDB
 {
     public partial class Pedido
     {
@@ -21,13 +21,6 @@ namespace EdiApi.Models
         public int? BodegaId { get; set; }
         public int? RegimenId { get; set; }
         public int? Destinoid { get; set; }
-        public int? PedidomasterId { get; set; }
-        public decimal? Bultos { get; set; }
-        public decimal? Peso { get; set; }
-        public decimal? Vol { get; set; }
-        public decimal? Qty { get; set; }
-        public int? PaisdestId { get; set; }
-        public double? Merchandisetotal { get; set; }
 
         public Clientes Cliente { get; set; }
         public Destconsigna Destino { get; set; }

@@ -110,11 +110,14 @@
             @foreach (LearSdp830 Sdp in Model.Item3.Data.ListLinSdp.Where(LNte => LNte.ParentHashId == Model.Item1.HashId))
             {
                 @await Html.PartialAsync("_DetailsOnSdp830",
-               new Tuple<LearSdp830, IEnumerable<EdiSegName>, IEnumerable<LearFst830>, IEnumerable<LearCodes>>(
+               new Tuple<LearSdp830, IEnumerable<EdiSegName>, IEnumerable<LearFst830>, IEnumerable<LearCodes>, IEnumerable<LearUit830>, IEnumerable<LearShp830>>(
                    Sdp,
                    Model.Item2,
                    Model.Item3.Data.ListSdpFst.Where(F => F.ParentHashId == Sdp.HashId),
-                   Model.Item3.Data.ListCodes))
+                   Model.Item3.Data.ListCodes,
+                   Model.Item3.Data.ListLinUit.Where(LNte => LNte.ParentHashId == Model.Item1.HashId),
+                   Model.Item3.Data.ListLinShp.Where(LShp => LShp.ParentHashId == Model.Item1.HashId && LShp.QuantityQualifier == "02")
+                   ))
                 <hr />
             }
 
@@ -130,7 +133,17 @@
                                 <div class="row">
                                     <div class="col-sm">
                                         <div class="SegmentDataCol">
+                                            @Html.ShowLabel("Data.FST.FstDate", Model.Item3.Data.ListCodes)
+                                        </div>
+                                    </div>
+                                    <div class="col-sm">
+                                        <div class="SegmentDataCol">
                                             @Html.ShowLabel("Data.FST.Quantity", Model.Item3.Data.ListCodes)
+                                        </div>
+                                    </div>
+                                    <div class="col-sm">
+                                        <div class="SegmentDataCol font-weight-bold">
+                                            Cantidad calculada a enviar
                                         </div>
                                     </div>
                                     <div class="col-sm">
@@ -143,19 +156,17 @@
                                             @Html.ShowLabel("Data.FST.ForecastTimingQualifier", Model.Item3.Data.ListCodes)
                                         </div>
                                     </div>
-                                    <div class="col-sm">
-                                        <div class="SegmentDataCol">
-                                            @Html.ShowLabel("Data.FST.FstDate", Model.Item3.Data.ListCodes)
-                                        </div>
-                                    </div>
                                 </div>
                                 @foreach (LearFst830 Fst in Model.Item3.Data.ListLinFst.Where(LNte => LNte.ParentHashId == Model.Item1.HashId))
                                 {
                                     @await Html.PartialAsync("_DetailsOnFst830",
-                                            new Tuple<LearFst830, IEnumerable<EdiSegName>, IEnumerable<LearCodes>>(
+                                            new Tuple<LearFst830, IEnumerable<EdiSegName>, IEnumerable<LearCodes>, int, IEnumerable<LearUit830>, IEnumerable<LearShp830>>(
                                                 Fst,
                                                 Model.Item2,
-                                                Model.Item3.Data.ListCodes))
+                                                Model.Item3.Data.ListCodes,
+                                                0,
+                                                Model.Item3.Data.ListLinUit,
+                                                Model.Item3.Data.ListLinShp.Where(LShp => LShp.ParentHashId == Model.Item1.HashId && LShp.QuantityQualifier == "02")))
                                 }
                             </div>
                         </div>

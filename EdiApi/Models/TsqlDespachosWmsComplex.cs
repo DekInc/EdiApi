@@ -6,9 +6,10 @@ using System.Threading.Tasks;
 namespace EdiApi.Models
 {
     public class TsqlDespachosWmsComplex
-    {
+    {        
         public int DespachoId { get; set; }
         public DateTime? FechaSalida { get; set; }
+        public DateTime? FechaCreacion { get; set; }
         public string NoContenedor { get; set; }
         public string Motorista { get; set; }
         public string DocumentoMotorista { get; set; }
@@ -20,9 +21,9 @@ namespace EdiApi.Models
         public int? Transportistaid { get; set; }
         public int? Destinoid { get; set; }
 
-        public long? idclient { get; set; }
-        public string code { get; set; }
-        public string businessname { get; set; }
+        public long? Idclient { get; set; }
+        public string Code { get; set; }
+        public string Businessname { get; set; }
         public long IdCountryOrigin { get; set; }
         public string CountryOrigin { get; set; }
         public double? Quantity { get; set; }
@@ -45,6 +46,7 @@ namespace EdiApi.Models
         public string NomBodega { get; set; }
         public string Nompais { get; set; }
         public long? IdRcontrol { get; set; }
-        public string errorMessage { get; set; }
+        public string ErrorMessage { get; set; }
+        public string Cliente { get; set; }
     }
 }

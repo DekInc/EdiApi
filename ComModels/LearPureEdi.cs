@@ -13,5 +13,6 @@ namespace ComModels
         public string NombreArchivo { get; set; }
         public string Log { get; set; }
         public int? CheckSeg { get; set; }
+        public bool Shp { get; set; }
     }
 }

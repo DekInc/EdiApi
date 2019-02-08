@@ -1,13 +1,21 @@
-﻿@model Tuple<ComModels.LearFst830, IEnumerable<ComModels.EdiSegName>, IEnumerable<ComModels.LearCodes>, int>
+﻿@model Tuple<ComModels.LearFst830, IEnumerable<ComModels.EdiSegName>, IEnumerable<ComModels.LearCodes>, int, IEnumerable<ComModels.LearUit830>, IEnumerable<ComModels.LearShp830>>
 <div class="row separator @(Model.Item4 % 2 == 0? "rowOdd" : "row")">
     <div class="col-sm">
         <div class="SegmentDataCol">
-            @Html.StrToDate(1, @Model.Item1.FstDate)
+            @Html.StrToDate(2, @Model.Item1.FstDate)
         </div>
     </div>
     <div class="col-sm">
         <div class="SegmentDataCol">
-            @Model.Item1.Quantity
+            @Html.QtyToMil(Model.Item1.Quantity, Model.Item5)
+        </div>
+    </div>
+    <div class="col-sm">
+        <div class="SegmentDataCol">
+            @if (Model.Item6.Where(Shp => Shp.QuantityQualifier == "02").Count() > 0)
+            {
+                @Html.QtyToLocal(Model.Item1.Quantity, Model.Item6, Model.Item5)
+            }
         </div>
     </div>
     <div class="col-sm">
@@ -19,5 +27,5 @@
         <div class="SegmentDataCol">
             @Html.CodeToStr("FST.ForecastTimingQualifier", Model.Item1.ForecastTimingQualifier, Model.Item3)
         </div>
-    </div>    
+    </div>
 </div>

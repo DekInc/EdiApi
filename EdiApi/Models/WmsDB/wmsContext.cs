@@ -2,18 +2,17 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 
-namespace EdiApi.Models
+namespace EdiApi.Models.WmsDB
 {
-    public partial class wmsContext : DbContext
+    public partial class WmsContext : DbContext
     {
-        public wmsContext()
+        public WmsContext()
         {
         }
 
-        public wmsContext(DbContextOptions<wmsContext> options)
+        public WmsContext(DbContextOptions<WmsContext> options)
             : base(options)
         {
-            
         }
 
         public virtual DbSet<Aduana> Aduana { get; set; }
@@ -48,7 +47,6 @@ namespace EdiApi.Models
         public virtual DbSet<ItemParamaetroxProducto> ItemParamaetroxProducto { get; set; }
         public virtual DbSet<Locations> Locations { get; set; }
         public virtual DbSet<LogAsignacionRacks> LogAsignacionRacks { get; set; }
-        public virtual DbSet<Masterpedido> Masterpedido { get; set; }
         public virtual DbSet<MetodoDescargo> MetodoDescargo { get; set; }
         public virtual DbSet<Operarios> Operarios { get; set; }
         public virtual DbSet<Optsystem> Optsystem { get; set; }
@@ -67,11 +65,12 @@ namespace EdiApi.Models
         public virtual DbSet<UnidadMedida> UnidadMedida { get; set; }
         public virtual DbSet<Usrsystem> Usrsystem { get; set; }
 
-        // Unable to generate entity type for table 'dbo.Employee'. Please see the warning messages.
         // Unable to generate entity type for table 'dbo.deptoasigna'. Please see the warning messages.
         // Unable to generate entity type for table 'dbo.tbLayout'. Please see the warning messages.
         // Unable to generate entity type for table 'dbo.template_col'. Please see the warning messages.
         // Unable to generate entity type for table 'dbo.config_frm_busqueda_detalle'. Please see the warning messages.
+        // Unable to generate entity type for table 'dbo.TemporalInventario'. Please see the warning messages.
+        // Unable to generate entity type for table 'dbo.TemporalItemInventario'. Please see the warning messages.
         // Unable to generate entity type for table 'dbo.TraduccionWeb'. Please see the warning messages.
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -451,20 +450,6 @@ namespace EdiApi.Models
                     .HasMaxLength(25)
                     .IsUnicode(false);
 
-                entity.Property(e => e.Ediprocess).HasColumnName("EDIprocess");
-
-                entity.Property(e => e.EdiprocessDate)
-                    .HasColumnName("EDIprocessDate")
-                    .HasColumnType("datetime");
-
-                entity.Property(e => e.Edistatus).HasColumnName("EDIstatus");
-
-                entity.Property(e => e.EdistatusDate)
-                    .HasColumnName("EDIstatusDate")
-                    .HasColumnType("datetime");
-
-                entity.Property(e => e.Ediuser).HasColumnName("EDIuser");
-
                 entity.Property(e => e.EmpresaCustodios)
                     .HasMaxLength(250)
                     .IsUnicode(false);
@@ -524,7 +509,7 @@ namespace EdiApi.Models
 
                 entity.Property(e => e.Nombredest)
                     .HasColumnName("nombredest")
-                    .HasMaxLength(250)
+                    .HasMaxLength(75)
                     .IsUnicode(false);
 
                 entity.Property(e => e.Paisid).HasColumnName("paisid");
@@ -1297,51 +1282,6 @@ namespace EdiApi.Models
                 entity.Property(e => e.RackId).HasColumnName("RackID");
             });
 
-            modelBuilder.Entity<Masterpedido>(entity =>
-            {
-                entity.HasKey(e => e.PedidomasterId);
-
-                entity.ToTable("masterpedido");
-
-                entity.Property(e => e.PedidomasterId).HasColumnName("pedidomasterID");
-
-                entity.Property(e => e.CmpIdOrigen).HasColumnName("cmpIdOrigen");
-
-                entity.Property(e => e.EtaPto)
-                    .HasColumnName("eta_pto")
-                    .HasColumnType("datetime");
-
-                entity.Property(e => e.EtaWhs)
-                    .HasColumnName("eta_whs")
-                    .HasColumnType("datetime");
-
-                entity.Property(e => e.EtaZarpe)
-                    .HasColumnName("eta_zarpe")
-                    .HasColumnType("datetime");
-
-                entity.Property(e => e.FecAdi)
-                    .HasColumnName("fec_adi")
-                    .HasColumnType("datetime");
-
-                entity.Property(e => e.FecCarga)
-                    .HasColumnName("fec_carga")
-                    .HasColumnType("datetime");
-
-                entity.Property(e => e.FecLlegada)
-                    .HasColumnName("fec_llegada")
-                    .HasColumnType("datetime");
-
-                entity.Property(e => e.FecMaster)
-                    .HasColumnName("fec_master")
-                    .HasColumnType("datetime");
-
-                entity.Property(e => e.PedIdOrigen).HasColumnName("pedIdOrigen");
-
-                entity.Property(e => e.Statusped).HasColumnName("statusped");
-
-                entity.Property(e => e.Userid).HasColumnName("userid");
-            });
-
             modelBuilder.Entity<MetodoDescargo>(entity =>
             {
                 entity.HasKey(e => e.Descargoid);
@@ -1424,10 +1364,6 @@ namespace EdiApi.Models
 
                 entity.Property(e => e.BodegaId).HasColumnName("BodegaID");
 
-                entity.Property(e => e.Bultos)
-                    .HasColumnName("bultos")
-                    .HasColumnType("numeric(18, 4)");
-
                 entity.Property(e => e.ClienteId).HasColumnName("ClienteID");
 
                 entity.Property(e => e.Destinoid).HasColumnName("destinoid");
@@ -1440,37 +1376,19 @@ namespace EdiApi.Models
                     .HasColumnName("fechapedido")
                     .HasColumnType("date");
 
-                entity.Property(e => e.Merchandisetotal).HasColumnName("merchandisetotal");
-
                 entity.Property(e => e.Observacion)
                     .HasMaxLength(250)
                     .IsUnicode(false);
 
-                entity.Property(e => e.PaisdestId).HasColumnName("paisdestID");
-
                 entity.Property(e => e.PedidoBarcode)
                     .HasMaxLength(50)
                     .IsUnicode(false);
-
-                entity.Property(e => e.PedidomasterId).HasColumnName("pedidomasterID");
-
-                entity.Property(e => e.Peso)
-                    .HasColumnName("peso")
-                    .HasColumnType("numeric(18, 6)");
-
-                entity.Property(e => e.Qty)
-                    .HasColumnName("qty")
-                    .HasColumnType("numeric(18, 6)");
 
                 entity.Property(e => e.RegimenId).HasColumnName("RegimenID");
 
                 entity.Property(e => e.TipoPedido)
                     .HasMaxLength(2)
                     .IsUnicode(false);
-
-                entity.Property(e => e.Vol)
-                    .HasColumnName("vol")
-                    .HasColumnType("numeric(18, 6)");
 
                 entity.HasOne(d => d.Cliente)
                     .WithMany(p => p.Pedido)
