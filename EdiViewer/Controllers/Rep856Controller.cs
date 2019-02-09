@@ -14,7 +14,7 @@ namespace EdiViewer.Controllers
         {
             return View();
         }
-        public async Task<IActionResult> SendForm()
+        public async Task<string> SendForm()
         {
             IEnumerable<TsqlDespachosWmsComplex> TsqlDespachosWmsComplexO;
             List<string[]> ListSelected = new List<string[]>();
@@ -26,10 +26,10 @@ namespace EdiViewer.Controllers
             {
                 IEnumerable<string> ListDispatch = ListSelected.Select(O1 => O1.FirstOrDefault()).Distinct();
                 IEnumerable<string> ListProducts = ListSelected.Select(O1 => O1.LastOrDefault()).ToArray();
-                TsqlDespachosWmsComplexO = await ApiClientFactory.Instance.GetSN(ListDispatch, ListProducts);
-                return View(TsqlDespachosWmsComplexO);
+                //TsqlDespachosWmsComplexO = await ApiClientFactory.Instance.GetSN(ListDispatch, ListProducts);
+                return "Todo ok";
             }
-            return View();
+            return string.Empty;
         }
         public async Task<IActionResult> GetGridData(string destino = "") {
             try

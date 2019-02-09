@@ -16,6 +16,7 @@ namespace EdiApi.Models.EdiDB
         }
 
         public virtual DbSet<EdiComs> EdiComs { get; set; }
+        public virtual DbSet<EdiRepSent> EdiRepSent { get; set; }
         public virtual DbSet<EdiSegName> EdiSegName { get; set; }
         public virtual DbSet<LearAth830> LearAth830 { get; set; }
         public virtual DbSet<LearBfr830> LearBfr830 { get; set; }
@@ -70,6 +71,15 @@ namespace EdiApi.Models.EdiDB
                 entity.Property(e => e.Log).HasColumnType("text");
 
                 entity.Property(e => e.Type).HasMaxLength(16);
+            });
+
+            modelBuilder.Entity<EdiRepSent>(entity =>
+            {
+                entity.Property(e => e.Fecha).HasMaxLength(18);
+
+                entity.Property(e => e.Log).HasColumnType("text");
+
+                entity.Property(e => e.Tipo).HasMaxLength(3);
             });
 
             modelBuilder.Entity<EdiSegName>(entity =>

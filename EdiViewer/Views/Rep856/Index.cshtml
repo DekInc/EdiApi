@@ -22,7 +22,7 @@
                     </form>
                     <div class="clearfix"></div>
                     <br />
-                    <form id="formReportes" accept-charset="UTF-8" method="post" asp-action="SendForm">
+                    <form id="formReportes" accept-charset="UTF-8" method="post">
                         <table id="tblReportes" class="table table-striped table-bordered nowrap table-hover display tblReportes" cellspacing="0">
                             <thead>
                                 <tr>
@@ -58,7 +58,7 @@
                         </table>
                         <br />
                         <br />
-                        <button class="btn btn-primary" type="submit">Enviar notificación de envió</button>
+                        <button id="btnSubmit" class="btn btn-primary" type="button">Enviar notificación de envió</button>
                         <br />
                         <br />
                     </form>
@@ -219,6 +219,22 @@
     //    if ($('#cbTo').val() == '')
     //        fillTblReportes('null');
     //});    
+    $('#btnSubmit').on("click", function () {
+        //e.preventDefault;
+        $.ajax({
+            url: '@this.Url.Action("SendForm")',
+            type: 'POST',
+            dataType: 'JSON',
+            data: $('#formReportes').serialize(),
+            success: function (data) {
+                alert('Notificación enviada');
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                alert(xhr.status);
+                alert(thrownError);
+            }
+        });
+    });
     $(document).ready(function () {
         fillTblReportes('null');
         $('#tblReportes tbody').on('click', 'tr', function () {
