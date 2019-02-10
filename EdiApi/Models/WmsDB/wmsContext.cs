@@ -13,6 +13,7 @@ namespace EdiApi.Models.WmsDB
         public WmsContext(DbContextOptions<WmsContext> options)
             : base(options)
         {
+            //this.Database.ExecuteSqlCommand()
         }
 
         public virtual DbSet<Aduana> Aduana { get; set; }

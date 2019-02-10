@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace EdiApi.Models
 {
-    public class ComRepoMail : Coms
+    public class ComRepoMail : ComS
     {
         private const string Id = "IMAP";        
         public static StreamReader GetEdi830File(string _IMapHost, int _IMapPortIn, int _IMapPortOut, string _IMapUser, string _IMapPassword, bool _IMapSSL, ref int _CodError, ref string _MessageSubject, ref string _FileName, ref EdiDBContext _DbO, object _MaxEdiComs)

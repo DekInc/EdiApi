@@ -1,7 +1,7 @@
 ﻿@model Tuple<ComModels.LearRef830, IEnumerable<ComModels.EdiSegName>, IEnumerable<ComModels.LearCodes>>
 <div class="card box-shadow">
-    <div class="card-header card-cref cursor" data-toggle="collapse" data-target="#@Model.Item1.HashId" aria-expanded="false" aria-controls="@Model.Item1.HashId" title="@Model.Item2.Where(Sn => Sn.Segment == "REF").FirstOrDefault().DescEng">
-        REF - @Model.Item2.Where(Sn => Sn.Segment == "REF").FirstOrDefault().Eng
+    <div class="card-header card-cref cursor" data-toggle="collapse" data-target="#@Model.Item1.HashId" aria-expanded="false" aria-controls="@Model.Item1.HashId" title="@Model.Item2.Where(Sn => Sn.Segment == "REF").Fod().DescEng">
+        REF - @Model.Item2.Where(Sn => Sn.Segment == "REF").Fod().Eng
     </div>
     <div class="collapse" id="@Model.Item1.HashId">
         <div class="card-body">

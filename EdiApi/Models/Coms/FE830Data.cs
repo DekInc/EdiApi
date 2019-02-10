@@ -30,5 +30,6 @@ namespace EdiApi.Models
         public IEnumerable<LearFst830> ListSdpFst { set; get; }
         public IEnumerable<LearRef830> ListShpRef { set; get; }
         public IEnumerable<LearCodes> ListCodes { set; get; }
+        public IEnumerable<FE830DataAux> ListProdExist { set; get; }
     }
 }

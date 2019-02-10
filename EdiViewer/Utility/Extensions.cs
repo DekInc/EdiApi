@@ -18,5 +18,8 @@ namespace EdiViewer
             string Val = Session.GetString(_Key);
             return Val == null ? default(T) : JsonConvert.DeserializeObject<T>(Val);
         }
+        public static TSource Fod<TSource>(this IEnumerable<TSource> source) {
+            return source.FirstOrDefault();
+        }
     }
 }

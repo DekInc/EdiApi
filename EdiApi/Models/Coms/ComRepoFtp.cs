@@ -11,7 +11,7 @@ namespace EdiApi.Models
     /// <summary>
     /// https://www.codeproject.com/Tips/443588/Simple-Csharp-FTP-Class
     /// </summary>
-    public class ComRepoFtp : Coms
+    public class ComRepoFtp : ComS
     {
         private const string Id = "FTP";
         private readonly string host = null;

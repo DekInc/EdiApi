@@ -8,8 +8,8 @@
     <div class="container">
         <div class="card-deck cardMain">
             <div class="card box-shadow">
-                <div class="card-header" data-togle="tooltip" data-html="true" title="@Model.Data.ListEdiSegName.Where(Sn => Sn.Segment == "ISA").FirstOrDefault().DescEng">
-                    ISA - @Model.Data.ListEdiSegName.Where(Sn => Sn.Segment == "ISA").FirstOrDefault().Eng
+                <div class="card-header" data-togle="tooltip" data-html="true" title="@Model.Data.ListEdiSegName.Where(Sn => Sn.Segment == "ISA").Fod().DescEng">
+                    ISA - @Model.Data.ListEdiSegName.Where(Sn => Sn.Segment == "ISA").Fod().Eng
                 </div>
                 <div class="card-body">
                     <div class="container">
@@ -72,10 +72,10 @@
                         @if (Model.Data.ListStN1.Count() > 0)
                         {
                             <div class="card box-shadow">
-                                <div class="card-header card-cn1 cursor" data-toggle="collapse" data-target="#@Model.Data.ListStN1.FirstOrDefault().HashId" aria-expanded="false" aria-controls="@Model.Data.ListStN1.FirstOrDefault().HashId" title="@Model.Data.ListEdiSegName.Where(Sn => Sn.Segment == "N1").FirstOrDefault().DescEng">
-                                    N1 - @Model.Data.ListEdiSegName.Where(Sn => Sn.Segment == "N1").FirstOrDefault().Eng
+                                <div class="card-header card-cn1 cursor" data-toggle="collapse" data-target="#@Model.Data.ListStN1.Fod().HashId" aria-expanded="false" aria-controls="@Model.Data.ListStN1.Fod().HashId" title="@Model.Data.ListEdiSegName.Where(Sn => Sn.Segment == "N1").Fod().DescEng">
+                                    N1 - @Model.Data.ListEdiSegName.Where(Sn => Sn.Segment == "N1").Fod().Eng
                                 </div>
-                                <div class="collapse" id="@Model.Data.ListStN1.FirstOrDefault().HashId">
+                                <div class="collapse" id="@Model.Data.ListStN1.Fod().HashId">
                                     <div class="card-body">
                                         <div class="container">
                                             @foreach (LearN1830 N1 in Model.Data.ListStN1)

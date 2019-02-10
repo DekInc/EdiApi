@@ -24,7 +24,7 @@ namespace EdiViewer.Controllers
                     ListSelected.Add(FormPara.Replace("chkS", "").Split('|'));
             if (ListSelected.Count > 0)
             {
-                IEnumerable<string> ListDispatch = ListSelected.Select(O1 => O1.FirstOrDefault()).Distinct();
+                IEnumerable<string> ListDispatch = ListSelected.Select(O1 => O1.Fod()).Distinct();
                 IEnumerable<string> ListProducts = ListSelected.Select(O1 => O1.LastOrDefault()).ToArray();
                 //TsqlDespachosWmsComplexO = await ApiClientFactory.Instance.GetSN(ListDispatch, ListProducts);
                 
@@ -37,17 +37,17 @@ namespace EdiViewer.Controllers
             {
                 if (destino == "null") destino = string.Empty;
                 //var dict = Request.Form.ToDictionary(x => x.Key, x => x.Value.ToString());
-                var draw = HttpContext.Request.Form["draw"].FirstOrDefault();
+                var draw = HttpContext.Request.Form["draw"].Fod();
                 // Skiping number of Rows count  
-                var start = Request.Form["start"].FirstOrDefault();
+                var start = Request.Form["start"].Fod();
                 // Paging Length 10,20  
-                var length = Request.Form["length"].FirstOrDefault();
+                var length = Request.Form["length"].Fod();
                 // Sort Column Name  
-                var sortColumn = Request.Form["columns[" + Request.Form["order[0][column]"].FirstOrDefault() + "][name]"].FirstOrDefault();
+                var sortColumn = Request.Form["columns[" + Request.Form["order[0][column]"].Fod() + "][name]"].Fod();
                 // Sort Column Direction ( asc ,desc)  
-                var sortColumnDirection = Request.Form["order[0][dir]"].FirstOrDefault();
+                var sortColumnDirection = Request.Form["order[0][dir]"].Fod();
                 // Search Value from (Search box)  
-                var searchValue = Request.Form["search[value]"].FirstOrDefault();
+                var searchValue = Request.Form["search[value]"].Fod();
 
                 //Paging Size (10,20,50,100)  
                 int pageSize = length != null ? Convert.ToInt32(length) : 0;
@@ -68,11 +68,11 @@ namespace EdiViewer.Controllers
                                              select D.CodProducto).Distinct();
                 if (TsqlDespachosWmsComplexO.Count() == 1)
                 {
-                    if (TsqlDespachosWmsComplexO.FirstOrDefault().DespachoId == 0)
+                    if (TsqlDespachosWmsComplexO.Fod().DespachoId == 0)
                     {
-                        if (string.IsNullOrEmpty(TsqlDespachosWmsComplexO.FirstOrDefault().ErrorMessage))
+                        if (string.IsNullOrEmpty(TsqlDespachosWmsComplexO.Fod().ErrorMessage))
                         {
-                            return Json(new { draw = 0, recordsFiltered = 0, recordsTotal = 0, TsqlDespachosWmsComplexO.FirstOrDefault().ErrorMessage, ListTo });
+                            return Json(new { draw = 0, recordsFiltered = 0, recordsTotal = 0, TsqlDespachosWmsComplexO.Fod().ErrorMessage, ListTo });
                         }
                     }
                 }

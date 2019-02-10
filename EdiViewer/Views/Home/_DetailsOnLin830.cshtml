@@ -2,11 +2,14 @@
 @using ComModels;
 
 <div class="card box-shadow">
-    <div class="card-header card-clin cursor" data-toggle="collapse" data-target="#@Model.Item1.HashId" aria-expanded="false" aria-controls="@Model.Item1.HashId" title="@Model.Item2.Where(Sn => Sn.Segment == "LIN").FirstOrDefault().DescEng">
-        LIN - @Model.Item2.Where(Sn => Sn.Segment == "LIN").FirstOrDefault().Eng @Model.Item1.ProductId
+    <div class="card-header card-clin cursor" data-toggle="collapse" data-target="#@Model.Item1.HashId" aria-expanded="false" aria-controls="@Model.Item1.HashId" title="@Model.Item2.Where(Sn => Sn.Segment == "LIN").Fod().DescEng">
+        LIN - @Model.Item2.Where(Sn => Sn.Segment == "LIN").Fod().Eng @Model.Item1.ProductId
     </div>
     <div class="collapse" id="@Model.Item1.HashId">
         <div class="card-body">
+            @*<div class="divExistencias">
+                Existencias del producto: @Model.Item3.Data.ListProdExist.Where(Pre => Pre.CodProducto == Model.Item1.ProductId).Fod().Existencia??0
+            </div>*@
             <div class="container">
                 <div class="row">
                     <div class="col-sm">
@@ -50,10 +53,10 @@
             @if (Model.Item3.Data.ListLinN1.Where(LN1 => LN1.ParentHashId == Model.Item1.HashId).Count() > 0)
             {
                 <div class="card box-shadow">
-                    <div class="card-header card-cn1 cursor" data-toggle="collapse" data-target="#@Model.Item3.Data.ListLinN1.Where(LN1 => LN1.ParentHashId == Model.Item1.HashId).FirstOrDefault().HashId" aria-expanded="false" aria-controls="@Model.Item3.Data.ListLinN1.Where(LN1 => LN1.ParentHashId == Model.Item1.HashId).FirstOrDefault().HashId" title="@Model.Item2.Where(Sn => Sn.Segment == "N1").FirstOrDefault().DescEng">
-                        N1 - @Model.Item2.Where(Sn => Sn.Segment == "N1").FirstOrDefault().Eng
+                    <div class="card-header card-cn1 cursor" data-toggle="collapse" data-target="#@Model.Item3.Data.ListLinN1.Where(LN1 => LN1.ParentHashId == Model.Item1.HashId).Fod().HashId" aria-expanded="false" aria-controls="@Model.Item3.Data.ListLinN1.Where(LN1 => LN1.ParentHashId == Model.Item1.HashId).Fod().HashId" title="@Model.Item2.Where(Sn => Sn.Segment == "N1").Fod().DescEng">
+                        N1 - @Model.Item2.Where(Sn => Sn.Segment == "N1").Fod().Eng
                     </div>
-                    <div class="collapse" id="@Model.Item3.Data.ListLinN1.Where(LN1 => LN1.ParentHashId == Model.Item1.HashId).FirstOrDefault().HashId">
+                    <div class="collapse" id="@Model.Item3.Data.ListLinN1.Where(LN1 => LN1.ParentHashId == Model.Item1.HashId).Fod().HashId">
                         <div class="card-body">
                             <div class="container">
                                 @foreach (LearN1830 N1 in Model.Item3.Data.ListLinN1.Where(LN1 => LN1.ParentHashId == Model.Item1.HashId))
@@ -125,10 +128,10 @@
             @if (Model.Item3.Data.ListLinFst.Where(LNte => LNte.ParentHashId == Model.Item1.HashId).Count() > 0)
             {
                 <div class="card box-shadow">
-                    <div class="card-header card-cfst cursor" data-toggle="collapse" data-target="#@Model.Item3.Data.ListLinFst.Where(LNte => LNte.ParentHashId == Model.Item1.HashId).FirstOrDefault().HashId" aria-expanded="false" aria-controls="@Model.Item3.Data.ListLinFst.Where(LNte => LNte.ParentHashId == Model.Item1.HashId).FirstOrDefault().HashId" title="@Model.Item2.Where(Sn => Sn.Segment == "FST").FirstOrDefault().DescEng">
-                        FST - @Model.Item2.Where(Sn => Sn.Segment == "FST").FirstOrDefault().Eng
+                    <div class="card-header card-cfst cursor" data-toggle="collapse" data-target="#@Model.Item3.Data.ListLinFst.Where(LNte => LNte.ParentHashId == Model.Item1.HashId).Fod().HashId" aria-expanded="false" aria-controls="@Model.Item3.Data.ListLinFst.Where(LNte => LNte.ParentHashId == Model.Item1.HashId).Fod().HashId" title="@Model.Item2.Where(Sn => Sn.Segment == "FST").Fod().DescEng">
+                        FST - @Model.Item2.Where(Sn => Sn.Segment == "FST").Fod().Eng
                     </div>
-                    <div class="collapse" id="@Model.Item3.Data.ListLinFst.Where(LNte => LNte.ParentHashId == Model.Item1.HashId).FirstOrDefault().HashId">
+                    <div class="collapse" id="@Model.Item3.Data.ListLinFst.Where(LNte => LNte.ParentHashId == Model.Item1.HashId).Fod().HashId">
                         <div class="card-body">
                             <div class="container">
                                 <div class="row">
@@ -180,10 +183,10 @@
             @if (Model.Item3.Data.ListLinAth.Where(LNte => LNte.ParentHashId == Model.Item1.HashId).Count() > 0)
             {
                 <div class="card box-shadow">
-                    <div class="card-header card-cath cursor" data-toggle="collapse" data-target="#@Model.Item3.Data.ListLinAth.Where(LNte => LNte.ParentHashId == Model.Item1.HashId).FirstOrDefault().HashId" aria-expanded="false" aria-controls="@Model.Item3.Data.ListLinAth.Where(LNte => LNte.ParentHashId == Model.Item1.HashId).FirstOrDefault().HashId" title="@Model.Item2.Where(Sn => Sn.Segment == "ATH").FirstOrDefault().DescEng">
-                        ATH - @Model.Item2.Where(Sn => Sn.Segment == "ATH").FirstOrDefault().Eng
+                    <div class="card-header card-cath cursor" data-toggle="collapse" data-target="#@Model.Item3.Data.ListLinAth.Where(LNte => LNte.ParentHashId == Model.Item1.HashId).Fod().HashId" aria-expanded="false" aria-controls="@Model.Item3.Data.ListLinAth.Where(LNte => LNte.ParentHashId == Model.Item1.HashId).Fod().HashId" title="@Model.Item2.Where(Sn => Sn.Segment == "ATH").Fod().DescEng">
+                        ATH - @Model.Item2.Where(Sn => Sn.Segment == "ATH").Fod().Eng
                     </div>
-                    <div class="collapse" id="@Model.Item3.Data.ListLinAth.Where(LNte => LNte.ParentHashId == Model.Item1.HashId).FirstOrDefault().HashId">
+                    <div class="collapse" id="@Model.Item3.Data.ListLinAth.Where(LNte => LNte.ParentHashId == Model.Item1.HashId).Fod().HashId">
                         <div class="card-body">
                             @foreach (LearAth830 Ath in Model.Item3.Data.ListLinAth.Where(LNte => LNte.ParentHashId == Model.Item1.HashId))
                             {
@@ -201,10 +204,10 @@
             @if (Model.Item3.Data.ListLinShp.Where(LShp => LShp.ParentHashId == Model.Item1.HashId).Count() > 0)
             {
                 <div class="card box-shadow">
-                    <div class="card-header card-cshp cursor" data-toggle="collapse" data-target="#@Model.Item3.Data.ListLinShp.Where(LShp => LShp.ParentHashId == Model.Item1.HashId).FirstOrDefault().HashId" aria-expanded="false" aria-controls="@Model.Item3.Data.ListLinShp.Where(LShp => LShp.ParentHashId == Model.Item1.HashId).FirstOrDefault().HashId" title="@Model.Item2.Where(Sn => Sn.Segment == "SHP").FirstOrDefault().DescEng">
-                        SHP - @Model.Item2.Where(Sn => Sn.Segment == "SHP").FirstOrDefault().Eng
+                    <div class="card-header card-cshp cursor" data-toggle="collapse" data-target="#@Model.Item3.Data.ListLinShp.Where(LShp => LShp.ParentHashId == Model.Item1.HashId).Fod().HashId" aria-expanded="false" aria-controls="@Model.Item3.Data.ListLinShp.Where(LShp => LShp.ParentHashId == Model.Item1.HashId).Fod().HashId" title="@Model.Item2.Where(Sn => Sn.Segment == "SHP").Fod().DescEng">
+                        SHP - @Model.Item2.Where(Sn => Sn.Segment == "SHP").Fod().Eng
                     </div>
-                    <div class="collapse" id="@Model.Item3.Data.ListLinShp.Where(LShp => LShp.ParentHashId == Model.Item1.HashId).FirstOrDefault().HashId">
+                    <div class="collapse" id="@Model.Item3.Data.ListLinShp.Where(LShp => LShp.ParentHashId == Model.Item1.HashId).Fod().HashId">
                         <div class="card-body">
                             <div class="container">
                                 @foreach (LearShp830 Shp in Model.Item3.Data.ListLinShp.Where(LShp => LShp.ParentHashId == Model.Item1.HashId))

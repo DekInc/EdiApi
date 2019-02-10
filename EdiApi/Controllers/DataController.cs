@@ -8,6 +8,8 @@ using EdiApi.Models.WmsDB;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
+using Microsoft.EntityFrameworkCore;
+using System.Data.Common;
 
 namespace EdiApi.Controllers
 {
@@ -32,7 +34,7 @@ namespace EdiApi.Controllers
         private IEnumerable<TsqlDespachosWmsComplex> GetExToIe2(Exception E1)
         {
             yield return new TsqlDespachosWmsComplex() { ErrorMessage = E1.ToString() };
-        }
+        }        
         [HttpGet]
         public IEnumerable<Rep830Info> GetPureEdi(string HashId = "")
         {   
@@ -203,6 +205,17 @@ namespace EdiApi.Controllers
             FE830DataRet.ListCodes = from c in DbO.LearCodes
                                      orderby c.Str, c.Param
                                      select c;
+            //List<LearLin830> ListProd = (from L in FE830DataRet.ListStLin
+            //                             select L).ToList();
+            //FE830DataRet.ListProdExist = from I in WmsDbO.Inventario
+            //                             from Ii in WmsDbO.ItemInventario
+            //                             from Pr in ListProd
+            //                             where Ii.InventarioId == I.InventarioId
+            //                             && Ii.CodProducto == Pr.ProductId
+            //                             select new FE830DataAux() {
+            //                                 CodProducto = Pr.ProductId,
+            //                                 Existencia = Ii.Existencia ?? 0
+            //                             };
             return FE830DataRet;
         }
         delegate void del(int i);
@@ -225,69 +238,10 @@ namespace EdiApi.Controllers
         }
         [HttpGet]
         public IEnumerable<TsqlDespachosWmsComplex> GetSN() {
-            //PASAR A SQL
             try
             {
-                List<string> ListProductosPendientes =
-                    (from Pe in DbO.LearPureEdi
-                     from I in DbO.LearIsa830
-                     from St in DbO.LearSt830
-                     from L in DbO.LearLin830
-                     where !Pe.Shp
-                     && I.ParentHashId == Pe.HashId
-                     && St.ParentHashId == I.HashId
-                     && L.ParentHashId == St.HashId
-                     orderby L.ProductId ascending
-                     select L.ProductId).Distinct().ToList();
-
-                IEnumerable<TsqlDespachosWmsComplex> ListDespachosWms = (
-                    from D in WmsDbO.Despachos
-                    from DD in WmsDbO.DtllDespacho
-                    from T in WmsDbO.Transacciones
-                    from P in WmsDbO.Pedido
-                    from S in WmsDbO.SysTempSalidas
-                    from PR in WmsDbO.Producto
-                    from CL in WmsDbO.Clientes
-                    from I in WmsDbO.Inventario
-                    from UM in WmsDbO.UnidadMedida
-                    from PP in ListProductosPendientes
-                    where PR.CodProducto == S.CodProducto
-                    && S.PedidoId == T.PedidoId
-                    && P.PedidoId == T.PedidoId
-                    && T.TransaccionId == DD.TransaccionId
-                    && DD.DespachoId == D.DespachoId
-                    && CL.ClienteId == T.ClienteId
-                    && I.InventarioId == S.InventarioId
-                    && UM.UnidadMedidaId == I.TipoBulto
-                    && T.EstatusId == 9
-                    && T.FechaTransaccion > DateTime.Now.AddDays(-15)
-                    && PR.CodProducto == PP
-                    group new { D, DD, T, P, S, PR, CL, I, UM, PP }
-                    by new {
-                        D.DespachoId,
-                        D.FechaSalida,
-                        PR.CodProducto,
-                        PR.Descripcion,
-                        CL.Nombre,
-                        UM.UnidadMedida1,
-                        D.Destino
-                    }
-                    into Grp
-                    select new TsqlDespachosWmsComplex() {
-                        DespachoId = Grp.Key.DespachoId,
-                        FechaSalida = Grp.Key.FechaSalida,
-                        CodProducto = Grp.Key.CodProducto,
-                        Producto = Grp.Key.Descripcion,
-                        Cliente = Grp.Key.Nombre,
-                        Quantity = Grp.Sum(Col => Col.S.Cantidad),
-                        Weight = Grp.Sum(ColO => ColO.S.Cantidad * ColO.I.Peso / ColO.I.CantidadInicial),
-                        Volume = Grp.Sum(ColO => ColO.S.Cantidad * ColO.I.Volumen / ColO.I.CantidadInicial),
-                        Bulks = Grp.Sum(ColO => ColO.S.Cantidad * (double)ColO.I.Articulos / ColO.I.CantidadInicial),
-                        TotalValue = Grp.Sum(ColO2 => ColO2.S.Cantidad * ColO2.S.Precio),
-                        UnidadDeMedida = Grp.Key.UnidadMedida1,
-                        Destino = Grp.Key.Destino
-                    });
-                return ListDespachosWms;
+                IEnumerable<TsqlDespachosWmsComplex> ListSN = ManualDB.SP_GetSN(ref WmsDbO);
+                return ListSN;
             }
             catch (Exception e1)
             {

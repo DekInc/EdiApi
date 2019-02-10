@@ -51,7 +51,7 @@ namespace EdiViewer.Utility.Helper
             if (Lc.Count() == 0)
                 return $"{_Param} - Valor no mapeado";
             else
-                return (_Eng ? Lc.FirstOrDefault().Value : Lc.FirstOrDefault().ValueEsp);
+                return (_Eng ? Lc.Fod().Value : Lc.Fod().ValueEsp);
         }
         public static string QtyToMil(this IHtmlHelper htmlHelper, string _Str, IEnumerable<ComModels.LearUit830> _ListUits)
         {
@@ -59,7 +59,7 @@ namespace EdiViewer.Utility.Helper
             {
                 int Qty = Convert.ToInt32(_Str);
                 if (_ListUits.Count() > 0)
-                    return $"{Qty.ToString("N0")} {_ListUits.FirstOrDefault().UnitOfMeasure}";
+                    return $"{Qty.ToString("N0")} {_ListUits.Fod().UnitOfMeasure}";
                 else
                     return Qty.ToString("N0");
             }
@@ -82,24 +82,24 @@ namespace EdiViewer.Utility.Helper
                     {
                         switch (ThisTime.DayOfWeek) {
                             case DayOfWeek.Monday:
-                                double ShpQty = Convert.ToDouble(_ShpQty.Where(S => S.QuantityQualifier.Equals("02")).FirstOrDefault().Quantity);
+                                double ShpQty = Convert.ToDouble(_ShpQty.Where(S => S.QuantityQualifier.Equals("02")).Fod().Quantity);
                                 double Qty = Convert.ToDouble(_StrQty);
                                 double QtyRes = (Qty - ShpQty);
-                                return $"{QtyRes.ToString("N0")} {_ListUits.FirstOrDefault().UnitOfMeasure}";
+                                return $"{QtyRes.ToString("N0")} {_ListUits.Fod().UnitOfMeasure}";
                             case DayOfWeek.Wednesday:
-                                Models.EdiDetailQtysModel QtyLast = _ListFstQtys.Where(FQ => FQ.FstDate == ThisTime.AddDays(-2) && FQ.HashId == _ParentHashId).FirstOrDefault();
-                                Models.EdiDetailQtysModel QtyNext = _ListFstQtys.Where(FQ => FQ.FstDate == ThisTime.AddDays(-1) && FQ.HashId == _ParentHashId).FirstOrDefault();
+                                Models.EdiDetailQtysModel QtyLast = _ListFstQtys.Where(FQ => FQ.FstDate == ThisTime.AddDays(-2) && FQ.HashId == _ParentHashId).Fod();
+                                Models.EdiDetailQtysModel QtyNext = _ListFstQtys.Where(FQ => FQ.FstDate == ThisTime.AddDays(-1) && FQ.HashId == _ParentHashId).Fod();
                                 if (QtyNext != null && QtyLast != null)
                                 {
-                                    return $"{(QtyNext.Qty - QtyLast.Qty).ToString("N0")} {_ListUits.FirstOrDefault().UnitOfMeasure}";
+                                    return $"{(QtyNext.Qty - QtyLast.Qty).ToString("N0")} {_ListUits.Fod().UnitOfMeasure}";
                                 }
                                 else return "-1";
                             case DayOfWeek.Friday:
-                                Models.EdiDetailQtysModel QtyLast2 = _ListFstQtys.Where(FQ => FQ.FstDate == ThisTime.AddDays(-3) && FQ.HashId == _ParentHashId).FirstOrDefault();
-                                Models.EdiDetailQtysModel QtyNext2 = _ListFstQtys.Where(FQ => FQ.FstDate == ThisTime.AddDays(-1) && FQ.HashId == _ParentHashId).FirstOrDefault();
+                                Models.EdiDetailQtysModel QtyLast2 = _ListFstQtys.Where(FQ => FQ.FstDate == ThisTime.AddDays(-3) && FQ.HashId == _ParentHashId).Fod();
+                                Models.EdiDetailQtysModel QtyNext2 = _ListFstQtys.Where(FQ => FQ.FstDate == ThisTime.AddDays(-1) && FQ.HashId == _ParentHashId).Fod();
                                 if (QtyNext2 != null && QtyLast2 != null)
                                 {
-                                    return $"{(QtyNext2.Qty - QtyLast2.Qty).ToString("N0")} {_ListUits.FirstOrDefault().UnitOfMeasure}";
+                                    return $"{(QtyNext2.Qty - QtyLast2.Qty).ToString("N0")} {_ListUits.Fod().UnitOfMeasure}";
                                 }
                                 else return "-1";
                         }                        
@@ -127,17 +127,17 @@ namespace EdiViewer.Utility.Helper
             {
                 if (ApplicationSettings.English)
                 {
-                    if (string.IsNullOrEmpty(Lc.FirstOrDefault().Value))
+                    if (string.IsNullOrEmpty(Lc.Fod().Value))
                         Div.InnerHtml.AppendHtml($"[{_ObjectLabel}] - valor no mapeado<br/>");
                     else
-                        Div.InnerHtml.AppendHtml($"{Lc.FirstOrDefault().Value}<br/>"); // English
+                        Div.InnerHtml.AppendHtml($"{Lc.Fod().Value}<br/>"); // English
                 }
                 else
                 {
-                    if (string.IsNullOrEmpty(Lc.FirstOrDefault().ValueEsp))
+                    if (string.IsNullOrEmpty(Lc.Fod().ValueEsp))
                         Div.InnerHtml.AppendHtml($"[{_ObjectLabel}] - valor no mapeado<br/>");
                     else
-                        Div.InnerHtml.AppendHtml($"{Lc.FirstOrDefault().ValueEsp}<br/>"); // Spanish
+                        Div.InnerHtml.AppendHtml($"{Lc.Fod().ValueEsp}<br/>"); // Spanish
                 }
             }
             return Div;

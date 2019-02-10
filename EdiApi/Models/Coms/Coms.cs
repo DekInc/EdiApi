@@ -4,9 +4,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace EdiApi
+namespace EdiApi.Models
 {
-    public class Coms
+    public class ComS
     {
         public static void AddComLog(ref EdiDBContext _DbO, string _Type, string _Log)
         {

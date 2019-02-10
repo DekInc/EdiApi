@@ -1,7 +1,7 @@
 ﻿@model Tuple<ComModels.LearUit830, IEnumerable<ComModels.EdiSegName>, IEnumerable<ComModels.LearCodes>>
 <div class="card box-shadow">
-    <div class="card-header card-cuit cursor" data-toggle="collapse" data-target="#@Model.Item1.HashId" aria-expanded="false" aria-controls="@Model.Item1.HashId" title="@Model.Item2.Where(Sn => Sn.Segment == "UIT").FirstOrDefault().DescEng">
-        UIT - @Model.Item2.Where(Sn => Sn.Segment == "UIT").FirstOrDefault().Eng
+    <div class="card-header card-cuit cursor" data-toggle="collapse" data-target="#@Model.Item1.HashId" aria-expanded="false" aria-controls="@Model.Item1.HashId" title="@Model.Item2.Where(Sn => Sn.Segment == "UIT").Fod().DescEng">
+        UIT - @Model.Item2.Where(Sn => Sn.Segment == "UIT").Fod().Eng
     </div>
     <div class="show" id="@Model.Item1.HashId">
         <div class="card-body">
