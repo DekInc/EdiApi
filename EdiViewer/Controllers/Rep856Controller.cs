@@ -27,6 +27,7 @@ namespace EdiViewer.Controllers
                 IEnumerable<string> ListDispatch = ListSelected.Select(O1 => O1.FirstOrDefault()).Distinct();
                 IEnumerable<string> ListProducts = ListSelected.Select(O1 => O1.LastOrDefault()).ToArray();
                 //TsqlDespachosWmsComplexO = await ApiClientFactory.Instance.GetSN(ListDispatch, ListProducts);
+                
                 return "Todo ok";
             }
             return string.Empty;

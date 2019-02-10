@@ -77,6 +77,9 @@ namespace EdiApi.Controllers
         //De modo que se expone https://localhost:44373/Edi/TranslateForms830
         public ActionResult<RetReporte> TranslateForms830()
         {
+            //System.IO.StreamWriter Sw2 = new System.IO.StreamWriter(@"c:\temp\EdiLog.txt", true);
+            //Sw2.WriteLine("TranslateForms830 init" + DateTime.Now.ToString() + Environment.NewLine);
+            //Sw2.Close();
             DateTime StartTime = DateTime.Now;
             LearRep830 LearRep830O = new LearRep830(ref DbO);
             try

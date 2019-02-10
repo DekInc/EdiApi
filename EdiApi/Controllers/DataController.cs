@@ -225,6 +225,7 @@ namespace EdiApi.Controllers
         }
         [HttpGet]
         public IEnumerable<TsqlDespachosWmsComplex> GetSN() {
+            //PASAR A SQL
             try
             {
                 List<string> ListProductosPendientes =

@@ -37,6 +37,18 @@ namespace EdiViewer.Controllers
                 return View(new EdiDetailModel());
             EdiDetailModelO.Data.ListLinFst = EdiDetailModelO.Data.ListLinFst.OrderBy(O => O.FstDate);
             EdiDetailModelO.Data.ListSdpFst = EdiDetailModelO.Data.ListSdpFst.OrderBy(O => O.FstDate);
+            if (EdiDetailModelO.Data.ListSdpFst.Count() > 1) {
+                EdiDetailModelO.EdiDetailQtys = 
+                    from F in EdiDetailModelO.Data.ListSdpFst
+                    select new EdiDetailQtysModel() {
+                        HashId = F.ParentHashId,
+                        FstDate = (new DateTime(Convert.ToInt32($"20{F.FstDate.Substring(0, 2)}"),
+                        Convert.ToInt32(F.FstDate.Substring(2, 2)),
+                        Convert.ToInt32(F.FstDate.Substring(4, 2))
+                        )),
+                        Qty = Convert.ToDouble(F.Quantity)
+                    };
+            }
             return View(EdiDetailModelO);
         }
         public async Task<IActionResult> GetPureEdi()
@@ -64,7 +76,7 @@ namespace EdiViewer.Controllers
                 // Getting all Customer data  
                 IEnumerable<Rep830Info> Rep830InfoO = await ApiClientFactory.Instance.GetPureEdi(string.Empty);
                 if (!string.IsNullOrEmpty(Rep830InfoO.FirstOrDefault().errorMessage)) {
-                    return Json(new { draw = 0, recordsFiltered = 0, recordsTotal = 0, data = Rep830InfoO });
+                    return Json(new { draw = 0, recordsFiltered = 0, recordsTotal = 0, data = Rep830InfoO, errorMessage = Rep830InfoO.FirstOrDefault().errorMessage });
                 }
                 if (!(string.IsNullOrEmpty(sortColumn) && string.IsNullOrEmpty(sortColumnDirection)))
                 {
@@ -79,7 +91,7 @@ namespace EdiViewer.Controllers
             }
             catch (Exception e1)
             {
-                return Json(new { draw = 0, recordsFiltered = 0, recordsTotal = 0, data = new Rep830Info() { errorMessage = e1.ToString() } });
+                return Json(new { draw = 0, recordsFiltered = 0, recordsTotal = 0, data = new Rep830Info() { errorMessage = e1.ToString() }, errorMessage = e1.ToString() });
             }
         }
 

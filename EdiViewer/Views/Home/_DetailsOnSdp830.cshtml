@@ -1,4 +1,4 @@
-﻿@model Tuple<ComModels.LearSdp830, IEnumerable<ComModels.EdiSegName>, IEnumerable<ComModels.LearFst830>, IEnumerable<ComModels.LearCodes>, IEnumerable<LearUit830>, IEnumerable<LearShp830>>
+﻿@model Tuple<ComModels.LearSdp830, IEnumerable<ComModels.EdiSegName>, IEnumerable<ComModels.LearFst830>, IEnumerable<ComModels.LearCodes>, IEnumerable<LearUit830>, IEnumerable<LearShp830>, IEnumerable<EdiDetailQtysModel>>
 @using ComModels
 <div class="card box-shadow">
     <div class="card-header card-csdp cursor" data-toggle="collapse" data-target="#@Model.Item1.HashId" aria-expanded="false" aria-controls="@Model.Item1.HashId" title="@Model.Item2.Where(Sn => Sn.Segment == "SDP").FirstOrDefault().DescEng">
@@ -61,13 +61,14 @@
                                 @for (int i = 0; i < Model.Item3.Count(); i++)
                                 {
                                     @await Html.PartialAsync("_DetailsOnFst830",
-                                            new Tuple<LearFst830, IEnumerable<EdiSegName>, IEnumerable<LearCodes>, int, IEnumerable<LearUit830>, IEnumerable<LearShp830>>(
+                                            new Tuple<LearFst830, IEnumerable<EdiSegName>, IEnumerable<LearCodes>, int, IEnumerable<LearUit830>, IEnumerable<LearShp830>, IEnumerable<EdiDetailQtysModel>>(
                                                 Model.Item3.ElementAt(i),
                                                 Model.Item2,
                                                 Model.Item4,
                                                 i,
                                                 Model.Item5,
-                                                Model.Item6))
+                                                Model.Item6,
+                                                Model.Item7))
                                 }
                             </div>
                         </div>

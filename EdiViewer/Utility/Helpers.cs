@@ -32,6 +32,18 @@ namespace EdiViewer.Utility.Helper
             }
             return string.Empty;
         }
+        public static bool StrToBool(this IHtmlHelper htmlHelper, int _Option, string _Value, int ContI)
+        {
+            if (ContI > 6) return false;
+            if (string.IsNullOrEmpty(_Value)) return false;
+            DateTime ThisTime = (new DateTime(Convert.ToInt32($"20{_Value.Substring(0, 2)}"),
+                        Convert.ToInt32(_Value.Substring(2, 2)),
+                        Convert.ToInt32(_Value.Substring(4, 2))
+                        ));
+            return ((ThisTime.DayOfWeek == DayOfWeek.Monday)
+                || (ThisTime.DayOfWeek == DayOfWeek.Wednesday)
+                || (ThisTime.DayOfWeek == DayOfWeek.Friday));
+        }
         public static string CodeToStr(this IHtmlHelper htmlHelper, string _Str, string _Param, IEnumerable<ComModels.LearCodes> _LearCodes, bool _Eng = true)
         {
             if (string.IsNullOrEmpty(_Param)) return string.Empty;
@@ -56,19 +68,45 @@ namespace EdiViewer.Utility.Helper
                 return _Str;
             }
         }
-        public static string QtyToLocal(this IHtmlHelper htmlHelper, string _StrQty, IEnumerable<ComModels.LearShp830> _ShpQty, IEnumerable<ComModels.LearUit830> _ListUits)
+        public static string QtyToLocal(this IHtmlHelper htmlHelper, string _StrQty, IEnumerable<ComModels.LearShp830> _ShpQty, IEnumerable<ComModels.LearUit830> _ListUits, string _Date, IEnumerable<EdiViewer.Models.EdiDetailQtysModel> _ListFstQtys, string _ParentHashId)
         {
             try
             {
                 if (_ShpQty.Where(S => S.QuantityQualifier.Equals("02")).Count() > 0)
                 {
-                    double ShpQty = Convert.ToDouble(_ShpQty.Where(S => S.QuantityQualifier.Equals("02")).FirstOrDefault().Quantity);
-                    double Qty = Convert.ToDouble(_StrQty);
-                    double QtyRes = (Qty - ShpQty);
+                    DateTime ThisTime = (new DateTime(Convert.ToInt32($"20{_Date.Substring(0, 2)}"),
+                        Convert.ToInt32(_Date.Substring(2, 2)),
+                        Convert.ToInt32(_Date.Substring(4, 2))
+                        ));                    
                     if (_ListUits.Count() > 0)
-                        return $"{QtyRes.ToString("N0")} {_ListUits.FirstOrDefault().UnitOfMeasure}";
+                    {
+                        switch (ThisTime.DayOfWeek) {
+                            case DayOfWeek.Monday:
+                                double ShpQty = Convert.ToDouble(_ShpQty.Where(S => S.QuantityQualifier.Equals("02")).FirstOrDefault().Quantity);
+                                double Qty = Convert.ToDouble(_StrQty);
+                                double QtyRes = (Qty - ShpQty);
+                                return $"{QtyRes.ToString("N0")} {_ListUits.FirstOrDefault().UnitOfMeasure}";
+                            case DayOfWeek.Wednesday:
+                                Models.EdiDetailQtysModel QtyLast = _ListFstQtys.Where(FQ => FQ.FstDate == ThisTime.AddDays(-2) && FQ.HashId == _ParentHashId).FirstOrDefault();
+                                Models.EdiDetailQtysModel QtyNext = _ListFstQtys.Where(FQ => FQ.FstDate == ThisTime.AddDays(-1) && FQ.HashId == _ParentHashId).FirstOrDefault();
+                                if (QtyNext != null && QtyLast != null)
+                                {
+                                    return $"{(QtyNext.Qty - QtyLast.Qty).ToString("N0")} {_ListUits.FirstOrDefault().UnitOfMeasure}";
+                                }
+                                else return "-1";
+                            case DayOfWeek.Friday:
+                                Models.EdiDetailQtysModel QtyLast2 = _ListFstQtys.Where(FQ => FQ.FstDate == ThisTime.AddDays(-3) && FQ.HashId == _ParentHashId).FirstOrDefault();
+                                Models.EdiDetailQtysModel QtyNext2 = _ListFstQtys.Where(FQ => FQ.FstDate == ThisTime.AddDays(-1) && FQ.HashId == _ParentHashId).FirstOrDefault();
+                                if (QtyNext2 != null && QtyLast2 != null)
+                                {
+                                    return $"{(QtyNext2.Qty - QtyLast2.Qty).ToString("N0")} {_ListUits.FirstOrDefault().UnitOfMeasure}";
+                                }
+                                else return "-1";
+                        }                        
+                        return "-1";
+                    }
                     else
-                        return QtyRes.ToString("N0");
+                        return _StrQty;
                 }
                 else return _StrQty;
             }

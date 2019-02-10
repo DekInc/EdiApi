@@ -9,5 +9,6 @@ namespace EdiViewer.Models
     public class EdiDetailModel
     {
         public FE830Data Data { set; get; }
+        public IEnumerable<EdiDetailQtysModel> EdiDetailQtys { get; set; }
     }
 }
