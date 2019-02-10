@@ -205,6 +205,7 @@ namespace EdiApi.Controllers
             FE830DataRet.ListCodes = from c in DbO.LearCodes
                                      orderby c.Str, c.Param
                                      select c;
+            FE830DataRet.ListProdExist = ManualDB.SP_GetExistencias(ref WmsDbO, 618);
             //List<LearLin830> ListProd = (from L in FE830DataRet.ListStLin
             //                             select L).ToList();
             //FE830DataRet.ListProdExist = from I in WmsDbO.Inventario

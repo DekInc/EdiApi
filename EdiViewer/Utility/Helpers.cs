@@ -68,6 +68,17 @@ namespace EdiViewer.Utility.Helper
                 return _Str;
             }
         }
+        public static string QtyToMil(this IHtmlHelper htmlHelper, double _Str, string _Um)
+        {
+            try
+            {                
+                return $"{_Str.ToString("N0")} {_Um}";
+            }
+            catch
+            {
+                return _Str.ToString("N0");
+            }
+        }
         public static string QtyToLocal(this IHtmlHelper htmlHelper, string _StrQty, IEnumerable<ComModels.LearShp830> _ShpQty, IEnumerable<ComModels.LearUit830> _ListUits, string _Date, IEnumerable<EdiViewer.Models.EdiDetailQtysModel> _ListFstQtys, string _ParentHashId)
         {
             try

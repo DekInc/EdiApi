@@ -44,5 +44,32 @@ namespace EdiApi.Models
             //List<GetSNSP> L = await WmsDbO.Query<GetSNSP>().FromSql("EXEC [dbo].[GetSN]").ToListAsync();
             return ListSn;
         }
+        public static IEnumerable<FE830DataAux> SP_GetExistencias(ref Models.WmsDB.WmsContext _WmsDbO, int _IdClient)
+        {
+            List<FE830DataAux> ListExists = new List<FE830DataAux>();
+            using (DbCommand Cmd = _WmsDbO.Database.GetDbConnection().CreateCommand())
+            {
+                Cmd.CommandText = $"[dbo].[SP_GetExistencias] {_IdClient}";
+                _WmsDbO.Database.OpenConnection();
+                DbDataReader Dr = Cmd.ExecuteReader();
+                if (Dr.HasRows)
+                {
+                    while (Dr.Read())
+                    {
+                        ListExists.Add(new FE830DataAux()
+                        {                            
+                            CodProducto = Dr.GetString(0),
+                            Producto = Dr.GetString(1),
+                            Existencia = Dr.GetDouble(2),
+                            UnidadDeMedida = Dr.GetString(3)
+                        });
+                    }
+                }
+                _WmsDbO.Database.CloseConnection();
+                if (!Dr.IsClosed)
+                    Dr.Close();
+            }
+            return ListExists;
+        }
     }
 }

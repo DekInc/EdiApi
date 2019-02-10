@@ -6,11 +6,24 @@
         LIN - @Model.Item2.Where(Sn => Sn.Segment == "LIN").Fod().Eng @Model.Item1.ProductId
     </div>
     <div class="collapse" id="@Model.Item1.HashId">
-        <div class="card-body">
-            @*<div class="divExistencias">
-                Existencias del producto: @Model.Item3.Data.ListProdExist.Where(Pre => Pre.CodProducto == Model.Item1.ProductId).Fod().Existencia??0
-            </div>*@
+        <div class="card-body">            
             <div class="container">
+                <div class="row">
+                    <div class="col-sm">
+                        <b>Existencias del producto:</b>
+                        @if (Model.Item3.Data.ListProdExist.Count() > 0)
+                        {
+                            if (Model.Item3.Data.ListProdExist.Where(Pre => Pre.CodProducto == Model.Item1.ProductId.Trim()).Count() > 0)
+                            {
+                                <text>@Html.QtyToMil(
+                                     Model.Item3.Data.ListProdExist.Where(Pre => Pre.CodProducto == Model.Item1.ProductId.Trim()).Select(Pr => Pr.Existencia).Sum(),
+                                     Model.Item3.Data.ListProdExist.Where(Pre => Pre.CodProducto == Model.Item1.ProductId.Trim()).Fod().UnidadDeMedida
+                                     )
+                                </text>
+                            }
+                        }
+                    </div>
+                </div>
                 <div class="row">
                     <div class="col-sm">
                         <div class="SegmentDataCol">
