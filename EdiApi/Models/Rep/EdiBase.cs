@@ -24,7 +24,7 @@ namespace EdiApi
         public EdiBase Parent { get; set; }
         public string ParentHashId => Parent == null? string.Empty: Parent.HashId;
         public List<EdiBase> Childs { get; set; } = new List<EdiBase>();
-        public EdiBase(string _SegmentTerminator) { SegmentTerminator = _SegmentTerminator; }
+        public EdiBase(string _SegmentTerminator) { SegmentTerminator = _SegmentTerminator; HashId = $"H{GetHashId()}"; }
         public string Ts()
         {
             string Ret = string.Empty;
@@ -43,7 +43,7 @@ namespace EdiApi
             {
                 EdiSec.CheckSeg++;
                 Coli = 0;
-                HashId = $"H{GetHashId()}";
+                //HashId = $"H{GetHashId()}";
                 EdiStr = _EdiStr;
                 EdiArray = EdiStr.Replace(SegmentTerminator, "").Split(ElementTerminator);
                 //if (Orden.Count() != EdiArray.Length)

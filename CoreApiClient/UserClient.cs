@@ -28,7 +28,10 @@ namespace CoreApiClient
         {
             return await GetAsync<FE830Data>(CreateRequestUri(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Data/GetFE830Data"), $"HashId={HashId}"));
         }
-
+        public async Task<string> SendForm856(IEnumerable<string> _ListDispatch)
+        {
+            return await GetAsync<string>(CreateRequestUri(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Data/SendForm856"), $"?DespachoId={string.Join('|', _ListDispatch)}"));
+        }
         //public async Task<List<UsersModel>> GetUsers()
         //{
         //    var requestUrl = CreateRequestUri(string.Format(System.Globalization.CultureInfo.InvariantCulture,

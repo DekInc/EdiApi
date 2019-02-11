@@ -205,21 +205,9 @@ namespace EdiApi.Controllers
             FE830DataRet.ListCodes = from c in DbO.LearCodes
                                      orderby c.Str, c.Param
                                      select c;
-            FE830DataRet.ListProdExist = ManualDB.SP_GetExistencias(ref WmsDbO, 618);
-            //List<LearLin830> ListProd = (from L in FE830DataRet.ListStLin
-            //                             select L).ToList();
-            //FE830DataRet.ListProdExist = from I in WmsDbO.Inventario
-            //                             from Ii in WmsDbO.ItemInventario
-            //                             from Pr in ListProd
-            //                             where Ii.InventarioId == I.InventarioId
-            //                             && Ii.CodProducto == Pr.ProductId
-            //                             select new FE830DataAux() {
-            //                                 CodProducto = Pr.ProductId,
-            //                                 Existencia = Ii.Existencia ?? 0
-            //                             };
+            FE830DataRet.ListProdExist = ManualDB.SP_GetExistencias(ref WmsDbO, 618);            
             return FE830DataRet;
         }
-        delegate void del(int i);
         [HttpGet]
         public ActionResult<string> TestThisService()
         {
@@ -247,158 +235,135 @@ namespace EdiApi.Controllers
             catch (Exception e1)
             {
                 return GetExToIe2(e1);
-            }            
+            }
         }
         [HttpGet]
-        public IEnumerable<TsqlDespachosWmsComplex> GetSNDetails(string ListDispatch, string ListProducts)
+        public string SendForm856(string listDispatch)
         {
-            try
+            string ThisDate = DateTime.Now.ToString(ApplicationSettings.ToDateTimeFormat);
+            string ThisTime = DateTime.Now.ToString(ApplicationSettings.ToTimeFormat);
+            IEnumerable<string> ListDispatch = listDispatch.Split('|');
+            IEnumerable<TsqlDespachosWmsComplex> ListSN = ManualDB.SP_GetSNDet(ref WmsDbO);
+            ListSN = from Ls in ListSN
+                     from Ld in ListDispatch
+                     where Ls.DespachoId == Convert.ToInt32(Ld)
+                     select Ls;
+            int InterchangeControlNumber = (from Isa in DbO.LearIsa856 select Convert.ToInt32(Isa.InterchangeControlNumber)).Max() + 1;
+            int ContHl = 1;
+            foreach (string Despacho in ListDispatch)
             {
-                List<int> ListDispatch2 = new List<int>();
-                string[] ListDispatchArray = ListDispatch.Split('|');
-                List<string> ListProducts2 = ListProducts.Split('|').ToList();
-                for (int Pi = 0; Pi < ListProducts2.Count(); Pi++)
-                    ListProducts2[Pi] = ListProducts2[Pi].Replace("º", " ").Replace("[", "").Replace("]", "");
-                for (int Pi = 0; Pi < ListDispatchArray.Count(); Pi++)
-                    ListDispatch2.Add(Convert.ToInt32(ListDispatchArray[Pi]));
-                List<TsqlDespachosWmsComplex> ListDespachosWms = (
-                    from MoreC in (
-                    from T in WmsDbO.Transacciones
-                    from B in WmsDbO.Bodegas
-                    from L in WmsDbO.Locations
-                    from Y in WmsDbO.Paises
-                    from P in WmsDbO.Pedido
-                    from D in WmsDbO.DtllDespacho
-                    from D2 in WmsDbO.Despachos
-                    from E in WmsDbO.Estatus
-                    from S in WmsDbO.SysTempSalidas
-                    from Ii in WmsDbO.ItemInventario
-                    from I in WmsDbO.Inventario
-                    from Um in WmsDbO.UnidadMedida
-                    where T.BodegaId == B.BodegaId
-                    && L.Locationid == B.Locationid
-                    && Y.Paisid == L.Paisid
-                    && P.PedidoId == T.PedidoId
-                    && D.TransaccionId == T.TransaccionId
-                    && D2.DespachoId == D.DespachoId
-                    && E.EstatusId == T.EstatusId
-                    && S.PedidoId == P.PedidoId
-                    && Ii.ItemInventarioId == S.ItemInventarioId
-                    && I.InventarioId == S.InventarioId
-                    && T.EstatusId == 9
-                    && T.FechaTransaccion > DateTime.Now.AddMonths(-1)
-                    && Um.UnidadMedidaId == I.TipoBulto
-                //&& D2.DespachoId == Dis
-                group new { T, B, L, Y, P, D, D2, E, S, Ii, I }
-                    by new
-                    {
-                        D2.DespachoId,
-                        D2.FechaSalida,
-                        D2.NoContenedor,
-                        D2.Motorista,
-                        D2.DocumentoMotorista,
-                        D2.Destino,
-                        D2.DocumentoFiscal,
-                        D2.FechaDocFiscal,
-                        D2.NoMarchamo,
-                        D2.Observacion,
-                        D2.Transportistaid,
-                        D2.Destinoid,
-
-                        I.TipoBulto,
-                        Ii.CodProducto,
-                        Ii.Descripcion,
-                        Ii.NumeroOc,
-                        Um.UnidadMedida1,
-
-                        T.NoTransaccion,
-                        T.ClienteId,
-                        E.Estatus1,
-
-                        B.BodegaId,
-                        B.NomBodega,
-                        Y.Nompais,
-                        T.IdRcontrol,
-                    }
-                    into Grp
-                    orderby Grp.Key.FechaSalida descending, Grp.Key.Destino ascending, Grp.Key.CodProducto ascending
-                    select new TsqlDespachosWmsComplex()
-                    {
-                        DespachoId = Grp.Key.DespachoId,
-                        FechaSalida = Grp.Key.FechaSalida,
-                        NoContenedor = Grp.Key.NoContenedor,
-                        Motorista = Grp.Key.Motorista,
-                        DocumentoMotorista = Grp.Key.DocumentoMotorista,
-                        Destino = Grp.Key.Destino,
-                        DocumentoFiscal = Grp.Key.DocumentoFiscal,
-                        FechaDocFiscal = Grp.Key.FechaDocFiscal,
-                        NoMarchamo = Grp.Key.NoMarchamo,
-                        Observacion = Grp.Key.Observacion,
-                        Transportistaid = Grp.Key.Transportistaid,
-                        Destinoid = Grp.Key.Destinoid,
-
-                        Quantity = Grp.Sum(Col => Col.S.Cantidad),
-                        Bulks = Grp.Sum(ColO => ColO.S.Cantidad * (double)ColO.I.Articulos / ColO.I.CantidadInicial),
-                        Weight = Grp.Sum(ColO => ColO.S.Cantidad * ColO.I.Peso / ColO.I.CantidadInicial),
-                        Volume = Grp.Sum(ColO => ColO.S.Cantidad * ColO.I.Volumen / ColO.I.CantidadInicial),
-                        TotalValue = Grp.Sum(ColO2 => ColO2.S.Cantidad * ColO2.S.Precio),
-
-                        TipoBulto = Grp.Key.TipoBulto,
-                        CodProducto = Grp.Key.CodProducto,
-                        Producto = Grp.Key.Descripcion,
-                        NumeroOc = Grp.Key.NumeroOc,
-                        UnidadDeMedida = Grp.Key.UnidadMedida1,
-
-                        NoTransaccion = Grp.Key.NoTransaccion,
-                        ClienteId = Grp.Key.ClienteId,
-                        Estatus1 = Grp.Key.Estatus1,
-
-                        BodegaId = Grp.Key.BodegaId,
-                        NomBodega = Grp.Key.NomBodega,
-                        Nompais = Grp.Key.Nompais,
-                        IdRcontrol = Grp.Key.IdRcontrol
-                    })
-                    from Dis in ListDispatch2
-                    from Pr in ListProducts2
-                    where MoreC.DespachoId == Dis
-                    && MoreC.CodProducto == Pr
-                    select MoreC)
-                    .ToList();
-                List<Models.Remps_globalDB.GlbClient> LGlbClient =
-                    (from C in Remps_globalDbO.GlbClient
-                     from R in ListDespachosWms
-                     where C.IdClient == R.ClienteId
-                     select C).ToList();
-                List<Models.Remps_globalDB.GlbCountry> LGlbCountry =
-                    (from U in Remps_globalDbO.GlbCountry
-                     from R in ListDespachosWms
-                     where U.Name.Equals(R.Nompais, StringComparison.OrdinalIgnoreCase)
-                     select U).ToList();
-                //List<Models.Remps_globalDB.GlbClientIntegration> LGlbClientIntegration =
-                //    (from G in Remps_globalDbO.GlbClientIntegration
-                //    from R in ListDespachosWms
-                //    where G.IdWms == R.ClienteId
-                //    select G).ToList();
-                foreach (TsqlDespachosWmsComplex D in ListDespachosWms)
+                TsqlDespachosWmsComplex DespachoInfo = ListSN.Where(Sn => Sn.DespachoId == Convert.ToInt32(Despacho)).Fod();
+                if (DespachoInfo == null) continue;
+                ISA856 Isa = new ISA856(0, EdiBase.SegmentTerminator, $"{InterchangeControlNumber:9}") {
+                    AuthorizationInformationQualifier = "00",
+                    AuthorizationInformation = "          ",
+                    SecurityInformationQualifier = "00",
+                    SecurityInformation = "          ",
+                    InterchangeSenderIdQualifier = "ZZ",
+                    InterchangeSenderId = "GLC504",
+                    InterchangeReceiverIdQualifier = "ZZ",
+                    InterchangeReceiverId = "HN02NC72       ",
+                    InterchangeDate = ThisDate,
+                    InterchangeControlStandardsId = "U",
+                    InterchangeControlVersion = "0231",
+                    AcknowledgmentRequested = "0",
+                    UsageIndicator = "P"
+                };
+                GS856 Gs = new GS856(0, EdiBase.SegmentTerminator, $"{InterchangeControlNumber}") {
+                    FunctionalIdCode = "SH",
+                    ApplicationSenderCode = "GLC504",
+                    ApplicationReceiverCode = "HN02NC72       ",
+                    GsDate = ThisDate,
+                    GsTime = ThisTime,
+                    ResponsibleAgencyCode = "X",
+                    Version = "002040"
+                };
+                ST856 St = new ST856(0, EdiBase.SegmentTerminator, $"{InterchangeControlNumber}");
+                Isa.Childs.Add(Gs);
+                Isa.Childs.Add(St);
+                BSN856 Bsn = new BSN856(EdiBase.SegmentTerminator) {
+                    TransactionSetPurposeCode = "00",
+                    ShipIdentification = Despacho,
+                    BsnDate = ThisDate,
+                    BsnTime = ThisTime
+                };
+                Isa.Childs.Add(Bsn);
+                DTM856 Dtm = new DTM856(EdiBase.SegmentTerminator) {
+                    DateTimeQualifier = "011",
+                    DtmDate = ThisDate,
+                    DtmTime = ThisTime
+                };
+                Isa.Childs.Add(Dtm);
+                HLSL856 Hls = new HLSL856(EdiBase.SegmentTerminator) {
+                    HierarchicalIdNumber = ContHl.ToString(),
+                    HierarchicalLevelCode = "S"
+                };
+                MEA856 Mea1 = new MEA856(EdiBase.SegmentTerminator)
                 {
-                    foreach (Models.Remps_globalDB.GlbClient C in LGlbClient)
-                    {
-                        D.Idclient = C.IdClient;
-                        D.Code = C.Code;
-                        D.Businessname = C.BusinessName;
-                    }
-                    foreach (Models.Remps_globalDB.GlbCountry U in LGlbCountry)
-                    {
-                        D.IdCountryOrigin = U.IdCountry;
-                        D.CountryOrigin = U.Name;
-                    }
-                }
-                return ListDespachosWms;
+                    MeasurementReferenceIdCode = "PD",
+                    MeasurementDimensionQualifier = "G",
+                    MeasurementValue = DespachoInfo.Weight.ToString(),
+                    UnitOfMeasure = "KG"
+                };
+                MEA856 Mea2 = new MEA856(EdiBase.SegmentTerminator)
+                {
+                    MeasurementReferenceIdCode = "PD",
+                    MeasurementDimensionQualifier = "N",
+                    MeasurementValue = Mea1.MeasurementValue,
+                    UnitOfMeasure = "KG"
+                };
+                Hls.Childs.Add(Mea1);
+                Hls.Childs.Add(Mea2);
+                TD1856 Td1 = new TD1856(EdiBase.SegmentTerminator) {
+                    PackagingCode = "PLT71",
+                    LadingQuantity = "1"
+                };
+                Hls.Childs.Add(Td1);
+                TD5856 Td5 = new TD5856(EdiBase.SegmentTerminator) {
+                    RoutingSequenceCode = "B",
+                    IdCodeQualifier = "ZZ",
+                    IdentificationCode = DespachoInfo.DocumentoMotorista,
+                    TransportationMethodCode = "M",
+                    LocationQualifier = "PP",
+                    LocationIdentifier = "ORMSBY"
+                };
+                Hls.Childs.Add(Td5);
+                TD3856 Td3 = new TD3856(EdiBase.SegmentTerminator)
+                {
+                    EquipmentDescriptionCode = "TL",
+                    EquipmentInitial = "",
+                    EquipmentNumber = DespachoInfo.NoContenedor
+                };
+                Hls.Childs.Add(Td3);
+                REF856 Ref1 = new REF856(EdiBase.SegmentTerminator) {
+                    ReferenceNumberQualifier = "VN",
+                    ReferenceNumber = DespachoInfo.NumeroOc
+                };
+                Hls.Childs.Add(Ref1);
+                REF856 Ref2 = new REF856(EdiBase.SegmentTerminator)
+                {
+                    ReferenceNumberQualifier = "PK",
+                    ReferenceNumber = DespachoInfo.NoMarchamo
+                };
+                Hls.Childs.Add(Ref2);
+                N1856 N11 = new N1856(EdiBase.SegmentTerminator) {
+                    EntityIdentifierCode = "ST",
+                    IdCodeQualifier = "92",
+                    IdCode = "HN02NC72"
+                };
+                Hls.Childs.Add(N11);
+                N1856 N12 = new N1856(EdiBase.SegmentTerminator)
+                {
+                    EntityIdentifierCode = "SF",
+                    IdCodeQualifier = "92",
+                    IdCode = "GLC504"
+                };
+                Hls.Childs.Add(N12);
+                HLOL856 HlO1 = new HLOL856(EdiBase.SegmentTerminator) {
+
+                };
             }
-            catch (Exception e1)
-            {
-                return GetExToIe2(e1);
-            }            
+            return string.Empty;
         }
     }
 }

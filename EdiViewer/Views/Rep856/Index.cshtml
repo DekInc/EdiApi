@@ -174,12 +174,12 @@
             "order": [[2, "desc"]],
             "columns": [
                 {
-                    data: "active",
+                    data: "procesado",
                     render: function (data, type, row) {
-                        if (type === 'display') {
+                        if (type === 'display' && data == 0) {
                             return '<input id="chkS' + row.despachoId + '|[' + row.codProducto.replace(/ /g, 'º') + ']' + '" name="chkS' + row.despachoId + '|[' + row.codProducto.replace(/ /g, 'º') + ']' + '" type="checkbox" class="editor-active">';
                         }
-                        return data;
+                        return '';
                     },
                     className: "dt-body-center"
                 },
@@ -245,7 +245,12 @@
                 domtblReportes.$('tr.selected').removeClass('selected');
                 $(this).addClass('selected');
                 //trigger update
-                $($(this).closest("tr").find('td:eq(0)').find('input')[0]).prop('checked', !$($(this).closest("tr").find('td:eq(0)').find('input')[0]).prop('checked'));
+                var idChk = $($(this).closest("tr").find('td:eq(0)').find('input')[0]).prop('id');
+                if (idChk == null) return;
+                idChk = idChk.substr(0, idChk.indexOf('|'));
+                $("input[name^='" + idChk + "']").each(function (Ind, Ele) {                    
+                    $(Ele).prop('checked', !$($(this).closest("tr").find('td:eq(0)').find('input')[0]).prop('checked'));
+                });                
             }
         });
     });

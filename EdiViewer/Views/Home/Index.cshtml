@@ -104,8 +104,11 @@
             }
         });
         HashId = $.urlParam('HashId');
-        if (HashId != null) {
-            
+        if (HashId == null) {
+            $.ajax({
+                method: "GET",
+                url: "@this.Url.Action("TranslateForms830")"
+            });  
         }
     });
 </script>

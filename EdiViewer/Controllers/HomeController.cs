@@ -24,6 +24,12 @@ namespace EdiViewer.Controllers
         {
             return View();
         }
+        [HttpGet]
+        public async Task<string> TranslateForms830()
+        {
+            RetReporte RetReporteO = await ApiClientFactory.Instance.TranslateForms830();
+            return "";
+        }
         public async Task<IActionResult> Details(string HashId = "")
         {
             EdiDetailModel EdiDetailModelO = new EdiDetailModel();

@@ -19,5 +19,9 @@ namespace EdiApi
         {
             _ListSHP.LastOrDefault().Childs.Add(_NewChild);
         }
+        public static TSource Fod<TSource>(this IEnumerable<TSource> source)
+        {
+            return source.FirstOrDefault();
+        }
     }
 }

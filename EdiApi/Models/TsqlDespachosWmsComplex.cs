@@ -48,5 +48,6 @@ namespace EdiApi.Models
         public long? IdRcontrol { get; set; }
         public string ErrorMessage { get; set; }
         public string Cliente { get; set; }
+        public int Procesado { get; set; }
     }
 }

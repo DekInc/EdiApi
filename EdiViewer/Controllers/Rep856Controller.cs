@@ -25,8 +25,9 @@ namespace EdiViewer.Controllers
             if (ListSelected.Count > 0)
             {
                 IEnumerable<string> ListDispatch = ListSelected.Select(O1 => O1.Fod()).Distinct();
-                IEnumerable<string> ListProducts = ListSelected.Select(O1 => O1.LastOrDefault()).ToArray();
+                //IEnumerable<string> ListProducts = ListSelected.Select(O1 => O1.LastOrDefault()).ToArray();
                 //TsqlDespachosWmsComplexO = await ApiClientFactory.Instance.GetSN(ListDispatch, ListProducts);
+                string s1 = await ApiClientFactory.Instance.SendForm856(ListDispatch);
                 
                 return "Todo ok";
             }
