@@ -99,15 +99,15 @@ namespace EdiViewer.Utility.Helper
                                 return $"{QtyRes.ToString("N0")} {_ListUits.Fod().UnitOfMeasure}";
                             case DayOfWeek.Wednesday:
                                 Models.EdiDetailQtysModel QtyLast = _ListFstQtys.Where(FQ => FQ.FstDate == ThisTime.AddDays(-2) && FQ.HashId == _ParentHashId).Fod();
-                                Models.EdiDetailQtysModel QtyNext = _ListFstQtys.Where(FQ => FQ.FstDate == ThisTime.AddDays(-1) && FQ.HashId == _ParentHashId).Fod();
+                                Models.EdiDetailQtysModel QtyNext = _ListFstQtys.Where(FQ => FQ.FstDate == ThisTime && FQ.HashId == _ParentHashId).Fod();
                                 if (QtyNext != null && QtyLast != null)
                                 {
                                     return $"{(QtyNext.Qty - QtyLast.Qty).ToString("N0")} {_ListUits.Fod().UnitOfMeasure}";
                                 }
                                 else return "-1";
                             case DayOfWeek.Friday:
-                                Models.EdiDetailQtysModel QtyLast2 = _ListFstQtys.Where(FQ => FQ.FstDate == ThisTime.AddDays(-3) && FQ.HashId == _ParentHashId).Fod();
-                                Models.EdiDetailQtysModel QtyNext2 = _ListFstQtys.Where(FQ => FQ.FstDate == ThisTime.AddDays(-1) && FQ.HashId == _ParentHashId).Fod();
+                                Models.EdiDetailQtysModel QtyLast2 = _ListFstQtys.Where(FQ => FQ.FstDate == ThisTime.AddDays(-2) && FQ.HashId == _ParentHashId).Fod();
+                                Models.EdiDetailQtysModel QtyNext2 = _ListFstQtys.Where(FQ => FQ.FstDate == ThisTime && FQ.HashId == _ParentHashId).Fod();
                                 if (QtyNext2 != null && QtyLast2 != null)
                                 {
                                     return $"{(QtyNext2.Qty - QtyLast2.Qty).ToString("N0")} {_ListUits.Fod().UnitOfMeasure}";

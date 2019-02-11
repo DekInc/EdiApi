@@ -371,6 +371,11 @@ namespace EdiApi.Controllers
                     };
                     Hls.Childs.Add(HlO1);
                     LIN856 Lin = new LIN856(EdiBase.SegmentTerminator) {
+                        ProductIdQualifier1 = "BP",
+                        ProductId1 = ComplexProd.CodProducto
+                    };
+                    HlO1.Childs.Add(Lin);
+                    SN1856 Sn1 = new SN1856(EdiBase.SegmentTerminator) {
 
                     };
                 }

@@ -56,7 +56,7 @@ namespace EdiViewer.Controllers
                 int recordsTotal = 0;
 
                 // Getting all Customer data  
-                IEnumerable<TsqlDespachosWmsComplex> TsqlDespachosWmsComplexO;
+                IEnumerable<TsqlDespachosWmsComplex> TsqlDespachosWmsComplexO;                
                 if (string.IsNullOrEmpty(destino))
                 {
                     TsqlDespachosWmsComplexO = await ApiClientFactory.Instance.GetSN();
