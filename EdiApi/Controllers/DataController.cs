@@ -376,7 +376,9 @@ namespace EdiApi.Controllers
                     };
                     HlO1.Childs.Add(Lin);
                     SN1856 Sn1 = new SN1856(EdiBase.SegmentTerminator) {
-
+                        NumberOfUnitsShipped = "",
+                        UnitOfMeasurementCode = "",
+                        QuantityShipped = ""
                     };
                 }
             }
