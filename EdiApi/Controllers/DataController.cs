@@ -243,8 +243,8 @@ namespace EdiApi.Controllers
             string ThisDate = DateTime.Now.ToString(ApplicationSettings.ToDateTimeFormat);
             string ThisTime = DateTime.Now.ToString(ApplicationSettings.ToTimeFormat);
             IEnumerable<string> ListDispatch = listDispatch.Split('|');
-            IEnumerable<TsqlDespachosWmsComplex> ListSN = ManualDB.SP_GetSNDet(ref WmsDbO);
-            ListSN = from Ls in ListSN
+            IEnumerable<TsqlDespachosWmsComplex> ListSNO = ManualDB.SP_GetSNDet(ref WmsDbO);
+            IEnumerable<TsqlDespachosWmsComplex> ListSN = from Ls in ListSNO
                      from Ld in ListDispatch
                      where Ls.DespachoId == Convert.ToInt32(Ld)
                      select Ls;
@@ -362,6 +362,9 @@ namespace EdiApi.Controllers
                 Hls.Childs.Add(N12);
                 foreach(TsqlDespachosWmsComplex ComplexProd in ListProductos)
                 {
+                    double? Cda = (from Sno in ListSNO
+                               where Sno.CodProducto == ComplexProd.CodProducto
+                               select Sno.Bulks).Sum();
                     ContHl++;
                     HLOL856 HlO1 = new HLOL856(EdiBase.SegmentTerminator)
                     {
@@ -376,9 +379,9 @@ namespace EdiApi.Controllers
                     };
                     HlO1.Childs.Add(Lin);
                     SN1856 Sn1 = new SN1856(EdiBase.SegmentTerminator) {
-                        NumberOfUnitsShipped = "",
-                        UnitOfMeasurementCode = "",
-                        QuantityShipped = ""
+                        NumberOfUnitsShipped = (ComplexProd.Bulks * 15744).ToString(), // por valor de cada caja
+                        UnitOfMeasurementCode = "FT",
+                        QuantityShipped = (Cda * 15744).ToString() // total de año, por valor de cada caja
                     };
                 }
             }

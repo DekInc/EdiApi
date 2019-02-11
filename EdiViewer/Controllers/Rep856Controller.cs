@@ -33,7 +33,7 @@ namespace EdiViewer.Controllers
             }
             return string.Empty;
         }
-        public async Task<IActionResult> GetGridData(string destino = "") {
+        public IActionResult GetGridData(string destino = "") {
             try
             {
                 if (destino == "null") destino = string.Empty;
@@ -59,7 +59,7 @@ namespace EdiViewer.Controllers
                 IEnumerable<TsqlDespachosWmsComplex> TsqlDespachosWmsComplexO;                
                 if (string.IsNullOrEmpty(destino))
                 {
-                    TsqlDespachosWmsComplexO = await ApiClientFactory.Instance.GetSN();
+                    TsqlDespachosWmsComplexO = ApiClientFactory.Instance.GetSN().Result;
                     HttpContext.Session.SetObjSession("TsqlDespachosWmsComplexO", TsqlDespachosWmsComplexO);
                 }
                 else

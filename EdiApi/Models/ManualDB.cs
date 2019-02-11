@@ -59,17 +59,17 @@ namespace EdiApi.Models
                     {
                         ListSn.Add(new TsqlDespachosWmsComplex()
                         {
-                            DespachoId = Dr.GetInt32(0),
-                            FechaSalida = Dr.GetDateTime(1),
-                            CodProducto = Dr.GetString(2),
-                            Producto = Dr.GetString(3),
-                            Cliente = Dr.GetString(4),
-                            Quantity = Dr.GetDouble(5),
-                            Weight = Dr.GetDouble(6),
-                            Volume = Dr.GetDouble(7),
-                            Bulks = Dr.GetDouble(8),
-                            UnidadDeMedida = Dr.GetString(9),
-                            Destino = Dr.GetString(10),
+                            DespachoId = Convert.ToInt32(Dr.GetValue(0)),
+                            FechaSalida = Convert.ToDateTime(Dr.GetValue(1)),
+                            CodProducto = Convert.ToString(Dr.GetValue(2)),
+                            Producto = Convert.ToString(Dr.GetValue(3)),
+                            Cliente = Convert.ToString(Dr.GetValue(4)),
+                            Quantity = Convert.ToDouble(Dr.GetValue(5)),
+                            Weight = Convert.ToDouble(Dr.GetValue(6)),
+                            Volume = Convert.ToDouble(Dr.GetValue(7)),
+                            Bulks = Convert.ToDouble(Dr.GetValue(8)),
+                            UnidadDeMedida = Convert.ToString(Dr.GetValue(9)),
+                            Destino = Convert.ToString(Dr.GetValue(10)),
                             
                             NoContenedor = Dr.GetString(11),
                             Motorista = Dr.GetString(12),
@@ -78,7 +78,7 @@ namespace EdiApi.Models
                             FechaDocFiscal = Dr.GetDateTime(15),
                             NoMarchamo = Dr.GetString(16),
                             Observacion = Dr.GetString(17), 
-                            TotalValue = Dr.GetDouble(18),
+                            TotalValue = Convert.ToDouble(Dr.GetValue(18)),
                             NumeroOc = Dr.GetString(19)
                         });
                     }
