@@ -252,7 +252,8 @@ namespace EdiApi.Controllers
             int ContHl = 1;
             foreach (string Despacho in ListDispatch)
             {
-                TsqlDespachosWmsComplex DespachoInfo = ListSN.Where(Sn => Sn.DespachoId == Convert.ToInt32(Despacho)).Fod();
+                IEnumerable<TsqlDespachosWmsComplex> ListProductos = ListSN.Where(Sn => Sn.DespachoId == Convert.ToInt32(Despacho));
+                TsqlDespachosWmsComplex DespachoInfo = ListProductos.Fod();
                 if (DespachoInfo == null) continue;
                 ISA856 Isa = new ISA856(0, EdiBase.SegmentTerminator, $"{InterchangeControlNumber:9}") {
                     AuthorizationInformationQualifier = "00",
@@ -359,9 +360,20 @@ namespace EdiApi.Controllers
                     IdCode = "GLC504"
                 };
                 Hls.Childs.Add(N12);
-                HLOL856 HlO1 = new HLOL856(EdiBase.SegmentTerminator) {
+                foreach(TsqlDespachosWmsComplex ComplexProd in ListProductos)
+                {
+                    ContHl++;
+                    HLOL856 HlO1 = new HLOL856(EdiBase.SegmentTerminator)
+                    {
+                        HierarchicalIdNumber = ContHl.ToString(),
+                        HierarchicalParentIdNumber = "1",
+                        HierarchicalLevelCode = "I"
+                    };
+                    Hls.Childs.Add(HlO1);
+                    LIN856 Lin = new LIN856(EdiBase.SegmentTerminator) {
 
-                };
+                    };
+                }
             }
             return string.Empty;
         }
