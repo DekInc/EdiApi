@@ -51,6 +51,9 @@ body {
     text-align: left;
 }
 .tblReportes thead {
+    background: linear-gradient(to bottom, #c54062, #fbfcf2);
+}
+.tblReportes thead {    
     background: linear-gradient(35deg, #c54062, #fbfcf2);
 }
 .tblReportes tbody {
@@ -198,11 +201,53 @@ table.dataTable thead th, table.dataTable thead td {
     position: relative;
     background: linear-gradient(rgb(0, 0, 0), rgba(255, 232, 252, 0.5)) !important;
 }
-.cardContent {
-    /*position: relative;
-    display: inline-block;
-    margin: 0 auto;*/
-}
 .hideCol{
     display: none;
+}
+.mainJumbo{
+    width: 98vw;
+    height: 90vh;
+    /*background: #b7baa5 !important;*/
+}
+.cardLogin{
+    width: 520px;
+    margin: 0 auto;
+}
+.imgLogo {
+    width: 20vw;    
+    margin: 0 auto;
+}
+.divLogo {
+    width: 100%;
+    display: inline-block;
+    position: relative;
+    margin: 0 auto;    
+    text-align: center;
+}
+.modal-header {
+    background: linear-gradient(35deg, #4b7099, #7ba0c9);
+}
+#divMensajePop1 {
+    font-size: 12pt;
+    box-sizing: border-box;
+    width: 100%;
+    overflow: auto;
+}
+.modal-content{
+    display: flex;
+    flex-direction: row;
+}
+.modal-body{
+    box-sizing: border-box;
+    width: 73%;
+}
+.fade2 {
+    transform: scale(0.9);
+    opacity: 0;
+    transition: all .2s linear;
+    /*display: block !important;*/
+}
+.fade2.show {
+    opacity: 1;
+    transform: scale(1);
 }

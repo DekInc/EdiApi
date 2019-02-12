@@ -455,5 +455,31 @@ namespace EdiApi.Controllers
             string EdiStr = Isa.Ts();
             return string.Empty;
         }
+        [HttpGet]
+        public string Login(string User, string Password)
+        {
+            try
+            {
+                Usrsystem UserO = (from U in WmsDbO.Usrsystem
+                                   where U.Idusr == User
+                                   && U.Usrpasswd == Password
+                                   select U).Fod();
+                if (UserO == null)
+                    return string.Empty;
+                EdiUsrSystem UserO2 = (from U2 in DbO.EdiUsrSystem
+                                       where U2.CodUsr == UserO.Codusr
+                                       select U2).Fod();
+                if (UserO2 == null)
+                    return string.Empty;
+                UserO2.HashId = EdiBase.GetHashId();
+                DbO.EdiUsrSystem.Update(UserO2);
+                DbO.SaveChanges();
+                return UserO2.HashId;
+            }
+            catch (Exception e1)
+            {
+                return "Error: " + e1.ToString();
+            }            
+        }
     }
 }

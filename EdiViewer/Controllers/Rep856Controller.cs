@@ -8,13 +8,13 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace EdiViewer.Controllers
 {
-    public class Rep856Controller : Controller
+    public class Rep856Controller : PreRunController
     {
         public IActionResult Index()
         {
             return View();
         }
-        public async Task<string> SendForm()
+        public async Task<IActionResult> SendForm()
         {
             IEnumerable<TsqlDespachosWmsComplex> TsqlDespachosWmsComplexO;
             List<string[]> ListSelected = new List<string[]>();
@@ -29,9 +29,9 @@ namespace EdiViewer.Controllers
                 //TsqlDespachosWmsComplexO = await ApiClientFactory.Instance.GetSN(ListDispatch, ListProducts);
                 string s1 = await ApiClientFactory.Instance.SendForm856(ListDispatch);
                 
-                return "Todo ok";
+                return Json(new { data = "ok" });
             }
-            return string.Empty;
+            return Json(new { data = "" });
         }
         public IActionResult GetGridData(string destino = "") {
             try

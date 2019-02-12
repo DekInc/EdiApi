@@ -3,6 +3,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <title>@ViewData["Title"] - EdiViewer</title>
     <link rel="stylesheet" href="~/lib/bootstrap421/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/lib/DataTables/datatables.min.css" />
@@ -13,6 +14,13 @@
     <script src="~/lib/DataTables/datatables.min.js"></script>
     <script src="~/lib/DataTables/Select-1.2.6/js/select.dataTables.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+    <!--[if IE]>
+          <style>
+            .tblReportes thead {
+                background: linear-gradient(to bottom, #c54062, #fbfcf2);
+            }
+          </style>
+        <![endif]-->
 </head>
 <body>
     <nav class="navbar navbar-dark bg-dark navbar-expand-lg fixed-top">
@@ -34,11 +42,14 @@
                 <li class="nav-item active">
                     <a class="nav-link" href="~/files/learspec856.pdf" target="_new">856 specs</a>
                 </li>
+                <li class="nav-item active">
+                    <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Exit">Salir</a>
+                </li>
             </ul>
-        </div>        
+        </div>
     </nav>
     <div>
-        @RenderBody()        
+        @RenderBody()
         <div class="fixed-bottom footer2">
             <hr />
             <p>&copy; 2019 - EdiViewer</p>
@@ -46,9 +57,10 @@
         <script>
             $(document).ready(function () {
                 $('.card-header').tooltip();
-            });            
+            });
         </script>
     </div>
+    @await Html.PartialAsync("_Popup")
     @RenderSection("Scripts", required: false)
 </body>
 </html>

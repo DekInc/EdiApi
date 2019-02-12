@@ -11,6 +11,7 @@ namespace EdiViewer
         public const string DateTimeFormatTD = "ddd dd/MM/yyyy HH:mm";
         public const string DateTimeFormatT = "dd/MM/yyyy HH:mm";
         public const string DateTimeFormat = "dd/MM/yyyy";
+        public const string DateTimeFormatL = "ddMMyyyyHHmm";
         public static bool English = false;
     }
 }

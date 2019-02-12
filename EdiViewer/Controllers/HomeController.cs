@@ -12,7 +12,7 @@ using Microsoft.AspNetCore.Http;
 
 namespace EdiViewer.Controllers
 {
-    public class HomeController : Controller
+    public class HomeController : PreRunController
     {
         public readonly IConfiguration Config;
         IConfiguration EdiWebApiConfig => Config.GetSection("EdiWebApi");
@@ -23,6 +23,11 @@ namespace EdiViewer.Controllers
         public IActionResult Index()
         {
             return View();
+        }
+        public IActionResult Exit()
+        {
+            HttpContext.Session.SetObjSession("Session.HashId", string.Empty);
+            return new RedirectResult("/Account/");
         }
         [HttpGet]
         public async Task<string> TranslateForms830()

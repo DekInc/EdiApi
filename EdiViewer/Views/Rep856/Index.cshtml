@@ -102,12 +102,12 @@
                 "datatype": "json",
                 "dataSrc": function (json) {
                     if (json.errorMessage != '') {
-                        alert(json.errorMessage);
+                        menErrorEdi(json.errorMessage);
                         return null;
                     }
                     if (json.data[0].despachoId == 0) {
                         if (json.data[0].errorMessage != '') {
-                            alert(json.data[0].errorMessage);
+                            menErrorEdi(json.data[0].errorMessage);
                             return null;
                         }
                     }                    
@@ -226,12 +226,15 @@
             type: 'POST',
             dataType: 'JSON',
             data: $('#formReportes').serialize(),
-            success: function (data) {
-                alert('Notificación enviada');
+            success: function (json) {
+                if (json.data == '')
+                    menErrorEdi('Seleccione un despacho');
+                else
+                    menErrorEdi('Notificación enviada');
             },
             error: function (xhr, ajaxOptions, thrownError) {
-                alert(xhr.status);
-                alert(thrownError);
+                menErrorEdi(xhr.status);
+                menErrorEdi(thrownError);
             }
         });
     });

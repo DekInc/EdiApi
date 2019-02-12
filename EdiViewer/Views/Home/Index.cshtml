@@ -68,7 +68,7 @@
                 "dataSrc": function (json) {
                     if (json.recordsTotal == 0) {
                         console.log(json);
-                        alert(json.errorMessage);
+                        menErrorEdi(json.errorMessage);
                         return json.data;
                     }                    
                     return json.data;
@@ -97,8 +97,8 @@
                 domtblReportes.$('tr.selected').removeClass('selected');
                 $(this).addClass('selected');
                 //trigger update
-                if ($(this).closest("tr").find('td:eq(5)').text().toLowerCase().includes('error')) {
-                    alert("El reporte contiene errores y no puede visualizarse");
+                if ($(this).closest("tr").find('td:eq(5)').text().toLowerCase().includes('error')) {                    
+                    menErrorEdi("El reporte contiene errores y no puede visualizarse");
                 } else 
                 window.location.href = '@this.Url.Action("Details")?HashId=' + $(this).closest("tr").find('td:eq(0)').text();
             }

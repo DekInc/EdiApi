@@ -1,0 +1,67 @@
+﻿@model ErrorModel
+@{
+    ViewData["Title"] = "Acceso visor EDI";
+    Layout = "_LayoutLogin";
+}
+<style>
+    body{
+        padding-top: 10px !important;
+        padding-bottom: unset;
+    }
+</style>
+<div class="container">
+    <div class="jumbotron mainJumbo">
+        <br />
+        <div class="divLogo"><img class="imgLogo" src="~/images/logo.png" /></div>        
+        <div class="card-deck cardLogin">
+            <div class="card">
+                <div class="card-header">
+                    Acceso al sistema
+                </div>
+                <div class="card-body">
+                    <form accept-charset="utf-8" asp-action="Login" method="post">
+                        <div class="form-group">
+                            <label>Usuario</label>
+                            <input class="form-control" id="TxtUser" name="TxtUser" type="text" maxlength="20" />
+                        </div>
+                        <div class="form-group">
+                            <label>Contraseña</label>
+                            <input class="form-control" id="TxtPassword" name="TxtPassword" type="password" maxlength="20" />
+                        </div>
+                        <button class="btn btn-primary btn-block" type="submit">Ingresar</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <br />
+    </div>
+</div>
+<script>
+    $.urlParam = function (name) {
+        var results = new RegExp('[\?&]' + name + '=([^&#]*)').exec(window.location.href);
+        if (results == null) {
+            return null;
+        }
+        return decodeURI(results[1]) || 0;
+    }
+    $(document).ready(function () {
+        $('#TxtUser').focus();
+        error = $.urlParam('error');
+        if (error != null) {            
+            switch (error) {
+                case "USER_INCORRECT":
+                    menErrorEdi("Usuario o contraseña incorrectos.");
+                    break;
+                case "NO_AUTH":
+                    menErrorEdi("Por favor inicie sesión para usar el sistema.");
+                    break;
+                default:                    
+                    break;
+            }
+        }
+        @if (!string.IsNullOrEmpty(Model.ErrorMessage))
+        {
+            @: menErrorEdi("@Html.Raw(Model.ErrorMessage)");
+        }
+    });
+</script>
