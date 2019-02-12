@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace EdiApi
 {
-    public class TD1856 : EdiBase
+    public partial class TD1856 : EdiBase
     {
         public const string Init = "TD1";
         public const string Self = "Carrier Details (Quantity and Weight)";

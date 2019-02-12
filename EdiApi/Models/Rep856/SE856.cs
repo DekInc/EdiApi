@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace EdiApi
 {
-    public class SE856 : EdiBase
+    public partial class SE856 : EdiBase
     {
         public const string Init = "SE";
         public const string Self = "Transaction Set Trailer";

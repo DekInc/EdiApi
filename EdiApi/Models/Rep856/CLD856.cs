@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace EdiApi
 {
-    public class CLD856 : EdiBase
+    public partial class CLD856 : EdiBase
     {
         public const string Init = "CLD";
         public const string Self = "Customer's Load Detail";

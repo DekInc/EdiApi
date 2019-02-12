@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace EdiApi
 {
-    public class REF856 : EdiBase
+    public partial class REF856 : EdiBase
     {
         public const string Init = "REF";
         public const string Self = "Reference Numbers";

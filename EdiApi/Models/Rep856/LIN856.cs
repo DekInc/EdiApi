@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace EdiApi
 {
-    public class LIN856 : EdiBase
+    public partial class LIN856 : EdiBase
     {
         public const string Init = "LIN";
         public const string Self = "Item Identification";

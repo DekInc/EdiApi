@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace EdiApi
 {
-    public class ETD856 : EdiBase
+    public partial class ETD856 : EdiBase
     {
         public const string Init = "ETD";
         public const string Self = "Excess Transportation Detail";

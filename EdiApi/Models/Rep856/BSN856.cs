@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace EdiApi
 {
-    public class BSN856 : EdiBase
+    public partial class BSN856 : EdiBase
     {
         public const string Init = "BSN";
         public const string Self = "Beginning Segment for Ship Notice";

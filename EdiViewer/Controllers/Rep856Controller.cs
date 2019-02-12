@@ -56,14 +56,7 @@ namespace EdiViewer.Controllers
                 int recordsTotal = 0;
 
                 // Getting all Customer data  
-                IEnumerable<TsqlDespachosWmsComplex> TsqlDespachosWmsComplexO;                
-                if (string.IsNullOrEmpty(destino))
-                {
-                    TsqlDespachosWmsComplexO = ApiClientFactory.Instance.GetSN().Result;
-                    HttpContext.Session.SetObjSession("TsqlDespachosWmsComplexO", TsqlDespachosWmsComplexO);
-                }
-                else
-                    TsqlDespachosWmsComplexO = HttpContext.Session.GetObjSession<IEnumerable<TsqlDespachosWmsComplex>>("TsqlDespachosWmsComplexO");                
+                IEnumerable<TsqlDespachosWmsComplex> TsqlDespachosWmsComplexO = ApiClientFactory.Instance.GetSN().Result;                
                 IEnumerable<string> ListTo = (from D in TsqlDespachosWmsComplexO
                                              orderby D.CodProducto
                                              select D.CodProducto).Distinct();

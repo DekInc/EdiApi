@@ -12,7 +12,7 @@ using EdiApi.Models.EdiDB;
 namespace EdiApi
 {
     [Browsable(true)]
-    public class EdiBase : EdiSec
+    public partial class EdiBase : EdiSec
     {
         public int Coli { set; get; }
         public string NotUsed { set; get; } = "";        
@@ -29,8 +29,15 @@ namespace EdiApi
         {
             string Ret = string.Empty;
             foreach (string OrdenO in Orden)
-                Ret += $"{this.GetType().GetProperty(OrdenO).GetValue(this, null)}{ElementTerminator}";
+            {
+                if (OrdenO == "Init")
+                    Ret += $"{this.GetType().GetField("Init").GetRawConstantValue()}{ElementTerminator}";
+                else
+                    Ret += $"{this.GetType().GetProperty(OrdenO).GetValue(this, null)}{ElementTerminator}";
+            }
             Ret = Ret.TrimEnd(ElementTerminator[0]) + SegmentTerminator + Environment.NewLine;
+            foreach (EdiBase ChildO in this.Childs)
+                Ret += ChildO.Ts();
             return Ret;
         }
         public static string GetHashId()

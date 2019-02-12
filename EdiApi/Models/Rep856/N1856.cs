@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace EdiApi
 {
-    public class N1856 : EdiBase
+    public partial class N1856 : EdiBase
     {
         public const string Init = "N1";
         public const string Self = "Detail (Shipment Hierarchical Level)";

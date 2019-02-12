@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace EdiApi
 {
-    public class MEA856 : EdiBase
+    public partial class MEA856 : EdiBase
     {
         public const string Init = "MEA";
         public const string Self = "Measurements";

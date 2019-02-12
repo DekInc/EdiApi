@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace EdiApi
 {
-    public class TD5856 : EdiBase
+    public partial class TD5856 : EdiBase
     {
         public const string Init = "TD5";
         public const string Self = "Carrier Details (Routing Sequence/Transit Time)";
@@ -27,7 +27,7 @@ namespace EdiApi
             Orden = new string[]{
                 "Init",
                 "RoutingSequenceCode", "IdCodeQualifier",
-                "IdCode", "TransportationMethodCode",
+                "IdentificationCode", "TransportationMethodCode",
                 "LocationQualifier", "LocationIdentifier",
             };
         }

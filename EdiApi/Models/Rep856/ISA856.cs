@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace EdiApi
 {
-    public class ISA856 : EdiBase
+    public partial class ISA856 : EdiBase
     {
         public UInt16 RepType { get; set; }
         public const string Init = "ISA";

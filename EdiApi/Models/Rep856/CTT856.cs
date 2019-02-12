@@ -6,7 +6,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace EdiApi
 {
-    public class CTT856 : EdiBase
+    public partial class CTT856 : EdiBase
     {
         public const string Init = "CTT";
         public const string Self = "Transaction Totals";

@@ -25,6 +25,7 @@ namespace EdiApi.Models.EdiDB
         public virtual DbSet<LearCodes> LearCodes { get; set; }
         public virtual DbSet<LearCtt856> LearCtt856 { get; set; }
         public virtual DbSet<LearDtm856> LearDtm856 { get; set; }
+        public virtual DbSet<LearEquivalencias> LearEquivalencias { get; set; }
         public virtual DbSet<LearEtd856> LearEtd856 { get; set; }
         public virtual DbSet<LearFst830> LearFst830 { get; set; }
         public virtual DbSet<LearGs830> LearGs830 { get; set; }
@@ -75,6 +76,8 @@ namespace EdiApi.Models.EdiDB
 
             modelBuilder.Entity<EdiRepSent>(entity =>
             {
+                entity.Property(e => e.Code).HasMaxLength(9);
+
                 entity.Property(e => e.Fecha).HasMaxLength(18);
 
                 entity.Property(e => e.Log).HasColumnType("text");
@@ -264,6 +267,27 @@ namespace EdiApi.Models.EdiDB
                 entity.Property(e => e.EdiStr).HasColumnType("text");
 
                 entity.Property(e => e.ParentHashId).HasMaxLength(128);
+            });
+
+            modelBuilder.Entity<LearEquivalencias>(entity =>
+            {
+                entity.ToTable("LEAR_EQUIVALENCIAS");
+
+                entity.Property(e => e.CartonSizemm).HasMaxLength(64);
+
+                entity.Property(e => e.CartonsXpallet).HasColumnName("CartonsXPallet");
+
+                entity.Property(e => e.CodProducto).HasMaxLength(50);
+
+                entity.Property(e => e.CodProductoLear).HasMaxLength(50);
+
+                entity.Property(e => e.GrossWeightXcartonKg).HasColumnName("GrossWeightXCartonKg");
+
+                entity.Property(e => e.PalletSizemm).HasMaxLength(64);
+
+                entity.Property(e => e.Spq).HasColumnName("SPQ");
+
+                entity.Property(e => e.Unit).HasMaxLength(16);
             });
 
             modelBuilder.Entity<LearEtd856>(entity =>

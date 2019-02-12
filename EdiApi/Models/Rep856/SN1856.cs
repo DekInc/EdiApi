@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace EdiApi
 {
-    public class SN1856 : EdiBase
+    public partial class SN1856 : EdiBase
     {
         public const string Init = "SN1";
         public const string Self = "Item Detail (Shipment)";

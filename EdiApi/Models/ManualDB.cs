@@ -71,15 +71,15 @@ namespace EdiApi.Models
                             UnidadDeMedida = Convert.ToString(Dr.GetValue(9)),
                             Destino = Convert.ToString(Dr.GetValue(10)),
                             
-                            NoContenedor = Dr.GetString(11),
-                            Motorista = Dr.GetString(12),
-                            DocumentoMotorista = Dr.GetString(13),
-                            DocumentoFiscal = Dr.GetString(14),
-                            FechaDocFiscal = Dr.GetDateTime(15),
-                            NoMarchamo = Dr.GetString(16),
-                            Observacion = Dr.GetString(17), 
+                            NoContenedor = Convert.ToString(Dr.GetValue(11)),
+                            Motorista = Convert.ToString(Dr.GetValue(12)),
+                            DocumentoMotorista = Convert.ToString(Dr.GetValue(13)),
+                            DocumentoFiscal = Convert.ToString(Dr.GetValue(14)),
+                            FechaDocFiscal = Convert.ToDateTime(Dr.GetValue(15)),
+                            NoMarchamo = Convert.ToString(Dr.GetValue(16)),
+                            Observacion = Convert.ToString(Dr.GetValue(17)), 
                             TotalValue = Convert.ToDouble(Dr.GetValue(18)),
-                            NumeroOc = Dr.GetString(19)
+                            NumeroOc = Convert.ToString(Dr.GetValue(19))
                         });
                     }
                 }

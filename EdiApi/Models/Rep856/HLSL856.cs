@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace EdiApi
 {
-    public class HLSL856 : EdiBase
+    public partial class HLSL856 : EdiBase
     {
         public const string Init = "HL";
         public const string Self = "Hierarchical Level";

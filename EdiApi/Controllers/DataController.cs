@@ -244,18 +244,23 @@ namespace EdiApi.Controllers
             string ThisTime = DateTime.Now.ToString(ApplicationSettings.ToTimeFormat);
             IEnumerable<string> ListDispatch = listDispatch.Split('|');
             IEnumerable<TsqlDespachosWmsComplex> ListSNO = ManualDB.SP_GetSNDet(ref WmsDbO);
-            IEnumerable<TsqlDespachosWmsComplex> ListSN = from Ls in ListSNO
+            List<LearEquivalencias> ListEquivalencias = DbO.LearEquivalencias.ToList();
+            List<TsqlDespachosWmsComplex> ListSN = (from Ls in ListSNO
                      from Ld in ListDispatch
                      where Ls.DespachoId == Convert.ToInt32(Ld)
-                     select Ls;
-            int InterchangeControlNumber = (from Isa in DbO.LearIsa856 select Convert.ToInt32(Isa.InterchangeControlNumber)).Max() + 1;
+                     select Ls).ToList();
+            int InterchangeControlNumber = 1;
+            if (DbO.LearIsa856.Count() > 0)
+                InterchangeControlNumber = (from Isa1 in DbO.LearIsa856 select Convert.ToInt32(Isa1.InterchangeControlNumber)).Max() + 1;
             int ContHl = 1;
+            ISA856 Isa = new ISA856(EdiBase.SegmentTerminator);
             foreach (string Despacho in ListDispatch)
             {
+                int NSeg = 0;
                 IEnumerable<TsqlDespachosWmsComplex> ListProductos = ListSN.Where(Sn => Sn.DespachoId == Convert.ToInt32(Despacho));
                 TsqlDespachosWmsComplex DespachoInfo = ListProductos.Fod();
                 if (DespachoInfo == null) continue;
-                ISA856 Isa = new ISA856(0, EdiBase.SegmentTerminator, $"{InterchangeControlNumber:9}") {
+                Isa = new ISA856(0, EdiBase.SegmentTerminator, $"{InterchangeControlNumber.ToString("D9")}") {
                     AuthorizationInformationQualifier = "00",
                     AuthorizationInformation = "          ",
                     SecurityInformationQualifier = "00",
@@ -265,12 +270,13 @@ namespace EdiApi.Controllers
                     InterchangeReceiverIdQualifier = "ZZ",
                     InterchangeReceiverId = "HN02NC72       ",
                     InterchangeDate = ThisDate,
+                    InterchangeTime = ThisTime,
                     InterchangeControlStandardsId = "U",
                     InterchangeControlVersion = "0231",
                     AcknowledgmentRequested = "0",
                     UsageIndicator = "P"
                 };
-                GS856 Gs = new GS856(0, EdiBase.SegmentTerminator, $"{InterchangeControlNumber}") {
+                GS856 Gs = new GS856(0, EdiBase.SegmentTerminator, $"{InterchangeControlNumber.ToString("D4")}") {
                     FunctionalIdCode = "SH",
                     ApplicationSenderCode = "GLC504",
                     ApplicationReceiverCode = "HN02NC72       ",
@@ -279,26 +285,32 @@ namespace EdiApi.Controllers
                     ResponsibleAgencyCode = "X",
                     Version = "002040"
                 };
-                ST856 St = new ST856(0, EdiBase.SegmentTerminator, $"{InterchangeControlNumber}");
+                NSeg++;
+                ST856 St = new ST856(0, EdiBase.SegmentTerminator, $"{InterchangeControlNumber.ToString("D4")}");
                 Isa.Childs.Add(Gs);
                 Isa.Childs.Add(St);
+                NSeg++;
                 BSN856 Bsn = new BSN856(EdiBase.SegmentTerminator) {
                     TransactionSetPurposeCode = "00",
                     ShipIdentification = Despacho,
                     BsnDate = ThisDate,
                     BsnTime = ThisTime
                 };
-                Isa.Childs.Add(Bsn);
+                NSeg++;
+                St.Childs.Add(Bsn);
                 DTM856 Dtm = new DTM856(EdiBase.SegmentTerminator) {
                     DateTimeQualifier = "011",
                     DtmDate = ThisDate,
                     DtmTime = ThisTime
                 };
-                Isa.Childs.Add(Dtm);
+                NSeg++;
+                St.Childs.Add(Dtm);
                 HLSL856 Hls = new HLSL856(EdiBase.SegmentTerminator) {
                     HierarchicalIdNumber = ContHl.ToString(),
                     HierarchicalLevelCode = "S"
                 };
+                NSeg++;
+                St.Childs.Add(Hls);
                 MEA856 Mea1 = new MEA856(EdiBase.SegmentTerminator)
                 {
                     MeasurementReferenceIdCode = "PD",
@@ -306,6 +318,7 @@ namespace EdiApi.Controllers
                     MeasurementValue = DespachoInfo.Weight.ToString(),
                     UnitOfMeasure = "KG"
                 };
+                NSeg++;
                 MEA856 Mea2 = new MEA856(EdiBase.SegmentTerminator)
                 {
                     MeasurementReferenceIdCode = "PD",
@@ -313,12 +326,14 @@ namespace EdiApi.Controllers
                     MeasurementValue = Mea1.MeasurementValue,
                     UnitOfMeasure = "KG"
                 };
+                NSeg++;
                 Hls.Childs.Add(Mea1);
                 Hls.Childs.Add(Mea2);
                 TD1856 Td1 = new TD1856(EdiBase.SegmentTerminator) {
                     PackagingCode = "PLT71",
                     LadingQuantity = "1"
                 };
+                NSeg++;
                 Hls.Childs.Add(Td1);
                 TD5856 Td5 = new TD5856(EdiBase.SegmentTerminator) {
                     RoutingSequenceCode = "B",
@@ -328,6 +343,7 @@ namespace EdiApi.Controllers
                     LocationQualifier = "PP",
                     LocationIdentifier = "ORMSBY"
                 };
+                NSeg++;
                 Hls.Childs.Add(Td5);
                 TD3856 Td3 = new TD3856(EdiBase.SegmentTerminator)
                 {
@@ -335,23 +351,27 @@ namespace EdiApi.Controllers
                     EquipmentInitial = "",
                     EquipmentNumber = DespachoInfo.NoContenedor
                 };
+                NSeg++;
                 Hls.Childs.Add(Td3);
                 REF856 Ref1 = new REF856(EdiBase.SegmentTerminator) {
                     ReferenceNumberQualifier = "VN",
                     ReferenceNumber = DespachoInfo.NumeroOc
                 };
+                NSeg++;
                 Hls.Childs.Add(Ref1);
                 REF856 Ref2 = new REF856(EdiBase.SegmentTerminator)
                 {
                     ReferenceNumberQualifier = "PK",
                     ReferenceNumber = DespachoInfo.NoMarchamo
                 };
+                NSeg++;
                 Hls.Childs.Add(Ref2);
                 N1856 N11 = new N1856(EdiBase.SegmentTerminator) {
                     EntityIdentifierCode = "ST",
                     IdCodeQualifier = "92",
                     IdCode = "HN02NC72"
                 };
+                NSeg++;
                 Hls.Childs.Add(N11);
                 N1856 N12 = new N1856(EdiBase.SegmentTerminator)
                 {
@@ -359,6 +379,7 @@ namespace EdiApi.Controllers
                     IdCodeQualifier = "92",
                     IdCode = "GLC504"
                 };
+                NSeg++;
                 Hls.Childs.Add(N12);
                 foreach(TsqlDespachosWmsComplex ComplexProd in ListProductos)
                 {
@@ -366,25 +387,72 @@ namespace EdiApi.Controllers
                                where Sno.CodProducto == ComplexProd.CodProducto
                                select Sno.Bulks).Sum();
                     ContHl++;
+                    LearEquivalencias LearEquivalencia = (
+                        from Le in ListEquivalencias
+                        where Le.CodProducto == ComplexProd.CodProducto
+                        select Le).Fod();
+                    if (LearEquivalencia == null)
+                    {
+                        throw new Exception("No existe el producto en la tabla de equivalencias");
+                    }
                     HLOL856 HlO1 = new HLOL856(EdiBase.SegmentTerminator)
                     {
                         HierarchicalIdNumber = ContHl.ToString(),
                         HierarchicalParentIdNumber = "1",
                         HierarchicalLevelCode = "I"
                     };
+                    NSeg++;
                     Hls.Childs.Add(HlO1);
                     LIN856 Lin = new LIN856(EdiBase.SegmentTerminator) {
                         ProductIdQualifier1 = "BP",
-                        ProductId1 = ComplexProd.CodProducto
+                        ProductId1 = LearEquivalencia.CodProductoLear
                     };
+                    NSeg++;
                     HlO1.Childs.Add(Lin);
                     SN1856 Sn1 = new SN1856(EdiBase.SegmentTerminator) {
-                        NumberOfUnitsShipped = (ComplexProd.Bulks * 15744).ToString(), // por valor de cada caja
-                        UnitOfMeasurementCode = "FT",
-                        QuantityShipped = (Cda * 15744).ToString() // total de año, por valor de cada caja
+                        NumberOfUnitsShipped = (ComplexProd.Bulks * LearEquivalencia.Spq).ToString(), // por valor de cada caja
+                        UnitOfMeasurementCode = LearEquivalencia.Unit,
+                        QuantityShipped = (Cda * LearEquivalencia.Spq).ToString() // total de año, por valor de cada caja
                     };
+                    NSeg++;
+                    Lin.Childs.Add(Sn1);
+                    PRF856 Prf = new PRF856(EdiBase.SegmentTerminator) {
+                        PurchaseOrderNumber = ComplexProd.NumeroOc,
+                        ReleaseNumber = "",
+                        ChangeOrderSequenceNumber = "",
+                        PurchaseOrderDate = ComplexProd.FechaSalida.Value.ToString(ApplicationSettings.ToDateTimeFormat)
+                    };
+                    NSeg++;
+                    Lin.Childs.Add(Prf);
+                    CLD856 Cld = new CLD856(EdiBase.SegmentTerminator)
+                    {
+                        NumberOfCustomerLoads = "1",
+                        UnitsShipped = "1",
+                        PackagingCode = "PLT90"
+                    };
+                    NSeg++;
+                    Lin.Childs.Add(Cld);
                 }
+                CTT856 Ctt = new CTT856(EdiBase.SegmentTerminator) {
+                    NumberOfLineItems = $"{ContHl}"
+                };
+                NSeg++;
+                Isa.Childs.Add(Ctt);                
+                Isa.Childs.Add(new SE856(EdiBase.SegmentTerminator)
+                {
+                    NumIncludedSegments = $"{NSeg}",
+                    TransactionSetControlNumber = InterchangeControlNumber.ToString("D4")
+                });
+                Isa.Childs.Add(new GE856(EdiBase.SegmentTerminator) {
+                    NumTransactionSetsIncluded = "1",
+                    GroupControl = InterchangeControlNumber.ToString("D4")
+                });
+                Isa.Childs.Add(new IEA856(EdiBase.SegmentTerminator) {
+                    NumIncludedGroups = "1",
+                    InterchangeControlNumber = Isa.InterchangeControlNumber
+                });
             }
+            string EdiStr = Isa.Ts();
             return string.Empty;
         }
     }

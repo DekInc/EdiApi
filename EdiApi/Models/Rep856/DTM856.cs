@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace EdiApi
 {
-    public class DTM856 : EdiBase
+    public partial class DTM856 : EdiBase
     {
         public const string Init = "DTM";
         public const string Self = "Date/Time Reference";

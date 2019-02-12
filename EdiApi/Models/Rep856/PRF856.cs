@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace EdiApi
 {
-    public class PRF856 : EdiBase
+    public partial class PRF856 : EdiBase
     {
         public const string Init = "PRF";
         public const string Self = "Purchase Order Reference";

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace EdiApi
 {
-    public class GS856 : EdiBase
+    public partial class GS856 : EdiBase
     {
         public UInt16 RepType { get; set; }
         public const string Init = "GS";
