@@ -58,7 +58,7 @@
                         </table>
                         <br />
                         <br />
-                        <button id="btnSubmit" class="btn btn-primary" type="button">Enviar notificación de envió</button>
+                        <button id="btnSubmit" class="btn btn-success" type="button">Enviar notificación de envió</button>
                         <br />
                         <br />
                     </form>
@@ -240,21 +240,29 @@
     });
     $(document).ready(function () {
         fillTblReportes('null');
-        $('#tblReportes tbody').on('click', 'tr', function () {
-            if ($(this).hasClass('selected')) {
-                $(this).removeClass('selected');
-            }
-            else {
-                domtblReportes.$('tr.selected').removeClass('selected');
-                $(this).addClass('selected');
+        $('#tblReportes tbody').on('click', 'tr', function (e) {
+            e.preventDefault();
+            //if ($(this).hasClass('selected')) {
+            //    $(this).removeClass('selected');
+            //    return false;
+            //}
+            //else {                
                 //trigger update
-                var idChk = $($(this).closest("tr").find('td:eq(0)').find('input')[0]).prop('id');
-                if (idChk == null) return;
-                idChk = idChk.substr(0, idChk.indexOf('|'));
+                domtblReportes.$('tr.selected').removeClass('selected');
+                var chk = $(this).closest("tr").find('td:eq(0)').find('input')[0];
+                var idChk = $(chk).prop('id');
+                if (idChk == null) return;                
+                var chkState = $(chk).prop('checked');
+                idChk = idChk.substr(0, idChk.indexOf('|'));                
                 $("input[name^='" + idChk + "']").each(function (Ind, Ele) {                    
-                    $(Ele).prop('checked', !$($(this).closest("tr").find('td:eq(0)').find('input')[0]).prop('checked'));
+                    $(Ele).prop('checked', !chkState);
+                    if (chkState)
+                        $(Ele).closest("tr").removeClass('selected');
+                    else
+                        $(Ele).closest("tr").addClass('selected');                        
                 });                
-            }
+                return false;
+            //}
         });
     });
 </script>

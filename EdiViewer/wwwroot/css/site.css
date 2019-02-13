@@ -50,10 +50,7 @@ body {
     width: 100%;
     text-align: left;
 }
-.tblReportes thead {
-    background: linear-gradient(to bottom, #c54062, #fbfcf2);
-}
-.tblReportes thead {    
+.tblReportes {    
     background: linear-gradient(35deg, #c54062, #fbfcf2);
 }
 .tblReportes tbody {
