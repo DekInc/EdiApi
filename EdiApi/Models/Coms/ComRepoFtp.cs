@@ -50,7 +50,7 @@ namespace EdiApi.Models
                 ftpRequest.UseBinary = true;
                 ftpRequest.UsePassive = true;
                 ftpRequest.KeepAlive = true;
-                ftpRequest.Method = WebRequestMethods.Ftp.AppendFile;
+                ftpRequest.Method = WebRequestMethods.Ftp.ListDirectory;
                 ftpResponse = (FtpWebResponse)ftpRequest.GetResponse();
                 ftpResponse.Close();
                 ftpRequest = null;
@@ -176,6 +176,49 @@ namespace EdiApi.Models
             }
             return;
         }
+        public void Put(string _EdiStr, ref EdiDBContext _DbO)
+        {
+            try
+            {
+                string FtpFile = EdiBase.GetHashId();
+                StreamWriter Sw = new StreamWriter(FtpFile, false);
+                Sw.Write(_EdiStr);
+                Sw.Close();
+                CheckMaxEdiComs(ref _DbO, MaxEdiComs);
+                ftpRequest = UseHost2 ? (FtpWebRequest)WebRequest.Create($"{host2}/{DirOut}/{FtpFile}") : (FtpWebRequest)WebRequest.Create($"{host}/{DirOut}/{FtpFile}");
+                ftpRequest.Credentials = new NetworkCredential(user, pass);
+                ftpRequest.UseBinary = true;
+                ftpRequest.UsePassive = true;
+                ftpRequest.KeepAlive = true;
+                ftpRequest.Method = WebRequestMethods.Ftp.UploadFile;
+                ftpStream = ftpRequest.GetRequestStream();
+                FileStream localFileStream = new FileStream(FtpFile, FileMode.Open);
+                byte[] byteBuffer = new byte[bufferSize];
+                int bytesSent = localFileStream.Read(byteBuffer, 0, bufferSize);
+                try
+                {
+                    while (bytesSent != 0)
+                    {
+                        ftpStream.Write(byteBuffer, 0, bytesSent);
+                        bytesSent = localFileStream.Read(byteBuffer, 0, bufferSize);
+                    }
+                    AddComLog(ref _DbO, Id, $"Archivo enviado en {(UseHost2 ? host2 : host)}");
+                }
+                catch (Exception ex)
+                {
+                    AddComLog(ref _DbO, Id, $"Error al procesar el archivo en {(UseHost2 ? host2 : host)}. Info: {ex.ToString()}");
+                }
+                localFileStream.Close();
+                ftpStream.Close();
+                ftpRequest = null;
+                File.Delete(FtpFile);
+            }
+            catch (Exception ex)
+            {
+                AddComLog(ref _DbO, Id, $"Error relacionado con la conexión de {(UseHost2 ? host2 : host)}. Info: {ex.ToString()}");
+            }
+            return;
+        }
 
         public void Get(ref EdiDBContext _DbO, ref int _CodError, ref string _MessageSubject, ref string _FileName, ref List<string> _EdiPure)
         {
@@ -186,26 +229,35 @@ namespace EdiApi.Models
                     return;
                 if (string.IsNullOrEmpty(Files.LastOrDefault()))
                     return;
-                List<LearPureEdi> ListLearPureEdiO = _DbO.LearPureEdi.Where(P => P.NombreArchivo == Files.LastOrDefault()).ToList();
-                if (ListLearPureEdiO.Count > 0) {
-                    if (ListLearPureEdiO.Where(P => P.Reprocesar).Count() > 0)
+                List<string> ListFiles = Files.ToList();
+                List<LearPureEdi> ListLearPureEdiO = (
+                    from Pe in _DbO.LearPureEdi
+                    from Lf in ListFiles
+                    where Pe.NombreArchivo == Lf
+                    select Pe).ToList();
+                for(int Ci = 0; Ci < ListLearPureEdiO.Count; Ci++)
+                {
+                    if (ListLearPureEdiO[Ci].Reprocesar)
                     {
-                        foreach(LearPureEdi P in ListLearPureEdiO)
-                        {
-                            P.Reprocesar = false;
-                            _DbO.LearPureEdi.Update(P);                            
-                        }
+                        ListLearPureEdiO[Ci].Reprocesar = false;
+                        _DbO.LearPureEdi.Update(ListLearPureEdiO[Ci]);
                         _DbO.SaveChanges();
+                        _FileName = ListLearPureEdiO[Ci].NombreArchivo;                        
+                        break;
                     }
-                    else
-                    {
-                        _CodError = -8;
-                        _MessageSubject = $"Error, el archivo {Files.LastOrDefault()} ha sido verificado y por algún motivo sigue en el directorio de entrada, esto es un error porque cuando se verifican se mueven al directorio {DirChecked} en ftp {(UseHost2 ? host2 : host)}";
-                        AddComLog(ref _DbO, Id, _MessageSubject);
-                        return;
-                    }                    
+                    ListFiles.Remove(ListLearPureEdiO[Ci].NombreArchivo);
                 }
-                _FileName = Files.LastOrDefault();
+                if (string.IsNullOrEmpty(_FileName))
+                {
+                    if (ListFiles.Count == 0)
+                    {
+                        _CodError = -2;
+                        return;
+                    }
+                    else {
+                        _FileName = ListFiles.Fod();
+                    }
+                }
                 ftpRequest = UseHost2 ? (FtpWebRequest)WebRequest.Create($"{host2}/{DirIn}/{_FileName}") : (FtpWebRequest)WebRequest.Create($"{host}/{DirIn}/{_FileName}");
                 ftpRequest.Credentials = new NetworkCredential(user, pass);
                 ftpRequest.UseBinary = true;

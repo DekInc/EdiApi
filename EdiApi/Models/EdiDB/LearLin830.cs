@@ -15,5 +15,6 @@ namespace EdiApi.Models.EdiDB
         public string EdiStr { get; set; }
         public string HashId { get; set; }
         public string ParentHashId { get; set; }
+        public string Comments { get; set; }
     }
 }

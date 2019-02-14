@@ -6,7 +6,7 @@
         LIN - @Model.Item2.Where(Sn => Sn.Segment == "LIN").Fod().Eng @Model.Item1.ProductId
     </div>
     <div class="collapse" id="@Model.Item1.HashId">
-        <div class="card-body">            
+        <div class="card-body">
             <div class="container">
                 <div class="row">
                     <div class="col-sm">
@@ -16,9 +16,9 @@
                             if (Model.Item3.Data.ListProdExist.Where(Pre => Pre.CodProducto == Model.Item1.ProductId.Trim()).Count() > 0)
                             {
                                 <text>@Html.QtyToMil(
-                                     Model.Item3.Data.ListProdExist.Where(Pre => Pre.CodProducto == Model.Item1.ProductId.Trim()).Select(Pr => Pr.Existencia).Sum(),
-                                     Model.Item3.Data.ListProdExist.Where(Pre => Pre.CodProducto == Model.Item1.ProductId.Trim()).Fod().UnidadDeMedida
-                                     )
+                                  Model.Item3.Data.ListProdExist.Where(Pre => Pre.CodProducto == Model.Item1.ProductId.Trim()).Select(Pr => Pr.Existencia).Sum(),
+                                  Model.Item3.Data.ListProdExist.Where(Pre => Pre.CodProducto == Model.Item1.ProductId.Trim()).Fod().UnidadDeMedida
+                                  )
                                 </text>
                             }
                         }
@@ -137,7 +137,49 @@
                    ))
                 <hr />
             }
-
+            <div class="row">
+                <div class="col-sm">
+                    <div class="form-group">
+                        <form id="form@(Model.Item1.HashId)" asp-action="UpdateLinComments" method="post">
+                            <b>Comentarios sobre cambios de cantidades a enviar para este producto:</b>
+                            <textarea class="form-control divComments" id="TxtLinCom@(Model.Item1.HashId)" name="TxtLinCom@(Model.Item1.HashId)">@Model.Item1.Comments</textarea>
+                            <button id="btnComm@(Model.Item1.HashId)" class="btn btn-primary btn-lg font-size-12" type="button">Guardar <div id="divSpin@(Model.Item1.HashId)" class="spinner-border spinner-border-sm text-danger" style="display: none" role="status"><span class="sr-only">Loading...</span></div></button>
+                        </form>
+                        <script>
+                            $('#btnComm@(Model.Item1.HashId)').on("click", function () {
+                                var btnName = '#btnComm@(Model.Item1.HashId)';
+                                var spinName = '#divSpin@(Model.Item1.HashId)';
+                                $(btnName).prop('disabled', true);
+                                $(spinName).show();
+                                //e.preventDefault;
+                                $.ajax({
+                                    url: '@this.Url.Action("UpdateLinComments")',
+                                    type: 'POST',
+                                    dataType: 'JSON',
+                                    data: $('#form@(Model.Item1.HashId)').serialize(),
+                                    success: function (json) {
+                                        $(btnName).removeAttr('disabled');
+                                        if (json.data == '') {
+                                            
+                                        }
+                                        else if (json.data == 'ok') {                                            
+                                            menErrorEdi('Comentario guardado');
+                                        }
+                                        else { menErrorEdi(json.data); }       
+                                        $(spinName).hide();
+                                    },
+                                    error: function (xhr, ajaxOptions, thrownError) {
+                                        $(btnName).removeAttr('disabled');
+                                        $(spinName).hide();
+                                        menErrorEdi(xhr.status);
+                                        menErrorEdi(thrownError);                
+                                    }
+                                });
+                            });
+                        </script>
+                    </div>
+                </div>
+            </div>
             @if (Model.Item3.Data.ListLinFst.Where(LNte => LNte.ParentHashId == Model.Item1.HashId).Count() > 0)
             {
                 <div class="card box-shadow">

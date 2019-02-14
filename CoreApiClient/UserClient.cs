@@ -30,7 +30,11 @@ namespace CoreApiClient
         }
         public async Task<string> SendForm856(IEnumerable<string> _ListDispatch)
         {
-            return await GetAsync<string>(CreateRequestUri(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Data/SendForm856"), $"?listDispatch={string.Join('|', _ListDispatch)}"));
+            return await GetAsyncNoJson<string>(CreateRequestUri(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Data/SendForm856"), $"?listDispatch={string.Join('|', _ListDispatch)}"));
+        }
+        public async Task<string> UpdateLinComments(string _LinHashId, string _TxtLinComData)
+        {
+            return await GetAsyncNoJson<string>(CreateRequestUri(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Data/UpdateLinComments"), $"?LinHashId={_LinHashId}&TxtLinComData={_TxtLinComData}"));
         }
         public async Task<string> Login(string _User, string _Password)
         {

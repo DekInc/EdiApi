@@ -42,6 +42,7 @@ namespace EdiApi.Models.EdiDB
         public virtual DbSet<LearN1856> LearN1856 { get; set; }
         public virtual DbSet<LearN4830> LearN4830 { get; set; }
         public virtual DbSet<LearNte830> LearNte830 { get; set; }
+        public virtual DbSet<LearPrf856> LearPrf856 { get; set; }
         public virtual DbSet<LearPrs830> LearPrs830 { get; set; }
         public virtual DbSet<LearPureEdi> LearPureEdi { get; set; }
         public virtual DbSet<LearRef830> LearRef830 { get; set; }
@@ -50,6 +51,7 @@ namespace EdiApi.Models.EdiDB
         public virtual DbSet<LearShp830> LearShp830 { get; set; }
         public virtual DbSet<LearSn1856> LearSn1856 { get; set; }
         public virtual DbSet<LearSt830> LearSt830 { get; set; }
+        public virtual DbSet<LearSt856> LearSt856 { get; set; }
         public virtual DbSet<LearTd1856> LearTd1856 { get; set; }
         public virtual DbSet<LearTd3856> LearTd3856 { get; set; }
         public virtual DbSet<LearTd5856> LearTd5856 { get; set; }
@@ -79,7 +81,11 @@ namespace EdiApi.Models.EdiDB
             {
                 entity.Property(e => e.Code).HasMaxLength(9);
 
+                entity.Property(e => e.EdiStr).HasColumnType("text");
+
                 entity.Property(e => e.Fecha).HasMaxLength(18);
+
+                entity.Property(e => e.HashId).HasMaxLength(128);
 
                 entity.Property(e => e.Log).HasColumnType("text");
 
@@ -554,6 +560,8 @@ namespace EdiApi.Models.EdiDB
 
                 entity.Property(e => e.AssignedIdentification).HasMaxLength(1);
 
+                entity.Property(e => e.Comments).HasColumnType("text");
+
                 entity.Property(e => e.EdiStr).HasColumnType("text");
 
                 entity.Property(e => e.ParentHashId).HasMaxLength(128);
@@ -767,6 +775,29 @@ namespace EdiApi.Models.EdiDB
                 entity.Property(e => e.ReferenceCode).HasMaxLength(3);
             });
 
+            modelBuilder.Entity<LearPrf856>(entity =>
+            {
+                entity.HasKey(e => e.HashId);
+
+                entity.ToTable("LEAR_PRF856");
+
+                entity.Property(e => e.HashId)
+                    .HasMaxLength(128)
+                    .ValueGeneratedNever();
+
+                entity.Property(e => e.ChangeOrderSequenceNumber).HasMaxLength(8);
+
+                entity.Property(e => e.EdiStr).HasColumnType("text");
+
+                entity.Property(e => e.ParentHashId).HasMaxLength(128);
+
+                entity.Property(e => e.PurchaseOrderDate).HasMaxLength(8);
+
+                entity.Property(e => e.PurchaseOrderNumber).HasMaxLength(13);
+
+                entity.Property(e => e.ReleaseNumber).HasMaxLength(30);
+            });
+
             modelBuilder.Entity<LearPrs830>(entity =>
             {
                 entity.HasKey(e => e.HashId);
@@ -844,7 +875,7 @@ namespace EdiApi.Models.EdiDB
 
                 entity.Property(e => e.ParentHashId).HasMaxLength(128);
 
-                entity.Property(e => e.ReferenceNumber).HasMaxLength(2);
+                entity.Property(e => e.ReferenceNumber).HasMaxLength(16);
 
                 entity.Property(e => e.ReferenceNumberQualifier).HasMaxLength(2);
             });
@@ -921,6 +952,25 @@ namespace EdiApi.Models.EdiDB
                 entity.HasKey(e => e.HashId);
 
                 entity.ToTable("LEAR_ST830");
+
+                entity.Property(e => e.HashId)
+                    .HasMaxLength(128)
+                    .ValueGeneratedNever();
+
+                entity.Property(e => e.ControlNumber).HasMaxLength(9);
+
+                entity.Property(e => e.EdiStr).HasColumnType("text");
+
+                entity.Property(e => e.IdCode).HasMaxLength(3);
+
+                entity.Property(e => e.ParentHashId).HasMaxLength(128);
+            });
+
+            modelBuilder.Entity<LearSt856>(entity =>
+            {
+                entity.HasKey(e => e.HashId);
+
+                entity.ToTable("LEAR_ST856");
 
                 entity.Property(e => e.HashId)
                     .HasMaxLength(128)

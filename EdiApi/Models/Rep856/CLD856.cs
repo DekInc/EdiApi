@@ -10,11 +10,11 @@ namespace EdiApi
     {
         public const string Init = "CLD";
         public const string Self = "Customer's Load Detail";
-        [StringLength(maximumLength: 2, MinimumLength = 2)]
+        [StringLength(maximumLength: 2, MinimumLength = 1)]
         public string NumberOfCustomerLoads { get; set; }        
-        [StringLength(maximumLength: 30, MinimumLength = 2)]
+        [StringLength(maximumLength: 30, MinimumLength = 1)]
         public string UnitsShipped { get; set; }        
-        [StringLength(maximumLength: 6, MinimumLength = 6)]
+        [StringLength(maximumLength: 6, MinimumLength = 3)]
         public string PackagingCode { get; set; }        
         public CLD856(string _SegmentTerminator) : base(_SegmentTerminator)
         {

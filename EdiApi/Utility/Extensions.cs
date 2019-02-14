@@ -23,5 +23,36 @@ namespace EdiApi
         {
             return source.FirstOrDefault();
         }
+        public static bool IsNumeric(this char CharO)
+        {
+            bool isNum = Double.TryParse(Convert.ToString(CharO), System.Globalization.NumberStyles.Any, System.Globalization.NumberFormatInfo.InvariantInfo, out double retNum);
+            return isNum;
+        }
+        public static string GiveFirstStr(this string _Code)
+        {
+            try
+            {
+                int I = 0;
+                for (I = 0; I < _Code.Length; I++)
+                    if (_Code[I].IsNumeric())
+                        break;
+                return _Code.Substring(0, I);
+            }
+            catch
+            {
+                return _Code;
+            }            
+        }
+        public static DateTime ToDate(this string _Str)
+        {
+            if (string.IsNullOrEmpty(_Str)) return DateTime.Now;
+
+            return new DateTime(Convert.ToInt32($"20{_Str.Substring(0, 2)}"),
+                        Convert.ToInt32(_Str.Substring(2, 2)),
+                        Convert.ToInt32(_Str.Substring(4, 2)),
+                        Convert.ToInt32(_Str.Substring(6, 2)),
+                        Convert.ToInt32(_Str.Substring(8, 2)), 0
+                        );
+        }
     }
 }

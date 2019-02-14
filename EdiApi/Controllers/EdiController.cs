@@ -132,7 +132,7 @@ namespace EdiApi.Controllers
                             return new RetReporte() {
                                 Info = new RetInfo() {
                                     CodError = -2,
-                                    Mensaje = $"Error, no hay correos a verificar.",
+                                    Mensaje = $"Error, no hay nada a verificar.",
                                     ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
                                 }
                             };
@@ -154,11 +154,13 @@ namespace EdiApi.Controllers
                                 }
                             };
                     }
+                    for (int Ifn = 0; Ifn < ListEdiPure.Count; Ifn++)
+                        ListEdiPure[Ifn] = ListEdiPure[Ifn].Replace(Environment.NewLine, "");
                     if (ListEdiPure.Count > 1)
                     {
+                        ListEdiPure.ForEach(E => EdiPureStr += E);
                         if (ListEdiPure[1].Contains(EdiBase.SegmentTerminator))
-                        {
-                            ListEdiPure.ForEach(E => EdiPureStr += E);
+                        {                            
                             LearRep830O.EdiFile = EdiPureStr.Split(EdiBase.SegmentTerminator).ToList();
                         }
                         else

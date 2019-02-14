@@ -35,6 +35,33 @@ namespace EdiViewer.Controllers
             RetReporte RetReporteO = await ApiClientFactory.Instance.TranslateForms830();
             return "";
         }
+        [HttpPost]
+        public async Task<IActionResult> UpdateLinComments() {
+            try
+            {
+                string TxtLinComData = null, LinHashId = null;
+                IFormCollection formCollection = HttpContext.Request.Form;
+                foreach (string FormPara in formCollection.Keys)
+                {
+                    if (FormPara.StartsWith("TxtLinCom"))
+                    {
+                        LinHashId = FormPara.Replace("TxtLinCom", "");
+                        TxtLinComData = HttpContext.Request.Form[FormPara].Fod();
+                        break;
+                    }
+                }
+                if (!string.IsNullOrEmpty(LinHashId))
+                {
+                    string data = await ApiClientFactory.Instance.UpdateLinComments(LinHashId, TxtLinComData);
+                    return Json(new { data });
+                }
+                return Json(new { data = "ok" });
+            }
+            catch (Exception e1)
+            {
+                return Json(new { data = e1.ToString() });
+            }
+        }
         public async Task<IActionResult> Details(string HashId = "")
         {
             EdiDetailModel EdiDetailModelO = new EdiDetailModel();
@@ -86,6 +113,8 @@ namespace EdiViewer.Controllers
 
                 // Getting all Customer data  
                 IEnumerable<Rep830Info> Rep830InfoO = await ApiClientFactory.Instance.GetPureEdi(string.Empty);
+                if (Rep830InfoO.Count() == 0)
+                    return Json(new { draw = 0, recordsFiltered = 0, recordsTotal = 1, data = Rep830InfoO, errorMessage = "" });
                 if (!string.IsNullOrEmpty(Rep830InfoO.Fod().errorMessage)) {
                     return Json(new { draw = 0, recordsFiltered = 0, recordsTotal = 0, data = Rep830InfoO, Rep830InfoO.Fod().errorMessage });
                 }

@@ -42,7 +42,7 @@ namespace EdiApi
         }
         public static string GetHashId()
         {
-            return Guid.NewGuid().ToString().Replace("-", "").Substring(0, 24) + DateTime.Now.Year.ToString();
+            return Guid.NewGuid().ToString().Replace("-", "").Substring(0, 24) + DateTime.Now.ToString("ddMMyyyyHHmm");
         }
         public bool Parse(string _EdiStr)
         {
@@ -101,7 +101,7 @@ namespace EdiApi
             }
             return _Dest;
         }
-        public void SaveAll(ref EdiDBContext _DbO) {
+        public void SaveAll830(ref EdiDBContext _DbO) {
             try
             {
                 ApplicationSettings.SavedSegments++;
@@ -149,7 +149,7 @@ namespace EdiApi
                         _DbO.LearAth830.Add(Reflect(new LearAth830()));
                         break;
                     case SHP830.Init:
-                        _DbO.LearShp830.Add(Reflect(new LearShp830())); _DbO.SaveChanges();
+                        _DbO.LearShp830.Add(Reflect(new LearShp830()));
                         break;
                     case REF830.Init:
                         _DbO.LearRef830.Add(Reflect(new LearRef830()));
@@ -161,7 +161,7 @@ namespace EdiApi
                     //case GE830.Init:
                     //    break;
                     //case IEA830.Init:
-                    //    break;
+                    //    break;                    
                     default:
                         break;
                 }
@@ -171,7 +171,93 @@ namespace EdiApi
                 throw new Exception($"Error al guardar {GetType().GetField("Init").GetRawConstantValue() } {eFb1.ToString()}. Error en linea {EdiStr}");
             }            
             foreach (EdiBase ChildO in this.Childs)
-                ChildO.SaveAll(ref _DbO);
+                ChildO.SaveAll830(ref _DbO);
+        }
+        public void SaveAll856(ref EdiDBContext _DbO)
+        {
+            try
+            {
+                ApplicationSettings.SavedSegments++;
+                Validate();
+                switch (GetType().GetField("Init").GetRawConstantValue())
+                {   
+                    case ISA856.Init:
+                        LearRep856.LearIsa856root = Reflect(new LearIsa856());
+                        _DbO.LearIsa856.Add(LearRep856.LearIsa856root);
+                        break;
+                    case BSN856.Init:
+                        _DbO.LearBsn856.Add(Reflect(new LearBsn856()));
+                        break;
+                    case CLD856.Init:
+                        _DbO.LearCld856.Add(Reflect(new LearCld856()));
+                        break;
+                    case CTT856.Init:
+                        _DbO.LearCtt856.Add(Reflect(new LearCtt856()));
+                        break;
+                    case DTM856.Init:
+                        _DbO.LearDtm856.Add(Reflect(new LearDtm856()));
+                        break;
+                    case ETD856.Init:
+                        _DbO.LearEtd856.Add(Reflect(new LearEtd856()));
+                        break;
+                    //case GE856.Init:
+                    //    break;
+                    case GS856.Init:
+                        _DbO.LearGs856.Add(Reflect(new LearGs856()));
+                        break;
+                    case HLOL856.Init:
+                        if (this.GetType().Name == "HLOL856")
+                            _DbO.LearHlol856.Add(Reflect(new LearHlol856()));
+                        else
+                            _DbO.LearHlsl856.Add(Reflect(new LearHlsl856()));
+                        break;
+                    //case IEA856.Init:
+                    //    _DbO.LearI
+                    //    break;
+                    case LIN856.Init:
+                        _DbO.LearLin856.Add(Reflect(new LearLin856()));
+                        break;
+                    case MEA856.Init:
+                        _DbO.LearMea856.Add(Reflect(new LearMea856()));
+                        break;
+                    case N1856.Init:
+                        _DbO.LearN1856.Add(Reflect(new LearN1856()));
+                        break;
+                    case PRF856.Init:
+                        _DbO.LearPrf856.Add(Reflect(new LearPrf856()));
+                        break;
+                    case REF856.Init:
+                        _DbO.LearRef856.Add(Reflect(new LearRef856()));
+                        break;
+                    //case SE856.Init:
+                    //    _DbO.LearSE
+                    //    break;
+                    case SN1856.Init:
+                        _DbO.LearSn1856.Add(Reflect(new LearSn1856()));
+                        break;
+                    case ST856.Init:
+                        _DbO.LearSt856.Add(Reflect(new LearSt856()));
+                        break;
+                    case TD1856.Init:
+                        _DbO.LearTd1856.Add(Reflect(new LearTd1856()));
+                        break;
+                    case TD3856.Init:
+                        _DbO.LearTd3856.Add(Reflect(new LearTd3856()));
+                        break;
+                    case TD5856.Init:
+                        _DbO.LearTd5856.Add(Reflect(new LearTd5856()));
+                        break;
+                    default:
+                        break;
+                }
+                _DbO.SaveChanges();
+            }
+            catch (Exception eFb1)
+            {
+                throw new Exception($"Error al guardar {GetType().GetField("Init").GetRawConstantValue() } {eFb1.ToString()}. Error en linea {EdiStr}");
+            }
+            foreach (EdiBase ChildO in this.Childs)
+                ChildO.SaveAll856(ref _DbO);
         }
     }
 }

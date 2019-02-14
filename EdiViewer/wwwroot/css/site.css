@@ -248,3 +248,12 @@ table.dataTable thead th, table.dataTable thead td {
     opacity: 1;
     transform: scale(1);
 }
+#divSpin1{
+    box-sizing: border-box;
+}
+.font-size-12{
+    font-size: 12pt;    
+}
+.divComments {
+    margin-bottom: 10px;
+}

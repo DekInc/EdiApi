@@ -10,5 +10,7 @@ namespace EdiApi.Models.EdiDB
         public int Id { get; set; }
         public string Log { get; set; }
         public string Code { get; set; }
+        public string EdiStr { get; set; }
+        public string HashId { get; set; }
     }
 }

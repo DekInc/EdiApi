@@ -10,18 +10,26 @@ namespace EdiApi.Models
     {
         public static void AddComLog(ref EdiDBContext _DbO, string _Type, string _Log)
         {
-            _DbO.EdiComs.Add(new EdiComs()
+            try
             {
-                Type = _Type,
-                Freg = DateTime.Now.ToString(ApplicationSettings.DateTimeFormat),
-                Log = _Log
-            });
-            _DbO.SaveChanges();
+                _DbO.EdiComs.Add(new EdiComs()
+                {
+                    Type = _Type,
+                    Freg = DateTime.Now.ToString(ApplicationSettings.DateTimeFormat),
+                    Log = _Log
+                });
+                _DbO.SaveChanges();
+            }
+            catch { }
         }
         public static void CheckMaxEdiComs(ref EdiDBContext _DbO, object _MaxEdiComs)
         {
-            if (_DbO.EdiComs.Count() > Convert.ToInt32(_MaxEdiComs))
-                foreach (EdiComs EdiComO in _DbO.EdiComs) _DbO.EdiComs.Remove(EdiComO);
+            try
+            {
+                if (_DbO.EdiComs.Count() > Convert.ToInt32(_MaxEdiComs))
+                    foreach (EdiComs EdiComO in _DbO.EdiComs) _DbO.EdiComs.Remove(EdiComO);
+            }
+            catch { }       
         }
     }
 }

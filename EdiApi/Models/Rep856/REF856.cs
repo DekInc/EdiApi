@@ -12,7 +12,7 @@ namespace EdiApi
         public const string Self = "Reference Numbers";
         [StringLength(maximumLength: 2, MinimumLength = 2)]
         public string ReferenceNumberQualifier { get; set; }
-        [StringLength(maximumLength: 30, MinimumLength = 1)]
+        [StringLength(maximumLength: 16, MinimumLength = 1)]
         public string ReferenceNumber { get; set; }
         public REF856(string _SegmentTerminator) : base(_SegmentTerminator)
         {

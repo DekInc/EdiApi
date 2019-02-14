@@ -16,21 +16,24 @@ namespace EdiViewer.Controllers
         }
         public async Task<IActionResult> SendForm()
         {
-            IEnumerable<TsqlDespachosWmsComplex> TsqlDespachosWmsComplexO;
-            List<string[]> ListSelected = new List<string[]>();
-            Microsoft.AspNetCore.Http.IFormCollection formCollection = HttpContext.Request.Form;
-            foreach(string FormPara in formCollection.Keys)
-                if (FormPara.StartsWith("chkS"))
-                    ListSelected.Add(FormPara.Replace("chkS", "").Split('|'));
-            if (ListSelected.Count > 0)
+            try
             {
-                IEnumerable<string> ListDispatch = ListSelected.Select(O1 => O1.Fod()).Distinct();
-                //IEnumerable<string> ListProducts = ListSelected.Select(O1 => O1.LastOrDefault()).ToArray();
-                //TsqlDespachosWmsComplexO = await ApiClientFactory.Instance.GetSN(ListDispatch, ListProducts);
-                string s1 = await ApiClientFactory.Instance.SendForm856(ListDispatch);
-                
-                return Json(new { data = "ok" });
+                List<string[]> ListSelected = new List<string[]>();
+                Microsoft.AspNetCore.Http.IFormCollection formCollection = HttpContext.Request.Form;
+                foreach (string FormPara in formCollection.Keys)
+                    if (FormPara.StartsWith("chkS"))
+                        ListSelected.Add(FormPara.Replace("chkS", "").Split('|'));
+                if (ListSelected.Count > 0)
+                {
+                    IEnumerable<string> ListDispatch = ListSelected.Select(O1 => O1.Fod()).Distinct();
+                    string s1 = await ApiClientFactory.Instance.SendForm856(ListDispatch);
+                    return Json(new { data = s1 });
+                }
             }
+            catch (Exception e3)
+            {
+                return Json(new { data = e3.ToString() });
+            }            
             return Json(new { data = "" });
         }
         public IActionResult GetGridData(string destino = "") {

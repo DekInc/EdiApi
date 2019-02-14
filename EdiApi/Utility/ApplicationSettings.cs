@@ -10,6 +10,7 @@ namespace EdiApi
         public const string DateTimeFormat = "dd/MM/yyyy HH:mm";
         public const string ToDateTimeFormat = "yyMMdd";
         public const string ToTimeFormat = "HHmm";
+        public const string DateTimeFormatEdiFrom = "yyMMddHHmm";
         public static int SavedSegments = 0;
     }    
 }
