@@ -12,10 +12,10 @@ namespace EdiViewer.Utility.Scheduling
     public class GetEdi830Task : Interfaces.IScheduledTask
     {
         public string Schedule => "*/20 * * * *";
-        public static HttpClient httpClient = new HttpClient();
-        private static readonly string Transform830Uri = $"{ApplicationSettings.ApiUri}Edi/TranslateForms830";
+        public static HttpClient httpClient = new HttpClient();        
         public async Task ExecuteAsync(CancellationToken cancellationToken)
         {
+            string Transform830Uri = $"{ApplicationSettings.ApiUri}Edi/TranslateForms830";
             try
             {
                 //System.IO.StreamWriter Sw2 = new System.IO.StreamWriter(@"c:\temp\EdiLog.txt", true);

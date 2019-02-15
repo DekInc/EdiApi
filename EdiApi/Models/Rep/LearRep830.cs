@@ -37,9 +37,11 @@ namespace EdiApi
         public SHP830 SHPO { get; set; }
         public NTE830 NTEO { get; set; }
         public CTT830 CTTO { get; set; }
-        public EdiDBContext DbO;
+        private EdiDBContext DbO;
+        private Models.WmsDB.WmsContext WmsDb;
         public LearPureEdi LearPureEdiO { get; set; }
         public LearRep830(ref EdiDBContext _DbO) { DbO = _DbO; }
+        public LearRep830(ref EdiDBContext _DbO, ref Models.WmsDB.WmsContext _WmsDB) { DbO = _DbO; WmsDb = _WmsDB; }
         public LearRep830(UInt16 _RepType, int _ControlNumber, ref LearIsa830 _LearIsaO, ref LearGs830 _LearGsO, ref LearBfr830 _LearBfrO)
         {
             RepType = _RepType;
@@ -432,7 +434,8 @@ namespace EdiApi
                 }
             }
             return string.Empty;
-        }
+        }        
+
         public void SaveEdiPure(ref string _EdiPure, string _FileName, int _CheckSeg)
         {
             LearPureEdiO = new LearPureEdi()
@@ -458,6 +461,160 @@ namespace EdiApi
         public void SaveAll() {
             ISAO.SaveAll830(ref DbO);
             DbO.SaveChanges();
+        }
+        public string AutoSendInventary830()
+        {
+            string ThisDate = DateTime.Now.ToString(ApplicationSettings.ToDateTimeFormat);
+            string ThisTime = DateTime.Now.ToString(ApplicationSettings.ToTimeFormat);
+            int ControlNumber = 1, NSeg = 0;
+            IEnumerable<int> IeMaxRep =
+                (from Rs in DbO.EdiRepSent
+                 where Rs.Tipo == "830"
+                 select Convert.ToInt32(Rs.Code));
+            if (IeMaxRep.Count() > 0)
+                ControlNumber = IeMaxRep.Max() + 1;
+            ISAO = new ISA830(EdiBase.SegmentTerminator)
+            {
+                AuthorizationInformationQualifier = "00",
+                AuthorizationInformation = "          ",
+                SecurityInformationQualifier = "00",
+                SecurityInformation = "          ",
+                InterchangeSenderIdQualifier = "ZZ",
+                InterchangeSenderId = "GLC504",
+                InterchangeReceiverIdQualifier = "ZZ",
+                InterchangeReceiverId = "ICN3660        ",
+                InterchangeDate = ThisDate,
+                InterchangeTime = ThisTime,
+                InterchangeControlStandardsId = "U",
+                InterchangeControlVersion = "0231",
+                AcknowledgmentRequested = "0",
+                UsageIndicator = "P",
+                InterchangeControlNumber = $"{ControlNumber.ToString("D9")}"
+            };
+            NSeg++;
+            GS830 Gs = new GS830(EdiBase.SegmentTerminator)
+            {
+                FunctionalIdCode = "PS",
+                ApplicationSenderCode = "GLC504",
+                ApplicationReceiverCode = "ICN3660        ",
+                GsDate = ThisDate,
+                GsTime = ThisTime,
+                ResponsibleAgencyCode = "X",
+                Version = "002040",
+                GroupControlNumber = $"{ControlNumber.ToString("D4")}"
+            };
+            NSeg++;
+            ISAO.Childs.Add(Gs);
+            ST830 St = new ST830(EdiBase.SegmentTerminator) {
+                IdCode = "830",
+                ControlNumber = $"{ControlNumber.ToString("D4")}"
+            };
+            NSeg++;
+            ISAO.Childs.Add(St);
+            BFR830 Bfr = new BFR830(EdiBase.SegmentTerminator) {
+                TransactionSetPurposeCode = "00",
+                ForecastOrderNumber = "",
+                ReleaseNumber = "0000",
+                ForecastTypeQualifier = "ZZ",
+                ForecastQuantityQualifier = "A",
+                ForecastHorizonStart = ThisDate,
+                ForecastHorizonEnd = ThisDate,
+                ForecastGenerationDate = ThisDate,
+                ForecastUpdatedDate = "",
+                ContractNumber = "",
+                PurchaseOrderNumber = ""
+            };
+            NSeg++;
+            St.Childs.Add(Bfr);
+            IEnumerable<FE830DataAux> IeExistencias = ManualDB.SP_GetExistencias(ref WmsDb, 618);
+            IEnumerable<LearEquivalencias> learEquivalencias = DbO.LearEquivalencias;            
+            foreach (FE830DataAux Producto in IeExistencias)
+            {
+                LIN830 Lin = new LIN830(EdiBase.SegmentTerminator) {
+                    AssignedIdentification = "",
+                    ProductIdQualifier = "BP",
+                    ProductId = Producto.CodProducto,
+                    ProductRefIdQualifier = "",
+                    ProductRefId = "",
+                    ProductPurchaseIdQualifier = "",
+                    ProductPurchaseId = "",
+                };
+                NSeg++;
+                St.Childs.Add(Lin);
+                UIT830 Uit = new UIT830(EdiBase.SegmentTerminator) {
+                  UnitOfMeasure = "FT"
+                };
+                NSeg++;
+                Lin.Childs.Add(Uit);
+                PRS830 Prs = new PRS830(EdiBase.SegmentTerminator) {
+                    StatusCode = "9"
+                };
+                NSeg++;
+                Lin.Childs.Add(Prs);
+                N1830 N1 = new N1830(EdiBase.SegmentTerminator) {
+                    OrganizationId = "ST",
+                    Name = "GLC HONDURAS",
+                    IdCodeQualifier = "92",
+                    IdCode = "GLC504"
+                };
+                NSeg++;
+                Lin.Childs.Add(N1);
+                N4830 N4 = new N4830(EdiBase.SegmentTerminator) {
+                    LocationQualifier = "WH",
+                    LocationId = "GLC504"
+                };
+                NSeg++;
+                Lin.Childs.Add(N4);
+                SDP830 Sdp = new SDP830(EdiBase.SegmentTerminator) {
+                    CalendarPatternCode = "Z",
+                    PatternTimeCode = "Z"
+                };
+                NSeg++;
+                Lin.Childs.Add(Sdp);
+                FST830 Fst = new FST830(EdiBase.SegmentTerminator) {
+                    Quantity = Math.Round(Convert.ToDecimal(Producto.Existencia), 0).ToString(),
+                    ForecastQualifier = "Z",
+                    ForecastTimingQualifier = "Z",
+                    FstDate = ThisDate
+                }; // Solo el monto actual
+                NSeg++;
+                Sdp.Childs.Add(Fst);
+            }
+            CTT830 Ctt = new CTT830(EdiBase.SegmentTerminator)
+            {
+                TotalLineItems = IeExistencias.Count().ToString(),
+                HashTotal = ""
+            };
+            ISAO.Childs.Add(Ctt);
+            SE830 Se = new SE830(EdiBase.SegmentTerminator) {
+                NumIncludedSegments = NSeg.ToString(),
+                TransactionSetControlNumber = $"{ControlNumber.ToString("D4")}"
+            };
+            ISAO.Childs.Add(Se);
+            GE830 Ge = new GE830(EdiBase.SegmentTerminator) {
+                NumTransactionSetsIncluded = "1",
+                GroupControl = $"{ControlNumber.ToString("D4")}"
+            };
+            ISAO.Childs.Add(Ge);
+            IEA830 Iea = new IEA830(EdiBase.SegmentTerminator) {
+                NumIncludedGroups = "1",
+                InterchangeControlNumber = $"{ControlNumber.ToString("D9")}"
+            };
+            EdiRepSent EdiSent = new EdiRepSent() {
+                Tipo = "830",
+                Fecha = DateTime.Now.ToString(ApplicationSettings.DateTimeFormat),
+                Log = "Reporte enviado",
+                Code = ControlNumber.ToString(),
+                EdiStr = ISAO.Ts(),
+                HashId = $"H{EdiBase.GetHashId()}"
+            };            
+            EdiBase E1 = new EdiBase(EdiBase.SegmentTerminator);
+            E1.HashId = EdiSent.HashId;
+            ISAO.Parent = E1;
+            ISAO.SaveAll830(ref DbO);
+            DbO.EdiRepSent.Add(EdiSent);
+            DbO.SaveChanges();
+            return EdiSent.EdiStr;
         }
     }
 }

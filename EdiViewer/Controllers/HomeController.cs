@@ -35,6 +35,12 @@ namespace EdiViewer.Controllers
             RetReporte RetReporteO = await ApiClientFactory.Instance.TranslateForms830();
             return "";
         }
+        [HttpGet]
+        public async Task<string> AutoSendInventary830()
+        {
+            RetInfo RetReporteO = await ApiClientFactory.Instance.AutoSendInventary830();
+            return "";
+        }
         [HttpPost]
         public async Task<IActionResult> UpdateLinComments() {
             try

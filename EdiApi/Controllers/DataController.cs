@@ -19,7 +19,6 @@ namespace EdiApi.Controllers
     {
         public EdiDBContext DbO;
         public WmsContext WmsDbO;
-        public Models.Remps_globalDB.Remps_globalContext Remps_globalDbO;
         public static readonly string G1;
         public readonly IConfiguration Config;
         IConfiguration IMapConfig => Config.GetSection("IMapConfig");
@@ -38,10 +37,9 @@ namespace EdiApi.Controllers
         string FtpDirOut => (string)IEdiFtpConfig.GetValue(typeof(string), "DirOut");
         string FtpDirChecked => (string)IEdiFtpConfig.GetValue(typeof(string), "DirChecked");
         object MaxEdiComs => Config.GetSection("MaxEdiComs").GetValue(typeof(object), "Value");
-        public DataController(EdiDBContext _DbO, WmsContext _WmsDbO, Models.Remps_globalDB.Remps_globalContext _Remps_globalDB, IConfiguration _Config) {
+        public DataController(EdiDBContext _DbO, WmsContext _WmsDbO, IConfiguration _Config) {
             DbO = _DbO;
             WmsDbO = _WmsDbO;
-            Remps_globalDbO = _Remps_globalDB;
             Config = _Config;
         }        
         private IEnumerable<Rep830Info> GetExToIe1(Exception E1)
@@ -532,7 +530,7 @@ namespace EdiApi.Controllers
                 return ex2.ToString();
             }            
         }
-        public string SendEdiFtp(string _EdiStr)
+        private string SendEdiFtp(string _EdiStr)
         {
             ComRepoFtp ComRepoFtpO = new ComRepoFtp(
                         FtpHost,
@@ -578,6 +576,32 @@ namespace EdiApi.Controllers
             catch (Exception e1)
             {
                 return "Error: " + e1.ToString();
+            }            
+        }
+        [HttpGet]
+        public string LastRep() {
+            try
+            {
+                List<EdiRepSent> ListRep = DbO.EdiRepSent.ToList();
+                if (ListRep.Count > 0)
+                {
+                    ListRep = (
+                        from R in ListRep
+                        where R.Tipo == "830"
+                        orderby R.Id descending
+                        select R
+                        ).ToList();
+                    if (ListRep.Count > 0)
+                    {
+                        return ListRep.Fod().Fecha;
+                    }
+                    else return string.Empty;
+                }
+                return string.Empty;
+            }
+            catch
+            {
+                return string.Empty;
             }            
         }
     }

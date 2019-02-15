@@ -21,5 +21,16 @@ namespace EdiViewer
         public static TSource Fod<TSource>(this IEnumerable<TSource> source) {
             return source.FirstOrDefault();
         }
+        public static DateTime ToDate(this string _Str)
+        {
+            if (string.IsNullOrEmpty(_Str)) return DateTime.Now;
+
+            return new DateTime(Convert.ToInt32($"{_Str.Substring(6, 4)}"),
+                        Convert.ToInt32(_Str.Substring(3, 2)),
+                        Convert.ToInt32(_Str.Substring(0, 2)),
+                        Convert.ToInt32(_Str.Substring(11, 2)),
+                        Convert.ToInt32(_Str.Substring(14, 2)), 0
+                        );
+        }
     }
 }

@@ -31,7 +31,6 @@ namespace EdiApi
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
             services.AddDbContext<EdiDBContext>(options => options.UseSqlServer(Configuration.GetConnectionString("EdiDB"), opt => opt.CommandTimeout((int)TimeSpan.FromMinutes(10).TotalSeconds)));
             services.AddDbContext<WmsContext>(options => options.UseSqlServer(Configuration.GetConnectionString("wmsDB"), opt => opt.CommandTimeout((int)TimeSpan.FromMinutes(10).TotalSeconds)));
-            services.AddDbContext<Models.Remps_globalDB.Remps_globalContext>(options => options.UseSqlServer(Configuration.GetConnectionString("Remps_globalDB"), opt => opt.CommandTimeout((int)TimeSpan.FromMinutes(10).TotalSeconds)));
             services.AddSingleton<IConfiguration>(Configuration);
         }
 

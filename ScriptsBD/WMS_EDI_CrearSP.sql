@@ -55,7 +55,7 @@ BEGIN
 	SELECT 
 		pr.CodProducto,
 		pr.Descripcion,
-		ii.Existencia,
+		SUM(ii.Existencia) Existencia,
 		um.UnidadMedida
 	FROM dbo.Inventario i
 		JOIN dbo.ItemInventario ii 
@@ -65,6 +65,9 @@ BEGIN
 		JOIN dbo.UnidadMedida um
 			ON um.UnidadMedidaID = i.TipoBulto
 	WHERE i.ClienteID = @IdClient
+	GROUP BY pr.CodProducto, 
+		pr.Descripcion, 
+		um.UnidadMedida
 	ORDER BY pr.CodProducto
 END
 GO
