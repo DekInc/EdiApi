@@ -1,7 +1,7 @@
-USE WMS
+USE EdiDB
 GO
-
-DROP PROCEDURE GetSN
+IF EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[GetSN]') AND type in (N'P', N'PC'))
+	DROP PROCEDURE GetSN
 GO
 CREATE PROCEDURE GetSN
 AS
@@ -20,15 +20,15 @@ BEGIN
 		D.Destino,
 		(select count(*) from EdiDB.dbo.EdiRepSent ERS where ERS.Tipo = '856' AND Code = D.DespachoID) Procesado
 	from 
-		Despachos D,
-		DtllDespacho DD,
-		Transacciones T,
-		Pedido P,
-		SysTempSalidas S,
-		Producto PR,
-		Clientes CL,
-		Inventario I,
-		UnidadMedida UM
+		wms.dbo.Despachos D,
+		wms.dbo.DtllDespacho DD,
+		wms.dbo.Transacciones T,
+		wms.dbo.Pedido P,
+		wms.dbo.SysTempSalidas S,
+		wms.dbo.Producto PR,
+		wms.dbo.Clientes CL,
+		wms.dbo.Inventario I,
+		wms.dbo.UnidadMedida UM
 	where PR.CodProducto = S.CodProducto
 	and S.PedidoID = T.PedidoID
 	and P.PedidoID = T.PedidoID
@@ -46,7 +46,8 @@ BEGIN
 	order by d.DespachoID desc
 END
 GO
-DROP PROCEDURE SP_GetExistencias
+IF EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[SP_GetExistencias]') AND type in (N'P', N'PC'))
+	DROP PROCEDURE SP_GetExistencias
 GO
 CREATE PROCEDURE SP_GetExistencias
 	@IdClient int
@@ -57,12 +58,12 @@ BEGIN
 		pr.Descripcion,
 		SUM(ii.Existencia) Existencia,
 		um.UnidadMedida
-	FROM dbo.Inventario i
-		JOIN dbo.ItemInventario ii 
+	FROM wms.dbo.Inventario i
+		JOIN wms.dbo.ItemInventario ii 
 			ON ii.InventarioID =i.InventarioID
-		JOIN dbo.Producto pr
+		JOIN wms.dbo.Producto pr
 			ON pr.CodProducto = ii.CodProducto
-		JOIN dbo.UnidadMedida um
+		JOIN wms.dbo.UnidadMedida um
 			ON um.UnidadMedidaID = i.TipoBulto
 	WHERE i.ClienteID = @IdClient
 	GROUP BY pr.CodProducto, 
@@ -73,7 +74,8 @@ END
 GO
 --exec SP_GetExistencias 618
 -- exec GetSN
-DROP PROCEDURE GetSNDet
+IF EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[GetSNDet]') AND type in (N'P', N'PC'))
+	DROP PROCEDURE GetSNDet
 GO
 CREATE PROCEDURE GetSNDet
 AS
@@ -102,16 +104,16 @@ BEGIN
 		(S.cantidad * S.precio) PrecioTotal,
 		Ii.numero_oc
 	from 
-		Despachos D,
-		DtllDespacho DD,
-		Transacciones T,
-		Pedido P,
-		SysTempSalidas S,
-		Producto PR,
-		Clientes CL,
-		Inventario I,
-		ItemInventario Ii,
-		UnidadMedida UM
+		wms.dbo.Despachos D,
+		wms.dbo.DtllDespacho DD,
+		wms.dbo.Transacciones T,
+		wms.dbo.Pedido P,
+		wms.dbo.SysTempSalidas S,
+		wms.dbo.Producto PR,
+		wms.dbo.Clientes CL,
+		wms.dbo.Inventario I,
+		wms.dbo.ItemInventario Ii,
+		wms.dbo.UnidadMedida UM
 	where PR.CodProducto = S.CodProducto
 	and S.PedidoID = T.PedidoID
 	and P.PedidoID = T.PedidoID

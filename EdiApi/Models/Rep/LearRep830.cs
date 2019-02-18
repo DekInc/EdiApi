@@ -526,7 +526,7 @@ namespace EdiApi
             };
             NSeg++;
             St.Childs.Add(Bfr);
-            IEnumerable<FE830DataAux> IeExistencias = ManualDB.SP_GetExistencias(ref WmsDb, 618);
+            IEnumerable<FE830DataAux> IeExistencias = ManualDB.SP_GetExistencias(ref DbO, 618);
             IEnumerable<LearEquivalencias> learEquivalencias = DbO.LearEquivalencias;            
             foreach (FE830DataAux Producto in IeExistencias)
             {

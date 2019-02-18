@@ -9,13 +9,13 @@ namespace EdiApi.Models
 {
     public static class ManualDB
     {
-        public static IEnumerable<TsqlDespachosWmsComplex> SP_GetSN(ref Models.WmsDB.WmsContext _WmsDbO)
+        public static IEnumerable<TsqlDespachosWmsComplex> SP_GetSN(ref Models.EdiDB.EdiDBContext _DbO)
         {
             List<TsqlDespachosWmsComplex> ListSn = new List<TsqlDespachosWmsComplex>();
-            using (DbCommand Cmd = _WmsDbO.Database.GetDbConnection().CreateCommand())
+            using (DbCommand Cmd = _DbO.Database.GetDbConnection().CreateCommand())
             {
                 Cmd.CommandText = "[dbo].[GetSN]";
-                _WmsDbO.Database.OpenConnection();
+                _DbO.Database.OpenConnection();
                 DbDataReader Dr = Cmd.ExecuteReader();
                 if (Dr.HasRows)
                 {
@@ -38,20 +38,20 @@ namespace EdiApi.Models
                         });
                     }
                 }
-                _WmsDbO.Database.CloseConnection();
+                _DbO.Database.CloseConnection();
                 if (!Dr.IsClosed)
                     Dr.Close();
             }
             //List<GetSNSP> L = await WmsDbO.Query<GetSNSP>().FromSql("EXEC [dbo].[GetSN]").ToListAsync();
             return ListSn;
         }
-        public static IEnumerable<TsqlDespachosWmsComplex> SP_GetSNDet(ref Models.WmsDB.WmsContext _WmsDbO)
+        public static IEnumerable<TsqlDespachosWmsComplex> SP_GetSNDet(ref Models.EdiDB.EdiDBContext _DbO)
         {
             List<TsqlDespachosWmsComplex> ListSn = new List<TsqlDespachosWmsComplex>();
-            using (DbCommand Cmd = _WmsDbO.Database.GetDbConnection().CreateCommand())
+            using (DbCommand Cmd = _DbO.Database.GetDbConnection().CreateCommand())
             {
                 Cmd.CommandText = $"[dbo].[GetSNDet]";
-                _WmsDbO.Database.OpenConnection();
+                _DbO.Database.OpenConnection();
                 DbDataReader Dr = Cmd.ExecuteReader();
                 if (Dr.HasRows)
                 {
@@ -83,20 +83,20 @@ namespace EdiApi.Models
                         });
                     }
                 }
-                _WmsDbO.Database.CloseConnection();
+                _DbO.Database.CloseConnection();
                 if (!Dr.IsClosed)
                     Dr.Close();
             }
             //List<GetSNSP> L = await WmsDbO.Query<GetSNSP>().FromSql("EXEC [dbo].[GetSN]").ToListAsync();
             return ListSn;
         }
-        public static IEnumerable<FE830DataAux> SP_GetExistencias(ref Models.WmsDB.WmsContext _WmsDbO, int _IdClient)
+        public static IEnumerable<FE830DataAux> SP_GetExistencias(ref Models.EdiDB.EdiDBContext _DbO, int _IdClient)
         {
             List<FE830DataAux> ListExists = new List<FE830DataAux>();
-            using (DbCommand Cmd = _WmsDbO.Database.GetDbConnection().CreateCommand())
+            using (DbCommand Cmd = _DbO.Database.GetDbConnection().CreateCommand())
             {
                 Cmd.CommandText = $"[dbo].[SP_GetExistencias] {_IdClient}";
-                _WmsDbO.Database.OpenConnection();
+                _DbO.Database.OpenConnection();
                 DbDataReader Dr = Cmd.ExecuteReader();
                 if (Dr.HasRows)
                 {
@@ -111,7 +111,7 @@ namespace EdiApi.Models
                         });
                     }
                 }
-                _WmsDbO.Database.CloseConnection();
+                _DbO.Database.CloseConnection();
                 if (!Dr.IsClosed)
                     Dr.Close();
             }

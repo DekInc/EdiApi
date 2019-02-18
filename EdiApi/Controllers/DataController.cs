@@ -236,7 +236,7 @@ namespace EdiApi.Controllers
             FE830DataRet.ListCodes = from c in DbO.LearCodes
                                      orderby c.Str, c.Param
                                      select c;
-            FE830DataRet.ListProdExist = ManualDB.SP_GetExistencias(ref WmsDbO, 618);            
+            FE830DataRet.ListProdExist = ManualDB.SP_GetExistencias(ref DbO, 618);            
             return FE830DataRet;
         }
         [HttpGet]
@@ -260,7 +260,7 @@ namespace EdiApi.Controllers
         public IEnumerable<TsqlDespachosWmsComplex> GetSN() {
             try
             {
-                IEnumerable<TsqlDespachosWmsComplex> ListSN = ManualDB.SP_GetSN(ref WmsDbO);
+                IEnumerable<TsqlDespachosWmsComplex> ListSN = ManualDB.SP_GetSN(ref DbO);
                 return ListSN;
             }
             catch (Exception e1)
@@ -276,7 +276,7 @@ namespace EdiApi.Controllers
                 string ThisDate = DateTime.Now.ToString(ApplicationSettings.ToDateTimeFormat);
                 string ThisTime = DateTime.Now.ToString(ApplicationSettings.ToTimeFormat);
                 IEnumerable<string> ListDispatch = listDispatch.Split('|');
-                IEnumerable<TsqlDespachosWmsComplex> ListSNO = ManualDB.SP_GetSNDet(ref WmsDbO);
+                IEnumerable<TsqlDespachosWmsComplex> ListSNO = ManualDB.SP_GetSNDet(ref DbO);
                 List<LearEquivalencias> ListEquivalencias = DbO.LearEquivalencias.ToList();
                 List<TsqlDespachosWmsComplex> ListSN = (from Ls in ListSNO
                                                         from Ld in ListDispatch
