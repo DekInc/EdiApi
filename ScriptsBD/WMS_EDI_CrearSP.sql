@@ -1,4 +1,5 @@
 USE EdiDB
+
 GO
 IF EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[GetSN]') AND type in (N'P', N'PC'))
 	DROP PROCEDURE GetSN
@@ -20,15 +21,15 @@ BEGIN
 		D.Destino,
 		(select count(*) from EdiDB.dbo.EdiRepSent ERS where ERS.Tipo = '856' AND Code = D.DespachoID) Procesado
 	from 
-		wms.dbo.Despachos D,
-		wms.dbo.DtllDespacho DD,
-		wms.dbo.Transacciones T,
-		wms.dbo.Pedido P,
-		wms.dbo.SysTempSalidas S,
-		wms.dbo.Producto PR,
-		wms.dbo.Clientes CL,
-		wms.dbo.Inventario I,
-		wms.dbo.UnidadMedida UM
+		wms_test_04022019.dbo.Despachos D,
+		wms_test_04022019.dbo.DtllDespacho DD,
+		wms_test_04022019.dbo.Transacciones T,
+		wms_test_04022019.dbo.Pedido P,
+		wms_test_04022019.dbo.SysTempSalidas S,
+		wms_test_04022019.dbo.Producto PR,
+		wms_test_04022019.dbo.Clientes CL,
+		wms_test_04022019.dbo.Inventario I,
+		wms_test_04022019.dbo.UnidadMedida UM
 	where PR.CodProducto = S.CodProducto
 	and S.PedidoID = T.PedidoID
 	and P.PedidoID = T.PedidoID
@@ -40,7 +41,7 @@ BEGIN
 	and T.EstatusID = 9
 	and D.Fecha > GETDATE() - 366 
 	and PR.CodProducto in (
-		SELECT DISTINCT TRIM(L.ProductId)
+		SELECT DISTINCT RTRIM(LTRIM(L.ProductId))
 		FROM EdiDB.dbo.LEAR_LIN830 L
 	)
 	order by d.DespachoID desc
@@ -58,12 +59,12 @@ BEGIN
 		pr.Descripcion,
 		SUM(ii.Existencia) Existencia,
 		um.UnidadMedida
-	FROM wms.dbo.Inventario i
-		JOIN wms.dbo.ItemInventario ii 
+	FROM wms_test_04022019.dbo.Inventario i
+		JOIN wms_test_04022019.dbo.ItemInventario ii 
 			ON ii.InventarioID =i.InventarioID
-		JOIN wms.dbo.Producto pr
+		JOIN wms_test_04022019.dbo.Producto pr
 			ON pr.CodProducto = ii.CodProducto
-		JOIN wms.dbo.UnidadMedida um
+		JOIN wms_test_04022019.dbo.UnidadMedida um
 			ON um.UnidadMedidaID = i.TipoBulto
 	WHERE i.ClienteID = @IdClient
 	GROUP BY pr.CodProducto, 
@@ -104,16 +105,16 @@ BEGIN
 		(S.cantidad * S.precio) PrecioTotal,
 		Ii.numero_oc
 	from 
-		wms.dbo.Despachos D,
-		wms.dbo.DtllDespacho DD,
-		wms.dbo.Transacciones T,
-		wms.dbo.Pedido P,
-		wms.dbo.SysTempSalidas S,
-		wms.dbo.Producto PR,
-		wms.dbo.Clientes CL,
-		wms.dbo.Inventario I,
-		wms.dbo.ItemInventario Ii,
-		wms.dbo.UnidadMedida UM
+		wms_test_04022019.dbo.Despachos D,
+		wms_test_04022019.dbo.DtllDespacho DD,
+		wms_test_04022019.dbo.Transacciones T,
+		wms_test_04022019.dbo.Pedido P,
+		wms_test_04022019.dbo.SysTempSalidas S,
+		wms_test_04022019.dbo.Producto PR,
+		wms_test_04022019.dbo.Clientes CL,
+		wms_test_04022019.dbo.Inventario I,
+		wms_test_04022019.dbo.ItemInventario Ii,
+		wms_test_04022019.dbo.UnidadMedida UM
 	where PR.CodProducto = S.CodProducto
 	and S.PedidoID = T.PedidoID
 	and P.PedidoID = T.PedidoID
@@ -126,7 +127,7 @@ BEGIN
 	and T.EstatusID = 9		
 	and D.Fecha > GETDATE() - 366 
 	and PR.CodProducto in (
-		SELECT DISTINCT TRIM(L.ProductId)
+		SELECT DISTINCT LTRIM(RTRIM(L.ProductId))
 		FROM EdiDB.dbo.LEAR_LIN830 L
 	)
 	order by d.DespachoID desc
