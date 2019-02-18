@@ -38,7 +38,7 @@ namespace EdiViewer.Controllers
         [HttpGet]
         public async Task<string> AutoSendInventary830()
         {
-            RetInfo RetReporteO = await ApiClientFactory.Instance.AutoSendInventary830();
+            RetInfo RetReporteO = await ApiClientFactory.Instance.AutoSendInventary830("true");
             return "";
         }
         [HttpPost]

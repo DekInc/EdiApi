@@ -82,6 +82,7 @@ namespace EdiApi.Controllers
                         orderby Pe.Fingreso descending
                         select new Rep830Info()
                         {
+                            InOut = (Pe.InOut == "I"? "Pedido" : "Inventario"),
                             From = IsaF.InterchangeSenderId,
                             To = IsaF.InterchangeReceiverId,
                             HashId = Pe.HashId,
@@ -164,6 +165,7 @@ namespace EdiApi.Controllers
                                      from St in DbO.LearSt830
                                      where Lin.ParentHashId == St.HashId 
                                      && St.ParentHashId == FE830DataRet.ISA.HashId
+                                     orderby Lin.ProductId ascending
                                      select Lin;
             FE830DataRet.ListLinUit = from Uit in DbO.LearUit830
                                       from Lin in DbO.LearLin830

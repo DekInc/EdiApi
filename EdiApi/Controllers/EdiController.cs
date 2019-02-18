@@ -224,6 +224,7 @@ namespace EdiApi.Controllers
                     LearRep830O.LearPureEdiO.Reprocesar = false;
                     LearRep830O.LearPureEdiO.Fprocesado = DateTime.Now.ToString(ApplicationSettings.DateTimeFormat);
                     LearRep830O.LearPureEdiO.Log = ParseRet;
+                    LearRep830O.LearPureEdiO.InOut = "I";
                     DbO.LearPureEdi.Update(LearRep830O.LearPureEdiO);
                     DbO.SaveChanges();
                     return new RetReporte()
@@ -305,13 +306,95 @@ namespace EdiApi.Controllers
             ComRepoFtpO.Put(_EdiStr, ref DbO);
             return "ok";
         }
-        public ActionResult<RetInfo> AutoSendInventary830()
+        private string LastRep()
+        {
+            try
+            {
+                List<EdiRepSent> ListRep = DbO.EdiRepSent.ToList();
+                if (ListRep.Count > 0)
+                {
+                    ListRep = (
+                        from R in ListRep
+                        where R.Tipo == "830"
+                        orderby R.Id descending
+                        select R
+                        ).ToList();
+                    if (ListRep.Count > 0)
+                    {
+                        return ListRep.Fod().Fecha;
+                    }
+                    else return string.Empty;
+                }
+                return string.Empty;
+            }
+            catch
+            {
+                return string.Empty;
+            }
+        }        
+        public ActionResult<RetInfo> AutoSendInventary830(bool Force = false)
         {
             DateTime StartTime = DateTime.Now;
             try
-            {   
-                LearRep830 LearRep830O = new LearRep830(ref DbO, ref WmsDb);
-                SendEdiFtp(LearRep830O.AutoSendInventary830());
+            {
+                if (((DateTime.Now.DayOfWeek == DayOfWeek.Friday
+                    || DateTime.Now.DayOfWeek == DayOfWeek.Saturday
+                    || DateTime.Now.DayOfWeek == DayOfWeek.Sunday
+                    )
+                    && DateTime.Now.Hour > 18)
+                    || Force
+                    )
+                {
+                    string DateLastRep = LastRep();
+                    if (string.IsNullOrEmpty(DateLastRep))
+                    {
+                        EdiRepSent EdiSent = new EdiRepSent()
+                        {
+                            Tipo = "830",
+                            Fecha = DateTime.Now.ToString(ApplicationSettings.DateTimeFormat),
+                            Log = "Procesando reporte",
+                            Code = "0",
+                            EdiStr = "",
+                            HashId = $"H{EdiBase.GetHashId()}"
+                        };
+                        DbO.EdiRepSent.Add(EdiSent);
+                        DbO.SaveChanges();
+                        LearRep830 LearRep830O = new LearRep830(ref DbO, ref WmsDb);
+                        SendEdiFtp(LearRep830O.AutoSendInventary830(ref EdiSent));
+                        return new RetInfo()
+                        {
+                            CodError = 0,
+                            Mensaje = "ok",
+                            ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                        };
+                    }
+                    else
+                    {
+                        DateTime LastDateRep = DateLastRep.ToDate();
+                        if ((DateTime.Now - LastDateRep).TotalDays > 4)
+                        {
+                            EdiRepSent EdiSent = new EdiRepSent()
+                            {
+                                Tipo = "830",
+                                Fecha = DateTime.Now.ToString(ApplicationSettings.DateTimeFormat),
+                                Log = "Procesando reporte",
+                                Code = "0",
+                                EdiStr = "",
+                                HashId = $"H{EdiBase.GetHashId()}"
+                            };
+                            DbO.EdiRepSent.Add(EdiSent);
+                            DbO.SaveChanges();
+                            LearRep830 LearRep830O = new LearRep830(ref DbO, ref WmsDb);
+                            SendEdiFtp(LearRep830O.AutoSendInventary830(ref EdiSent));
+                            return new RetInfo()
+                            {
+                                CodError = 0,
+                                Mensaje = "ok",
+                                ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                            };
+                        }
+                    }
+                }
                 return new RetInfo()
                 {
                     CodError = 0,

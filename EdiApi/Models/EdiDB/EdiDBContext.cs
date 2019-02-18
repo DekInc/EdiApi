@@ -835,6 +835,10 @@ namespace EdiApi.Models.EdiDB
                     .HasColumnName("FProcesado")
                     .HasMaxLength(16);
 
+                entity.Property(e => e.InOut)
+                    .HasMaxLength(1)
+                    .IsUnicode(false);
+
                 entity.Property(e => e.Log).HasColumnType("text");
 
                 entity.Property(e => e.NombreArchivo).HasMaxLength(256);

@@ -20,5 +20,6 @@ namespace ComModels
         public string errorMessage { get; set; }
         public string NumReporte { get; set; }
         public string Estado { get; set; }
+        public string InOut { get; set; }
     }
 }

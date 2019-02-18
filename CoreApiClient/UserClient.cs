@@ -40,9 +40,9 @@ namespace CoreApiClient
         {
             return await GetAsyncNoJson<string>(CreateRequestUri(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Data/Login"), $"?User={_User}&Password={_Password}"));
         }
-        public async Task<RetInfo> AutoSendInventary830()
+        public async Task<RetInfo> AutoSendInventary830(string _Force)
         {
-            return await GetAsync<RetInfo>(CreateRequestUri(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Edi/AutoSendInventary830")));
+            return await GetAsync<RetInfo>(CreateRequestUri(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Edi/AutoSendInventary830"), $"?Force={_Force}"));
         }
         public async Task<string> LastRep()
         {

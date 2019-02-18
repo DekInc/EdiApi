@@ -16,6 +16,7 @@
                                 <thead>
                                     <tr>
                                         <th>HashId</th>
+                                        <th>Tipo</th>
                                         <th>NombreArchivo</th>
                                         <th>Reporte</th>
                                         <th>Origen</th>
@@ -74,12 +75,13 @@
                     return json.data;
                 }
             },
-            "order": [[2, "desc"]],
+            "order": [[3, "desc"]],
             "columnDefs": [
                 { className: "hideCol", "targets": [0] }
             ],
             "columns": [
                 { "data": "hashId", "name": "HashId", "autoWidth": true, "defaultContent": "" },
+                { "data": "inOut", "name": "inOut", "autoWidth": true, "defaultContent": "" },
                 { "data": "nombreArchivo", "name": "NombreArchivo", "autoWidth": true, "defaultContent": "" },
                 { "data": "numReporte", "name": "numReporte", "autoWidth": true, "defaultContent": "" },
                 { "data": "from", "name": "Origen", "autoWidth": true, "defaultContent": "" },
@@ -97,9 +99,9 @@
                 domtblReportes.$('tr.selected').removeClass('selected');
                 $(this).addClass('selected');
                 //trigger update
-                if ($(this).closest("tr").find('td:eq(5)').text().toLowerCase().includes('error')) {                    
-                    menErrorEdi("El reporte contiene errores y no puede visualizarse");
-                } else 
+                //if ($(this).closest("tr").find('td:eq(5)').text().toLowerCase().includes('error')) {                    
+                //    menErrorEdi("El reporte contiene errores y no puede visualizarse");
+                //} else 
                 window.location.href = '@this.Url.Action("Details")?HashId=' + $(this).closest("tr").find('td:eq(0)').text();
             }
         });

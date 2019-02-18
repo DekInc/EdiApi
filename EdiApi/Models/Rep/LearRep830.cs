@@ -462,7 +462,7 @@ namespace EdiApi
             ISAO.SaveAll830(ref DbO);
             DbO.SaveChanges();
         }
-        public string AutoSendInventary830()
+        public string AutoSendInventary830(ref EdiRepSent EdiSent)
         {
             string ThisDate = DateTime.Now.ToString(ApplicationSettings.ToDateTimeFormat);
             string ThisTime = DateTime.Now.ToString(ApplicationSettings.ToTimeFormat);
@@ -480,13 +480,13 @@ namespace EdiApi
                 SecurityInformationQualifier = "00",
                 SecurityInformation = "          ",
                 InterchangeSenderIdQualifier = "ZZ",
-                InterchangeSenderId = "GLC504",
+                InterchangeSenderId = "GLC504         ",
                 InterchangeReceiverIdQualifier = "ZZ",
                 InterchangeReceiverId = "ICN3660        ",
                 InterchangeDate = ThisDate,
                 InterchangeTime = ThisTime,
                 InterchangeControlStandardsId = "U",
-                InterchangeControlVersion = "0231",
+                InterchangeControlVersion = "00231",
                 AcknowledgmentRequested = "0",
                 UsageIndicator = "P",
                 InterchangeControlNumber = $"{ControlNumber.ToString("D9")}"
@@ -496,7 +496,7 @@ namespace EdiApi
             {
                 FunctionalIdCode = "PS",
                 ApplicationSenderCode = "GLC504",
-                ApplicationReceiverCode = "ICN3660        ",
+                ApplicationReceiverCode = "ICN3660",
                 GsDate = ThisDate,
                 GsTime = ThisTime,
                 ResponsibleAgencyCode = "X",
@@ -504,13 +504,15 @@ namespace EdiApi
                 GroupControlNumber = $"{ControlNumber.ToString("D4")}"
             };
             NSeg++;
-            ISAO.Childs.Add(Gs);
+            //Gs.Parent = ISAO;
+            //ISAO.Childs.Add(Gs);
+            ISAO.AddParentChild(Gs);
             ST830 St = new ST830(EdiBase.SegmentTerminator) {
                 IdCode = "830",
                 ControlNumber = $"{ControlNumber.ToString("D4")}"
             };
             NSeg++;
-            ISAO.Childs.Add(St);
+            ISAO.AddParentChild(St);
             BFR830 Bfr = new BFR830(EdiBase.SegmentTerminator) {
                 TransactionSetPurposeCode = "00",
                 ForecastOrderNumber = "",
@@ -525,11 +527,15 @@ namespace EdiApi
                 PurchaseOrderNumber = ""
             };
             NSeg++;
-            St.Childs.Add(Bfr);
+            St.AddParentChild(Bfr);
             IEnumerable<FE830DataAux> IeExistencias = ManualDB.SP_GetExistencias(ref DbO, 618);
-            IEnumerable<LearEquivalencias> learEquivalencias = DbO.LearEquivalencias;            
+            IEnumerable<LearEquivalencias> learEquivalencias = DbO.LearEquivalencias;
             foreach (FE830DataAux Producto in IeExistencias)
             {
+                IEnumerable<LearEquivalencias> Exists = learEquivalencias.Where(E => E.CodProducto == Producto.CodProducto
+                || E.CodProducto + "-" == Producto.CodProducto);
+                if (Exists.Count() == 0)
+                    continue;
                 LIN830 Lin = new LIN830(EdiBase.SegmentTerminator) {
                     AssignedIdentification = "",
                     ProductIdQualifier = "BP",
@@ -540,17 +546,17 @@ namespace EdiApi
                     ProductPurchaseId = "",
                 };
                 NSeg++;
-                St.Childs.Add(Lin);
+                St.AddParentChild(Lin);
                 UIT830 Uit = new UIT830(EdiBase.SegmentTerminator) {
-                  UnitOfMeasure = "FT"
+                    UnitOfMeasure = "FT"
                 };
                 NSeg++;
-                Lin.Childs.Add(Uit);
+                Lin.AddParentChild(Uit);
                 PRS830 Prs = new PRS830(EdiBase.SegmentTerminator) {
                     StatusCode = "9"
                 };
                 NSeg++;
-                Lin.Childs.Add(Prs);
+                Lin.AddParentChild(Prs);
                 N1830 N1 = new N1830(EdiBase.SegmentTerminator) {
                     OrganizationId = "ST",
                     Name = "GLC HONDURAS",
@@ -558,19 +564,19 @@ namespace EdiApi
                     IdCode = "GLC504"
                 };
                 NSeg++;
-                Lin.Childs.Add(N1);
+                Lin.AddParentChild(N1);
                 N4830 N4 = new N4830(EdiBase.SegmentTerminator) {
                     LocationQualifier = "WH",
                     LocationId = "GLC504"
                 };
                 NSeg++;
-                Lin.Childs.Add(N4);
+                Lin.AddParentChild(N4);
                 SDP830 Sdp = new SDP830(EdiBase.SegmentTerminator) {
                     CalendarPatternCode = "Z",
                     PatternTimeCode = "Z"
                 };
                 NSeg++;
-                Lin.Childs.Add(Sdp);
+                Lin.AddParentChild(Sdp);
                 FST830 Fst = new FST830(EdiBase.SegmentTerminator) {
                     Quantity = Math.Round(Convert.ToDecimal(Producto.Existencia), 0).ToString(),
                     ForecastQualifier = "Z",
@@ -578,41 +584,51 @@ namespace EdiApi
                     FstDate = ThisDate
                 }; // Solo el monto actual
                 NSeg++;
-                Sdp.Childs.Add(Fst);
+                Sdp.AddParentChild(Fst);
             }
             CTT830 Ctt = new CTT830(EdiBase.SegmentTerminator)
             {
                 TotalLineItems = IeExistencias.Count().ToString(),
                 HashTotal = ""
             };
-            ISAO.Childs.Add(Ctt);
+            ISAO.AddParentChild(Ctt);
             SE830 Se = new SE830(EdiBase.SegmentTerminator) {
                 NumIncludedSegments = NSeg.ToString(),
                 TransactionSetControlNumber = $"{ControlNumber.ToString("D4")}"
             };
-            ISAO.Childs.Add(Se);
+            ISAO.AddParentChild(Se);
             GE830 Ge = new GE830(EdiBase.SegmentTerminator) {
                 NumTransactionSetsIncluded = "1",
                 GroupControl = $"{ControlNumber.ToString("D4")}"
             };
-            ISAO.Childs.Add(Ge);
+            ISAO.AddParentChild(Ge);
             IEA830 Iea = new IEA830(EdiBase.SegmentTerminator) {
                 NumIncludedGroups = "1",
                 InterchangeControlNumber = $"{ControlNumber.ToString("D9")}"
             };
-            EdiRepSent EdiSent = new EdiRepSent() {
-                Tipo = "830",
-                Fecha = DateTime.Now.ToString(ApplicationSettings.DateTimeFormat),
-                Log = "Reporte enviado",
-                Code = ControlNumber.ToString(),
-                EdiStr = ISAO.Ts(),
-                HashId = $"H{EdiBase.GetHashId()}"
-            };            
+            ISAO.AddParentChild(Iea);
+            string ActualEdiStr = ISAO.Ts();
+            EdiSent.Log = "Reporte enviado";
+            EdiSent.Code = ControlNumber.ToString();
+            EdiSent.EdiStr = ActualEdiStr;
             EdiBase E1 = new EdiBase(EdiBase.SegmentTerminator);
             E1.HashId = EdiSent.HashId;
             ISAO.Parent = E1;
             ISAO.SaveAll830(ref DbO);
-            DbO.EdiRepSent.Add(EdiSent);
+            DbO.EdiRepSent.Update(EdiSent);
+            LearPureEdi Pe = new LearPureEdi() {
+                EdiStr = ActualEdiStr,
+                HashId = E1.HashId,
+                Fingreso = DateTime.Now.ToString(ApplicationSettings.DateTimeFormat),
+                Fprocesado = DateTime.Now.ToString(ApplicationSettings.DateTimeFormat),
+                Reprocesar = false,
+                NombreArchivo = "Inventario",
+                Log = $"{NSeg} segmentos analizados, procesados y guardados",
+                CheckSeg = NSeg,
+                Shp = false,
+                InOut = "O"
+            };
+            DbO.LearPureEdi.Add(Pe);
             DbO.SaveChanges();
             return EdiSent.EdiStr;
         }
