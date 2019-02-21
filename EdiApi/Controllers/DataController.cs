@@ -259,10 +259,20 @@ namespace EdiApi.Controllers
             return $"Funciona ok {d.ToString()} {Ret}";
         }
         [HttpGet]
-        public IEnumerable<TsqlDespachosWmsComplex> GetSN() {
+        public IEnumerable<TsqlDespachosWmsComplex> GetSN(bool NoEnviado = false) {
             try
             {
                 IEnumerable<TsqlDespachosWmsComplex> ListSN = ManualDB.SP_GetSN(ref DbO);
+                List<EdiRepSent> ListSent =
+                    (from S in DbO.EdiRepSent
+                     where S.Tipo == "856" 
+                     && (DateTime.Now - S.Fecha.ToDateEsp()).TotalDays < 32
+                     select S).ToList();
+                if (ListSent.Count > 0 && NoEnviado)
+                {
+                    ListSN = from Sn in ListSN where ListSent.Where(S => S.Code == Sn.DespachoId.ToString()).Count() == 0 select Sn;
+                    //ListSN = ListSN.Where(Sn => ListSent.Where(S => S.Code == Sn.DespachoId.ToString()).Count() == 0);
+                }
                 return ListSN;
             }
             catch (Exception e1)
@@ -302,7 +312,7 @@ namespace EdiApi.Controllers
                         SecurityInformationQualifier = "00",
                         SecurityInformation = "          ",
                         InterchangeSenderIdQualifier = "ZZ",
-                        InterchangeSenderId = "GLC504",
+                        InterchangeSenderId = "GLC504         ",
                         InterchangeReceiverIdQualifier = "ZZ",
                         InterchangeReceiverId = "HN02NC72       ",
                         InterchangeDate = ThisDate,

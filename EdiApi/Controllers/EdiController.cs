@@ -355,7 +355,7 @@ namespace EdiApi.Controllers
                             Log = "Procesando reporte",
                             Code = "0",
                             EdiStr = "",
-                            HashId = $"H{EdiBase.GetHashId()}"
+                            HashId = EdiBase.GetHashId()
                         };
                         DbO.EdiRepSent.Add(EdiSent);
                         DbO.SaveChanges();
@@ -370,7 +370,7 @@ namespace EdiApi.Controllers
                     }
                     else
                     {
-                        DateTime LastDateRep = DateLastRep.ToDate();
+                        DateTime LastDateRep = DateLastRep.ToDateEsp();
                         if ((DateTime.Now - LastDateRep).TotalDays > 4)
                         {
                             EdiRepSent EdiSent = new EdiRepSent()
@@ -380,7 +380,7 @@ namespace EdiApi.Controllers
                                 Log = "Procesando reporte",
                                 Code = "0",
                                 EdiStr = "",
-                                HashId = $"H{EdiBase.GetHashId()}"
+                                HashId = EdiBase.GetHashId()
                             };
                             DbO.EdiRepSent.Add(EdiSent);
                             DbO.SaveChanges();

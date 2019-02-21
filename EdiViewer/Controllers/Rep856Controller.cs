@@ -36,10 +36,12 @@ namespace EdiViewer.Controllers
             }            
             return Json(new { data = "" });
         }
-        public IActionResult GetGridData(string destino = "") {
+        public IActionResult GetGridData(string cbTo = "", bool chkEnviados = false, string dtp1 = "", string TxtDespachoId = "") {
             try
             {
-                if (destino == "null") destino = string.Empty;
+                if (cbTo == "null") cbTo = string.Empty;
+                if (dtp1 == "null") dtp1 = string.Empty;
+                if (TxtDespachoId == "null") TxtDespachoId = string.Empty;
                 //var dict = Request.Form.ToDictionary(x => x.Key, x => x.Value.ToString());
                 var draw = HttpContext.Request.Form["draw"].Fod();
                 // Skiping number of Rows count  
@@ -59,10 +61,22 @@ namespace EdiViewer.Controllers
                 int recordsTotal = 0;
 
                 // Getting all Customer data  
-                IEnumerable<TsqlDespachosWmsComplex> TsqlDespachosWmsComplexO = ApiClientFactory.Instance.GetSN().Result;                
+                IEnumerable<TsqlDespachosWmsComplex> TsqlDespachosWmsComplexO;                
+                if ((sortColumn == "despachoId" && sortColumnDirection == "desc")
+                    || HttpContext.Session.GetObjSession<bool>("chkEnviados") != chkEnviados
+                    || !HttpContext.Session.ExistsObjSession<bool>("chkEnviados"))
+                {
+                    HttpContext.Session.SetObjSession("chkEnviados", chkEnviados);
+                    TsqlDespachosWmsComplexO = ApiClientFactory.Instance.GetSN(chkEnviados).Result;
+                    HttpContext.Session.SetObjSession("TsqlDespachosWmsComplexO", TsqlDespachosWmsComplexO);
+                }
+                else
+                {
+                    TsqlDespachosWmsComplexO = HttpContext.Session.GetObjSession<IEnumerable<TsqlDespachosWmsComplex>>("TsqlDespachosWmsComplexO");
+                }
                 IEnumerable<string> ListTo = (from D in TsqlDespachosWmsComplexO
-                                             orderby D.CodProducto
-                                             select D.CodProducto).Distinct();
+                                                  orderby D.CodProducto
+                                                  select D.CodProducto).Distinct();
                 if (TsqlDespachosWmsComplexO.Count() == 1)
                 {
                     if (TsqlDespachosWmsComplexO.Fod().DespachoId == 0)
@@ -74,9 +88,18 @@ namespace EdiViewer.Controllers
                     }
                 }
                 //Search                
-                if (!string.IsNullOrEmpty(destino))
+                if (!string.IsNullOrEmpty(cbTo))
                 {
-                    TsqlDespachosWmsComplexO = TsqlDespachosWmsComplexO.Where(Co => Co.CodProducto == destino);
+                    TsqlDespachosWmsComplexO = TsqlDespachosWmsComplexO.Where(Co => Co.CodProducto == cbTo);
+                }
+                if (!string.IsNullOrEmpty(dtp1)) {
+                    DateTime Dtp1 = dtp1.ToDateEsp();
+                    TsqlDespachosWmsComplexO = TsqlDespachosWmsComplexO.Where(Co => Co.FechaSalida == Dtp1);
+                }
+                if (!string.IsNullOrEmpty(TxtDespachoId))
+                {
+                    int DespachoId = Convert.ToInt32(TxtDespachoId);
+                    TsqlDespachosWmsComplexO = TsqlDespachosWmsComplexO.Where(Co => Co.DespachoId == DespachoId);
                 }
                 if (!(string.IsNullOrEmpty(sortColumn) && string.IsNullOrEmpty(sortColumnDirection)))
                 {

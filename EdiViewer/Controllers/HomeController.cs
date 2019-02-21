@@ -95,7 +95,7 @@ namespace EdiViewer.Controllers
             }
             return View(EdiDetailModelO);
         }
-        public async Task<IActionResult> GetPureEdi()
+        public async Task<IActionResult> GetPureEdi(string Tipo = "0")
         {
             try
             {
@@ -118,7 +118,19 @@ namespace EdiViewer.Controllers
                 int recordsTotal = 0;
 
                 // Getting all Customer data  
-                IEnumerable<Rep830Info> Rep830InfoO = await ApiClientFactory.Instance.GetPureEdi(string.Empty);
+                IEnumerable<Rep830Info> Rep830InfoO;
+                if (sortColumn == "NumReporte" && sortColumnDirection == "desc")
+                {
+                    Rep830InfoO = await ApiClientFactory.Instance.GetPureEdi(string.Empty);
+                    HttpContext.Session.SetObjSession("Rep830InfoO", Rep830InfoO);
+                }
+                else {
+                    Rep830InfoO = HttpContext.Session.GetObjSession<IEnumerable<Rep830Info>>("Rep830InfoO");
+                }
+                if (Tipo == "0")
+                    Rep830InfoO = from R in Rep830InfoO where R.InOut == "Pedido" select R;
+                else
+                    Rep830InfoO = from R in Rep830InfoO where R.InOut == "Inventario" select R;
                 if (Rep830InfoO.Count() == 0)
                     return Json(new { draw = 0, recordsFiltered = 0, recordsTotal = 1, data = Rep830InfoO, errorMessage = "" });
                 if (!string.IsNullOrEmpty(Rep830InfoO.Fod().errorMessage)) {

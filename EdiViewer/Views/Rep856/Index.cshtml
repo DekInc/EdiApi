@@ -13,10 +13,37 @@
                         <div class="container">
                             <div class="row">
                                 <div class="col-sm">
-                                    <label>Producto</label><br/>
-                                    <select id="cbTo" name="cbTo">
-                                    </select>
+                                    <label>Producto</label><br />
+                                    <select class="form-control" id="cbTo" name="cbTo"></select>
+                                    <div class="form-check margin5">
+                                        <input class="form-check-input" id="chkEnviados" name="chkEnviados" type="checkbox" />
+                                        <label class="form-check-label" for="chkEnviados">No mostrar los enviados</label>
+                                    </div>
+                                </div>
+                                <div class="col-sm">
+                                    <label class="label" for="dtp1">Fecha de creación</label><br />
+                                    <input class="form-control datepicker" data-date-format="dd/mm/yyyy" id="dtp1" maxlength="10" />
+                                </div>
+                                <div class="col-sm">
+                                    <label class="label" for="TxtDespachoId"># despacho</label><br />
+                                    <input class="form-control" id="TxtDespachoId" onkeypress="return isNumberKey(event)" maxlength="16" />
                                 </div>                                
+                            </div>
+                            <div class="row margin5">
+                                <div class="col-sm">
+                                    <button id="btnFiltrar" class="btn btn-success" type="button">
+                                        &nbsp;&nbsp;&nbsp;Filtrar&nbsp;&nbsp;&nbsp;
+                                        <div id="divSpinFiltrar" class="spinner-border spinner-border-sm text-danger" style="display: none" role="status">
+                                            <span class="sr-only">Loading...</span>
+                                        </div>
+                                    </button>
+                                    <button id="btnLimpiar" class="btn btn-success" type="button">
+                                        &nbsp;&nbsp;&nbsp;Limpiar&nbsp;&nbsp;&nbsp;
+                                        <div id="divSpinLimpiar" class="spinner-border spinner-border-sm text-danger" style="display: none" role="status">
+                                            <span class="sr-only">Loading...</span>
+                                        </div>
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </form>
@@ -59,7 +86,7 @@
                         <br />
                         <br />
                         <button id="btnSubmit" class="btn btn-success" type="button">
-                            Enviar notificación de envió
+                            Enviar notificación de Despacho
                             <div id="divSpin1" class="spinner-border spinner-border-sm text-danger" style="display: none" role="status">
                                 <span class="sr-only">Loading...</span>
                             </div>
@@ -75,6 +102,8 @@
 <script>
     var domtblReportes = null;
     var HashId = '';
+    var foo = function () {        
+    };
     $.urlParam = function (name) {
         var results = new RegExp('[\?&]' + name + '=([^&#]*)').exec(window.location.href);
         if (results == null) {
@@ -82,17 +111,27 @@
         }
         return decodeURI(results[1]) || 0;
     }
-    function fillTblReportes(destinoDef) {
+    function fillTblReportes() {
+        var dtp1 = $('#dtp1').val();
+        var TxtDespachoId = $('#TxtDespachoId').val();
+        if (dtp1 != '') {
+            dtp1 = dtp1.replace(/\//g, '');
+        }
+        var cbTo = $('#cbTo').val();
+        var chkEnviados = $('#chkEnviados').prop('checked');
+        $('#cbTo').off();
         $('#cbTo').empty();
+        //if (domtblReportes != null)
+        //    domtblReportes.clear().draw();
         domtblReportes = $("#tblReportes").DataTable({
             select: true,
             responsive: false,
             destroy: true,
             "scrollX": true,
-            "processing": true, // for show progress bar  
-            "serverSide": true, // for process server side  
-            "filter": false, // this is for disable filter (search box)  
-            "orderMulti": false, // for disable multiple column at once  
+            "processing": true, // for show progress bar
+            "serverSide": true, // for process server side
+            "filter": false, // this is for disable filter (search box)
+            "orderMulti": false, // for disable multiple column at once
             "lengthMenu": [[15, 25, 35, 50], [15, 25, 35, 50]],
             "language":
             {
@@ -102,10 +141,20 @@
                 "emptyTable": "No hay información"
             },
             "ajax": {
-                "url": "@this.Url.Action("GetGridData")?destino=" + destinoDef,
+                "url": "@this.Url.Action("GetGridData")?cbTo=" + cbTo + '&chkEnviados=' + chkEnviados + '&dtp1=' + dtp1 + '&TxtDespachoId=' + TxtDespachoId,
                 "type": "POST",
                 "datatype": "json",
                 "dataSrc": function (json) {
+                    $('#divSpinFiltrar').hide();
+                    $('#divSpinLimpiar').hide();
+                    if (json.data.length == 0 && json.errorMessage == '') {
+                        $('#cbTo').append($('<option>', {
+                            value: '',
+                            text: 'Todos',
+                            selected: true
+                        }));
+                        return json.data;
+                    }
                     if (json.errorMessage != '') {
                         menErrorEdi(json.errorMessage);
                         return null;
@@ -115,13 +164,13 @@
                             menErrorEdi(json.data[0].errorMessage);
                             return null;
                         }
-                    }                    
+                    }
                     $.each(json.listTo, function (i, item) {
                         var isExist = !!$('#cbTo option').filter(function () {
                             return $(this).attr('value').toLowerCase() === item.toLowerCase();
                         }).length;
                         if (!isExist) {
-                            if (destinoDef == 'null') {
+                            if (cbTo == 'null') {
                                 $('#cbTo').append($('<option>', {
                                     value: item,
                                     text: item,
@@ -129,7 +178,7 @@
                                 }));
                             } else {
                                 var selectedD = false;
-                                if (destinoDef == item)
+                                if (cbTo == item)
                                     selectedD = true;
                                 $('#cbTo').append($('<option>', {
                                     value: item,
@@ -139,11 +188,15 @@
                             }
                         }
                     });
-                    $('#cbTo').append($('<option>', {
-                        value: '',
-                        text: '',
-                        selected: true
-                    }));
+                    if ($($("#cbTo option")[0]).val() != '') {
+                        $('#cbTo').append($('<option>', {
+                            value: '',
+                            text: 'Todos',
+                            selected: true
+                        }));
+                    } else {
+                        $("#cbTo").val('');
+                    }
                     var options = $("#cbTo option");
                     options.detach().sort(function (a, b) {
                         var at = $(a).text();
@@ -151,11 +204,14 @@
                         return (at > bt) ? 1 : ((at < bt) ? -1 : 0);
                     });
                     options.appendTo("#cbTo");
-                    if (destinoDef != 'null')
-                        $('#cbTo').val(destinoDef);
+                    if (cbTo != 'null')
+                        $('#cbTo').val(cbTo);
+                    //$('#cbTo').on("change", function () {
+                    //    fillTblReportes($('#cbTo').val(), $('#chkEnviados').prop('checked'));
+                    //});
                     return json.data;
                 }
-            },          
+            },
             columnDefs: [
                 {
                     render: function (data, type, full, meta) {
@@ -199,7 +255,7 @@
                 { "data": "bulks", "name": "bulks", "autoWidth": true, "defaultContent": "" },
                 { "data": "unidadDeMedida", "name": "unidadDeMedida", "autoWidth": true, "defaultContent": "" },
                 { "data": "destino", "name": "destino", "autoWidth": true, "defaultContent": "" }
-                
+
                 //{ "data": "numeroOc", "name": "numeroOc", "autoWidth": true, "defaultContent": "" },
                 //{ "data": "documentoFiscal", "name": "documentoFiscal", "autoWidth": true, "defaultContent": "" },
                 //{ "data": "fechaDocFiscalStr", "name": "fechaDocFiscalStr", "autoWidth": true, "defaultContent": "" },
@@ -216,14 +272,23 @@
                 //{ "data": "tipoBulto", "name": "tipoBulto", "autoWidth": true, "defaultContent": "" }
             ]
         });
-    }
-    $('#cbTo').on("change", function () {
-        fillTblReportes($('#cbTo').val());
+    }    
+    //$('#chkEnviados').on("change", function () {
+    //    fillTblReportes($('#cbTo').val(), $('#chkEnviados').prop('checked'));
+    //});
+
+    $('#btnFiltrar').on("click", function () {
+        $('#divSpinFiltrar').show();
+        fillTblReportes();        
     });
-    //$('#cbTo').on("click", function () {
-    //    if ($('#cbTo').val() == '')
-    //        fillTblReportes('null');
-    //});    
+    $('#btnLimpiar').on("click", function () {
+        $('#divSpinLimpiar').show();
+        $('#cbTo').val('');
+        $('#dtp1').val('');
+        $('#TxtDespachoId').val('');
+        $('#chkEnviados').prop('checked', false);
+        fillTblReportes();
+    });
     $('#btnSubmit').on("click", function () {
         $('#btnSubmit').prop('disabled', true);
         $('#divSpin1').show();
@@ -242,40 +307,41 @@
                     domtblReportes.ajax.reload();
                     menErrorEdi('Notificación enviada');
                 }
-                else { menErrorEdi(json.data); }       
+                else { menErrorEdi(json.data); }
                 $('#divSpin1').hide();
             },
             error: function (xhr, ajaxOptions, thrownError) {
                 $('#btnSubmit').removeAttr('disabled');
                 $('#divSpin1').hide();
                 menErrorEdi(xhr.status);
-                menErrorEdi(thrownError);                
+                menErrorEdi(thrownError);
             }
         });
     });
     $(document).ready(function () {
-        fillTblReportes('null');
+        $('#dtp1').datepicker();
+        fillTblReportes('null', false);
         $('#tblReportes tbody').on('click', 'tr', function (e) {
             e.preventDefault();
             //if ($(this).hasClass('selected')) {
             //    $(this).removeClass('selected');
             //    return false;
             //}
-            //else {                
+            //else {
                 //trigger update
                 domtblReportes.$('tr.selected').removeClass('selected');
                 var chk = $(this).closest("tr").find('td:eq(0)').find('input')[0];
                 var idChk = $(chk).prop('id');
-                if (idChk == null) return;                
+                if (idChk == null) return;
                 var chkState = $(chk).prop('checked');
-                idChk = idChk.substr(0, idChk.indexOf('|'));                
-                $("input[name^='" + idChk + "']").each(function (Ind, Ele) {                    
+                idChk = idChk.substr(0, idChk.indexOf('|'));
+                $("input[name^='" + idChk + "']").each(function (Ind, Ele) {
                     $(Ele).prop('checked', !chkState);
                     if (chkState)
                         $(Ele).closest("tr").removeClass('selected');
                     else
-                        $(Ele).closest("tr").addClass('selected');                        
-                });                
+                        $(Ele).closest("tr").addClass('selected');
+                });
                 return false;
             //}
         });
