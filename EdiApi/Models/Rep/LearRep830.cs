@@ -446,7 +446,8 @@ namespace EdiApi
                 Fingreso = DateTime.Now.ToString(ApplicationSettings.DateTimeFormat),
                 Reprocesar = true,
                 NombreArchivo = _FileName,
-                CheckSeg = _CheckSeg                
+                CheckSeg = _CheckSeg,
+                InOut = "I"
             };
             DbO.LearPureEdi.Add(LearPureEdiO);
             DbO.SaveChanges();

@@ -218,7 +218,7 @@ namespace EdiApi.Controllers
                     };
                 }
                 LearRep830O.SaveEdiPure(ref EdiPureStr, FileName, LearRep830O.EdiFile.Count);
-                string ParseRet = LearRep830O.Parse();
+                string ParseRet = LearRep830O.Parse();                
                 if (!string.IsNullOrEmpty(ParseRet))
                 {
                     LearRep830O.LearPureEdiO.Reprocesar = false;
@@ -245,47 +245,86 @@ namespace EdiApi.Controllers
                     DbO.LearIsa830.Update(LearRep830.LearIsa830root);
                 }                
                 LearRep830O.UpdateEdiPure();
-
-                //List<Tuple<LIN830, FST830>> ListProductsQtys = new List<Tuple<LIN830, FST830>>();
-                //List<LIN830> ListProducts = new List<LIN830>();
-                //LearRep830O.ISAO.Childs.ForEach(ObjSt => {
-                //    if (ObjSt.GetType().Name == "ST830")
-                //    {
-                //        ObjSt.Childs.ForEach(ObjLin => {
-                //            if (ObjSt.GetType().Name == "LIN830")
-                //            {
-                //                ObjLin.Childs.ForEach(ObjSdp => {
-                //                    if (ObjSt.GetType().Name == "SDP830")
-                //                    {
-                //                        ObjSdp.Childs.ForEach(ObjFst => {
-                //                            if (ObjSt.GetType().Name == "FST830")
-                //                            {
-                //                                if (!ListProducts.Exists(P => P.HashId == ((LIN830)ObjLin).ProductId))
-                //                                    ListProducts.Add((LIN830)ObjLin);
-                //                                ListProductsQtys.Add(new Tuple<LIN830, FST830>((LIN830)ObjLin, (FST830)ObjFst));
-                //                            }
-                //                        });                                        
-                //                    }
-                //                });                                
-                //            }
-                //        });                        
-                //    }
-                //});                
-                //ListProductsQtys = ListProductsQtys
-                //    .OrderBy(Pq => Pq.Item1.ProductId)
-                //    .ThenBy(Pq2 => Pq2.Item2.FstDate.ToShortDate())
-                //    .ToList();
-                //ListProducts.ForEach(P => {
-                //    DateTime? FirstDate = null;
-                //    ListProductsQtys
-                //    .Where(Pq => Pq.Item1.HashId == P.HashId)
-                //    .ToList().ForEach(Pq => {
-                //        if (!FirstDate.HasValue) FirstDate = Pq.Item2.FstDate.ToShortDate();
-                //        if ((Pq.Item2.FstDate.ToShortDate() - FirstDate.Value).TotalDays > 7) return;
-
-                //    });
-                //});
-
+                try
+                {
+                    List<Tuple<LIN830, FST830>> ListProductsQtys = new List<Tuple<LIN830, FST830>>();
+                    List<LIN830> ListProducts = new List<LIN830>();
+                    List<SHP830> ListShp = new List<SHP830>();
+                    LearRep830O.ISAO.Childs.ForEach(ObjSt =>
+                    {
+                        if (ObjSt.GetType().Name == "ST830")
+                        {
+                            ObjSt.Childs.ForEach(ObjLin =>
+                            {
+                                if (ObjLin.GetType().Name == "LIN830")
+                                {
+                                    ObjLin.Childs.ForEach(ObjSdp =>
+                                    {
+                                        if (ObjSdp.GetType().Name.Equals("SDP830"))
+                                        {
+                                            ObjSdp.Childs.ForEach(ObjFst =>
+                                            {
+                                                if (ObjFst.GetType().Name.Equals("FST830"))
+                                                {
+                                                    if (!ListProducts.Exists(P => P.HashId == ((LIN830)ObjLin).HashId))
+                                                        ListProducts.Add((LIN830)ObjLin);
+                                                    ListProductsQtys.Add(new Tuple<LIN830, FST830>((LIN830)ObjLin, (FST830)ObjFst));
+                                                }
+                                            });
+                                        }
+                                        else if (ObjSdp.GetType().Name.Equals("SHP830"))
+                                        {
+                                            ListShp.Add((SHP830)ObjSdp);
+                                        }
+                                    });
+                                }
+                            });
+                        }
+                    });
+                    ListProductsQtys = ListProductsQtys
+                        .OrderBy(Pq => Pq.Item1.ProductId)
+                        .ThenBy(Pq2 => Pq2.Item2.FstDate.ToShortDate())
+                        .ToList();
+                    ListProducts.ForEach(P =>
+                    {
+                        DateTime? FirstDate = null;
+                        ListProductsQtys
+                        .Where(Pq => Pq.Item1.HashId == P.HashId)
+                        .ToList().ForEach(Pq =>
+                        {
+                            if (!FirstDate.HasValue) FirstDate = Pq.Item2.FstDate.ToShortDate();
+                            if ((Pq.Item2.FstDate.ToShortDate() - FirstDate.Value).TotalDays > 6) return;
+                            switch (Pq.Item2.FstDate.ToShortDate().DayOfWeek)
+                            {
+                                case DayOfWeek.Monday:
+                                    SHP830 Shp = ListShp.Where(S => S.ParentHashId == P.HashId && S.QuantityQualifier.Equals("02")).Fod();
+                                    if (Shp != null)
+                                    {
+                                        double ShpQty = Convert.ToDouble(Shp.Quantity);
+                                        double Qty = Convert.ToDouble(Pq.Item2.Quantity);
+                                        double QtyRes = (Qty - ShpQty);
+                                        Pq.Item2.RealQty = QtyRes.ToString("N0");
+                                    }
+                                    break;
+                                case DayOfWeek.Wednesday:
+                                case DayOfWeek.Friday:
+                                    FST830 FstLast = ListProductsQtys.Where(Pq2 => Pq2.Item1.HashId == P.HashId && Pq2.Item2.FstDate.ToShortDate() == Pq.Item2.FstDate.ToShortDate().AddDays(-2)).Fod().Item2;
+                                    Pq.Item2.RealQty = (Convert.ToDouble(Pq.Item2.Quantity) - Convert.ToDouble(FstLast.Quantity)).ToString("N0");
+                                    break;
+                            }
+                        });
+                    });
+                    ListProductsQtys = ListProductsQtys.Where(Pq => !string.IsNullOrEmpty(Pq.Item2.RealQty)).ToList();
+                    ListProductsQtys.ForEach(Pq => {
+                        LearFst830 Fst = DbO.LearFst830.Where(F => F.HashId == Pq.Item2.HashId).Fod();
+                        Fst.RealQty = Pq.Item2.RealQty;
+                        DbO.LearFst830.Update(Fst);
+                    });
+                    DbO.SaveChanges();
+                }
+                catch
+                {
+                }                
                 return new RetReporte() {
                     EdiFile = string.Join(EdiBase.SegmentTerminator, LearRep830O.EdiFile),
                     Info = new RetInfo() {

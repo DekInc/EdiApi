@@ -146,6 +146,7 @@
                             <button id="btnComm@(Model.Item1.HashId)" class="btn btn-primary btn-lg font-size-12" type="button">Guardar <div id="divSpin@(Model.Item1.HashId)" class="spinner-border spinner-border-sm text-danger" style="display: none" role="status"><span class="sr-only">Loading...</span></div></button>
                         </form>
                         <script>
+                            //$('#form@(Model.Item1.HashId)').serialize(),
                             $('#btnComm@(Model.Item1.HashId)').on("click", function () {
                                 var btnName = '#btnComm@(Model.Item1.HashId)';
                                 var spinName = '#divSpin@(Model.Item1.HashId)';
@@ -156,14 +157,14 @@
                                     url: '@this.Url.Action("UpdateLinComments")',
                                     type: 'POST',
                                     dataType: 'JSON',
-                                    data: $('#form@(Model.Item1.HashId)').serialize(),
+                                    data: 'TxtLinCom@(Model.Item1.HashId)=' + $('#TxtLinCom@(Model.Item1.HashId)').val() + '&' + $('.realQtySelector').serialize(),
                                     success: function (json) {
                                         $(btnName).removeAttr('disabled');
                                         if (json.data == '') {
                                             
                                         }
                                         else if (json.data == 'ok') {                                            
-                                            menErrorEdi('Comentario guardado');
+                                            menErrorEdi('Información guardada');
                                         }
                                         else { menErrorEdi(json.data); }       
                                         $(spinName).hide();

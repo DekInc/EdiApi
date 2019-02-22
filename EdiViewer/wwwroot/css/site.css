@@ -381,3 +381,6 @@ table.dataTable thead th, table.dataTable thead td {
 .margin5{
     margin-top: 5px;
 }
+.noBorder {
+    border: 0px solid #FFF;
+}

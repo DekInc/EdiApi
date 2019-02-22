@@ -50,7 +50,7 @@ namespace EdiApi.Controllers
         {
             yield return new TsqlDespachosWmsComplex() { ErrorMessage = E1.ToString() };
         }
-        public string UpdateLinComments(string LinHashId, string TxtLinComData) {
+        public string UpdateLinComments(string LinHashId, string TxtLinComData, string ListFst) {
             try
             {
                 LearLin830 Lin = DbO.LearLin830.Where(L => L.HashId == LinHashId).Fod();
@@ -58,6 +58,15 @@ namespace EdiApi.Controllers
                     return "No existe el elemento Lin";
                 Lin.Comments = TxtLinComData;
                 DbO.Update(Lin);
+                foreach(string FstStr in ListFst.Split('|'))
+                {
+                    if (string.IsNullOrEmpty(FstStr)) break;
+                    string[] FstArr = FstStr.Split('Ç');
+                    if (FstArr.Length != 2) break;
+                    LearFst830 learFst830 = DbO.LearFst830.Where(F => F.HashId == FstArr[0]).Fod();
+                    learFst830.RealQty = FstArr[1];
+                    DbO.LearFst830.Update(learFst830);
+                }
                 DbO.SaveChanges();
                 return "ok";
             }
@@ -294,6 +303,31 @@ namespace EdiApi.Controllers
                                                         from Ld in ListDispatch
                                                         where Ls.DespachoId == Convert.ToInt32(Ld)
                                                         select Ls).ToList();
+                //Obtener ultimo reporte
+                List<LearPureEdi> LastRep =
+                    (from Pe in DbO.LearPureEdi
+                    where Pe.InOut == "I"
+                    orderby Pe.Fingreso descending
+                    select Pe).ToList();
+                if (LastRep.Count == 0)
+                    return "No existen pedidos";
+                string LastRepHashId = LastRep.Fod().HashId;
+                DateTime DateCon = DateTime.Now;
+                switch (DateCon.DayOfWeek)
+                {
+                    case DayOfWeek.Tuesday:
+                    case DayOfWeek.Thursday:
+                    case DayOfWeek.Saturday:
+                        DateCon = DateCon.AddDays(-1);
+                        break;
+                    case DayOfWeek.Monday:
+                    case DayOfWeek.Wednesday:
+                    case DayOfWeek.Friday:
+                        break;
+                    case DayOfWeek.Sunday:
+                        DateCon = DateCon.AddDays(-2);
+                        break;                    
+                }
                 foreach (string Despacho in ListDispatch)
                 {
                     int InterchangeControlNumber = 1;
@@ -449,6 +483,23 @@ namespace EdiApi.Controllers
                         {
                             return (new Exception("No existe el producto en la tabla de equivalencias")).ToString();
                         }
+                        List<LearFst830> ListFst = (
+                            from IsaT in DbO.LearIsa830
+                            from StT in DbO.LearSt830
+                            from L in DbO.LearLin830
+                            from Sdp in DbO.LearSdp830
+                            from F in DbO.LearFst830
+                            where IsaT.ParentHashId == LastRepHashId
+                            && StT.ParentHashId == IsaT.HashId
+                            && L.ParentHashId == StT.HashId
+                            && Sdp.ParentHashId == L.HashId
+                            && F.ParentHashId == Sdp.HashId
+                            && F.FstDate.ToShortDate() == new DateTime(DateCon.Year, DateCon.Month, DateCon.Day)
+                            && L.ProductId == LearEquivalencia.CodProductoLear
+                            orderby L.ProductId
+                            select F).ToList();
+                        if (ListFst.Count == 0)
+                            return "No existe el reporte de cantidades para el producto " + LearEquivalencia.CodProductoLear;
                         HLOL856 HlO1 = new HLOL856(EdiBase.SegmentTerminator)
                         {
                             HierarchicalIdNumber = ContHl.ToString(),
@@ -466,7 +517,7 @@ namespace EdiApi.Controllers
                         HlO1.Childs.Add(Lin);
                         SN1856 Sn1 = new SN1856(EdiBase.SegmentTerminator)
                         {
-                            NumberOfUnitsShipped = DespachoInfo.Quantity.ToString(), 
+                            NumberOfUnitsShipped = ListFst.Fod().RealQty.Replace(",", ""), //DespachoInfo.Quantity.ToString(), 
                             UnitOfMeasurementCode = LearEquivalencia.Unit,
                             QuantityShipped = Cda.ToString() 
                         };
@@ -530,6 +581,7 @@ namespace EdiApi.Controllers
                         HashId = Isa.HashId
                     };
                     string FtpRes = SendEdiFtp(EdiStrO);
+                    //string FtpRes = "ok";
                     if (FtpRes != "ok")
                         return FtpRes;
                     DbO.EdiRepSent.Add(Rep856N);

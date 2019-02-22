@@ -38,27 +38,29 @@ namespace EdiViewer.Controllers
         [HttpGet]
         public async Task<string> AutoSendInventary830()
         {
-            RetInfo RetReporteO = await ApiClientFactory.Instance.AutoSendInventary830("true");
+            RetInfo RetReporteO = await ApiClientFactory.Instance.AutoSendInventary830("false");
             return "";
         }
         [HttpPost]
         public async Task<IActionResult> UpdateLinComments() {
             try
             {
-                string TxtLinComData = null, LinHashId = null;
+                string TxtLinComData = null, LinHashId = null, ListFst = string.Empty;
                 IFormCollection formCollection = HttpContext.Request.Form;
                 foreach (string FormPara in formCollection.Keys)
                 {
                     if (FormPara.StartsWith("TxtLinCom"))
                     {
                         LinHashId = FormPara.Replace("TxtLinCom", "");
-                        TxtLinComData = HttpContext.Request.Form[FormPara].Fod();
-                        break;
+                        TxtLinComData = HttpContext.Request.Form[FormPara].Fod();                        
+                    } else if (FormPara.StartsWith("TxtRealQty"))
+                    {
+                        ListFst += $"{FormPara.Replace("TxtRealQty", "")}Ç{HttpContext.Request.Form[FormPara].Fod()}|";
                     }
                 }
                 if (!string.IsNullOrEmpty(LinHashId))
                 {
-                    string data = await ApiClientFactory.Instance.UpdateLinComments(LinHashId, TxtLinComData);
+                    string data = await ApiClientFactory.Instance.UpdateLinComments(LinHashId, TxtLinComData, ListFst);
                     return Json(new { data });
                 }
                 return Json(new { data = "ok" });

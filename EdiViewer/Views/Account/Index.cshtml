@@ -61,7 +61,7 @@
         }
         @if (!string.IsNullOrEmpty(Model.ErrorMessage))
         {
-            @: menErrorEdi("@Html.Raw(Model.ErrorMessage)");
+            @: menErrorEdi('@Html.Raw(Model.ErrorMessage.Replace(Environment.NewLine, "<br />"))');
         }
     });
 </script>

@@ -29,7 +29,7 @@ namespace EdiViewer.Controllers
             }
             catch (Exception e1)
             {
-                return View("Index", new Models.ErrorModel() { ErrorMessage = e1.ToString() });
+                return View("Index", new Models.ErrorModel() { ErrorMessage = e1.ToString().Replace("'", "") });
             }            
         }
     }

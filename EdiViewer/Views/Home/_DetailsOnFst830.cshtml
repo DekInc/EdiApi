@@ -21,8 +21,8 @@
         </div>
     </div>
     <div class="col-sm">
-        <div class="SegmentDataCol">
-            @Html.QtyToMil(Model.Item1.RealQty, Model.Item5)
+        <div class="SegmentDataCol">            
+            <input class="noBorder realQtySelector" id="TxtRealQty@(Model.Item1.HashId)" name="TxtRealQty@(Model.Item1.HashId)" value="@Model.Item1.RealQty" maxlength="16" />
         </div>
     </div>
     <div class="col-sm">
