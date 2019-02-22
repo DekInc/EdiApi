@@ -494,10 +494,12 @@ namespace EdiApi.Controllers
                             && L.ParentHashId == StT.HashId
                             && Sdp.ParentHashId == L.HashId
                             && F.ParentHashId == Sdp.HashId
-                            && F.FstDate.ToShortDate() == new DateTime(DateCon.Year, DateCon.Month, DateCon.Day)
+                            //&& F.FstDate.ToShortDate() == new DateTime(DateCon.Year, DateCon.Month, DateCon.Day)
                             && L.ProductId == LearEquivalencia.CodProductoLear
                             orderby L.ProductId
                             select F).ToList();
+                        Cda = ListFst.Where(F1 => !string.IsNullOrEmpty(F1.RealQty)).Select(F => Convert.ToDouble(F.RealQty.Replace(",", ""))).Sum();
+                        ListFst = ListFst.Where(F => F.FstDate.ToShortDate() == new DateTime(DateCon.Year, DateCon.Month, DateCon.Day)).ToList();
                         if (ListFst.Count == 0)
                             return "No existe el reporte de cantidades para el producto " + LearEquivalencia.CodProductoLear;
                         HLOL856 HlO1 = new HLOL856(EdiBase.SegmentTerminator)
