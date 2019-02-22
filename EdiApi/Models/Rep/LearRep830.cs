@@ -345,6 +345,7 @@ namespace EdiApi
                             FST830 FSTnp = new FST830(EdiBase.SegmentTerminator);
                             if (!FSTnp.Parse(EdiStr))
                                 return ParseMenError1(FST830.Self, Nr, FSTnp.Coli);
+                            FSTnp.RealQty = "0";
                             if (ListSDP.Count == 0)
                             {
                                 FSTnp.Parent = ListLIN.LastOrDefault();

@@ -245,6 +245,47 @@ namespace EdiApi.Controllers
                     DbO.LearIsa830.Update(LearRep830.LearIsa830root);
                 }                
                 LearRep830O.UpdateEdiPure();
+
+                //List<Tuple<LIN830, FST830>> ListProductsQtys = new List<Tuple<LIN830, FST830>>();
+                //List<LIN830> ListProducts = new List<LIN830>();
+                //LearRep830O.ISAO.Childs.ForEach(ObjSt => {
+                //    if (ObjSt.GetType().Name == "ST830")
+                //    {
+                //        ObjSt.Childs.ForEach(ObjLin => {
+                //            if (ObjSt.GetType().Name == "LIN830")
+                //            {
+                //                ObjLin.Childs.ForEach(ObjSdp => {
+                //                    if (ObjSt.GetType().Name == "SDP830")
+                //                    {
+                //                        ObjSdp.Childs.ForEach(ObjFst => {
+                //                            if (ObjSt.GetType().Name == "FST830")
+                //                            {
+                //                                if (!ListProducts.Exists(P => P.HashId == ((LIN830)ObjLin).ProductId))
+                //                                    ListProducts.Add((LIN830)ObjLin);
+                //                                ListProductsQtys.Add(new Tuple<LIN830, FST830>((LIN830)ObjLin, (FST830)ObjFst));
+                //                            }
+                //                        });                                        
+                //                    }
+                //                });                                
+                //            }
+                //        });                        
+                //    }
+                //});                
+                //ListProductsQtys = ListProductsQtys
+                //    .OrderBy(Pq => Pq.Item1.ProductId)
+                //    .ThenBy(Pq2 => Pq2.Item2.FstDate.ToShortDate())
+                //    .ToList();
+                //ListProducts.ForEach(P => {
+                //    DateTime? FirstDate = null;
+                //    ListProductsQtys
+                //    .Where(Pq => Pq.Item1.HashId == P.HashId)
+                //    .ToList().ForEach(Pq => {
+                //        if (!FirstDate.HasValue) FirstDate = Pq.Item2.FstDate.ToShortDate();
+                //        if ((Pq.Item2.FstDate.ToShortDate() - FirstDate.Value).TotalDays > 7) return;
+
+                //    });
+                //});
+
                 return new RetReporte() {
                     EdiFile = string.Join(EdiBase.SegmentTerminator, LearRep830O.EdiFile),
                     Info = new RetInfo() {

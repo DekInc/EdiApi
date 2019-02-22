@@ -48,6 +48,15 @@ namespace EdiApi
                 return _Code;
             }            
         }
+        public static DateTime ToShortDate(this string _Str)
+        {
+            if (string.IsNullOrEmpty(_Str)) return DateTime.Now;
+
+            return new DateTime(Convert.ToInt32($"20{_Str.Substring(0, 2)}"),
+                        Convert.ToInt32(_Str.Substring(2, 2)),
+                        Convert.ToInt32(_Str.Substring(4, 2))
+                        );
+        }
         public static DateTime ToDate(this string _Str)
         {
             if (string.IsNullOrEmpty(_Str)) return DateTime.Now;

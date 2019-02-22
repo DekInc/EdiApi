@@ -348,6 +348,8 @@ namespace EdiApi.Models.EdiDB
                 entity.Property(e => e.ParentHashId).HasMaxLength(128);
 
                 entity.Property(e => e.Quantity).HasMaxLength(10);
+
+                entity.Property(e => e.RealQty).HasMaxLength(16);
             });
 
             modelBuilder.Entity<LearGs830>(entity =>

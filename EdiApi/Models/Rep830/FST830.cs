@@ -18,6 +18,7 @@ namespace EdiApi
         public string ForecastTimingQualifier { get; set; }
         [StringLength(maximumLength: 6, MinimumLength = 0)]
         public string FstDate { get; set; }
+        public string RealQty { get; set; }
         public FST830(string _SegmentTerminator) : base(_SegmentTerminator)
         {
             Orden = new string[]{

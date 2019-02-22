@@ -1,34 +1,39 @@
 ﻿@model Tuple<ComModels.LearFst830, IEnumerable<ComModels.EdiSegName>, IEnumerable<ComModels.LearCodes>, int, IEnumerable<ComModels.LearUit830>, IEnumerable<ComModels.LearShp830>, IEnumerable<EdiDetailQtysModel>>
 @if (Html.StrToBool(1, @Model.Item1.FstDate, Model.Item4))
 {
-    <div class="row separator">
-        <div class="col-sm">
-            <div class="SegmentDataCol">
-                @Html.StrToDate(2, @Model.Item1.FstDate)
-            </div>
-        </div>
-        <div class="col-sm">
-            <div class="SegmentDataCol">
-                @Html.QtyToMil(Model.Item1.Quantity, Model.Item5)
-            </div>
-        </div>
-        <div class="col-sm">
-            <div class="SegmentDataCol">
-                @if (Model.Item6.Where(Shp => Shp.QuantityQualifier == "02").Count() > 0)
-                {
-                    @Html.QtyToLocal(Model.Item1.Quantity, Model.Item6, Model.Item5, Model.Item1.FstDate, Model.Item7, Model.Item1.ParentHashId)
-                }
-            </div>
-        </div>
-        <div class="col-sm">
-            <div class="SegmentDataCol">
-                @Html.CodeToStr("FST.ForecastQualifier", Model.Item1.ForecastQualifier, Model.Item3)
-            </div>
-        </div>
-        <div class="col-sm">
-            <div class="SegmentDataCol">
-                @Html.CodeToStr("FST.ForecastTimingQualifier", Model.Item1.ForecastTimingQualifier, Model.Item3)
-            </div>
+<div class="row separator">
+    <div class="col-sm">
+        <div class="SegmentDataCol">
+            @Html.StrToDate(2, @Model.Item1.FstDate)
         </div>
     </div>
+    <div class="col-sm">
+        <div class="SegmentDataCol">
+            @Html.QtyToMil(Model.Item1.Quantity, Model.Item5)
+        </div>
+    </div>
+    <div class="col-sm">
+        <div class="SegmentDataCol">
+            @if (Model.Item6.Where(Shp => Shp.QuantityQualifier == "02").Count() > 0)
+            {
+                @Html.QtyToLocal(Model.Item1.Quantity, Model.Item6, Model.Item5, Model.Item1.FstDate, Model.Item7, Model.Item1.ParentHashId)
+            }
+        </div>
+    </div>
+    <div class="col-sm">
+        <div class="SegmentDataCol">
+            @Html.QtyToMil(Model.Item1.RealQty, Model.Item5)
+        </div>
+    </div>
+    <div class="col-sm">
+        <div class="SegmentDataCol">
+            @Html.CodeToStr("FST.ForecastQualifier", Model.Item1.ForecastQualifier, Model.Item3)
+        </div>
+    </div>
+    <div class="col-sm">
+        <div class="SegmentDataCol">
+            @Html.CodeToStr("FST.ForecastTimingQualifier", Model.Item1.ForecastTimingQualifier, Model.Item3)
+        </div>
+    </div>
+</div>
 }
