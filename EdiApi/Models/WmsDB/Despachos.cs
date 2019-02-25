@@ -28,9 +28,6 @@ namespace EdiApi.Models.WmsDB
         public string Observacion { get; set; }
         public int? Transportistaid { get; set; }
         public int? Destinoid { get; set; }
-        public int? Edistatus { get; set; }
-        public DateTime? EdistatusDate { get; set; }
-        public int? Ediuser { get; set; }
 
         public Transportista Transportista { get; set; }
         public ICollection<DtllDespacho> DtllDespacho { get; set; }

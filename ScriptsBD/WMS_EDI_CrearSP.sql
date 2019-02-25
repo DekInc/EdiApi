@@ -39,7 +39,7 @@ BEGIN
 	and I.InventarioID = S.InventarioID
 	and UM.UnidadMedidaID = I.TipoBulto
 	and T.EstatusID = 9
-	and D.Fecha > GETDATE() - 366 
+	and D.Fecha > GETDATE() - 15 
 	and PR.CodProducto in (
 		SELECT DISTINCT RTRIM(LTRIM(L.ProductId))
 		FROM EdiDB.dbo.LEAR_LIN830 L
@@ -125,7 +125,7 @@ BEGIN
 	and Ii.ItemInventarioID = S.ItemInventarioID
 	and UM.UnidadMedidaID = I.TipoBulto
 	and T.EstatusID = 9		
-	and D.Fecha > GETDATE() - 366 
+	and D.Fecha > GETDATE() - 15 
 	and PR.CodProducto in (
 		SELECT DISTINCT LTRIM(RTRIM(L.ProductId))
 		FROM EdiDB.dbo.LEAR_LIN830 L

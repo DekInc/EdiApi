@@ -38,7 +38,7 @@ namespace EdiApi
         public NTE830 NTEO { get; set; }
         public CTT830 CTTO { get; set; }
         private EdiDBContext DbO;
-        private Models.WmsDB.WmsContext WmsDb;
+        private readonly Models.WmsDB.WmsContext WmsDb;
         public LearPureEdi LearPureEdiO { get; set; }
         public LearRep830(ref EdiDBContext _DbO) { DbO = _DbO; }
         public LearRep830(ref EdiDBContext _DbO, ref Models.WmsDB.WmsContext _WmsDB) { DbO = _DbO; WmsDb = _WmsDB; }
@@ -613,8 +613,10 @@ namespace EdiApi
             EdiSent.Log = "Reporte enviado";
             EdiSent.Code = ControlNumber.ToString();
             EdiSent.EdiStr = ActualEdiStr;
-            EdiBase E1 = new EdiBase(EdiBase.SegmentTerminator);
-            E1.HashId = EdiSent.HashId;
+            EdiBase E1 = new EdiBase(EdiBase.SegmentTerminator)
+            {
+                HashId = EdiSent.HashId
+            };
             ISAO.Parent = E1;
             ISAO.SaveAll830(ref DbO);
             DbO.EdiRepSent.Update(EdiSent);

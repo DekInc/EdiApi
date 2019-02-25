@@ -1,0 +1,43 @@
+﻿@model IEnumerable<ComModels.EdiComs>
+
+@{
+    ViewData["Title"] = "ShowEdiComs";
+}
+<h2>ShowEdiComs</h2>
+<table class="tblReportes table table-striped table-responsive">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Id)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Type)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Log)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Freg)
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Id)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Type)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Log)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Freg)
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

@@ -1,0 +1,73 @@
+﻿@model IEnumerable<ComModels.LearPureEdi>
+
+@{
+    ViewData["Title"] = "ShowLearPureEdi";
+}
+<h2>ShowLearPureEdi</h2>
+<table class="tblReportes table table-striped table-responsive">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.EdiStr)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.HashId)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Fingreso)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Fprocesado)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Reprocesar)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.NombreArchivo)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Log)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.CheckSeg)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Shp)
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    <textarea style="width: 320px; height:320px; overflow:auto;" readonly>@item.EdiStr</textarea>
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.HashId)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Fingreso)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Fprocesado)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Reprocesar)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.NombreArchivo)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Log)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.CheckSeg)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Shp)
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

@@ -13,7 +13,6 @@ namespace EdiApi.Models.WmsDB
         public WmsContext(DbContextOptions<WmsContext> options)
             : base(options)
         {
-            //this.Database.ExecuteSqlCommand()
         }
 
         public virtual DbSet<Aduana> Aduana { get; set; }
@@ -450,14 +449,6 @@ namespace EdiApi.Models.WmsDB
                 entity.Property(e => e.DocumentoMotorista)
                     .HasMaxLength(25)
                     .IsUnicode(false);
-
-                entity.Property(e => e.Edistatus).HasColumnName("EDIstatus");
-
-                entity.Property(e => e.EdistatusDate)
-                    .HasColumnName("EDIstatusDate")
-                    .HasColumnType("datetime");
-
-                entity.Property(e => e.Ediuser).HasColumnName("EDIuser");
 
                 entity.Property(e => e.EmpresaCustodios)
                     .HasMaxLength(250)

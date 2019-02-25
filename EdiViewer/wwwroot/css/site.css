@@ -59,7 +59,7 @@ body {
     box-sizing: border-box !important;
 }
 .tblReportes thead tr {
-    background: linear-gradient(35deg, #c54062, #fbfcf2);
+    background: linear-gradient(35deg, rgb(218, 148, 51), rgb(255, 185, 88));
 }
 
 .tblReportes tbody {
@@ -110,29 +110,32 @@ label {
 
 .card-header {
     background-color: unset;
-    background: linear-gradient(35deg, #4b7099, #7ba0c9);
+    background: linear-gradient(35deg, rgb(65, 111, 170), rgb(122, 175, 243));  
     font-size: 13pt;
     font-weight: bold;
 }
-
+h4 {
+    font-size: 16pt;
+    font-weight: bold;
+}
 .card-cbfr {
     background-color: unset;
-    background: linear-gradient(35deg, #b6c9de, #e6f9fe);
+    background: linear-gradient(35deg, rgb(65, 111, 170), #e6f9fe);
 }
 
 .card-clin {
     background-color: unset;
-    background: linear-gradient(35deg, #86a6c8, #b6d6f8);
+    background: linear-gradient(35deg, rgb(65, 111, 170), #e6f9fe);
 }
 
 .card-cn1 {
     background-color: unset;
-    background: linear-gradient(35deg, #82b256, #b2e286);
+    background: linear-gradient(35deg, rgb(65, 111, 170), #e6f9fe);
 }
 
 .card-cn4 {
     background-color: unset;
-    background: linear-gradient(35deg, #eef2c0, #fff6e5);
+    background: linear-gradient(35deg, rgb(65, 111, 170), #e6f9fe);
 }
 
 .card-cnte {
@@ -142,7 +145,7 @@ label {
 
 .card-cuit {
     background-color: unset;
-    background: linear-gradient(35deg, #fcd280, #fcf2b0);
+    background: linear-gradient(35deg, rgb(65, 111, 170), #e6f9fe);
 }
 
 .card-cprs {
@@ -152,22 +155,22 @@ label {
 
 .card-csdp {
     background-color: unset;
-    background: linear-gradient(35deg, #c54062, #fbfcf2);
+    background: linear-gradient(35deg, rgb(218, 148, 51), rgb(241, 224, 203));
 }
 
 .card-cfst {
     background-color: unset;
-    background: linear-gradient(35deg, #b7baa5, #e7ead5);
+    background: linear-gradient(35deg, rgb(65, 111, 170), rgb(255, 255, 255));
 }
 
 .card-cath {
     background-color: unset;
-    background: linear-gradient(35deg, #939779, #c3c7a9);
+    background: linear-gradient(35deg, rgb(218, 148, 51), rgb(241, 224, 203));
 }
 
 .card-cshp {
     background-color: unset;
-    background: linear-gradient(35deg, #6e754c, #9ea57c);
+    background: linear-gradient(35deg, rgb(218, 148, 51), rgb(241, 224, 203));
 }
 
 .card-cref {
@@ -316,10 +319,6 @@ table.dataTable thead th, table.dataTable thead td {
 }
 
 /*Accordion*/
-.project-tab {
-    /*padding: 10%;
-    margin-top: -8%;*/
-}
 .project-tab #tabs {
     background: #007b5e;
     color: #eee;
@@ -335,15 +334,6 @@ table.dataTable thead th, table.dataTable thead td {
     border-bottom: 3px solid !important;
     font-size: 16px;
     font-weight: bold;*/
-}
-
-.project-tab .nav-link {
-    /*border: 1px solid transparent;
-    border-top-left-radius: .25rem;
-    border-top-right-radius: .25rem;
-    color: #0062cc;
-    font-size: 16px;
-    font-weight: 600;*/
 }
 
 .project-tab .nav-link:hover {
@@ -375,12 +365,36 @@ table.dataTable thead th, table.dataTable thead td {
 .sorting_1 {
     background-color: unset !important;
 }
-.col-sm {
-    /*border: 1px solid #000;*/
-}
 .margin5{
     margin-top: 5px;
 }
 .noBorder {
     border: 0px solid #FFF;
+}
+/* Colores institucionales */
+.btn {
+    font-style: italic;
+}
+.btn-primary {
+    background-color: unset !important;
+    background: linear-gradient(35deg, #4b7099, rgb(65, 111, 170));
+}
+.btn-info {
+    /*background-color: rgb(218, 148, 51) !important;*/
+    background-color: unset !important;
+    background: linear-gradient(35deg, rgb(218, 148, 51), rgb(255, 185, 88));
+}
+.bg-dark {
+    background-color: unset !important;
+    background: linear-gradient(35deg, rgb(15, 61, 120), rgb(65, 111, 170));
+    font-style: italic;
+    border-bottom: 2px solid #999;
+}
+.nav-link {
+    border-left: 1px dashed rgb(15, 61, 120);
+    border-right: 1px dashed rgb(15, 61, 120);
+}
+.nav-link:hover {
+    border-left: 1px dashed #fcd280;
+    border-right: 1px dashed #fcd280;
 }

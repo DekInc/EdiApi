@@ -1,0 +1,66 @@
+﻿@model IEnumerable<ComModels.EdiRepSent>
+
+@{
+    ViewData["Title"] = "ShowEdiRepSent";
+}
+<h2>ShowEdiRepSent</h2>
+<table class="tblReportes table table-striped table-responsive">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Tipo)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Fecha)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Id)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Log)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Code)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.EdiStr)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.HashId)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.CodUsr)
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Tipo)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Fecha)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Id)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Log)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Code)
+            </td>
+            <td>
+                <textarea style="width: 320px; height:320px; overflow:auto;" readonly>@item.EdiStr</textarea>
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.HashId)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.CodUsr)
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

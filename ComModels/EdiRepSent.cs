@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace EdiApi.Models.EdiDB
+namespace ComModels
 {
     public partial class EdiRepSent
     {

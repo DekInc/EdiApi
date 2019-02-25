@@ -23,6 +23,7 @@ namespace EdiViewer.Controllers
                 if (!string.IsNullOrEmpty(HashId))
                     HashId += DateTime.Now.ToString(ApplicationSettings.DateTimeFormatL);
                 HttpContext.Session.SetObjSession("Session.HashId", HashId);
+                HttpContext.Session.SetObjSession("Session.Idusr", TxtUser);
                 if (string.IsNullOrEmpty(HashId))
                     return LocalRedirect("/Account/?error=USER_INCORRECT");
                 return LocalRedirect("/");

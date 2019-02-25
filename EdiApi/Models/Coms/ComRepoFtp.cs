@@ -176,7 +176,7 @@ namespace EdiApi.Models
             }
             return;
         }
-        public void Put(string _EdiStr, ref EdiDBContext _DbO)
+        public void Put(string _EdiStr, ref EdiDBContext _DbO, string Tipo)
         {
             try
             {
@@ -202,11 +202,11 @@ namespace EdiApi.Models
                         ftpStream.Write(byteBuffer, 0, bytesSent);
                         bytesSent = localFileStream.Read(byteBuffer, 0, bufferSize);
                     }
-                    AddComLog(ref _DbO, Id, $"Archivo enviado en {(UseHost2 ? host2 : host)}");
+                    AddComLog(ref _DbO, Id, $"Archivo enviado en {(UseHost2 ? host2 : host)}. Tipo: {Tipo}");
                 }
                 catch (Exception ex)
                 {
-                    AddComLog(ref _DbO, Id, $"Error al procesar el archivo en {(UseHost2 ? host2 : host)}. Info: {ex.ToString()}");
+                    AddComLog(ref _DbO, Id, $"Error al procesar el archivo en {(UseHost2 ? host2 : host)}. Info: {ex.ToString()}. Tipo: {Tipo}");
                 }
                 localFileStream.Close();
                 ftpStream.Close();
@@ -215,7 +215,7 @@ namespace EdiApi.Models
             }
             catch (Exception ex)
             {
-                AddComLog(ref _DbO, Id, $"Error relacionado con la conexión de {(UseHost2 ? host2 : host)}. Info: {ex.ToString()}");
+                AddComLog(ref _DbO, Id, $"Error relacionado con la conexión de {(UseHost2 ? host2 : host)}. Info: {ex.ToString()}. Tipo: {Tipo}");
             }
             return;
         }

@@ -76,6 +76,21 @@ namespace EdiApi.Controllers
             }
         }
         [HttpGet]
+        public IEnumerable<EdiComs> GetEdiComs()
+        {
+            return DbO.EdiComs.OrderByDescending(O => O.Id);
+        }
+        [HttpGet]
+        public IEnumerable<EdiRepSent> GetEdiRepSent()
+        {
+            return DbO.EdiRepSent.OrderByDescending(O => O.Id);
+        }
+        [HttpGet]
+        public IEnumerable<LearPureEdi> GetLearPureEdi()
+        {
+            return DbO.LearPureEdi.OrderByDescending(O => O.Fingreso.ToDateEsp());
+        }
+        [HttpGet]
         public IEnumerable<Rep830Info> GetPureEdi(string HashId = "")
         {   
             try
@@ -290,7 +305,7 @@ namespace EdiApi.Controllers
             }
         }        
         [HttpGet]
-        public string SendForm856(string listDispatch)
+        public string SendForm856(string listDispatch, string Idusr)
         {
             try
             {
@@ -573,6 +588,10 @@ namespace EdiApi.Controllers
                         return e2.ToString();
                     }
                     string EdiStrO = Isa.Ts();
+                    int CodUsr =
+                        (from U in WmsDbO.Usrsystem
+                         where U.Idusr == Idusr
+                         select U.Codusr).Fod();
                     EdiRepSent Rep856N = new EdiRepSent()
                     {
                         Tipo = "856",
@@ -580,9 +599,10 @@ namespace EdiApi.Controllers
                         Log = "Reporte enviado",
                         Code = Despacho,
                         EdiStr = EdiStrO,
-                        HashId = Isa.HashId
+                        HashId = Isa.HashId,
+                        CodUsr = CodUsr
                     };
-                    string FtpRes = SendEdiFtp(EdiStrO);
+                    string FtpRes = SendEdiFtp(EdiStrO, "856 notif envio");
                     //string FtpRes = "ok";
                     if (FtpRes != "ok")
                         return FtpRes;
@@ -596,7 +616,7 @@ namespace EdiApi.Controllers
                 return ex2.ToString();
             }            
         }
-        private string SendEdiFtp(string _EdiStr)
+        private string SendEdiFtp(string _EdiStr, string Tipo)
         {
             ComRepoFtp ComRepoFtpO = new ComRepoFtp(
                         FtpHost,
@@ -615,7 +635,7 @@ namespace EdiApi.Controllers
                     return "Error, no se puede conectar con el servidor FTP primario o secundario";
                 }
             }
-            ComRepoFtpO.Put(_EdiStr, ref DbO);
+            ComRepoFtpO.Put(_EdiStr, ref DbO, Tipo);
             return "ok";
         }
         [HttpGet]

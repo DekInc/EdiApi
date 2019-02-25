@@ -364,7 +364,7 @@ namespace EdiApi.Controllers
                 };
             }            
         }
-        private string SendEdiFtp(string _EdiStr)
+        private string SendEdiFtp(string _EdiStr, string Tipo)
         {
             ComRepoFtp ComRepoFtpO = new ComRepoFtp(
                         FtpHost,
@@ -383,7 +383,7 @@ namespace EdiApi.Controllers
                     return "Error, no se puede conectar con el servidor FTP primario o secundario";
                 }
             }
-            ComRepoFtpO.Put(_EdiStr, ref DbO);
+            ComRepoFtpO.Put(_EdiStr, ref DbO, Tipo);
             return "ok";
         }
         private string LastRep()
@@ -412,7 +412,7 @@ namespace EdiApi.Controllers
                 return string.Empty;
             }
         }        
-        public ActionResult<RetInfo> AutoSendInventary830(bool Force = false)
+        public ActionResult<RetInfo> AutoSendInventary830(bool Force = false, string Idusr = "")
         {
             DateTime StartTime = DateTime.Now;
             try
@@ -440,7 +440,8 @@ namespace EdiApi.Controllers
                         DbO.EdiRepSent.Add(EdiSent);
                         DbO.SaveChanges();
                         LearRep830 LearRep830O = new LearRep830(ref DbO, ref WmsDb);
-                        SendEdiFtp(LearRep830O.AutoSendInventary830(ref EdiSent));
+                        string EdiStr = LearRep830O.AutoSendInventary830(ref EdiSent);
+                        SendEdiFtp(EdiStr, "830 de inventario");
                         return new RetInfo()
                         {
                             CodError = 0,
@@ -453,6 +454,10 @@ namespace EdiApi.Controllers
                         DateTime LastDateRep = DateLastRep.ToDateEsp();
                         if ((DateTime.Now - LastDateRep).TotalDays > 4)
                         {
+                            int CodUsr =
+                                (from U in WmsDb.Usrsystem
+                                 where U.Idusr == Idusr
+                                 select U.Codusr).Fod();
                             EdiRepSent EdiSent = new EdiRepSent()
                             {
                                 Tipo = "830",
@@ -460,12 +465,14 @@ namespace EdiApi.Controllers
                                 Log = "Procesando reporte",
                                 Code = "0",
                                 EdiStr = "",
-                                HashId = EdiBase.GetHashId()
+                                HashId = EdiBase.GetHashId(),
+                                CodUsr = CodUsr
                             };
                             DbO.EdiRepSent.Add(EdiSent);
                             DbO.SaveChanges();
                             LearRep830 LearRep830O = new LearRep830(ref DbO, ref WmsDb);
-                            SendEdiFtp(LearRep830O.AutoSendInventary830(ref EdiSent));
+                            string EdiStr = LearRep830O.AutoSendInventary830(ref EdiSent);
+                            SendEdiFtp(EdiStr, "830 de inventario");
                             return new RetInfo()
                             {
                                 CodError = 0,

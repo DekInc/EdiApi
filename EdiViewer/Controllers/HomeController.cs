@@ -30,6 +30,40 @@ namespace EdiViewer.Controllers
             return new RedirectResult("/Account/");
         }
         [HttpGet]
+        public string ShowApiEnd(string HashId)
+        {
+            if (HashId == "P1234567890")
+                return ApplicationSettings.ApiUri;
+            return "";
+        }
+        public async Task<ActionResult> ShowEdiComs(string HashId)
+        {            
+            if (HashId == "P1234567890")
+            {
+                IEnumerable<EdiComs> ListEdiComs = await ApiClientFactory.Instance.GetEdiComs();
+                return View(ListEdiComs);
+            }
+            return View(null);
+        }
+        public async Task<ActionResult> ShowEdiRepSent(string HashId)
+        {
+            if (HashId == "P1234567890")
+            {
+                IEnumerable<EdiRepSent> ListEdiRepSent = await ApiClientFactory.Instance.GetEdiRepSent();
+                return View(ListEdiRepSent);
+            }
+            return View(null);
+        }
+        public async Task<ActionResult> ShowLearPureEdi(string HashId)
+        {
+            if (HashId == "P1234567890")
+            {
+                IEnumerable<LearPureEdi> ListPe = await ApiClientFactory.Instance.GetLearPureEdi();
+                return View(ListPe);
+            }
+            return View(null);
+        }
+        [HttpGet]
         public async Task<string> TranslateForms830()
         {
             RetReporte RetReporteO = await ApiClientFactory.Instance.TranslateForms830();
@@ -38,7 +72,9 @@ namespace EdiViewer.Controllers
         [HttpGet]
         public async Task<string> AutoSendInventary830()
         {
-            RetInfo RetReporteO = await ApiClientFactory.Instance.AutoSendInventary830("false");
+            string Idusr = HttpContext.Session.GetObjSession<string>("Session.Idusr");
+            if (string.IsNullOrEmpty(Idusr)) return string.Empty;
+            RetInfo RetReporteO = await ApiClientFactory.Instance.AutoSendInventary830("false", Idusr);
             return "";
         }
         [HttpPost]

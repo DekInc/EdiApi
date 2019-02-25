@@ -15,7 +15,19 @@ namespace CoreApiClient
         public async Task<IEnumerable<Rep830Info>> GetPureEdi(string HashId = "")
         {
             return await GetAsync<IEnumerable<Rep830Info>>(CreateRequestUri(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Data/GetPureEdi"), $"HashId={HashId}"));
-        }        
+        }
+        public async Task<IEnumerable<EdiComs>> GetEdiComs()
+        {
+            return await GetAsync<IEnumerable<EdiComs>>(CreateRequestUri(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Data/GetEdiComs")));
+        }
+        public async Task<IEnumerable<EdiRepSent>> GetEdiRepSent()
+        {
+            return await GetAsync<IEnumerable<EdiRepSent>>(CreateRequestUri(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Data/GetEdiRepSent")));
+        }
+        public async Task<IEnumerable<LearPureEdi>> GetLearPureEdi()
+        {
+            return await GetAsync<IEnumerable<LearPureEdi>>(CreateRequestUri(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Data/GetLearPureEdi")));
+        }
         public async Task<IEnumerable<TsqlDespachosWmsComplex>> GetSN(bool NoEnviado)
         {
             return await GetAsync<IEnumerable<TsqlDespachosWmsComplex>>(CreateRequestUri(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Data/GetSN"), $"?NoEnviado={NoEnviado}"));
@@ -28,9 +40,9 @@ namespace CoreApiClient
         {
             return await GetAsync<FE830Data>(CreateRequestUri(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Data/GetFE830Data"), $"HashId={HashId}"));
         }
-        public async Task<string> SendForm856(IEnumerable<string> _ListDispatch)
+        public async Task<string> SendForm856(IEnumerable<string> _ListDispatch, string Idusr)
         {
-            return await GetAsyncNoJson<string>(CreateRequestUri(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Data/SendForm856"), $"?listDispatch={string.Join('|', _ListDispatch)}"));
+            return await GetAsyncNoJson<string>(CreateRequestUri(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Data/SendForm856"), $"?listDispatch={string.Join('|', _ListDispatch)}&Idusr={Idusr}"));
         }
         public async Task<string> UpdateLinComments(string _LinHashId, string _TxtLinComData, string _ListFst)
         {
@@ -40,9 +52,9 @@ namespace CoreApiClient
         {
             return await GetAsyncNoJson<string>(CreateRequestUri(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Data/Login"), $"?User={_User}&Password={_Password}"));
         }
-        public async Task<RetInfo> AutoSendInventary830(string _Force)
+        public async Task<RetInfo> AutoSendInventary830(string _Force, string Idusr)
         {
-            return await GetAsync<RetInfo>(CreateRequestUri(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Edi/AutoSendInventary830"), $"?Force={_Force}"));
+            return await GetAsync<RetInfo>(CreateRequestUri(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Edi/AutoSendInventary830"), $"?Force={_Force}&Idusr={Idusr}"));
         }
         public async Task<string> LastRep()
         {

@@ -26,7 +26,8 @@ namespace EdiViewer.Controllers
                 if (ListSelected.Count > 0)
                 {
                     IEnumerable<string> ListDispatch = ListSelected.Select(O1 => O1.Fod()).Distinct();
-                    string s1 = await ApiClientFactory.Instance.SendForm856(ListDispatch);
+                    string Idusr = HttpContext.Session.GetObjSession<string>("Session.Idusr");
+                    string s1 = await ApiClientFactory.Instance.SendForm856(ListDispatch, Idusr);
                     return Json(new { data = s1 });
                 }
             }
