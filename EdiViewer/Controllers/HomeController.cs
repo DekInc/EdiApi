@@ -70,11 +70,11 @@ namespace EdiViewer.Controllers
             return "";
         }
         [HttpGet]
-        public async Task<string> AutoSendInventary830()
+        public async Task<string> AutoSendInventary830(string Force = "false")
         {
             string Idusr = HttpContext.Session.GetObjSession<string>("Session.Idusr");
             if (string.IsNullOrEmpty(Idusr)) return string.Empty;
-            RetInfo RetReporteO = await ApiClientFactory.Instance.AutoSendInventary830("false", Idusr);
+            RetInfo RetReporteO = await ApiClientFactory.Instance.AutoSendInventary830(Force, Idusr);
             return "";
         }
         [HttpPost]
