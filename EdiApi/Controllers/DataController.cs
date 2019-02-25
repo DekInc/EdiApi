@@ -361,20 +361,20 @@ namespace EdiApi.Controllers
                         SecurityInformationQualifier = "00",
                         SecurityInformation = "          ",
                         InterchangeSenderIdQualifier = "ZZ",
-                        InterchangeSenderId = "GLC504         ",
+                        InterchangeSenderId = "GLC503         ",
                         InterchangeReceiverIdQualifier = "ZZ",
                         InterchangeReceiverId = "HN02NC72       ",
                         InterchangeDate = ThisDate,
                         InterchangeTime = ThisTime,
                         InterchangeControlStandardsId = "U",
-                        InterchangeControlVersion = "0231",
+                        InterchangeControlVersion = "00204",
                         AcknowledgmentRequested = "0",
                         UsageIndicator = "P"
                     };
                     GS856 Gs = new GS856(0, EdiBase.SegmentTerminator, $"{InterchangeControlNumber.ToString("D4")}")
                     {
                         FunctionalIdCode = "SH",
-                        ApplicationSenderCode = "GLC504",
+                        ApplicationSenderCode = "GLC503",
                         ApplicationReceiverCode = "HN02NC72       ",
                         GsDate = ThisDate,
                         GsTime = ThisTime,
@@ -480,7 +480,7 @@ namespace EdiApi.Controllers
                     {
                         EntityIdentifierCode = "SF",
                         IdCodeQualifier = "92",
-                        IdCode = "GLC504"
+                        IdCode = "GLC503"
                     };
                     NSeg++;
                     Hls.Childs.Add(N12);

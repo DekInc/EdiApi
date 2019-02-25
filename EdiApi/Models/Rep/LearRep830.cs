@@ -482,13 +482,13 @@ namespace EdiApi
                 SecurityInformationQualifier = "00",
                 SecurityInformation = "          ",
                 InterchangeSenderIdQualifier = "ZZ",
-                InterchangeSenderId = "GLC504         ",
+                InterchangeSenderId = "GLC503         ",
                 InterchangeReceiverIdQualifier = "ZZ",
                 InterchangeReceiverId = "ICN3660        ",
                 InterchangeDate = ThisDate,
                 InterchangeTime = ThisTime,
                 InterchangeControlStandardsId = "U",
-                InterchangeControlVersion = "00231",
+                InterchangeControlVersion = "00204",
                 AcknowledgmentRequested = "0",
                 UsageIndicator = "P",
                 InterchangeControlNumber = $"{ControlNumber.ToString("D9")}"
@@ -497,7 +497,7 @@ namespace EdiApi
             GS830 Gs = new GS830(EdiBase.SegmentTerminator)
             {
                 FunctionalIdCode = "PS",
-                ApplicationSenderCode = "GLC504",
+                ApplicationSenderCode = "GLC503",
                 ApplicationReceiverCode = "ICN3660",
                 GsDate = ThisDate,
                 GsTime = ThisTime,
@@ -563,13 +563,13 @@ namespace EdiApi
                     OrganizationId = "ST",
                     Name = "GLC HONDURAS",
                     IdCodeQualifier = "92",
-                    IdCode = "GLC504"
+                    IdCode = "GLC503"
                 };
                 NSeg++;
                 Lin.AddParentChild(N1);
                 N4830 N4 = new N4830(EdiBase.SegmentTerminator) {
                     LocationQualifier = "WH",
-                    LocationId = "GLC504"
+                    LocationId = "GLC503"
                 };
                 NSeg++;
                 Lin.AddParentChild(N4);
