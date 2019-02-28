@@ -70,7 +70,7 @@ namespace EdiApi.Models
                             Bulks = Convert.ToDouble(Dr.GetValue(8)),
                             UnidadDeMedida = Convert.ToString(Dr.GetValue(9)),
                             Destino = Convert.ToString(Dr.GetValue(10)),
-                            
+
                             NoContenedor = Convert.ToString(Dr.GetValue(11)),
                             Motorista = Convert.ToString(Dr.GetValue(12)),
                             DocumentoMotorista = Convert.ToString(Dr.GetValue(13)),
@@ -78,8 +78,8 @@ namespace EdiApi.Models
                             FechaDocFiscal = Convert.ToDateTime(Dr.GetValue(15)),
                             NoMarchamo = Convert.ToString(Dr.GetValue(16)),
                             Observacion = Convert.ToString(Dr.GetValue(17)), 
-                            TotalValue = Convert.ToDouble(Dr.GetValue(18)),
-                            NumeroOc = Convert.ToString(Dr.GetValue(19))
+                            TotalValue = Convert.ToDouble(Dr.GetValue(20)),
+                            NumeroOc = Convert.ToString(Dr.GetValue(21))
                         });
                     }
                 }

@@ -19,7 +19,7 @@ namespace EdiApi.Models
         public string NoMarchamo { get; set; }
         public string Observacion { get; set; }
         public int? Transportistaid { get; set; }
-        public int? Destinoid { get; set; }
+        //public int? Destinoid { get; set; }
 
         public long? Idclient { get; set; }
         public string Code { get; set; }
