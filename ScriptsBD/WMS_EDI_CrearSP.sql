@@ -38,7 +38,7 @@ BEGIN
 	and CL.ClienteID = T.ClienteID
 	and I.InventarioID = S.InventarioID
 	and UM.UnidadMedidaID = I.TipoBulto
-	--and T.EstatusID = 9
+	and T.EstatusID = 9
 	and D.Fecha > GETDATE() - 31
 	and PR.CodProducto in (
 		SELECT DISTINCT RTRIM(LTRIM(L.ProductId))
@@ -124,7 +124,7 @@ BEGIN
 	and I.InventarioID = S.InventarioID
 	and Ii.ItemInventarioID = S.ItemInventarioID
 	and UM.UnidadMedidaID = I.TipoBulto
-	--and T.EstatusID = 9		
+	and T.EstatusID = 9		
 	and D.Fecha > GETDATE() - 31 
 	and PR.CodProducto in (
 		SELECT DISTINCT LTRIM(RTRIM(L.ProductId))
