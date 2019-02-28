@@ -322,6 +322,7 @@ namespace EdiApi.Controllers
                 List<LearPureEdi> LastRep =
                     (from Pe in DbO.LearPureEdi
                     where Pe.InOut == "I"
+                    && !Pe.Shp                    
                     orderby Pe.Fingreso descending
                     select Pe).ToList();
                 if (LastRep.Count == 0)
