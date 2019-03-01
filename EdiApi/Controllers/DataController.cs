@@ -376,7 +376,7 @@ namespace EdiApi.Controllers
                     {
                         FunctionalIdCode = "SH",
                         ApplicationSenderCode = "GLC503",
-                        ApplicationReceiverCode = "HN02NC72       ",
+                        ApplicationReceiverCode = "HN02NC72",
                         GsDate = ThisDate,
                         GsTime = ThisTime,
                         ResponsibleAgencyCode = "X",
