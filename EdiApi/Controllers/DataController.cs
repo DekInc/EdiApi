@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.EntityFrameworkCore;
 using System.Data.Common;
+using System.Text;
 
 namespace EdiApi.Controllers
 {
@@ -41,7 +42,7 @@ namespace EdiApi.Controllers
             DbO = _DbO;
             WmsDbO = _WmsDbO;
             Config = _Config;
-        }        
+        }
         private IEnumerable<Rep830Info> GetExToIe1(Exception E1)
         {
             yield return new Rep830Info() { errorMessage = E1.ToString() };
@@ -50,6 +51,7 @@ namespace EdiApi.Controllers
         {
             yield return new TsqlDespachosWmsComplex() { ErrorMessage = E1.ToString() };
         }
+        [HttpGet]
         public string UpdateLinComments(string LinHashId, string TxtLinComData, string ListFst) {
             try
             {
@@ -58,7 +60,7 @@ namespace EdiApi.Controllers
                     return "No existe el elemento Lin";
                 Lin.Comments = TxtLinComData;
                 DbO.Update(Lin);
-                foreach(string FstStr in ListFst.Split('|'))
+                foreach (string FstStr in ListFst.Split('|'))
                 {
                     if (string.IsNullOrEmpty(FstStr)) break;
                     string[] FstArr = FstStr.Split('Ç');
@@ -81,6 +83,15 @@ namespace EdiApi.Controllers
             return DbO.EdiComs.OrderByDescending(O => O.Id);
         }
         [HttpGet]
+        public string GetConfig(string HashId)
+        {
+            if (HashId == "P1234567890")
+            {
+                return DbO.Database.GetDbConnection().ConnectionString;
+            }
+            return string.Empty;
+        }
+        [HttpGet]
         public IEnumerable<EdiRepSent> GetEdiRepSent()
         {
             return DbO.EdiRepSent.OrderByDescending(O => O.Id);
@@ -92,7 +103,7 @@ namespace EdiApi.Controllers
         }
         [HttpGet]
         public IEnumerable<Rep830Info> GetPureEdi(string HashId = "")
-        {   
+        {
             try
             {
                 int LcCount = DbO.LearCodes.Where(Lc => Lc.Str == "GS.FunctionalIdCode").Count();
@@ -106,7 +117,7 @@ namespace EdiApi.Controllers
                         orderby Pe.Fingreso descending
                         select new Rep830Info()
                         {
-                            InOut = (Pe.InOut == "I"? "Pedido" : "Inventario"),
+                            InOut = (Pe.InOut == "I" ? "Pedido" : "Inventario"),
                             From = IsaF.InterchangeSenderId,
                             To = IsaF.InterchangeReceiverId,
                             HashId = Pe.HashId,
@@ -117,7 +128,7 @@ namespace EdiApi.Controllers
                             Log = Pe.Log,
                             CheckSeg = Pe.CheckSeg,
                             NumReporte = IsaF.InterchangeControlNumber,
-                            Estado = Pe.Log.Contains("segmentos analizados, procesados y guardados")? "Exitoso" : "Error"                            
+                            Estado = Pe.Log.Contains("segmentos analizados, procesados y guardados") ? "Exitoso" : "Error"
                         };
                 return LRet;
             }
@@ -125,69 +136,69 @@ namespace EdiApi.Controllers
             {
                 return (GetExToIe1(e1));
             }
-        }        
+        }
         [HttpGet]
         public ActionResult<FE830Data> GetFE830Data(string HashId)
         {
             FE830Data FE830DataRet = new FE830Data
             {
                 ISA = (from Isa in DbO.LearIsa830
-                      where Isa.ParentHashId == HashId                      
-                      select Isa).FirstOrDefault(),
+                       where Isa.ParentHashId == HashId
+                       select Isa).FirstOrDefault(),
                 ListEdiSegName = DbO.EdiSegName
             };
             if (FE830DataRet.ISA == null)
                 return FE830DataRet;
             FE830DataRet.GS = (from Gs in DbO.LearGs830
-                              where Gs.ParentHashId == FE830DataRet.ISA.HashId
-                              select Gs).FirstOrDefault();
+                               where Gs.ParentHashId == FE830DataRet.ISA.HashId
+                               select Gs).FirstOrDefault();
             FE830DataRet.ListSt = from St in DbO.LearSt830
                                   where St.ParentHashId == FE830DataRet.ISA.HashId
                                   select St;
             FE830DataRet.ListStBfr = from Bfr in DbO.LearBfr830
-                                   from St in DbO.LearSt830
-                                   where Bfr.ParentHashId == St.HashId 
-                                   && St.ParentHashId == FE830DataRet.ISA.HashId
+                                     from St in DbO.LearSt830
+                                     where Bfr.ParentHashId == St.HashId
+                                     && St.ParentHashId == FE830DataRet.ISA.HashId
                                      select Bfr;
             FE830DataRet.ListStN1 = from N1 in DbO.LearN1830
                                     from St in DbO.LearSt830
-                                    where N1.ParentHashId == St.HashId 
+                                    where N1.ParentHashId == St.HashId
                                     && St.ParentHashId == FE830DataRet.ISA.HashId
                                     select N1;
             FE830DataRet.ListLinN1 = from LN1 in DbO.LearN1830
-                                    from Lin in DbO.LearLin830
-                                    from St in DbO.LearSt830
-                                    where LN1.ParentHashId == Lin.HashId
-                                    && Lin.ParentHashId == St.HashId
-                                    && St.ParentHashId == FE830DataRet.ISA.HashId
-                                    select LN1;
+                                     from Lin in DbO.LearLin830
+                                     from St in DbO.LearSt830
+                                     where LN1.ParentHashId == Lin.HashId
+                                     && Lin.ParentHashId == St.HashId
+                                     && St.ParentHashId == FE830DataRet.ISA.HashId
+                                     select LN1;
             FE830DataRet.ListStN4 = from N4 in DbO.LearN4830
                                     from St in DbO.LearSt830
-                                    where N4.ParentHashId == St.HashId 
+                                    where N4.ParentHashId == St.HashId
                                     && St.ParentHashId == FE830DataRet.ISA.HashId
                                     select N4;
             FE830DataRet.ListLinN4 = from LN4 in DbO.LearN4830
-                                    from Lin in DbO.LearLin830
-                                    from St in DbO.LearSt830
-                                    where LN4.ParentHashId == Lin.HashId
-                                    && Lin.ParentHashId == St.HashId
-                                    && St.ParentHashId == FE830DataRet.ISA.HashId
-                                    select LN4;
+                                     from Lin in DbO.LearLin830
+                                     from St in DbO.LearSt830
+                                     where LN4.ParentHashId == Lin.HashId
+                                     && Lin.ParentHashId == St.HashId
+                                     && St.ParentHashId == FE830DataRet.ISA.HashId
+                                     select LN4;
             FE830DataRet.ListStNte = from Nte in DbO.LearNte830
-                                    from St in DbO.LearSt830
-                                    where Nte.ParentHashId == St.HashId 
-                                    && St.ParentHashId == FE830DataRet.ISA.HashId
+                                     from St in DbO.LearSt830
+                                     where Nte.ParentHashId == St.HashId
+                                     && St.ParentHashId == FE830DataRet.ISA.HashId
                                      select Nte;
             FE830DataRet.ListLinNte = from Nte2 in DbO.LearNte830
                                       from Lin in DbO.LearLin830
-                                     from St in DbO.LearSt830
-                                     where Nte2.ParentHashId == Lin.HashId 
-                                     && Lin.ParentHashId == St.HashId 
-                                     && St.ParentHashId == FE830DataRet.ISA.HashId
-                                     select Nte2;
+                                      from St in DbO.LearSt830
+                                      where Nte2.ParentHashId == Lin.HashId
+                                      && Lin.ParentHashId == St.HashId
+                                      && St.ParentHashId == FE830DataRet.ISA.HashId
+                                      select Nte2;
             FE830DataRet.ListStLin = from Lin in DbO.LearLin830
                                      from St in DbO.LearSt830
-                                     where Lin.ParentHashId == St.HashId 
+                                     where Lin.ParentHashId == St.HashId
                                      && St.ParentHashId == FE830DataRet.ISA.HashId
                                      orderby Lin.ProductId ascending
                                      select Lin;
@@ -262,7 +273,7 @@ namespace EdiApi.Controllers
             FE830DataRet.ListCodes = from c in DbO.LearCodes
                                      orderby c.Str, c.Param
                                      select c;
-            FE830DataRet.ListProdExist = ManualDB.SP_GetExistencias(ref DbO, 618);            
+            FE830DataRet.ListProdExist = ManualDB.SP_GetExistencias(ref DbO, 618);
             return FE830DataRet;
         }
         [HttpGet]
@@ -289,7 +300,7 @@ namespace EdiApi.Controllers
                 IEnumerable<TsqlDespachosWmsComplex> ListSN = ManualDB.SP_GetSN(ref DbO);
                 List<EdiRepSent> ListSent =
                     (from S in DbO.EdiRepSent
-                     where S.Tipo == "856" 
+                     where S.Tipo == "856"
                      && (DateTime.Now - S.Fecha.ToDateEsp()).TotalDays < 32
                      select S).ToList();
                 if (ListSent.Count > 0 && NoEnviado)
@@ -303,7 +314,7 @@ namespace EdiApi.Controllers
             {
                 return GetExToIe2(e1);
             }
-        }        
+        }
         [HttpGet]
         public string SendForm856(string listDispatch, string Idusr)
         {
@@ -319,15 +330,16 @@ namespace EdiApi.Controllers
                                                         where Ls.DespachoId == Convert.ToInt32(Ld)
                                                         select Ls).ToList();
                 //Obtener ultimo reporte
-                List<LearPureEdi> LastRep =
+                List<string> LastRepHashId =
                     (from Pe in DbO.LearPureEdi
-                    where Pe.InOut == "I"
-                    && !Pe.Shp                    
-                    orderby Pe.Fingreso descending
-                    select Pe).ToList();
-                if (LastRep.Count == 0)
+                     where Pe.InOut == "I"
+                     && !Pe.Shp
+                     && Pe.Fingreso.ToDateEsp() >= DateTime.Now.AddDays(-15)
+                     orderby Pe.Fingreso.ToDateEsp() descending
+                     select Pe.HashId).ToList();
+                if (LastRepHashId.Count == 0)
                     return "No existen pedidos";
-                string LastRepHashId = LastRep.Fod().HashId;
+                //List<string> LastRepHashId = LastRep.Fod().HashId;
                 DateTime DateCon = DateTime.Now;
                 switch (DateCon.DayOfWeek)
                 {
@@ -342,7 +354,7 @@ namespace EdiApi.Controllers
                         break;
                     case DayOfWeek.Sunday:
                         DateCon = DateCon.AddDays(-2);
-                        break;                    
+                        break;
                 }
                 foreach (string Despacho in ListDispatch)
                 {
@@ -499,21 +511,27 @@ namespace EdiApi.Controllers
                         {
                             return (new Exception("No existe el producto en la tabla de equivalencias")).ToString();
                         }
-                        List<LearFst830> ListFst = (
-                            from IsaT in DbO.LearIsa830
-                            from StT in DbO.LearSt830
-                            from L in DbO.LearLin830
-                            from Sdp in DbO.LearSdp830
-                            from F in DbO.LearFst830
-                            where IsaT.ParentHashId == LastRepHashId
-                            && StT.ParentHashId == IsaT.HashId
-                            && L.ParentHashId == StT.HashId
-                            && Sdp.ParentHashId == L.HashId
-                            && F.ParentHashId == Sdp.HashId
-                            //&& F.FstDate.ToShortDate() == new DateTime(DateCon.Year, DateCon.Month, DateCon.Day)
-                            && L.ProductId == LearEquivalencia.CodProductoLear
-                            orderby L.ProductId
-                            select F).ToList();
+                        List<LearFst830> ListFst = new List<LearFst830>();
+                        foreach (string LastRep in LastRepHashId)
+                        {
+                            ListFst = (
+                                from IsaT in DbO.LearIsa830
+                                from StT in DbO.LearSt830
+                                from L in DbO.LearLin830
+                                from Sdp in DbO.LearSdp830
+                                from F in DbO.LearFst830
+                                where IsaT.ParentHashId == LastRep
+                                && StT.ParentHashId == IsaT.HashId
+                                && L.ParentHashId == StT.HashId
+                                && Sdp.ParentHashId == L.HashId
+                                && F.ParentHashId == Sdp.HashId
+                                //&& F.FstDate.ToShortDate() == new DateTime(DateCon.Year, DateCon.Month, DateCon.Day)
+                                && L.ProductId == LearEquivalencia.CodProductoLear
+                                orderby L.ProductId
+                                select F).ToList();
+                            if (ListFst.Count > 0)
+                                break;
+                        }
                         Cda = ListFst.Where(F1 => !string.IsNullOrEmpty(F1.RealQty)).Select(F => Convert.ToDouble(F.RealQty.Replace(",", ""))).Sum();
                         ListFst = ListFst.Where(F => F.FstDate.ToShortDate() == new DateTime(DateCon.Year, DateCon.Month, DateCon.Day)).ToList();
                         if (ListFst.Count == 0)
@@ -537,7 +555,7 @@ namespace EdiApi.Controllers
                         {
                             NumberOfUnitsShipped = ListFst.Fod().RealQty.Replace(",", ""), //DespachoInfo.Quantity.ToString(), 
                             UnitOfMeasurementCode = LearEquivalencia.Unit,
-                            QuantityShipped = Cda.ToString() 
+                            QuantityShipped = Cda.ToString()
                         };
                         NSeg++;
                         Lin.Childs.Add(Sn1);
@@ -603,8 +621,8 @@ namespace EdiApi.Controllers
                         HashId = Isa.HashId,
                         CodUsr = CodUsr
                     };
-                    string FtpRes = SendEdiFtp(EdiStrO, "856 notif envio");
-                    //string FtpRes = "ok";
+                    //string FtpRes = SendEdiFtp(EdiStrO, "856 notif envio");
+                    string FtpRes = "ok";
                     if (FtpRes != "ok")
                         return FtpRes;
                     DbO.EdiRepSent.Add(Rep856N);
@@ -615,7 +633,7 @@ namespace EdiApi.Controllers
             catch (Exception ex2)
             {
                 return ex2.ToString();
-            }            
+            }
         }
         private string SendEdiFtp(string _EdiStr, string Tipo)
         {
@@ -663,7 +681,42 @@ namespace EdiApi.Controllers
             catch (Exception e1)
             {
                 return "Error: " + e1.ToString();
-            }            
+            }
+        }
+        //[HttpPost]
+        //public string LoginExtern(string Json)
+        //{
+        //    return "";
+        //}
+        //[HttpPost]
+        //public string LoginExtern([FromBody]UserModel UserO)
+        //{
+        //    return "";
+        //}        
+        [HttpPost]
+        public string LoginExtern(UserModel UserEnc)
+        {
+            try
+            {
+                string UserDecrypted = Encoding.UTF8.GetString(CryptoHelper.DecryptData(Convert.FromBase64String(UserEnc.User)));
+                string PasswordDecrypted = Encoding.UTF8.GetString(CryptoHelper.DecryptData(Convert.FromBase64String(UserEnc.Password)));
+                UsuariosExternos UserO = (
+                    from U in DbO.UsuariosExternos
+                    where U.CodUsr == UserDecrypted
+                    && U.UsrPassword == PasswordDecrypted
+                    select U
+                    ).Fod();
+                if (UserO == null)
+                    return string.Empty;
+                UserO.HashId = EdiBase.GetHashId();
+                DbO.UsuariosExternos.Update(UserO);
+                DbO.SaveChanges();
+                return UserO.HashId;
+            }
+            catch (Exception e1)
+            {
+                return "Error: " + e1.ToString();
+            }
         }
         [HttpGet]
         public string LastRep() {

@@ -3,11 +3,19 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using ComModels;
+using Newtonsoft.Json;
 
 namespace CoreApiClient
 {
     public partial class ApiClient
     {
+        public string Encrypt(string Val) {
+            return Convert.ToBase64String(CryptoHelper.EncryptData(Encoding.UTF8.GetBytes(Val)));
+        }
+        //public byte[] Decrypt(byte[] Val)
+        //{
+        //    return CryptoHelper.DecryptData(Val);
+        //}
         public async Task<RetReporte> TranslateForms830()
         {
             return await GetAsync<RetReporte>(CreateRequestUri(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Edi/TranslateForms830")));
@@ -51,6 +59,15 @@ namespace CoreApiClient
         public async Task<string> Login(string _User, string _Password)
         {
             return await GetAsyncNoJson<string>(CreateRequestUri(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Data/Login"), $"?User={_User}&Password={_Password}"));
+        }
+        public async Task<string> LoginExtern(string _User, string _Password)
+        {
+            UserModel UserO = new UserModel() {
+                User = _User,
+                Password = _Password
+            };
+            string JsonParams = JsonConvert.SerializeObject(UserO);
+            return await PostAsyncJson<string>(CreateRequestUri(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Data/LoginExtern")), JsonParams);
         }
         public async Task<RetInfo> AutoSendInventary830(string _Force, string Idusr)
         {

@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 
-namespace EdiApi.Models.EdiDB
+namespace EdiViewer.Models.EdiDB
 {
     public partial class EdiDBContext : DbContext
     {
@@ -1080,17 +1080,13 @@ namespace EdiApi.Models.EdiDB
             {
                 entity.Property(e => e.ClienteId).HasColumnName("ClienteID");
 
-                entity.Property(e => e.CodUsr)
-                    .HasMaxLength(128)
-                    .IsUnicode(false);
+                entity.Property(e => e.CodUsr).HasMaxLength(128);
 
-                entity.Property(e => e.NomUsr)
-                    .HasMaxLength(128)
-                    .IsUnicode(false);
+                entity.Property(e => e.HashId).HasMaxLength(128);
 
-                entity.Property(e => e.UsrPassword)
-                    .HasMaxLength(256)
-                    .IsUnicode(false);
+                entity.Property(e => e.NomUsr).HasMaxLength(128);
+
+                entity.Property(e => e.UsrPassword).HasMaxLength(256);
             });
         }
     }

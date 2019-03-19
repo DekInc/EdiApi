@@ -411,7 +411,8 @@ namespace EdiApi.Controllers
             {
                 return string.Empty;
             }
-        }        
+        }
+        [HttpGet]
         public ActionResult<RetInfo> AutoSendInventary830(bool Force = false, string Idusr = "")
         {
             DateTime StartTime = DateTime.Now;

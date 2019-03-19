@@ -1,0 +1,68 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <title>@ViewData["Title"] - Extranet</title>
+    <link rel="stylesheet" href="~/lib/bootstrap431/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/lib/DataTables/datatables.min.css" />
+    <link rel="stylesheet" href="~/lib/DataTables/Select-1.2.6/css/select.dataTables.min.css" />
+    <link rel="stylesheet" href="~/lib/bootstrap421/css/bootstrap-datepicker.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap431/js/bootstrap.bundle.min.js"></script>
+    <script src="~/lib/DataTables/datatables.min.js"></script>
+    <script src="~/lib/DataTables/Select-1.2.6/js/select.dataTables.js"></script>
+    <script src="~/lib/bootstrap421/js/bootstrap-datepicker.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    <!--[if IE]>
+          <style>
+            .tblReportes thead {
+                background: linear-gradient(to bottom, #c54062, #fbfcf2);
+            }
+          </style>
+        <![endif]-->
+</head>
+<body>
+    <nav class="navbar navbar-dark bg-dark navbar-expand-lg fixed-top">
+        <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">Extranet</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar1" aria-controls="navbarColor01" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="navbar-collapse collapse" id="navbar1">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item active">
+                    <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">Rep 830</a>
+                </li>
+                <li class="nav-item active">
+                    <a class="nav-link" href="~/files/learspec830.pdf" target="_new">830 specs</a>
+                </li>
+                <li class="nav-item active">
+                    <a class="nav-link" asp-area="" asp-controller="Rep856" asp-action="Index">Rep 856</a>
+                </li>
+                <li class="nav-item active">
+                    <a class="nav-link" href="~/files/learspec856.pdf" target="_new">856 specs</a>
+                </li>
+                <li class="nav-item active">
+                    <a class="nav-link" asp-area="" asp-controller="HomeExtern" asp-action="Exit">Salir</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+    <div>
+        @RenderBody()
+        <div class="fixed-bottom footer2">
+            <hr />
+            <p>&copy; 2019 - EdiViewer</p>
+        </div>
+        <script>
+            $(document).ready(function () {
+                $('.card-header').tooltip();
+            });
+        </script>
+    </div>
+    @await Html.PartialAsync("_Popup")
+    @RenderSection("Scripts", required: false)
+</body>
+</html>

@@ -7,18 +7,14 @@ using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace EdiViewer.Controllers
 {
-    public partial class PreRunController : Controller
+    public partial class PreRunExternController : Controller
     {        
         public override void OnActionExecuting(ActionExecutingContext filterContext)
         {
             if (string.IsNullOrEmpty(HttpContext.Session.GetObjSession<string>("Session.HashId")))
             {
                 filterContext.Result = new RedirectResult("/Account/?error=NO_AUTH");
-            }
-            else {
-                if (HttpContext.Session.GetObjSession<bool>("Session.IsExtern"))
-                    filterContext.Result = new RedirectResult("/HomeExtern/");
-            }
+            }            
             base.OnActionExecuting(filterContext);
         }
     }
