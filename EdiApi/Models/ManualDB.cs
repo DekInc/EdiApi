@@ -104,10 +104,11 @@ namespace EdiApi.Models
                     {
                         ListExists.Add(new FE830DataAux()
                         {                            
-                            CodProducto = Dr.GetString(0),
-                            Producto = Dr.GetString(1),
-                            Existencia = Dr.GetDouble(2),
-                            UnidadDeMedida = Dr.GetString(3)
+                            CodProducto = Convert.ToString(Dr.GetValue(0)),
+                            Producto = Convert.ToString(Dr.GetValue(1)),
+                            Existencia = Convert.ToDouble(Dr.GetValue(2)),
+                            UnidadDeMedida = Convert.ToString(Dr.GetValue(3)),
+                            CodProductoLear = Convert.ToString(Dr.GetValue(4))
                         });
                     }
                 }

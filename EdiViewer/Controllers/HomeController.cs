@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -120,6 +121,13 @@ namespace EdiViewer.Controllers
             EdiDetailModelO.Data.ListLinFst = EdiDetailModelO.Data.ListLinFst.OrderBy(O => O.FstDate);
             EdiDetailModelO.Data.ListSdpFst = EdiDetailModelO.Data.ListSdpFst.OrderBy(O => O.FstDate);
             if (EdiDetailModelO.Data.ListSdpFst.Count() > 1) {
+                if (EdiDetailModelO.Data.ListProdExist.Count() > 0)
+                {
+                    EdiDetailModelO.Data.ListProdExist.ToList().ForEach(P => {
+                        if (!string.IsNullOrEmpty(P.CodProductoLear))
+                            P.CodProducto = P.CodProductoLear;
+                    });
+                }
                 EdiDetailModelO.EdiDetailQtys = 
                     from F in EdiDetailModelO.Data.ListSdpFst
                     select new EdiDetailQtysModel() {

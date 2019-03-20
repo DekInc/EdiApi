@@ -535,7 +535,7 @@ namespace EdiApi.Controllers
                         Cda = ListFst.Where(F1 => !string.IsNullOrEmpty(F1.RealQty)).Select(F => Convert.ToDouble(F.RealQty.Replace(",", ""))).Sum();
                         ListFst = ListFst.Where(F => F.FstDate.ToShortDate() == new DateTime(DateCon.Year, DateCon.Month, DateCon.Day)).ToList();
                         if (ListFst.Count == 0)
-                            return "No existe el reporte de cantidades para el producto " + LearEquivalencia.CodProductoLear;
+                            return "No existe el reporte EDI 830 de cantidades para el producto " + LearEquivalencia.CodProductoLear;
                         HLOL856 HlO1 = new HLOL856(EdiBase.SegmentTerminator)
                         {
                             HierarchicalIdNumber = ContHl.ToString(),

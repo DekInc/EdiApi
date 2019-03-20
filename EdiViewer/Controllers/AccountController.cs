@@ -26,13 +26,13 @@ namespace EdiViewer.Controllers
                     return View("Index", new Models.ErrorModel() { ErrorMessage = System.Net.WebUtility.HtmlEncode(HashId.Replace(Environment.NewLine, "<br />")) });
                 if (string.IsNullOrEmpty(HashId))
                 {
-                    string UserEncrypted = ApiClientFactory.Instance.Encrypt(TxtUser);
-                    string PasswordEncrypted = ApiClientFactory.Instance.Encrypt(TxtPassword);
-                    HashId = await ApiClientFactory.Instance.LoginExtern(UserEncrypted, PasswordEncrypted);
-                    if (string.IsNullOrEmpty(HashId))
-                        return LocalRedirect("/Account/?error=USER_INCORRECT");
-                    HttpContext.Session.SetObjSession("Session.IsExtern", true);
-                    IsExtern = true;
+                    //string UserEncrypted = ApiClientFactory.Instance.Encrypt(TxtUser);
+                    //string PasswordEncrypted = ApiClientFactory.Instance.Encrypt(TxtPassword);
+                    //HashId = await ApiClientFactory.Instance.LoginExtern(UserEncrypted, PasswordEncrypted);
+                    //if (string.IsNullOrEmpty(HashId))
+                    //    return LocalRedirect("/Account/?error=USER_INCORRECT");
+                    //HttpContext.Session.SetObjSession("Session.IsExtern", true);
+                    //IsExtern = true;
                 } else
                 {
                     HttpContext.Session.SetObjSession("Session.IsExtern", false);
