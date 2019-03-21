@@ -59,16 +59,7 @@ namespace CoreApiClient
         public async Task<string> Login(string _User, string _Password)
         {
             return await GetAsyncNoJson<string>(CreateRequestUri(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Data/Login"), $"?User={_User}&Password={_Password}"));
-        }
-        public async Task<string> LoginExtern(string _User, string _Password)
-        {
-            UserModel UserO = new UserModel() {
-                User = _User,
-                Password = _Password
-            };
-            string JsonParams = JsonConvert.SerializeObject(UserO);
-            return await PostAsyncJson<string>(CreateRequestUri(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Data/LoginExtern")), JsonParams);
-        }
+        }        
         public async Task<RetInfo> AutoSendInventary830(string _Force, string Idusr)
         {
             return await GetAsync<RetInfo>(CreateRequestUri(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Edi/AutoSendInventary830"), $"?Force={_Force}&Idusr={Idusr}"));
@@ -76,6 +67,23 @@ namespace CoreApiClient
         public async Task<string> LastRep()
         {
             return await GetAsyncNoJson<string>(CreateRequestUri(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Data/LastRep")));
+        }
+        // Extranet
+        public async Task<string> LoginExtern(string _User, string _Password)
+        {
+            UserModel UserO = new UserModel()
+            {
+                User = _User,
+                Password = _Password
+            };
+            string JsonParams = JsonConvert.SerializeObject(UserO);
+            return await PostAsyncJson<string>(CreateRequestUri(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Data/LoginExtern")), JsonParams);
+        }        
+        public async Task<RetData<IEnumerable<FE830DataAux>>> GetStock(int ClientId)
+        {            
+            string JsonParams = JsonConvert.SerializeObject(ClientId);
+            string JsonRes = await PostAsyncJson<string>(CreateRequestUri(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Data/GetStock")), JsonParams);
+            return JsonConvert.DeserializeObject<RetData<IEnumerable<FE830DataAux>>>(JsonRes);
         }
         //public async Task<List<UsersModel>> GetUsers()
         //{

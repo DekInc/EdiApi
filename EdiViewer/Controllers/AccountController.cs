@@ -33,6 +33,8 @@ namespace EdiViewer.Controllers
                     //    return LocalRedirect("/Account/?error=USER_INCORRECT");
                     //HttpContext.Session.SetObjSession("Session.IsExtern", true);
                     //IsExtern = true;
+                    //HttpContext.Session.SetObjSession("Session.ClientId", HashId.Split('|')[1]);
+                    //HashId = HashId.Split('|')[0];
                 } else
                 {
                     HttpContext.Session.SetObjSession("Session.IsExtern", false);

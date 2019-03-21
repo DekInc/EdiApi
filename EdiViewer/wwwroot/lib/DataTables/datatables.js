@@ -4,10 +4,10 @@
  *
  * To rebuild or modify this file with the latest versions of the included
  * software please visit:
- *   https://datatables.net/download/#dt/jszip-2.5.0/pdfmake-0.1.36/dt-1.10.18/af-2.3.2/b-1.5.4/b-colvis-1.5.4/b-html5-1.5.4/b-print-1.5.4/cr-1.5.0/fc-3.2.5/fh-3.1.4/kt-2.5.0/r-2.2.2/rg-1.1.0/rr-1.2.4/sc-1.5.0/sl-1.2.6
+ *   https://datatables.net/download/#bs4/jszip-2.5.0/pdfmake-0.1.36/dt-1.10.18/af-2.3.3/b-1.5.6/b-colvis-1.5.6/b-flash-1.5.6/b-html5-1.5.6/b-print-1.5.6/cr-1.5.0/fc-3.2.5/fh-3.1.4/kt-2.5.0/r-2.2.2/rg-1.1.0/rr-1.2.4/sc-2.0.0/sl-1.3.0
  *
  * Included libraries:
- *   JSZip 2.5.0, pdfmake 0.1.36, DataTables 1.10.18, AutoFill 2.3.2, Buttons 1.5.4, Column visibility 1.5.4, HTML5 export 1.5.4, Print view 1.5.4, ColReorder 1.5.0, FixedColumns 3.2.5, FixedHeader 3.1.4, KeyTable 2.5.0, Responsive 2.2.2, RowGroup 1.1.0, RowReorder 1.2.4, Scroller 1.5.0, Select 1.2.6
+ *   JSZip 2.5.0, pdfmake 0.1.36, DataTables 1.10.18, AutoFill 2.3.3, Buttons 1.5.6, Column visibility 1.5.6, Flash export 1.5.6, HTML5 export 1.5.6, Print view 1.5.6, ColReorder 1.5.0, FixedColumns 3.2.5, FixedHeader 3.1.4, KeyTable 2.5.0, Responsive 2.2.2, RowGroup 1.1.0, RowReorder 1.2.4, Scroller 2.0.0, Select 1.3.0
  */
 
 /*!
@@ -51020,92 +51020,77 @@ module.exports = {
   "cp1258": "windows1258",
   "iso88591": {
     "type": "_sbcs",
-    "chars": "
- ¡¢£¤¥¦§¨©ª«¬­®¯°±²³´µ¶·¸¹º»¼½¾¿ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖ×ØÙÚÛÜÝÞßàáâãäåæçèéêëìíîïðñòóôõö÷øùúûüýþÿ"
+    "chars": " ¡¢£¤¥¦§¨©ª«¬­®¯°±²³´µ¶·¸¹º»¼½¾¿ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖ×ØÙÚÛÜÝÞßàáâãäåæçèéêëìíîïðñòóôõö÷øùúûüýþÿ"
   },
   "cp28591": "iso88591",
   "iso88592": {
     "type": "_sbcs",
-    "chars": "
- Ą˘Ł¤ĽŚ§¨ŠŞŤŹ­ŽŻ°ą˛ł´ľśˇ¸šşťź˝žżŔÁÂĂÄĹĆÇČÉĘËĚÍÎĎĐŃŇÓÔŐÖ×ŘŮÚŰÜÝŢßŕáâăäĺćçčéęëěíîďđńňóôőö÷řůúűüýţ˙"
+    "chars": " Ą˘Ł¤ĽŚ§¨ŠŞŤŹ­ŽŻ°ą˛ł´ľśˇ¸šşťź˝žżŔÁÂĂÄĹĆÇČÉĘËĚÍÎĎĐŃŇÓÔŐÖ×ŘŮÚŰÜÝŢßŕáâăäĺćçčéęëěíîďđńňóôőö÷řůúűüýţ˙"
   },
   "cp28592": "iso88592",
   "iso88593": {
     "type": "_sbcs",
-    "chars": "
- Ħ˘£¤�Ĥ§¨İŞĞĴ­�Ż°ħ²³´µĥ·¸ışğĵ½�żÀÁÂ�ÄĊĈÇÈÉÊËÌÍÎÏ�ÑÒÓÔĠÖ×ĜÙÚÛÜŬŜßàáâ�äċĉçèéêëìíîï�ñòóôġö÷ĝùúûüŭŝ˙"
+    "chars": " Ħ˘£¤�Ĥ§¨İŞĞĴ­�Ż°ħ²³´µĥ·¸ışğĵ½�żÀÁÂ�ÄĊĈÇÈÉÊËÌÍÎÏ�ÑÒÓÔĠÖ×ĜÙÚÛÜŬŜßàáâ�äċĉçèéêëìíîï�ñòóôġö÷ĝùúûüŭŝ˙"
   },
   "cp28593": "iso88593",
   "iso88594": {
     "type": "_sbcs",
-    "chars": "
- ĄĸŖ¤ĨĻ§¨ŠĒĢŦ­Ž¯°ą˛ŗ´ĩļˇ¸šēģŧŊžŋĀÁÂÃÄÅÆĮČÉĘËĖÍÎĪĐŅŌĶÔÕÖ×ØŲÚÛÜŨŪßāáâãäåæįčéęëėíîīđņōķôõö÷øųúûüũū˙"
+    "chars": " ĄĸŖ¤ĨĻ§¨ŠĒĢŦ­Ž¯°ą˛ŗ´ĩļˇ¸šēģŧŊžŋĀÁÂÃÄÅÆĮČÉĘËĖÍÎĪĐŅŌĶÔÕÖ×ØŲÚÛÜŨŪßāáâãäåæįčéęëėíîīđņōķôõö÷øųúûüũū˙"
   },
   "cp28594": "iso88594",
   "iso88595": {
     "type": "_sbcs",
-    "chars": "
- ЁЂЃЄЅІЇЈЉЊЋЌ­ЎЏАБВГДЕЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯабвгдежзийклмнопрстуфхцчшщъыьэюя№ёђѓєѕіїјљњћќ§ўџ"
+    "chars": " ЁЂЃЄЅІЇЈЉЊЋЌ­ЎЏАБВГДЕЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯабвгдежзийклмнопрстуфхцчшщъыьэюя№ёђѓєѕіїјљњћќ§ўџ"
   },
   "cp28595": "iso88595",
   "iso88596": {
     "type": "_sbcs",
-    "chars": "
- ���¤�������،­�������������؛���؟�ءآأؤإئابةتثجحخدذرزسشصضطظعغ�����ـفقكلمنهوىيًٌٍَُِّْ�������������"
+    "chars": " ���¤�������،­�������������؛���؟�ءآأؤإئابةتثجحخدذرزسشصضطظعغ�����ـفقكلمنهوىيًٌٍَُِّْ�������������"
   },
   "cp28596": "iso88596",
   "iso88597": {
     "type": "_sbcs",
-    "chars": "
- ‘’£€₯¦§¨©ͺ«¬­�―°±²³΄΅Ά·ΈΉΊ»Ό½ΎΏΐΑΒΓΔΕΖΗΘΙΚΛΜΝΞΟΠΡ�ΣΤΥΦΧΨΩΪΫάέήίΰαβγδεζηθικλμνξοπρςστυφχψωϊϋόύώ�"
+    "chars": " ‘’£€₯¦§¨©ͺ«¬­�―°±²³΄΅Ά·ΈΉΊ»Ό½ΎΏΐΑΒΓΔΕΖΗΘΙΚΛΜΝΞΟΠΡ�ΣΤΥΦΧΨΩΪΫάέήίΰαβγδεζηθικλμνξοπρςστυφχψωϊϋόύώ�"
   },
   "cp28597": "iso88597",
   "iso88598": {
     "type": "_sbcs",
-    "chars": "
- �¢£¤¥¦§¨©×«¬­®¯°±²³´µ¶·¸¹÷»¼½¾��������������������������������‗אבגדהוזחטיךכלםמןנסעףפץצקרשת��‎‏�"
+    "chars": " �¢£¤¥¦§¨©×«¬­®¯°±²³´µ¶·¸¹÷»¼½¾��������������������������������‗אבגדהוזחטיךכלםמןנסעףפץצקרשת��‎‏�"
   },
   "cp28598": "iso88598",
   "iso88599": {
     "type": "_sbcs",
-    "chars": "
- ¡¢£¤¥¦§¨©ª«¬­®¯°±²³´µ¶·¸¹º»¼½¾¿ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏĞÑÒÓÔÕÖ×ØÙÚÛÜİŞßàáâãäåæçèéêëìíîïğñòóôõö÷øùúûüışÿ"
+    "chars": " ¡¢£¤¥¦§¨©ª«¬­®¯°±²³´µ¶·¸¹º»¼½¾¿ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏĞÑÒÓÔÕÖ×ØÙÚÛÜİŞßàáâãäåæçèéêëìíîïğñòóôõö÷øùúûüışÿ"
   },
   "cp28599": "iso88599",
   "iso885910": {
     "type": "_sbcs",
-    "chars": "
- ĄĒĢĪĨĶ§ĻĐŠŦŽ­ŪŊ°ąēģīĩķ·ļđšŧž―ūŋĀÁÂÃÄÅÆĮČÉĘËĖÍÎÏÐŅŌÓÔÕÖŨØŲÚÛÜÝÞßāáâãäåæįčéęëėíîïðņōóôõöũøųúûüýþĸ"
+    "chars": " ĄĒĢĪĨĶ§ĻĐŠŦŽ­ŪŊ°ąēģīĩķ·ļđšŧž―ūŋĀÁÂÃÄÅÆĮČÉĘËĖÍÎÏÐŅŌÓÔÕÖŨØŲÚÛÜÝÞßāáâãäåæįčéęëėíîïðņōóôõöũøųúûüýþĸ"
   },
   "cp28600": "iso885910",
   "iso885911": {
     "type": "_sbcs",
-    "chars": "
- กขฃคฅฆงจฉชซฌญฎฏฐฑฒณดตถทธนบปผฝพฟภมยรฤลฦวศษสหฬอฮฯะัาำิีึืฺุู����฿เแโใไๅๆ็่้๊๋์ํ๎๏๐๑๒๓๔๕๖๗๘๙๚๛����"
+    "chars": " กขฃคฅฆงจฉชซฌญฎฏฐฑฒณดตถทธนบปผฝพฟภมยรฤลฦวศษสหฬอฮฯะัาำิีึืฺุู����฿เแโใไๅๆ็่้๊๋์ํ๎๏๐๑๒๓๔๕๖๗๘๙๚๛����"
   },
   "cp28601": "iso885911",
   "iso885913": {
     "type": "_sbcs",
-    "chars": "
- ”¢£¤„¦§Ø©Ŗ«¬­®Æ°±²³“µ¶·ø¹ŗ»¼½¾æĄĮĀĆÄÅĘĒČÉŹĖĢĶĪĻŠŃŅÓŌÕÖ×ŲŁŚŪÜŻŽßąįāćäåęēčéźėģķīļšńņóōõö÷ųłśūüżž’"
+    "chars": " ”¢£¤„¦§Ø©Ŗ«¬­®Æ°±²³“µ¶·ø¹ŗ»¼½¾æĄĮĀĆÄÅĘĒČÉŹĖĢĶĪĻŠŃŅÓŌÕÖ×ŲŁŚŪÜŻŽßąįāćäåęēčéźėģķīļšńņóōõö÷ųłśūüżž’"
   },
   "cp28603": "iso885913",
   "iso885914": {
     "type": "_sbcs",
-    "chars": "
- Ḃḃ£ĊċḊ§Ẁ©ẂḋỲ­®ŸḞḟĠġṀṁ¶ṖẁṗẃṠỳẄẅṡÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏŴÑÒÓÔÕÖṪØÙÚÛÜÝŶßàáâãäåæçèéêëìíîïŵñòóôõöṫøùúûüýŷÿ"
+    "chars": " Ḃḃ£ĊċḊ§Ẁ©ẂḋỲ­®ŸḞḟĠġṀṁ¶ṖẁṗẃṠỳẄẅṡÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏŴÑÒÓÔÕÖṪØÙÚÛÜÝŶßàáâãäåæçèéêëìíîïŵñòóôõöṫøùúûüýŷÿ"
   },
   "cp28604": "iso885914",
   "iso885915": {
     "type": "_sbcs",
-    "chars": "
- ¡¢£€¥Š§š©ª«¬­®¯°±²³Žµ¶·ž¹º»ŒœŸ¿ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖ×ØÙÚÛÜÝÞßàáâãäåæçèéêëìíîïðñòóôõö÷øùúûüýþÿ"
+    "chars": " ¡¢£€¥Š§š©ª«¬­®¯°±²³Žµ¶·ž¹º»ŒœŸ¿ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖ×ØÙÚÛÜÝÞßàáâãäåæçèéêëìíîïðñòóôõö÷øùúûüýþÿ"
   },
   "cp28605": "iso885915",
   "iso885916": {
     "type": "_sbcs",
-    "chars": "
- ĄąŁ€„Š§š©Ș«Ź­źŻ°±ČłŽ”¶·žčș»ŒœŸżÀÁÂĂÄĆÆÇÈÉÊËÌÍÎÏĐŃÒÓÔŐÖŚŰÙÚÛÜĘȚßàáâăäćæçèéêëìíîïđńòóôőöśűùúûüęțÿ"
+    "chars": " ĄąŁ€„Š§š©Ș«Ź­źŻ°±ČłŽ”¶·žčș»ŒœŸżÀÁÂĂÄĆÆÇÈÉÊËÌÍÎÏĐŃÒÓÔŐÖŚŰÙÚÛÜĘȚßàáâăäćæçèéêëìíîïđńòóôőöśűùúûüęțÿ"
   },
   "cp28606": "iso885916",
   "cp437": {
@@ -51212,8 +51197,7 @@ module.exports = {
   "csibm869": "cp869",
   "cp922": {
     "type": "_sbcs",
-    "chars": "
- ¡¢£¤¥¦§¨©ª«¬­®‾°±²³´µ¶·¸¹º»¼½¾¿ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏŠÑÒÓÔÕÖ×ØÙÚÛÜÝŽßàáâãäåæçèéêëìíîïšñòóôõö÷øùúûüýžÿ"
+    "chars": " ¡¢£¤¥¦§¨©ª«¬­®‾°±²³´µ¶·¸¹º»¼½¾¿ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏŠÑÒÓÔÕÖ×ØÙÚÛÜÝŽßàáâãäåæçèéêëìíîïšñòóôõö÷øùúûüýžÿ"
   },
   "ibm922": "cp922",
   "csibm922": "cp922",
@@ -51225,8 +51209,7 @@ module.exports = {
   "csibm1046": "cp1046",
   "cp1124": {
     "type": "_sbcs",
-    "chars": "
- ЁЂҐЄЅІЇЈЉЊЋЌ­ЎЏАБВГДЕЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯабвгдежзийклмнопрстуфхцчшщъыьэюя№ёђґєѕіїјљњћќ§ўџ"
+    "chars": " ЁЂҐЄЅІЇЈЉЊЋЌ­ЎЏАБВГДЕЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯабвгдежзийклмнопрстуфхцчшщъыьэюя№ёђґєѕіїјљњћќ§ўџ"
   },
   "ibm1124": "cp1124",
   "csibm1124": "cp1124",
@@ -51238,15 +51221,13 @@ module.exports = {
   "csibm1125": "cp1125",
   "cp1129": {
     "type": "_sbcs",
-    "chars": "
- ¡¢£¤¥¦§œ©ª«¬­®¯°±²³Ÿµ¶·Œ¹º»¼½¾¿ÀÁÂĂÄÅÆÇÈÉÊË̀ÍÎÏĐÑ̉ÓÔƠÖ×ØÙÚÛÜỮßàáâăäåæçèéêë́íîïđṇ̃óôơö÷øùúûüư₫ÿ"
+    "chars": " ¡¢£¤¥¦§œ©ª«¬­®¯°±²³Ÿµ¶·Œ¹º»¼½¾¿ÀÁÂĂÄÅÆÇÈÉÊË̀ÍÎÏĐÑ̉ÓÔƠÖ×ØÙÚÛÜỮßàáâăäåæçèéêë́íîïđṇ̃óôơö÷øùúûüư₫ÿ"
   },
   "ibm1129": "cp1129",
   "csibm1129": "cp1129",
   "cp1133": {
     "type": "_sbcs",
-    "chars": "
- ກຂຄງຈສຊຍດຕຖທນບປຜຝພຟມຢຣລວຫອຮ���ຯະາຳິີຶືຸູຼັົຽ���ເແໂໃໄ່້໊໋໌ໍໆ�ໜໝ₭����������������໐໑໒໓໔໕໖໗໘໙��¢¬¦�"
+    "chars": " ກຂຄງຈສຊຍດຕຖທນບປຜຝພຟມຢຣລວຫອຮ���ຯະາຳິີຶືຸູຼັົຽ���ເແໂໃໄ່້໊໋໌ໍໆ�ໜໝ₭����������������໐໑໒໓໔໕໖໗໘໙��¢¬¦�"
   },
   "ibm1133": "cp1133",
   "csibm1133": "cp1133",
@@ -51264,8 +51245,7 @@ module.exports = {
   "csibm1162": "cp1162",
   "cp1163": {
     "type": "_sbcs",
-    "chars": "
- ¡¢£€¥¦§œ©ª«¬­®¯°±²³Ÿµ¶·Œ¹º»¼½¾¿ÀÁÂĂÄÅÆÇÈÉÊË̀ÍÎÏĐÑ̉ÓÔƠÖ×ØÙÚÛÜỮßàáâăäåæçèéêë́íîïđṇ̃óôơö÷øùúûüư₫ÿ"
+    "chars": " ¡¢£€¥¦§œ©ª«¬­®¯°±²³Ÿµ¶·Œ¹º»¼½¾¿ÀÁÂĂÄÅÆÇÈÉÊË̀ÍÎÏĐÑ̉ÓÔƠÖ×ØÙÚÛÜỮßàáâăäåæçèéêë́íîïđṇ̃óôơö÷øùúûüư₫ÿ"
   },
   "ibm1163": "cp1163",
   "csibm1163": "cp1163",
@@ -51323,8 +51303,7 @@ module.exports = {
   },
   "armscii8": {
     "type": "_sbcs",
-    "chars": "
- �և։)(»«—.՝,-֊…՜՛՞ԱաԲբԳգԴդԵեԶզԷէԸըԹթԺժԻիԼլԽխԾծԿկՀհՁձՂղՃճՄմՅյՆնՇշՈոՉչՊպՋջՌռՍսՎվՏտՐրՑցՒւՓփՔքՕօՖֆ՚�"
+    "chars": " �և։)(»«—.՝,-֊…՜՛՞ԱաԲբԳգԴդԵեԶզԷէԸըԹթԺժԻիԼլԽխԾծԿկՀհՁձՂղՃճՄմՅյՆնՇշՈոՉչՊպՋջՌռՍսՎվՏտՐրՑցՒւՓփՔքՕօՖֆ՚�"
   },
   "rk1048": {
     "type": "_sbcs",
@@ -51360,8 +51339,7 @@ module.exports = {
   },
   "hproman8": {
     "type": "_sbcs",
-    "chars": "
- ÀÂÈÊËÎÏ´ˋˆ¨˜ÙÛ₤¯Ýý°ÇçÑñ¡¿¤£¥§ƒ¢âêôûáéóúàèòùäëöüÅîØÆåíøæÄìÖÜÉïßÔÁÃãÐðÍÌÓÒÕõŠšÚŸÿÞþ·µ¶¾—¼½ªº«■»±�"
+    "chars": " ÀÂÈÊËÎÏ´ˋˆ¨˜ÙÛ₤¯Ýý°ÇçÑñ¡¿¤£¥§ƒ¢âêôûáéóúàèòùäëöüÅîØÆåíøæÄìÖÜÉïßÔÁÃãÐðÍÌÓÒÕõŠšÚŸÿÞþ·µ¶¾—¼½ªº«■»±�"
   },
   "macintosh": {
     "type": "_sbcs",
@@ -73552,7 +73530,7 @@ this.pdfMake = this.pdfMake || {}; this.pdfMake.vfs = {
 		 *
 		 *  @type string
 		 */
-		build:"dt/jszip-2.5.0/pdfmake-0.1.36/dt-1.10.18/af-2.3.2/b-1.5.4/b-colvis-1.5.4/b-html5-1.5.4/b-print-1.5.4/cr-1.5.0/fc-3.2.5/fh-3.1.4/kt-2.5.0/r-2.2.2/rg-1.1.0/rr-1.2.4/sc-1.5.0/sl-1.2.6",
+		build:"bs4/jszip-2.5.0/pdfmake-0.1.36/dt-1.10.18/af-2.3.3/b-1.5.6/b-colvis-1.5.6/b-flash-1.5.6/b-html5-1.5.6/b-print-1.5.6/cr-1.5.0/fc-3.2.5/fh-3.1.4/kt-2.5.0/r-2.2.2/rg-1.1.0/rr-1.2.4/sc-2.0.0/sl-1.3.0",
 	
 	
 		/**
@@ -74962,14 +74940,200 @@ this.pdfMake = this.pdfMake || {}; this.pdfMake.vfs = {
 }));
 
 
-/*! AutoFill 2.3.2
+/*! DataTables Bootstrap 4 integration
+ * ©2011-2017 SpryMedia Ltd - datatables.net/license
+ */
+
+/**
+ * DataTables integration for Bootstrap 4. This requires Bootstrap 4 and
+ * DataTables 1.10 or newer.
+ *
+ * This file sets the defaults and adds options to DataTables to style its
+ * controls using Bootstrap. See http://datatables.net/manual/styling/bootstrap
+ * for further information.
+ */
+(function( factory ){
+	if ( typeof define === 'function' && define.amd ) {
+		// AMD
+		define( ['jquery', 'datatables.net'], function ( $ ) {
+			return factory( $, window, document );
+		} );
+	}
+	else if ( typeof exports === 'object' ) {
+		// CommonJS
+		module.exports = function (root, $) {
+			if ( ! root ) {
+				root = window;
+			}
+
+			if ( ! $ || ! $.fn.dataTable ) {
+				// Require DataTables, which attaches to jQuery, including
+				// jQuery if needed and have a $ property so we can access the
+				// jQuery object that is used
+				$ = require('datatables.net')(root, $).$;
+			}
+
+			return factory( $, root, root.document );
+		};
+	}
+	else {
+		// Browser
+		factory( jQuery, window, document );
+	}
+}(function( $, window, document, undefined ) {
+'use strict';
+var DataTable = $.fn.dataTable;
+
+
+/* Set the defaults for DataTables initialisation */
+$.extend( true, DataTable.defaults, {
+	dom:
+		"<'row'<'col-sm-12 col-md-6'l><'col-sm-12 col-md-6'f>>" +
+		"<'row'<'col-sm-12'tr>>" +
+		"<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
+	renderer: 'bootstrap'
+} );
+
+
+/* Default class modification */
+$.extend( DataTable.ext.classes, {
+	sWrapper:      "dataTables_wrapper dt-bootstrap4",
+	sFilterInput:  "form-control form-control-sm",
+	sLengthSelect: "custom-select custom-select-sm form-control form-control-sm",
+	sProcessing:   "dataTables_processing card",
+	sPageButton:   "paginate_button page-item"
+} );
+
+
+/* Bootstrap paging button renderer */
+DataTable.ext.renderer.pageButton.bootstrap = function ( settings, host, idx, buttons, page, pages ) {
+	var api     = new DataTable.Api( settings );
+	var classes = settings.oClasses;
+	var lang    = settings.oLanguage.oPaginate;
+	var aria = settings.oLanguage.oAria.paginate || {};
+	var btnDisplay, btnClass, counter=0;
+
+	var attach = function( container, buttons ) {
+		var i, ien, node, button;
+		var clickHandler = function ( e ) {
+			e.preventDefault();
+			if ( !$(e.currentTarget).hasClass('disabled') && api.page() != e.data.action ) {
+				api.page( e.data.action ).draw( 'page' );
+			}
+		};
+
+		for ( i=0, ien=buttons.length ; i<ien ; i++ ) {
+			button = buttons[i];
+
+			if ( $.isArray( button ) ) {
+				attach( container, button );
+			}
+			else {
+				btnDisplay = '';
+				btnClass = '';
+
+				switch ( button ) {
+					case 'ellipsis':
+						btnDisplay = '&#x2026;';
+						btnClass = 'disabled';
+						break;
+
+					case 'first':
+						btnDisplay = lang.sFirst;
+						btnClass = button + (page > 0 ?
+							'' : ' disabled');
+						break;
+
+					case 'previous':
+						btnDisplay = lang.sPrevious;
+						btnClass = button + (page > 0 ?
+							'' : ' disabled');
+						break;
+
+					case 'next':
+						btnDisplay = lang.sNext;
+						btnClass = button + (page < pages-1 ?
+							'' : ' disabled');
+						break;
+
+					case 'last':
+						btnDisplay = lang.sLast;
+						btnClass = button + (page < pages-1 ?
+							'' : ' disabled');
+						break;
+
+					default:
+						btnDisplay = button + 1;
+						btnClass = page === button ?
+							'active' : '';
+						break;
+				}
+
+				if ( btnDisplay ) {
+					node = $('<li>', {
+							'class': classes.sPageButton+' '+btnClass,
+							'id': idx === 0 && typeof button === 'string' ?
+								settings.sTableId +'_'+ button :
+								null
+						} )
+						.append( $('<a>', {
+								'href': '#',
+								'aria-controls': settings.sTableId,
+								'aria-label': aria[ button ],
+								'data-dt-idx': counter,
+								'tabindex': settings.iTabIndex,
+								'class': 'page-link'
+							} )
+							.html( btnDisplay )
+						)
+						.appendTo( container );
+
+					settings.oApi._fnBindAction(
+						node, {action: button}, clickHandler
+					);
+
+					counter++;
+				}
+			}
+		}
+	};
+
+	// IE9 throws an 'unknown error' if document.activeElement is used
+	// inside an iframe or frame. 
+	var activeEl;
+
+	try {
+		// Because this approach is destroying and recreating the paging
+		// elements, focus is lost on the select button which is bad for
+		// accessibility. So we want to restore focus once the draw has
+		// completed
+		activeEl = $(host).find(document.activeElement).data('dt-idx');
+	}
+	catch (e) {}
+
+	attach(
+		$(host).empty().html('<ul class="pagination"/>').children('ul'),
+		buttons
+	);
+
+	if ( activeEl !== undefined ) {
+		$(host).find( '[data-dt-idx='+activeEl+']' ).focus();
+	}
+};
+
+
+return DataTable;
+}));
+
+
+/*! AutoFill 2.3.3
  * ©2008-2018 SpryMedia Ltd - datatables.net/license
  */
 
 /**
  * @summary     AutoFill
  * @description Add Excel like click and drag auto-fill options to DataTables
- * @version     2.3.2
+ * @version     2.3.3
  * @file        dataTables.autoFill.js
  * @author      SpryMedia Ltd (www.sprymedia.co.uk)
  * @contact     www.sprymedia.co.uk/contact
@@ -75353,10 +75517,10 @@ $.extend( AutoFill.prototype, {
 		left   = start.column < end.column ? startCell : endCell;
 		right  = start.column < end.column ? endCell   : startCell;
 
-		top    = this._getPosition( top ).top;
-		left   = this._getPosition( left ).left;
-		height = this._getPosition( bottom ).top + bottom.outerHeight() - top;
-		width  = this._getPosition( right ).left + right.outerWidth() - left;
+		top    = this._getPosition( top.get(0) ).top;
+		left   = this._getPosition( left.get(0) ).left;
+		height = this._getPosition( bottom.get(0) ).top + bottom.outerHeight() - top;
+		width  = this._getPosition( right.get(0) ).left + right.outerWidth() - left;
 
 		var select = this.dom.select;
 		select.top.css( {
@@ -75549,9 +75713,8 @@ $.extend( AutoFill.prototype, {
 	_getPosition: function ( node, targetParent )
 	{
 		var
-			currNode = $(node),
+			currNode = node,
 			currOffsetParent,
-			position,
 			top = 0,
 			left = 0;
 
@@ -75560,23 +75723,26 @@ $.extend( AutoFill.prototype, {
 		}
 
 		do {
-			position = currNode.position();
+			// Don't use jQuery().position() the behaviour changes between 1.x and 3.x for
+			// tables
+			var positionTop = currNode.offsetTop;
+			var positionLeft = currNode.offsetLeft;
 
 			// jQuery doesn't give a `table` as the offset parent oddly, so use DOM directly
-			currOffsetParent = $( currNode[0].offsetParent );
+			currOffsetParent = $( currNode.offsetParent );
 
-			top += position.top + currOffsetParent.scrollTop();
-			left += position.left + currOffsetParent.scrollLeft();
+			top += positionTop + currOffsetParent.scrollTop();
+			left += positionLeft + currOffsetParent.scrollLeft();
 
 			top += parseInt( currOffsetParent.css('margin-top') ) * 1;
 			top += parseInt( currOffsetParent.css('border-top-width') ) * 1;
 
 			// Emergency fall back. Shouldn't happen, but just in case!
-			if ( currNode.get(0).nodeName.toLowerCase() === 'body' ) {
+			if ( currNode.nodeName.toLowerCase() === 'body' ) {
 				break;
 			}
 
-			currNode = currOffsetParent; // for next loop
+			currNode = currOffsetParent.get(0); // for next loop
 		}
 		while ( currOffsetParent.get(0) !== targetParent.get(0) )
 
@@ -75696,14 +75862,14 @@ $.extend( AutoFill.prototype, {
 			var editor = dt.editor();
 
 			editor
-				.on( 'submitSuccess.dtaf', function () {
+				.on( 'submitSuccess.dtaf close.dtaf', function () {
 					editor.off( '.dtaf');
 
 					setTimeout( function () {
 						that._mouseup( e );
 					}, 100 );
 				} )
-				.on( 'submitComplete.dtaf preSubmitCancelled.dtaf', function () {
+				.on( 'submitComplete.dtaf preSubmitCancelled.dtaf close.dtaf', function () {
 					editor.off( '.dtaf');
 				} );
 
@@ -75908,6 +76074,7 @@ $.extend( AutoFill.prototype, {
 
 		var dt = this.s.dt;
 		var cell;
+		var columns = dt.columns( this.c.columns ).indexes();
 
 		// Potentially allow modifications to the cells matrix
 		this._emitEvent( 'preAutoFill', [ dt, cells ] );
@@ -75928,7 +76095,9 @@ $.extend( AutoFill.prototype, {
 				for ( var j=0, jen=cells[i].length ; j<jen ; j++ ) {
 					cell = cells[i][j];
 
-					cell.cell.data( cell.set );
+					if ( columns.indexOf(cell.index.column) !== -1 ) {
+						cell.cell.data( cell.set );
+					}
 				}
 			}
 
@@ -76059,7 +76228,7 @@ AutoFill.actions = {
  * @static
  * @type      String
  */
-AutoFill.version = '2.3.2';
+AutoFill.version = '2.3.3';
 
 
 /**
@@ -76169,8 +76338,52 @@ return AutoFill;
 }));
 
 
-/*! Buttons for DataTables 1.5.4
- * ©2016-2018 SpryMedia Ltd - datatables.net/license
+/*! Bootstrap integration for DataTables' AutoFill
+ * ©2015 SpryMedia Ltd - datatables.net/license
+ */
+
+(function( factory ){
+	if ( typeof define === 'function' && define.amd ) {
+		// AMD
+		define( ['jquery', 'datatables.net-bs4', 'datatables.net-autofill'], function ( $ ) {
+			return factory( $, window, document );
+		} );
+	}
+	else if ( typeof exports === 'object' ) {
+		// CommonJS
+		module.exports = function (root, $) {
+			if ( ! root ) {
+				root = window;
+			}
+
+			if ( ! $ || ! $.fn.dataTable ) {
+				$ = require('datatables.net-bs4')(root, $).$;
+			}
+
+			if ( ! $.fn.dataTable.AutoFill ) {
+				require('datatables.net-autofill')(root, $);
+			}
+
+			return factory( $, root, root.document );
+		};
+	}
+	else {
+		// Browser
+		factory( jQuery, window, document );
+	}
+}(function( $, window, document, undefined ) {
+'use strict';
+var DataTable = $.fn.dataTable;
+
+
+DataTable.AutoFill.classes.btn = 'btn btn-primary';
+
+
+return DataTable;
+}));
+
+/*! Buttons for DataTables 1.5.6
+ * ©2016-2019 SpryMedia Ltd - datatables.net/license
  */
 
 (function( factory ){
@@ -76219,6 +76432,15 @@ var _dtButtons = DataTable.ext.buttons;
  */
 var Buttons = function( dt, config )
 {
+	// If not created with a `new` keyword then we return a wrapper function that
+	// will take the settings object for a DT. This allows easy use of new instances
+	// with the `layout` option - e.g. `topLeft: $.fn.dataTable.Buttons( ... )`.
+	if ( !(this instanceof Buttons) ) {
+		return function (settings) {
+			return new Buttons( settings, dt ).container();
+		};
+	}
+
 	// If there is no config set it to an empty object
 	if ( typeof( config ) === 'undefined' ) {
 		config = {};	
@@ -76419,12 +76641,16 @@ $.extend( Buttons.prototype, {
 	},
 
 	/**
-	 * Get a button's node
-	 * @param  {node} node Button node
-	 * @return {jQuery} Button element
+	 * Get a button's node of the buttons container if no button is given
+	 * @param  {node} [node] Button node
+	 * @return {jQuery} Button element, or container
 	 */
 	node: function ( node )
 	{
+		if ( ! node ) {
+			return this.dom.container;
+		}
+
 		var button = this._nodeToButton( node );
 		return $(button.node);
 	},
@@ -76718,6 +76944,7 @@ $.extend( Buttons.prototype, {
 		};
 
 		var tag = config.tag || buttonDom.tag;
+		var clickBlurs = config.clickBlurs === undefined ? true : config.clickBlurs
 		var button = $('<'+tag+'/>')
 			.addClass( buttonDom.className )
 			.attr( 'tabindex', this.s.dt.settings()[0].iTabIndex )
@@ -76728,8 +76955,9 @@ $.extend( Buttons.prototype, {
 				if ( ! button.hasClass( buttonDom.disabled ) && config.action ) {
 					action( e, dt, button, config );
 				}
-
-				button.blur();
+				if( clickBlurs ) {
+					button.blur();
+				}
 			} )
 			.on( 'keyup.dtb', function (e) {
 				if ( e.keyCode === 13 ) {
@@ -76796,6 +77024,13 @@ $.extend( Buttons.prototype, {
 		}
 
 		this._addKey( config );
+
+		// Style integration callback for DOM manipulation
+		// Note that this is _not_ documented. It is currently
+		// for style integration only
+		if( this.c.buttonCreated ) {
+			inserter = this.c.buttonCreated( config, inserter );
+		}
 
 		return {
 			conf:         config,
@@ -77092,10 +77327,12 @@ Buttons.background = function ( show, className, fade, insertPoint ) {
 			.addClass( className )
 			.css( 'display', 'none' )
 			.insertAfter( insertPoint )
+			.stop()
 			.fadeIn( fade );
 	}
 	else {
 		$('div.'+className)
+			.stop()
 			.fadeOut( fade, function () {
 				$(this)
 					.removeClass( className )
@@ -77339,7 +77576,7 @@ Buttons.defaults = {
  * @type {string}
  * @static
  */
-Buttons.version = '1.5.4';
+Buttons.version = '1.5.6';
 
 
 $.extend( _dtButtons, {
@@ -77348,101 +77585,22 @@ $.extend( _dtButtons, {
 			return dt.i18n( 'buttons.collection', 'Collection' );
 		},
 		className: 'buttons-collection',
+		init: function ( dt, button, config ) {
+			button.attr( 'aria-expanded', false );
+		},
 		action: function ( e, dt, button, config ) {
-			var host = button;
-			var collectionParent = $(button).parents('div.dt-button-collection');
-			var hostPosition = host.position();
-			var tableContainer = $( dt.table().container() );
-			var multiLevel = false;
-			var insertPoint = host;
-
-			// Remove any old collection
-			if ( collectionParent.length ) {
-				multiLevel = $('.dt-button-collection').position();
-				insertPoint = collectionParent;
-				$('body').trigger( 'click.dtb-collection' );
-			}
-
-			if ( insertPoint.parents('body')[0] !== document.body ) {
-				insertPoint = document.body.lastChild;
-			}
-
-			config._collection.find('.dt-button-collection-title').remove();
-			config._collection.prepend('<div class="dt-button-collection-title">'+config.collectionTitle+'</div>');
-
-			config._collection
-				.addClass( config.collectionLayout )
-				.css( 'display', 'none' )
-				.insertAfter( insertPoint )
-				.fadeIn( config.fade );
-
-			var position = config._collection.css( 'position' );
-
-			if ( multiLevel && position === 'absolute' ) {
-				config._collection.css( {
-					top: multiLevel.top,
-					left: multiLevel.left
-				} );
-			}
-			else if ( position === 'absolute' ) {
-				config._collection.css( {
-					top: hostPosition.top + host.outerHeight(),
-					left: hostPosition.left
-				} );
-
-				// calculate overflow when positioned beneath
-				var tableBottom = tableContainer.offset().top + tableContainer.height();
-				var listBottom = hostPosition.top + host.outerHeight() + config._collection.outerHeight();
-				var bottomOverflow = listBottom - tableBottom;
-				
-				// calculate overflow when positioned above
-				var listTop = hostPosition.top - config._collection.outerHeight();
-				var tableTop = tableContainer.offset().top;
-				var topOverflow = tableTop - listTop;
-				
-				// if bottom overflow is larger, move to the top because it fits better, or if dropup is requested
-				if (bottomOverflow > topOverflow || config.dropup) {
-					config._collection.css( 'top', hostPosition.top - config._collection.outerHeight() - 5);
-				}
-
-				// Right alignment is enabled on a class, e.g. bootstrap:
-				// $.fn.dataTable.Buttons.defaults.dom.collection.className += " dropdown-menu-right"; 
-				if ( config._collection.hasClass( config.rightAlignClassName ) ) {
-					config._collection.css( 'left', hostPosition.left + host.outerWidth() - config._collection.outerWidth() );
-				}
-
-				// Right alignment in table container
-				var listRight = hostPosition.left + config._collection.outerWidth();
-				var tableRight = tableContainer.offset().left + tableContainer.width();
-				if ( listRight > tableRight ) {
-					config._collection.css( 'left', hostPosition.left - ( listRight - tableRight ) );
-				}
-
-				// Right alignment to window
-				var listOffsetRight = host.offset().left + config._collection.outerWidth();
-				if ( listOffsetRight > $(window).width() ) {
-					config._collection.css( 'left', hostPosition.left - (listOffsetRight-$(window).width()) );
-				}
-			}
-			else {
-				// Fix position - centre on screen
-				var top = config._collection.height() / 2;
-				if ( top > $(window).height() / 2 ) {
-					top = $(window).height() / 2;
-				}
-
-				config._collection.css( 'marginTop', top*-1 );
-			}
-
-			if ( config.background ) {
-				Buttons.background( true, config.backgroundClassName, config.fade, insertPoint );
-			}
-
 			var close = function () {
-				config._collection
-				.fadeOut( config.fade, function () {
-					config._collection.detach();
-				} );
+				dt.buttons( '[aria-haspopup="true"][aria-expanded="true"]' ).nodes().each( function() {
+					var collection = $(this).siblings('.dt-button-collection');
+
+					if ( collection.length ) {
+						collection.stop().fadeOut( config.fade, function () {
+							collection.detach();
+						} );
+					}
+
+					$(this).attr( 'aria-expanded', 'false' );
+				});
 
 				$('div.dt-button-background').off( 'click.dtb-collection' );
 				Buttons.background( false, config.backgroundClassName, config.fade, insertPoint );
@@ -77451,36 +77609,134 @@ $.extend( _dtButtons, {
 				dt.off( 'buttons-action.b-internal' );
 			};
 
-			// Need to break the 'thread' for the collection button being
-			// activated by a click - it would also trigger this event
-			setTimeout( function () {
-				// This is bonkers, but if we don't have a click listener on the
-				// background element, iOS Safari will ignore the body click
-				// listener below. An empty function here is all that is
-				// required to make it work...
-				$('div.dt-button-background').on( 'click.dtb-collection', function () {} );
+			var wasExpanded = button.attr( 'aria-expanded' ) === 'true';
 
-				$('body')
-					.on( 'click.dtb-collection', function (e) {
-						// andSelf is deprecated in jQ1.8, but we want 1.7 compat
-						var back = $.fn.addBack ? 'addBack' : 'andSelf';
+			close();
 
-						if ( ! $(e.target).parents()[back]().filter( config._collection ).length ) {
-							close();
-						}
-					} )
-					.on( 'keyup.dtb-collection', function (e) {
-						if ( e.keyCode === 27 ) {
-							close();
-						}
-					} );
+			if (!wasExpanded) {
+				var host = button;
+				var collectionParent = $(button).parents('div.dt-button-collection');
+				var hostPosition = host.position();
+				var tableContainer = $( dt.table().container() );
+				var multiLevel = false;
+				var insertPoint = host;
 
-				if ( config.autoClose ) {
-					dt.on( 'buttons-action.b-internal', function () {
-						close();
+				button.attr( 'aria-expanded', 'true' );
+
+				// Remove any old collection
+				if ( collectionParent.length ) {
+					multiLevel = $('.dt-button-collection').position();
+					insertPoint = collectionParent;
+					$('body').trigger( 'click.dtb-collection' );
+				}
+
+				if ( insertPoint.parents('body')[0] !== document.body ) {
+					insertPoint = document.body.lastChild;
+				}
+
+				config._collection.find('.dt-button-collection-title').remove();
+				config._collection.prepend('<div class="dt-button-collection-title">'+config.collectionTitle+'</div>');
+
+				config._collection
+					.addClass( config.collectionLayout )
+					.css( 'display', 'none' )
+					.insertAfter( insertPoint )
+					.stop()
+					.fadeIn( config.fade );
+
+				var position = config._collection.css( 'position' );
+
+				if ( multiLevel && position === 'absolute' ) {
+					config._collection.css( {
+						top: multiLevel.top,
+						left: multiLevel.left
 					} );
 				}
-			}, 10 );
+				else if ( position === 'absolute' ) {
+					config._collection.css( {
+						top: hostPosition.top + host.outerHeight(),
+						left: hostPosition.left
+					} );
+
+					// calculate overflow when positioned beneath
+					var tableBottom = tableContainer.offset().top + tableContainer.height();
+					var listBottom = hostPosition.top + host.outerHeight() + config._collection.outerHeight();
+					var bottomOverflow = listBottom - tableBottom;
+
+					// calculate overflow when positioned above
+					var listTop = hostPosition.top - config._collection.outerHeight();
+					var tableTop = tableContainer.offset().top;
+					var topOverflow = tableTop - listTop;
+
+					// if bottom overflow is larger, move to the top because it fits better, or if dropup is requested
+					if (bottomOverflow > topOverflow || config.dropup) {
+						config._collection.css( 'top', hostPosition.top - config._collection.outerHeight() - 5);
+					}
+
+					// Right alignment is enabled on a class, e.g. bootstrap:
+					// $.fn.dataTable.Buttons.defaults.dom.collection.className += " dropdown-menu-right"; 
+					if ( config._collection.hasClass( config.rightAlignClassName ) ) {
+						config._collection.css( 'left', hostPosition.left + host.outerWidth() - config._collection.outerWidth() );
+					}
+
+					// Right alignment in table container
+					var listRight = hostPosition.left + config._collection.outerWidth();
+					var tableRight = tableContainer.offset().left + tableContainer.width();
+					if ( listRight > tableRight ) {
+						config._collection.css( 'left', hostPosition.left - ( listRight - tableRight ) );
+					}
+
+					// Right alignment to window
+					var listOffsetRight = host.offset().left + config._collection.outerWidth();
+					if ( listOffsetRight > $(window).width() ) {
+						config._collection.css( 'left', hostPosition.left - (listOffsetRight-$(window).width()) );
+					}
+				}
+				else {
+					// Fix position - centre on screen
+					var top = config._collection.height() / 2;
+					if ( top > $(window).height() / 2 ) {
+						top = $(window).height() / 2;
+					}
+
+					config._collection.css( 'marginTop', top*-1 );
+				}
+
+				if ( config.background ) {
+					Buttons.background( true, config.backgroundClassName, config.fade, insertPoint );
+				}
+
+				// Need to break the 'thread' for the collection button being
+				// activated by a click - it would also trigger this event
+				setTimeout( function () {
+					// This is bonkers, but if we don't have a click listener on the
+					// background element, iOS Safari will ignore the body click
+					// listener below. An empty function here is all that is
+					// required to make it work...
+					$('div.dt-button-background').on( 'click.dtb-collection', function () {} );
+
+					$('body')
+						.on( 'click.dtb-collection', function (e) {
+							// andSelf is deprecated in jQ1.8, but we want 1.7 compat
+							var back = $.fn.addBack ? 'addBack' : 'andSelf';
+
+							if ( ! $(e.target).parents()[back]().filter( config._collection ).length ) {
+								close();
+							}
+						} )
+						.on( 'keyup.dtb-collection', function (e) {
+							if ( e.keyCode === 27 ) {
+								close();
+							}
+						} );
+
+					if ( config.autoClose ) {
+						dt.on( 'buttons-action.b-internal', function () {
+							close();
+						} );
+					}
+				}, 10 );
+			}
 		},
 		background: true,
 		collectionLayout: '',
@@ -77568,7 +77824,7 @@ $.extend( _dtButtons, {
 			init: function ( dt, node, conf ) {
 				var that = this;
 				dt.on( 'length.dt'+conf.namespace, function () {
-					that.text( text( dt ) );
+					that.text( conf.text );
 				} );
 			},
 			destroy: function ( dt, node, conf ) {
@@ -78071,19 +78327,96 @@ $(document).on( 'init.dt plugin-init.dt', function (e, settings) {
 	}
 } );
 
+function _init ( settings ) {
+	var api = new DataTable.Api( settings );
+	var opts = api.init().buttons || DataTable.defaults.buttons;
+
+	return new Buttons( api, opts ).container();
+}
+
 // DataTables `dom` feature option
 DataTable.ext.feature.push( {
-	fnInit: function( settings ) {
-		var api = new DataTable.Api( settings );
-		var opts = api.init().buttons || DataTable.defaults.buttons;
-
-		return new Buttons( api, opts ).container();
-	},
+	fnInit: _init,
 	cFeature: "B"
 } );
 
+// DataTables 2 layout feature
+if ( DataTable.ext.features ) {
+	DataTable.ext.features.register( 'buttons', _init );
+}
+
 
 return Buttons;
+}));
+
+
+/*! Bootstrap integration for DataTables' Buttons
+ * ©2016 SpryMedia Ltd - datatables.net/license
+ */
+
+(function( factory ){
+	if ( typeof define === 'function' && define.amd ) {
+		// AMD
+		define( ['jquery', 'datatables.net-bs4', 'datatables.net-buttons'], function ( $ ) {
+			return factory( $, window, document );
+		} );
+	}
+	else if ( typeof exports === 'object' ) {
+		// CommonJS
+		module.exports = function (root, $) {
+			if ( ! root ) {
+				root = window;
+			}
+
+			if ( ! $ || ! $.fn.dataTable ) {
+				$ = require('datatables.net-bs4')(root, $).$;
+			}
+
+			if ( ! $.fn.dataTable.Buttons ) {
+				require('datatables.net-buttons')(root, $);
+			}
+
+			return factory( $, root, root.document );
+		};
+	}
+	else {
+		// Browser
+		factory( jQuery, window, document );
+	}
+}(function( $, window, document, undefined ) {
+'use strict';
+var DataTable = $.fn.dataTable;
+
+$.extend( true, DataTable.Buttons.defaults, {
+	dom: {
+		container: {
+			className: 'dt-buttons btn-group'
+		},
+		button: {
+			className: 'btn btn-secondary'
+		},
+		collection: {
+			tag: 'div',
+			className: 'dt-button-collection dropdown-menu',
+			button: {
+				tag: 'a',
+				className: 'dt-button dropdown-item',
+				active: 'active',
+				disabled: 'disabled'
+			}
+		}
+	},
+	buttonCreated: function ( config, button ) {
+		return config.buttons ?
+			$('<div class="btn-group"/>').append(button) :
+			button;
+	}
+} );
+
+DataTable.ext.buttons.collection.className += ' dropdown-toggle';
+DataTable.ext.buttons.collection.rightAlignClassName = 'dropdown-menu-right';
+
+return DataTable.Buttons;
 }));
 
 
@@ -78295,6 +78628,1464 @@ $.extend( DataTable.ext.buttons, {
 
 		hide: []
 	}
+} );
+
+
+return DataTable.Buttons;
+}));
+
+
+/*!
+ * Flash export buttons for Buttons and DataTables.
+ * 2015-2017 SpryMedia Ltd - datatables.net/license
+ *
+ * ZeroClipbaord - MIT license
+ * Copyright (c) 2012 Joseph Huckaby
+ */
+
+(function( factory ){
+	if ( typeof define === 'function' && define.amd ) {
+		// AMD
+		define( ['jquery', 'datatables.net', 'datatables.net-buttons'], function ( $ ) {
+			return factory( $, window, document );
+		} );
+	}
+	else if ( typeof exports === 'object' ) {
+		// CommonJS
+		module.exports = function (root, $) {
+			if ( ! root ) {
+				root = window;
+			}
+
+			if ( ! $ || ! $.fn.dataTable ) {
+				$ = require('datatables.net')(root, $).$;
+			}
+
+			if ( ! $.fn.dataTable.Buttons ) {
+				require('datatables.net-buttons')(root, $);
+			}
+
+			return factory( $, root, root.document );
+		};
+	}
+	else {
+		// Browser
+		factory( jQuery, window, document );
+	}
+}(function( $, window, document, undefined ) {
+'use strict';
+var DataTable = $.fn.dataTable;
+
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ * ZeroClipboard dependency
+ */
+
+/*
+ * ZeroClipboard 1.0.4 with modifications
+ * Author: Joseph Huckaby
+ * License: MIT
+ *
+ * Copyright (c) 2012 Joseph Huckaby
+ */
+var ZeroClipboard_TableTools = {
+	version: "1.0.4-TableTools2",
+	clients: {}, // registered upload clients on page, indexed by id
+	moviePath: '', // URL to movie
+	nextId: 1, // ID of next movie
+
+	$: function(thingy) {
+		// simple DOM lookup utility function
+		if (typeof(thingy) == 'string') {
+			thingy = document.getElementById(thingy);
+		}
+		if (!thingy.addClass) {
+			// extend element with a few useful methods
+			thingy.hide = function() { this.style.display = 'none'; };
+			thingy.show = function() { this.style.display = ''; };
+			thingy.addClass = function(name) { this.removeClass(name); this.className += ' ' + name; };
+			thingy.removeClass = function(name) {
+				this.className = this.className.replace( new RegExp("\\s*" + name + "\\s*"), " ").replace(/^\s+/, '').replace(/\s+$/, '');
+			};
+			thingy.hasClass = function(name) {
+				return !!this.className.match( new RegExp("\\s*" + name + "\\s*") );
+			};
+		}
+		return thingy;
+	},
+
+	setMoviePath: function(path) {
+		// set path to ZeroClipboard.swf
+		this.moviePath = path;
+	},
+
+	dispatch: function(id, eventName, args) {
+		// receive event from flash movie, send to client
+		var client = this.clients[id];
+		if (client) {
+			client.receiveEvent(eventName, args);
+		}
+	},
+
+	log: function ( str ) {
+		console.log( 'Flash: '+str );
+	},
+
+	register: function(id, client) {
+		// register new client to receive events
+		this.clients[id] = client;
+	},
+
+	getDOMObjectPosition: function(obj) {
+		// get absolute coordinates for dom element
+		var info = {
+			left: 0,
+			top: 0,
+			width: obj.width ? obj.width : obj.offsetWidth,
+			height: obj.height ? obj.height : obj.offsetHeight
+		};
+
+		if ( obj.style.width !== "" ) {
+			info.width = obj.style.width.replace("px","");
+		}
+
+		if ( obj.style.height !== "" ) {
+			info.height = obj.style.height.replace("px","");
+		}
+
+		while (obj) {
+			info.left += obj.offsetLeft;
+			info.top += obj.offsetTop;
+			obj = obj.offsetParent;
+		}
+
+		return info;
+	},
+
+	Client: function(elem) {
+		// constructor for new simple upload client
+		this.handlers = {};
+
+		// unique ID
+		this.id = ZeroClipboard_TableTools.nextId++;
+		this.movieId = 'ZeroClipboard_TableToolsMovie_' + this.id;
+
+		// register client with singleton to receive flash events
+		ZeroClipboard_TableTools.register(this.id, this);
+
+		// create movie
+		if (elem) {
+			this.glue(elem);
+		}
+	}
+};
+
+ZeroClipboard_TableTools.Client.prototype = {
+
+	id: 0, // unique ID for us
+	ready: false, // whether movie is ready to receive events or not
+	movie: null, // reference to movie object
+	clipText: '', // text to copy to clipboard
+	fileName: '', // default file save name
+	action: 'copy', // action to perform
+	handCursorEnabled: true, // whether to show hand cursor, or default pointer cursor
+	cssEffects: true, // enable CSS mouse effects on dom container
+	handlers: null, // user event handlers
+	sized: false,
+	sheetName: '', // default sheet name for excel export
+
+	glue: function(elem, title) {
+		// glue to DOM element
+		// elem can be ID or actual DOM element object
+		this.domElement = ZeroClipboard_TableTools.$(elem);
+
+		// float just above object, or zIndex 99 if dom element isn't set
+		var zIndex = 99;
+		if (this.domElement.style.zIndex) {
+			zIndex = parseInt(this.domElement.style.zIndex, 10) + 1;
+		}
+
+		// find X/Y position of domElement
+		var box = ZeroClipboard_TableTools.getDOMObjectPosition(this.domElement);
+
+		// create floating DIV above element
+		this.div = document.createElement('div');
+		var style = this.div.style;
+		style.position = 'absolute';
+		style.left = '0px';
+		style.top = '0px';
+		style.width = (box.width) + 'px';
+		style.height = box.height + 'px';
+		style.zIndex = zIndex;
+
+		if ( typeof title != "undefined" && title !== "" ) {
+			this.div.title = title;
+		}
+		if ( box.width !== 0 && box.height !== 0 ) {
+			this.sized = true;
+		}
+
+		// style.backgroundColor = '#f00'; // debug
+		if ( this.domElement ) {
+			this.domElement.appendChild(this.div);
+			this.div.innerHTML = this.getHTML( box.width, box.height ).replace(/&/g, '&amp;');
+		}
+	},
+
+	positionElement: function() {
+		var box = ZeroClipboard_TableTools.getDOMObjectPosition(this.domElement);
+		var style = this.div.style;
+
+		style.position = 'absolute';
+		//style.left = (this.domElement.offsetLeft)+'px';
+		//style.top = this.domElement.offsetTop+'px';
+		style.width = box.width + 'px';
+		style.height = box.height + 'px';
+
+		if ( box.width !== 0 && box.height !== 0 ) {
+			this.sized = true;
+		} else {
+			return;
+		}
+
+		var flash = this.div.childNodes[0];
+		flash.width = box.width;
+		flash.height = box.height;
+	},
+
+	getHTML: function(width, height) {
+		// return HTML for movie
+		var html = '';
+		var flashvars = 'id=' + this.id +
+			'&width=' + width +
+			'&height=' + height;
+
+		if (navigator.userAgent.match(/MSIE/)) {
+			// IE gets an OBJECT tag
+			var protocol = location.href.match(/^https/i) ? 'https://' : 'http://';
+			html += '<object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" codebase="'+protocol+'download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=10,0,0,0" width="'+width+'" height="'+height+'" id="'+this.movieId+'" align="middle"><param name="allowScriptAccess" value="always" /><param name="allowFullScreen" value="false" /><param name="movie" value="'+ZeroClipboard_TableTools.moviePath+'" /><param name="loop" value="false" /><param name="menu" value="false" /><param name="quality" value="best" /><param name="bgcolor" value="#ffffff" /><param name="flashvars" value="'+flashvars+'"/><param name="wmode" value="transparent"/></object>';
+		}
+		else {
+			// all other browsers get an EMBED tag
+			html += '<embed id="'+this.movieId+'" src="'+ZeroClipboard_TableTools.moviePath+'" loop="false" menu="false" quality="best" bgcolor="#ffffff" width="'+width+'" height="'+height+'" name="'+this.movieId+'" align="middle" allowScriptAccess="always" allowFullScreen="false" type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer" flashvars="'+flashvars+'" wmode="transparent" />';
+		}
+		return html;
+	},
+
+	hide: function() {
+		// temporarily hide floater offscreen
+		if (this.div) {
+			this.div.style.left = '-2000px';
+		}
+	},
+
+	show: function() {
+		// show ourselves after a call to hide()
+		this.reposition();
+	},
+
+	destroy: function() {
+		// destroy control and floater
+		var that = this;
+
+		if (this.domElement && this.div) {
+			$(this.div).remove();
+
+			this.domElement = null;
+			this.div = null;
+
+			$.each( ZeroClipboard_TableTools.clients, function ( id, client ) {
+				if ( client === that ) {
+					delete ZeroClipboard_TableTools.clients[ id ];
+				}
+			} );
+		}
+	},
+
+	reposition: function(elem) {
+		// reposition our floating div, optionally to new container
+		// warning: container CANNOT change size, only position
+		if (elem) {
+			this.domElement = ZeroClipboard_TableTools.$(elem);
+			if (!this.domElement) {
+				this.hide();
+			}
+		}
+
+		if (this.domElement && this.div) {
+			var box = ZeroClipboard_TableTools.getDOMObjectPosition(this.domElement);
+			var style = this.div.style;
+			style.left = '' + box.left + 'px';
+			style.top = '' + box.top + 'px';
+		}
+	},
+
+	clearText: function() {
+		// clear the text to be copy / saved
+		this.clipText = '';
+		if (this.ready) {
+			this.movie.clearText();
+		}
+	},
+
+	appendText: function(newText) {
+		// append text to that which is to be copied / saved
+		this.clipText += newText;
+		if (this.ready) { this.movie.appendText(newText) ;}
+	},
+
+	setText: function(newText) {
+		// set text to be copied to be copied / saved
+		this.clipText = newText;
+		if (this.ready) { this.movie.setText(newText) ;}
+	},
+
+	setFileName: function(newText) {
+		// set the file name
+		this.fileName = newText;
+		if (this.ready) {
+			this.movie.setFileName(newText);
+		}
+	},
+
+	setSheetData: function(data) {
+		// set the xlsx sheet data
+		if (this.ready) {
+			this.movie.setSheetData( JSON.stringify( data ) );
+		}
+	},
+
+	setAction: function(newText) {
+		// set action (save or copy)
+		this.action = newText;
+		if (this.ready) {
+			this.movie.setAction(newText);
+		}
+	},
+
+	addEventListener: function(eventName, func) {
+		// add user event listener for event
+		// event types: load, queueStart, fileStart, fileComplete, queueComplete, progress, error, cancel
+		eventName = eventName.toString().toLowerCase().replace(/^on/, '');
+		if (!this.handlers[eventName]) {
+			this.handlers[eventName] = [];
+		}
+		this.handlers[eventName].push(func);
+	},
+
+	setHandCursor: function(enabled) {
+		// enable hand cursor (true), or default arrow cursor (false)
+		this.handCursorEnabled = enabled;
+		if (this.ready) {
+			this.movie.setHandCursor(enabled);
+		}
+	},
+
+	setCSSEffects: function(enabled) {
+		// enable or disable CSS effects on DOM container
+		this.cssEffects = !!enabled;
+	},
+
+	receiveEvent: function(eventName, args) {
+		var self;
+
+		// receive event from flash
+		eventName = eventName.toString().toLowerCase().replace(/^on/, '');
+
+		// special behavior for certain events
+		switch (eventName) {
+			case 'load':
+				// movie claims it is ready, but in IE this isn't always the case...
+				// bug fix: Cannot extend EMBED DOM elements in Firefox, must use traditional function
+				this.movie = document.getElementById(this.movieId);
+				if (!this.movie) {
+					self = this;
+					setTimeout( function() { self.receiveEvent('load', null); }, 1 );
+					return;
+				}
+
+				// firefox on pc needs a "kick" in order to set these in certain cases
+				if (!this.ready && navigator.userAgent.match(/Firefox/) && navigator.userAgent.match(/Windows/)) {
+					self = this;
+					setTimeout( function() { self.receiveEvent('load', null); }, 100 );
+					this.ready = true;
+					return;
+				}
+
+				this.ready = true;
+				this.movie.clearText();
+				this.movie.appendText( this.clipText );
+				this.movie.setFileName( this.fileName );
+				this.movie.setAction( this.action );
+				this.movie.setHandCursor( this.handCursorEnabled );
+				break;
+
+			case 'mouseover':
+				if (this.domElement && this.cssEffects) {
+					//this.domElement.addClass('hover');
+					if (this.recoverActive) {
+						this.domElement.addClass('active');
+					}
+				}
+				break;
+
+			case 'mouseout':
+				if (this.domElement && this.cssEffects) {
+					this.recoverActive = false;
+					if (this.domElement.hasClass('active')) {
+						this.domElement.removeClass('active');
+						this.recoverActive = true;
+					}
+					//this.domElement.removeClass('hover');
+				}
+				break;
+
+			case 'mousedown':
+				if (this.domElement && this.cssEffects) {
+					this.domElement.addClass('active');
+				}
+				break;
+
+			case 'mouseup':
+				if (this.domElement && this.cssEffects) {
+					this.domElement.removeClass('active');
+					this.recoverActive = false;
+				}
+				break;
+		} // switch eventName
+
+		if (this.handlers[eventName]) {
+			for (var idx = 0, len = this.handlers[eventName].length; idx < len; idx++) {
+				var func = this.handlers[eventName][idx];
+
+				if (typeof(func) == 'function') {
+					// actual function reference
+					func(this, args);
+				}
+				else if ((typeof(func) == 'object') && (func.length == 2)) {
+					// PHP style object + method, i.e. [myObject, 'myMethod']
+					func[0][ func[1] ](this, args);
+				}
+				else if (typeof(func) == 'string') {
+					// name of function
+					window[func](this, args);
+				}
+			} // foreach event handler defined
+		} // user defined handler for event
+	}
+};
+
+ZeroClipboard_TableTools.hasFlash = function ()
+{
+	try {
+		var fo = new ActiveXObject('ShockwaveFlash.ShockwaveFlash');
+		if (fo) {
+			return true;
+		}
+	}
+	catch (e) {
+		if (
+			navigator.mimeTypes &&
+			navigator.mimeTypes['application/x-shockwave-flash'] !== undefined &&
+			navigator.mimeTypes['application/x-shockwave-flash'].enabledPlugin
+		) {
+			return true;
+		}
+	}
+
+	return false;
+};
+
+// For the Flash binding to work, ZeroClipboard_TableTools must be on the global
+// object list
+window.ZeroClipboard_TableTools = ZeroClipboard_TableTools;
+
+
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ * Local (private) functions
+ */
+
+/**
+ * If a Buttons instance is initlaised before it is placed into the DOM, Flash
+ * won't be able to bind to it, so we need to wait until it is available, this
+ * method abstracts that out.
+ *
+ * @param {ZeroClipboard} flash ZeroClipboard instance
+ * @param {jQuery} node  Button
+ */
+var _glue = function ( flash, node )
+{
+	var id = node.attr('id');
+
+	if ( node.parents('html').length ) {
+		flash.glue( node[0], '' );
+	}
+	else {
+		setTimeout( function () {
+			_glue( flash, node );
+		}, 500 );
+	}
+};
+
+/**
+ * Get the sheet name for Excel exports.
+ *
+ * @param {object}  config       Button configuration
+ */
+var _sheetname = function ( config )
+{
+	var sheetName = 'Sheet1';
+
+	if ( config.sheetName ) {
+		sheetName = config.sheetName.replace(/[\[\]\*\/\\\?\:]/g, '');
+	}
+
+	return sheetName;
+};
+
+/**
+ * Set the flash text. This has to be broken up into chunks as the Javascript /
+ * Flash bridge has a size limit. There is no indication in the Flash
+ * documentation what this is, and it probably depends upon the browser.
+ * Experimentation shows that the point is around 50k when data starts to get
+ * lost, so an 8K limit used here is safe.
+ *
+ * @param {ZeroClipboard} flash ZeroClipboard instance
+ * @param {string}        data  Data to send to Flash
+ */
+var _setText = function ( flash, data )
+{
+	var parts = data.match(/[\s\S]{1,8192}/g) || [];
+
+	flash.clearText();
+	for ( var i=0, len=parts.length ; i<len ; i++ )
+	{
+		flash.appendText( parts[i] );
+	}
+};
+
+/**
+ * Get the newline character(s)
+ *
+ * @param {object}  config Button configuration
+ * @return {string}        Newline character
+ */
+var _newLine = function ( config )
+{
+	return config.newline ?
+		config.newline :
+		navigator.userAgent.match(/Windows/) ?
+			'\r\n' :
+			'\n';
+};
+
+/**
+ * Combine the data from the `buttons.exportData` method into a string that
+ * will be used in the export file.
+ *
+ * @param  {DataTable.Api} dt     DataTables API instance
+ * @param  {object}        config Button configuration
+ * @return {object}               The data to export
+ */
+var _exportData = function ( dt, config )
+{
+	var newLine = _newLine( config );
+	var data = dt.buttons.exportData( config.exportOptions );
+	var boundary = config.fieldBoundary;
+	var separator = config.fieldSeparator;
+	var reBoundary = new RegExp( boundary, 'g' );
+	var escapeChar = config.escapeChar !== undefined ?
+		config.escapeChar :
+		'\\';
+	var join = function ( a ) {
+		var s = '';
+
+		// If there is a field boundary, then we might need to escape it in
+		// the source data
+		for ( var i=0, ien=a.length ; i<ien ; i++ ) {
+			if ( i > 0 ) {
+				s += separator;
+			}
+
+			s += boundary ?
+				boundary + ('' + a[i]).replace( reBoundary, escapeChar+boundary ) + boundary :
+				a[i];
+		}
+
+		return s;
+	};
+
+	var header = config.header ? join( data.header )+newLine : '';
+	var footer = config.footer && data.footer ? newLine+join( data.footer ) : '';
+	var body = [];
+
+	for ( var i=0, ien=data.body.length ; i<ien ; i++ ) {
+		body.push( join( data.body[i] ) );
+	}
+
+	return {
+		str: header + body.join( newLine ) + footer,
+		rows: body.length
+	};
+};
+
+
+// Basic initialisation for the buttons is common between them
+var flashButton = {
+	available: function () {
+		return ZeroClipboard_TableTools.hasFlash();
+	},
+
+	init: function ( dt, button, config ) {
+		// Insert the Flash movie
+		ZeroClipboard_TableTools.moviePath = DataTable.Buttons.swfPath;
+		var flash = new ZeroClipboard_TableTools.Client();
+
+		flash.setHandCursor( true );
+		flash.addEventListener('mouseDown', function(client) {
+			config._fromFlash = true;
+			dt.button( button[0] ).trigger();
+			config._fromFlash = false;
+		} );
+
+		_glue( flash, button );
+
+		config._flash = flash;
+	},
+
+	destroy: function ( dt, button, config ) {
+		config._flash.destroy();
+	},
+
+	fieldSeparator: ',',
+
+	fieldBoundary: '"',
+
+	exportOptions: {},
+
+	title: '*',
+
+	messageTop: '*',
+
+	messageBottom: '*',
+
+	filename: '*',
+
+	extension: '.csv',
+
+	header: true,
+
+	footer: false
+};
+
+
+/**
+ * Convert from numeric position to letter for column names in Excel
+ * @param  {int} n Column number
+ * @return {string} Column letter(s) name
+ */
+function createCellPos( n ){
+	var ordA = 'A'.charCodeAt(0);
+	var ordZ = 'Z'.charCodeAt(0);
+	var len = ordZ - ordA + 1;
+	var s = "";
+
+	while( n >= 0 ) {
+		s = String.fromCharCode(n % len + ordA) + s;
+		n = Math.floor(n / len) - 1;
+	}
+
+	return s;
+}
+
+/**
+ * Create an XML node and add any children, attributes, etc without needing to
+ * be verbose in the DOM.
+ *
+ * @param  {object} doc      XML document
+ * @param  {string} nodeName Node name
+ * @param  {object} opts     Options - can be `attr` (attributes), `children`
+ *   (child nodes) and `text` (text content)
+ * @return {node}            Created node
+ */
+function _createNode( doc, nodeName, opts ){
+	var tempNode = doc.createElement( nodeName );
+
+	if ( opts ) {
+		if ( opts.attr ) {
+			$(tempNode).attr( opts.attr );
+		}
+
+		if ( opts.children ) {
+			$.each( opts.children, function ( key, value ) {
+				tempNode.appendChild( value );
+			} );
+		}
+
+		if ( opts.text !== null && opts.text !== undefined ) {
+			tempNode.appendChild( doc.createTextNode( opts.text ) );
+		}
+	}
+
+	return tempNode;
+}
+
+/**
+ * Get the width for an Excel column based on the contents of that column
+ * @param  {object} data Data for export
+ * @param  {int}    col  Column index
+ * @return {int}         Column width
+ */
+function _excelColWidth( data, col ) {
+	var max = data.header[col].length;
+	var len, lineSplit, str;
+
+	if ( data.footer && data.footer[col].length > max ) {
+		max = data.footer[col].length;
+	}
+
+	for ( var i=0, ien=data.body.length ; i<ien ; i++ ) {
+		var point = data.body[i][col];
+		str = point !== null && point !== undefined ?
+			point.toString() :
+			'';
+
+		// If there is a newline character, workout the width of the column
+		// based on the longest line in the string
+		if ( str.indexOf('\n') !== -1 ) {
+			lineSplit = str.split('\n');
+			lineSplit.sort( function (a, b) {
+				return b.length - a.length;
+			} );
+
+			len = lineSplit[0].length;
+		}
+		else {
+			len = str.length;
+		}
+
+		if ( len > max ) {
+			max = len;
+		}
+
+		// Max width rather than having potentially massive column widths
+		if ( max > 40 ) {
+			return 52; // 40 * 1.3
+		}
+	}
+
+	max *= 1.3;
+
+	// And a min width
+	return max > 6 ? max : 6;
+}
+
+  var _serialiser = "";
+    if (typeof window.XMLSerializer === 'undefined') {
+        _serialiser = new function () {
+            this.serializeToString = function (input) {
+                return input.xml
+            }
+        };
+    } else {
+        _serialiser =  new XMLSerializer();
+    }
+
+    var _ieExcel;
+
+
+/**
+ * Convert XML documents in an object to strings
+ * @param  {object} obj XLSX document object
+ */
+function _xlsxToStrings( obj ) {
+	if ( _ieExcel === undefined ) {
+		// Detect if we are dealing with IE's _awful_ serialiser by seeing if it
+		// drop attributes
+		_ieExcel = _serialiser
+			.serializeToString(
+				$.parseXML( excelStrings['xl/worksheets/sheet1.xml'] )
+			)
+			.indexOf( 'xmlns:r' ) === -1;
+	}
+
+	$.each( obj, function ( name, val ) {
+		if ( $.isPlainObject( val ) ) {
+			_xlsxToStrings( val );
+		}
+		else {
+			if ( _ieExcel ) {
+				// IE's XML serialiser will drop some name space attributes from
+				// from the root node, so we need to save them. Do this by
+				// replacing the namespace nodes with a regular attribute that
+				// we convert back when serialised. Edge does not have this
+				// issue
+				var worksheet = val.childNodes[0];
+				var i, ien;
+				var attrs = [];
+
+				for ( i=worksheet.attributes.length-1 ; i>=0 ; i-- ) {
+					var attrName = worksheet.attributes[i].nodeName;
+					var attrValue = worksheet.attributes[i].nodeValue;
+
+					if ( attrName.indexOf( ':' ) !== -1 ) {
+						attrs.push( { name: attrName, value: attrValue } );
+
+						worksheet.removeAttribute( attrName );
+					}
+				}
+
+				for ( i=0, ien=attrs.length ; i<ien ; i++ ) {
+					var attr = val.createAttribute( attrs[i].name.replace( ':', '_dt_b_namespace_token_' ) );
+					attr.value = attrs[i].value;
+					worksheet.setAttributeNode( attr );
+				}
+			}
+
+			var str = _serialiser.serializeToString(val);
+
+			// Fix IE's XML
+			if ( _ieExcel ) {
+				// IE doesn't include the XML declaration
+				if ( str.indexOf( '<?xml' ) === -1 ) {
+					str = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'+str;
+				}
+
+				// Return namespace attributes to being as such
+				str = str.replace( /_dt_b_namespace_token_/g, ':' );
+			}
+
+			// Safari, IE and Edge will put empty name space attributes onto
+			// various elements making them useless. This strips them out
+			str = str.replace( /<([^<>]*?) xmlns=""([^<>]*?)>/g, '<$1 $2>' );
+
+			obj[ name ] = str;
+		}
+	} );
+}
+
+// Excel - Pre-defined strings to build a basic XLSX file
+var excelStrings = {
+	"_rels/.rels":
+		'<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'+
+		'<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">'+
+			'<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/>'+
+		'</Relationships>',
+
+	"xl/_rels/workbook.xml.rels":
+		'<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'+
+		'<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">'+
+			'<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet1.xml"/>'+
+			'<Relationship Id="rId2" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/>'+
+		'</Relationships>',
+
+	"[Content_Types].xml":
+		'<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'+
+		'<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">'+
+			'<Default Extension="xml" ContentType="application/xml" />'+
+			'<Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml" />'+
+			'<Default Extension="jpeg" ContentType="image/jpeg" />'+
+			'<Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml" />'+
+			'<Override PartName="/xl/worksheets/sheet1.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml" />'+
+			'<Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml" />'+
+		'</Types>',
+
+	"xl/workbook.xml":
+		'<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'+
+		'<workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">'+
+			'<fileVersion appName="xl" lastEdited="5" lowestEdited="5" rupBuild="24816"/>'+
+			'<workbookPr showInkAnnotation="0" autoCompressPictures="0"/>'+
+			'<bookViews>'+
+				'<workbookView xWindow="0" yWindow="0" windowWidth="25600" windowHeight="19020" tabRatio="500"/>'+
+			'</bookViews>'+
+			'<sheets>'+
+				'<sheet name="" sheetId="1" r:id="rId1"/>'+
+			'</sheets>'+
+		'</workbook>',
+
+	"xl/worksheets/sheet1.xml":
+		'<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'+
+		'<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="x14ac" xmlns:x14ac="http://schemas.microsoft.com/office/spreadsheetml/2009/9/ac">'+
+			'<sheetData/>'+
+			'<mergeCells count="0"/>'+
+		'</worksheet>',
+
+	"xl/styles.xml":
+		'<?xml version="1.0" encoding="UTF-8"?>'+
+		'<styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="x14ac" xmlns:x14ac="http://schemas.microsoft.com/office/spreadsheetml/2009/9/ac">'+
+			'<numFmts count="6">'+
+				'<numFmt numFmtId="164" formatCode="#,##0.00_-\ [$$-45C]"/>'+
+				'<numFmt numFmtId="165" formatCode="&quot;£&quot;#,##0.00"/>'+
+				'<numFmt numFmtId="166" formatCode="[$€-2]\ #,##0.00"/>'+
+				'<numFmt numFmtId="167" formatCode="0.0%"/>'+
+				'<numFmt numFmtId="168" formatCode="#,##0;(#,##0)"/>'+
+				'<numFmt numFmtId="169" formatCode="#,##0.00;(#,##0.00)"/>'+
+			'</numFmts>'+
+			'<fonts count="5" x14ac:knownFonts="1">'+
+				'<font>'+
+					'<sz val="11" />'+
+					'<name val="Calibri" />'+
+				'</font>'+
+				'<font>'+
+					'<sz val="11" />'+
+					'<name val="Calibri" />'+
+					'<color rgb="FFFFFFFF" />'+
+				'</font>'+
+				'<font>'+
+					'<sz val="11" />'+
+					'<name val="Calibri" />'+
+					'<b />'+
+				'</font>'+
+				'<font>'+
+					'<sz val="11" />'+
+					'<name val="Calibri" />'+
+					'<i />'+
+				'</font>'+
+				'<font>'+
+					'<sz val="11" />'+
+					'<name val="Calibri" />'+
+					'<u />'+
+				'</font>'+
+			'</fonts>'+
+			'<fills count="6">'+
+				'<fill>'+
+					'<patternFill patternType="none" />'+
+				'</fill>'+
+				'<fill>'+ // Excel appears to use this as a dotted background regardless of values but
+					'<patternFill patternType="none" />'+ // to be valid to the schema, use a patternFill
+				'</fill>'+
+				'<fill>'+
+					'<patternFill patternType="solid">'+
+						'<fgColor rgb="FFD9D9D9" />'+
+						'<bgColor indexed="64" />'+
+					'</patternFill>'+
+				'</fill>'+
+				'<fill>'+
+					'<patternFill patternType="solid">'+
+						'<fgColor rgb="FFD99795" />'+
+						'<bgColor indexed="64" />'+
+					'</patternFill>'+
+				'</fill>'+
+				'<fill>'+
+					'<patternFill patternType="solid">'+
+						'<fgColor rgb="ffc6efce" />'+
+						'<bgColor indexed="64" />'+
+					'</patternFill>'+
+				'</fill>'+
+				'<fill>'+
+					'<patternFill patternType="solid">'+
+						'<fgColor rgb="ffc6cfef" />'+
+						'<bgColor indexed="64" />'+
+					'</patternFill>'+
+				'</fill>'+
+			'</fills>'+
+			'<borders count="2">'+
+				'<border>'+
+					'<left />'+
+					'<right />'+
+					'<top />'+
+					'<bottom />'+
+					'<diagonal />'+
+				'</border>'+
+				'<border diagonalUp="false" diagonalDown="false">'+
+					'<left style="thin">'+
+						'<color auto="1" />'+
+					'</left>'+
+					'<right style="thin">'+
+						'<color auto="1" />'+
+					'</right>'+
+					'<top style="thin">'+
+						'<color auto="1" />'+
+					'</top>'+
+					'<bottom style="thin">'+
+						'<color auto="1" />'+
+					'</bottom>'+
+					'<diagonal />'+
+				'</border>'+
+			'</borders>'+
+			'<cellStyleXfs count="1">'+
+				'<xf numFmtId="0" fontId="0" fillId="0" borderId="0" />'+
+			'</cellStyleXfs>'+
+			'<cellXfs count="61">'+
+				'<xf numFmtId="0" fontId="0" fillId="0" borderId="0" applyFont="1" applyFill="1" applyBorder="1"/>'+
+				'<xf numFmtId="0" fontId="1" fillId="0" borderId="0" applyFont="1" applyFill="1" applyBorder="1"/>'+
+				'<xf numFmtId="0" fontId="2" fillId="0" borderId="0" applyFont="1" applyFill="1" applyBorder="1"/>'+
+				'<xf numFmtId="0" fontId="3" fillId="0" borderId="0" applyFont="1" applyFill="1" applyBorder="1"/>'+
+				'<xf numFmtId="0" fontId="4" fillId="0" borderId="0" applyFont="1" applyFill="1" applyBorder="1"/>'+
+				'<xf numFmtId="0" fontId="0" fillId="2" borderId="0" applyFont="1" applyFill="1" applyBorder="1"/>'+
+				'<xf numFmtId="0" fontId="1" fillId="2" borderId="0" applyFont="1" applyFill="1" applyBorder="1"/>'+
+				'<xf numFmtId="0" fontId="2" fillId="2" borderId="0" applyFont="1" applyFill="1" applyBorder="1"/>'+
+				'<xf numFmtId="0" fontId="3" fillId="2" borderId="0" applyFont="1" applyFill="1" applyBorder="1"/>'+
+				'<xf numFmtId="0" fontId="4" fillId="2" borderId="0" applyFont="1" applyFill="1" applyBorder="1"/>'+
+				'<xf numFmtId="0" fontId="0" fillId="3" borderId="0" applyFont="1" applyFill="1" applyBorder="1"/>'+
+				'<xf numFmtId="0" fontId="1" fillId="3" borderId="0" applyFont="1" applyFill="1" applyBorder="1"/>'+
+				'<xf numFmtId="0" fontId="2" fillId="3" borderId="0" applyFont="1" applyFill="1" applyBorder="1"/>'+
+				'<xf numFmtId="0" fontId="3" fillId="3" borderId="0" applyFont="1" applyFill="1" applyBorder="1"/>'+
+				'<xf numFmtId="0" fontId="4" fillId="3" borderId="0" applyFont="1" applyFill="1" applyBorder="1"/>'+
+				'<xf numFmtId="0" fontId="0" fillId="4" borderId="0" applyFont="1" applyFill="1" applyBorder="1"/>'+
+				'<xf numFmtId="0" fontId="1" fillId="4" borderId="0" applyFont="1" applyFill="1" applyBorder="1"/>'+
+				'<xf numFmtId="0" fontId="2" fillId="4" borderId="0" applyFont="1" applyFill="1" applyBorder="1"/>'+
+				'<xf numFmtId="0" fontId="3" fillId="4" borderId="0" applyFont="1" applyFill="1" applyBorder="1"/>'+
+				'<xf numFmtId="0" fontId="4" fillId="4" borderId="0" applyFont="1" applyFill="1" applyBorder="1"/>'+
+				'<xf numFmtId="0" fontId="0" fillId="5" borderId="0" applyFont="1" applyFill="1" applyBorder="1"/>'+
+				'<xf numFmtId="0" fontId="1" fillId="5" borderId="0" applyFont="1" applyFill="1" applyBorder="1"/>'+
+				'<xf numFmtId="0" fontId="2" fillId="5" borderId="0" applyFont="1" applyFill="1" applyBorder="1"/>'+
+				'<xf numFmtId="0" fontId="3" fillId="5" borderId="0" applyFont="1" applyFill="1" applyBorder="1"/>'+
+				'<xf numFmtId="0" fontId="4" fillId="5" borderId="0" applyFont="1" applyFill="1" applyBorder="1"/>'+
+				'<xf numFmtId="0" fontId="0" fillId="0" borderId="1" applyFont="1" applyFill="1" applyBorder="1"/>'+
+				'<xf numFmtId="0" fontId="1" fillId="0" borderId="1" applyFont="1" applyFill="1" applyBorder="1"/>'+
+				'<xf numFmtId="0" fontId="2" fillId="0" borderId="1" applyFont="1" applyFill="1" applyBorder="1"/>'+
+				'<xf numFmtId="0" fontId="3" fillId="0" borderId="1" applyFont="1" applyFill="1" applyBorder="1"/>'+
+				'<xf numFmtId="0" fontId="4" fillId="0" borderId="1" applyFont="1" applyFill="1" applyBorder="1"/>'+
+				'<xf numFmtId="0" fontId="0" fillId="2" borderId="1" applyFont="1" applyFill="1" applyBorder="1"/>'+
+				'<xf numFmtId="0" fontId="1" fillId="2" borderId="1" applyFont="1" applyFill="1" applyBorder="1"/>'+
+				'<xf numFmtId="0" fontId="2" fillId="2" borderId="1" applyFont="1" applyFill="1" applyBorder="1"/>'+
+				'<xf numFmtId="0" fontId="3" fillId="2" borderId="1" applyFont="1" applyFill="1" applyBorder="1"/>'+
+				'<xf numFmtId="0" fontId="4" fillId="2" borderId="1" applyFont="1" applyFill="1" applyBorder="1"/>'+
+				'<xf numFmtId="0" fontId="0" fillId="3" borderId="1" applyFont="1" applyFill="1" applyBorder="1"/>'+
+				'<xf numFmtId="0" fontId="1" fillId="3" borderId="1" applyFont="1" applyFill="1" applyBorder="1"/>'+
+				'<xf numFmtId="0" fontId="2" fillId="3" borderId="1" applyFont="1" applyFill="1" applyBorder="1"/>'+
+				'<xf numFmtId="0" fontId="3" fillId="3" borderId="1" applyFont="1" applyFill="1" applyBorder="1"/>'+
+				'<xf numFmtId="0" fontId="4" fillId="3" borderId="1" applyFont="1" applyFill="1" applyBorder="1"/>'+
+				'<xf numFmtId="0" fontId="0" fillId="4" borderId="1" applyFont="1" applyFill="1" applyBorder="1"/>'+
+				'<xf numFmtId="0" fontId="1" fillId="4" borderId="1" applyFont="1" applyFill="1" applyBorder="1"/>'+
+				'<xf numFmtId="0" fontId="2" fillId="4" borderId="1" applyFont="1" applyFill="1" applyBorder="1"/>'+
+				'<xf numFmtId="0" fontId="3" fillId="4" borderId="1" applyFont="1" applyFill="1" applyBorder="1"/>'+
+				'<xf numFmtId="0" fontId="4" fillId="4" borderId="1" applyFont="1" applyFill="1" applyBorder="1"/>'+
+				'<xf numFmtId="0" fontId="0" fillId="5" borderId="1" applyFont="1" applyFill="1" applyBorder="1"/>'+
+				'<xf numFmtId="0" fontId="1" fillId="5" borderId="1" applyFont="1" applyFill="1" applyBorder="1"/>'+
+				'<xf numFmtId="0" fontId="2" fillId="5" borderId="1" applyFont="1" applyFill="1" applyBorder="1"/>'+
+				'<xf numFmtId="0" fontId="3" fillId="5" borderId="1" applyFont="1" applyFill="1" applyBorder="1"/>'+
+				'<xf numFmtId="0" fontId="4" fillId="5" borderId="1" applyFont="1" applyFill="1" applyBorder="1"/>'+
+				'<xf numFmtId="0" fontId="0" fillId="0" borderId="0" applyFont="1" applyFill="1" applyBorder="1" xfId="0" applyAlignment="1">'+
+					'<alignment horizontal="left"/>'+
+				'</xf>'+
+				'<xf numFmtId="0" fontId="0" fillId="0" borderId="0" applyFont="1" applyFill="1" applyBorder="1" xfId="0" applyAlignment="1">'+
+					'<alignment horizontal="center"/>'+
+				'</xf>'+
+				'<xf numFmtId="0" fontId="0" fillId="0" borderId="0" applyFont="1" applyFill="1" applyBorder="1" xfId="0" applyAlignment="1">'+
+					'<alignment horizontal="right"/>'+
+				'</xf>'+
+				'<xf numFmtId="0" fontId="0" fillId="0" borderId="0" applyFont="1" applyFill="1" applyBorder="1" xfId="0" applyAlignment="1">'+
+					'<alignment horizontal="fill"/>'+
+				'</xf>'+
+				'<xf numFmtId="0" fontId="0" fillId="0" borderId="0" applyFont="1" applyFill="1" applyBorder="1" xfId="0" applyAlignment="1">'+
+					'<alignment textRotation="90"/>'+
+				'</xf>'+
+				'<xf numFmtId="0" fontId="0" fillId="0" borderId="0" applyFont="1" applyFill="1" applyBorder="1" xfId="0" applyAlignment="1">'+
+					'<alignment wrapText="1"/>'+
+				'</xf>'+
+				'<xf numFmtId="9"   fontId="0" fillId="0" borderId="0" applyFont="1" applyFill="1" applyBorder="1" xfId="0" applyNumberFormat="1"/>'+
+				'<xf numFmtId="164" fontId="0" fillId="0" borderId="0" applyFont="1" applyFill="1" applyBorder="1" xfId="0" applyNumberFormat="1"/>'+
+				'<xf numFmtId="165" fontId="0" fillId="0" borderId="0" applyFont="1" applyFill="1" applyBorder="1" xfId="0" applyNumberFormat="1"/>'+
+				'<xf numFmtId="166" fontId="0" fillId="0" borderId="0" applyFont="1" applyFill="1" applyBorder="1" xfId="0" applyNumberFormat="1"/>'+
+				'<xf numFmtId="167" fontId="0" fillId="0" borderId="0" applyFont="1" applyFill="1" applyBorder="1" xfId="0" applyNumberFormat="1"/>'+
+				'<xf numFmtId="168" fontId="0" fillId="0" borderId="0" applyFont="1" applyFill="1" applyBorder="1" xfId="0" applyNumberFormat="1"/>'+
+				'<xf numFmtId="169" fontId="0" fillId="0" borderId="0" applyFont="1" applyFill="1" applyBorder="1" xfId="0" applyNumberFormat="1"/>'+
+				'<xf numFmtId="3" fontId="0" fillId="0" borderId="0" applyFont="1" applyFill="1" applyBorder="1" xfId="0" applyNumberFormat="1"/>'+
+				'<xf numFmtId="4" fontId="0" fillId="0" borderId="0" applyFont="1" applyFill="1" applyBorder="1" xfId="0" applyNumberFormat="1"/>'+
+			'</cellXfs>'+
+			'<cellStyles count="1">'+
+				'<cellStyle name="Normal" xfId="0" builtinId="0" />'+
+			'</cellStyles>'+
+			'<dxfs count="0" />'+
+			'<tableStyles count="0" defaultTableStyle="TableStyleMedium9" defaultPivotStyle="PivotStyleMedium4" />'+
+		'</styleSheet>'
+};
+// Note we could use 3 `for` loops for the styles, but when gzipped there is
+// virtually no difference in size, since the above can be easily compressed
+
+// Pattern matching for special number formats. Perhaps this should be exposed
+// via an API in future?
+var _excelSpecials = [
+	{ match: /^\-?\d+\.\d%$/,       style: 60, fmt: function (d) { return d/100; } }, // Precent with d.p.
+	{ match: /^\-?\d+\.?\d*%$/,     style: 56, fmt: function (d) { return d/100; } }, // Percent
+	{ match: /^\-?\$[\d,]+.?\d*$/,  style: 57 }, // Dollars
+	{ match: /^\-?£[\d,]+.?\d*$/,   style: 58 }, // Pounds
+	{ match: /^\-?€[\d,]+.?\d*$/,   style: 59 }, // Euros
+	{ match: /^\([\d,]+\)$/,        style: 61, fmt: function (d) { return -1 * d.replace(/[\(\)]/g, ''); } },  // Negative numbers indicated by brackets
+	{ match: /^\([\d,]+\.\d{2}\)$/, style: 62, fmt: function (d) { return -1 * d.replace(/[\(\)]/g, ''); } },  // Negative numbers indicated by brackets - 2d.p.
+	{ match: /^[\d,]+$/,            style: 63 }, // Numbers with thousand separators
+	{ match: /^[\d,]+\.\d{2}$/,     style: 64 }  // Numbers with 2d.p. and thousands separators
+];
+
+
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ * DataTables options and methods
+ */
+
+// Set the default SWF path
+DataTable.Buttons.swfPath = '//cdn.datatables.net/buttons/'+DataTable.Buttons.version+'/swf/flashExport.swf';
+
+// Method to allow Flash buttons to be resized when made visible - as they are
+// of zero height and width if initialised hidden
+DataTable.Api.register( 'buttons.resize()', function () {
+	$.each( ZeroClipboard_TableTools.clients, function ( i, client ) {
+		if ( client.domElement !== undefined && client.domElement.parentNode ) {
+			client.positionElement();
+		}
+	} );
+} );
+
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ * Button definitions
+ */
+
+// Copy to clipboard
+DataTable.ext.buttons.copyFlash = $.extend( {}, flashButton, {
+	className: 'buttons-copy buttons-flash',
+
+	text: function ( dt ) {
+		return dt.i18n( 'buttons.copy', 'Copy' );
+	},
+
+	action: function ( e, dt, button, config ) {
+		// Check that the trigger did actually occur due to a Flash activation
+		if ( ! config._fromFlash ) {
+			return;
+		}
+
+		this.processing( true );
+
+		var flash = config._flash;
+		var exportData = _exportData( dt, config );
+		var info = dt.buttons.exportInfo( config );
+		var newline = _newLine(config);
+		var output = exportData.str;
+
+		if ( info.title ) {
+			output = info.title + newline + newline + output;
+		}
+
+		if ( info.messageTop ) {
+			output = info.messageTop + newline + newline + output;
+		}
+
+		if ( info.messageBottom ) {
+			output = output + newline + newline + info.messageBottom;
+		}
+
+		if ( config.customize ) {
+			output = config.customize( output, config, dt );
+		}
+
+		flash.setAction( 'copy' );
+		_setText( flash, output );
+
+		this.processing( false );
+
+		dt.buttons.info(
+			dt.i18n( 'buttons.copyTitle', 'Copy to clipboard' ),
+			dt.i18n( 'buttons.copySuccess', {
+				_: 'Copied %d rows to clipboard',
+				1: 'Copied 1 row to clipboard'
+			}, data.rows ),
+			3000
+		);
+	},
+
+	fieldSeparator: '\t',
+
+	fieldBoundary: ''
+} );
+
+// CSV save file
+DataTable.ext.buttons.csvFlash = $.extend( {}, flashButton, {
+	className: 'buttons-csv buttons-flash',
+
+	text: function ( dt ) {
+		return dt.i18n( 'buttons.csv', 'CSV' );
+	},
+
+	action: function ( e, dt, button, config ) {
+		// Set the text
+		var flash = config._flash;
+		var data = _exportData( dt, config );
+		var info = dt.buttons.exportInfo( config );
+		var output = config.customize ?
+			config.customize( data.str, config, dt ) :
+			data.str;
+
+		flash.setAction( 'csv' );
+		flash.setFileName( info.filename );
+		_setText( flash, output );
+	},
+
+	escapeChar: '"'
+} );
+
+// Excel save file - this is really a CSV file using UTF-8 that Excel can read
+DataTable.ext.buttons.excelFlash = $.extend( {}, flashButton, {
+	className: 'buttons-excel buttons-flash',
+
+	text: function ( dt ) {
+		return dt.i18n( 'buttons.excel', 'Excel' );
+	},
+
+	action: function ( e, dt, button, config ) {
+		this.processing( true );
+
+		var flash = config._flash;
+		var rowPos = 0;
+		var rels = $.parseXML( excelStrings['xl/worksheets/sheet1.xml'] ) ; //Parses xml
+		var relsGet = rels.getElementsByTagName( "sheetData" )[0];
+
+		var xlsx = {
+			_rels: {
+				".rels": $.parseXML( excelStrings['_rels/.rels'] )
+			},
+			xl: {
+				_rels: {
+					"workbook.xml.rels": $.parseXML( excelStrings['xl/_rels/workbook.xml.rels'] )
+				},
+				"workbook.xml": $.parseXML( excelStrings['xl/workbook.xml'] ),
+				"styles.xml": $.parseXML( excelStrings['xl/styles.xml'] ),
+				"worksheets": {
+					"sheet1.xml": rels
+				}
+
+			},
+			"[Content_Types].xml": $.parseXML( excelStrings['[Content_Types].xml'])
+		};
+
+		var data = dt.buttons.exportData( config.exportOptions );
+		var currentRow, rowNode;
+		var addRow = function ( row ) {
+			currentRow = rowPos+1;
+			rowNode = _createNode( rels, "row", { attr: {r:currentRow} } );
+
+			for ( var i=0, ien=row.length ; i<ien ; i++ ) {
+				// Concat both the Cell Columns as a letter and the Row of the cell.
+				var cellId = createCellPos(i) + '' + currentRow;
+				var cell = null;
+
+				// For null, undefined of blank cell, continue so it doesn't create the _createNode
+				if ( row[i] === null || row[i] === undefined || row[i] === '' ) {
+					if ( config.createEmptyCells === true ) {
+						row[i] = '';
+					}
+					else {
+						continue;
+					}
+				}
+
+				row[i] = $.trim( row[i] );
+
+				// Special number formatting options
+				for ( var j=0, jen=_excelSpecials.length ; j<jen ; j++ ) {
+					var special = _excelSpecials[j];
+
+					// TODO Need to provide the ability for the specials to say
+					// if they are returning a string, since at the moment it is
+					// assumed to be a number
+					if ( row[i].match && ! row[i].match(/^0\d+/) && row[i].match( special.match ) ) {
+						var val = row[i].replace(/[^\d\.\-]/g, '');
+
+						if ( special.fmt ) {
+							val = special.fmt( val );
+						}
+
+						cell = _createNode( rels, 'c', {
+							attr: {
+								r: cellId,
+								s: special.style
+							},
+							children: [
+								_createNode( rels, 'v', { text: val } )
+							]
+						} );
+
+						break;
+					}
+				}
+
+				if ( ! cell ) {
+					if ( typeof row[i] === 'number' || (
+						row[i].match &&
+						row[i].match(/^-?\d+(\.\d+)?$/) &&
+						! row[i].match(/^0\d+/) )
+					) {
+						// Detect numbers - don't match numbers with leading zeros
+						// or a negative anywhere but the start
+						cell = _createNode( rels, 'c', {
+							attr: {
+								t: 'n',
+								r: cellId
+							},
+							children: [
+								_createNode( rels, 'v', { text: row[i] } )
+							]
+						} );
+					}
+					else {
+						// String output - replace non standard characters for text output
+						var text = ! row[i].replace ?
+							row[i] :
+							row[i].replace(/[\x00-\x09\x0B\x0C\x0E-\x1F\x7F-\x9F]/g, '');
+
+						cell = _createNode( rels, 'c', {
+							attr: {
+								t: 'inlineStr',
+								r: cellId
+							},
+							children:{
+								row: _createNode( rels, 'is', {
+									children: {
+										row: _createNode( rels, 't', {
+											text: text
+										} )
+									}
+								} )
+							}
+						} );
+					}
+				}
+
+				rowNode.appendChild( cell );
+			}
+
+			relsGet.appendChild(rowNode);
+			rowPos++;
+		};
+
+		$( 'sheets sheet', xlsx.xl['workbook.xml'] ).attr( 'name', _sheetname( config ) );
+
+		if ( config.customizeData ) {
+			config.customizeData( data );
+		}
+
+		var mergeCells = function ( row, colspan ) {
+			var mergeCells = $('mergeCells', rels);
+
+			mergeCells[0].appendChild( _createNode( rels, 'mergeCell', {
+				attr: {
+					ref: 'A'+row+':'+createCellPos(colspan)+row
+				}
+			} ) );
+			mergeCells.attr( 'count', mergeCells.attr( 'count' )+1 );
+			$('row:eq('+(row-1)+') c', rels).attr( 's', '51' ); // centre
+		};
+
+		// Title and top messages
+		var exportInfo = dt.buttons.exportInfo( config );
+		if ( exportInfo.title ) {
+			addRow( [exportInfo.title], rowPos );
+			mergeCells( rowPos, data.header.length-1 );
+		}
+
+		if ( exportInfo.messageTop ) {
+			addRow( [exportInfo.messageTop], rowPos );
+			mergeCells( rowPos, data.header.length-1 );
+		}
+
+		// Table itself
+		if ( config.header ) {
+			addRow( data.header, rowPos );
+			$('row:last c', rels).attr( 's', '2' ); // bold
+		}
+
+		for ( var n=0, ie=data.body.length ; n<ie ; n++ ) {
+			addRow( data.body[n], rowPos );
+		}
+
+		if ( config.footer && data.footer ) {
+			addRow( data.footer, rowPos);
+			$('row:last c', rels).attr( 's', '2' ); // bold
+		}
+
+		// Below the table
+		if ( exportInfo.messageBottom ) {
+			addRow( [exportInfo.messageBottom], rowPos );
+			mergeCells( rowPos, data.header.length-1 );
+		}
+
+		// Set column widths
+		var cols = _createNode( rels, 'cols' );
+		$('worksheet', rels).prepend( cols );
+
+		for ( var i=0, ien=data.header.length ; i<ien ; i++ ) {
+			cols.appendChild( _createNode( rels, 'col', {
+				attr: {
+					min: i+1,
+					max: i+1,
+					width: _excelColWidth( data, i ),
+					customWidth: 1
+				}
+			} ) );
+		}
+
+		// Let the developer customise the document if they want to
+		if ( config.customize ) {
+			config.customize( xlsx, config, dt );
+		}
+
+		_xlsxToStrings( xlsx );
+
+		flash.setAction( 'excel' );
+		flash.setFileName( exportInfo.filename );
+		flash.setSheetData( xlsx );
+		_setText( flash, '' );
+
+		this.processing( false );
+	},
+
+	extension: '.xlsx',
+	
+	createEmptyCells: false
+} );
+
+
+
+// PDF export
+DataTable.ext.buttons.pdfFlash = $.extend( {}, flashButton, {
+	className: 'buttons-pdf buttons-flash',
+
+	text: function ( dt ) {
+		return dt.i18n( 'buttons.pdf', 'PDF' );
+	},
+
+	action: function ( e, dt, button, config ) {
+		this.processing( true );
+
+		// Set the text
+		var flash = config._flash;
+		var data = dt.buttons.exportData( config.exportOptions );
+		var info = dt.buttons.exportInfo( config );
+		var totalWidth = dt.table().node().offsetWidth;
+
+		// Calculate the column width ratios for layout of the table in the PDF
+		var ratios = dt.columns( config.columns ).indexes().map( function ( idx ) {
+			return dt.column( idx ).header().offsetWidth / totalWidth;
+		} );
+
+		flash.setAction( 'pdf' );
+		flash.setFileName( info.filename );
+
+		_setText( flash, JSON.stringify( {
+			title:         info.title || '',
+			messageTop:    info.messageTop || '',
+			messageBottom: info.messageBottom || '',
+			colWidth:      ratios.toArray(),
+			orientation:   config.orientation,
+			size:          config.pageSize,
+			header:        config.header ? data.header : null,
+			footer:        config.footer ? data.footer : null,
+			body:          data.body
+		} ) );
+
+		this.processing( false );
+	},
+
+	extension: '.pdf',
+
+	orientation: 'portrait',
+
+	pageSize: 'A4',
+
+	newline: '\n'
 } );
 
 
@@ -79516,19 +81307,19 @@ DataTable.ext.buttons.excelHtml5 = {
 			} ) );
 		}
 
-		// Auto filter for columns
-		$('mergeCells', rels).before( _createNode( rels, 'autoFilter', {
-			attr: {
-				ref: 'A'+dataStartRow+':'+createCellPos(data.header.length-1)+dataEndRow
-			}
-		} ) );
-
 		// Workbook modifications
 		var workbook = xlsx.xl['workbook.xml'];
 
 		$( 'sheets sheet', workbook ).attr( 'name', _sheetname( config ) );
 
+		// Auto filter for columns
 		if ( config.autoFilter ) {
+			$('mergeCells', rels).before( _createNode( rels, 'autoFilter', {
+				attr: {
+					ref: 'A'+dataStartRow+':'+createCellPos(data.header.length-1)+dataEndRow
+				}
+			} ) );
+
 			$('definedNames', workbook).append( _createNode( workbook, 'definedName', {
 				attr: {
 					name: '_xlnm._FilterDatabase',
@@ -87580,14 +89371,14 @@ return RowReorder;
 }));
 
 
-/*! Scroller 1.5.0
+/*! Scroller 2.0.0
  * ©2011-2018 SpryMedia Ltd - datatables.net/license
  */
 
 /**
  * @summary     Scroller
  * @description Virtual rendering for DataTables
- * @version     1.5.0
+ * @version     2.0.0
  * @file        dataTables.scroller.js
  * @author      SpryMedia Ltd (www.sprymedia.co.uk)
  * @contact     www.sprymedia.co.uk/contact
@@ -87675,7 +89466,7 @@ var DataTable = $.fn.dataTable;
  *        $('#example').DataTable( {
  *            "scrollY": "200px",
  *            "ajax": "media/dataset/large.txt",
- *            "dom": "frtiS",
+ *            "scroller": true,
  *            "deferRender": true
  *        } );
  *    } );
@@ -87705,27 +89496,27 @@ var Scroller = function ( dt, opts ) {
 		 *  @type     object
 		 *  @default  Passed in as first parameter to constructor
 		 */
-		"dt": dtApi.settings()[0],
+		dt: dtApi.settings()[0],
 
 		/**
 		 * DataTables API instance
 		 *  @type     DataTable.Api
 		 */
-		"dtApi": dtApi,
+		dtApi: dtApi,
 
 		/**
 		 * Pixel location of the top of the drawn table in the viewport
 		 *  @type     int
 		 *  @default  0
 		 */
-		"tableTop": 0,
+		tableTop: 0,
 
 		/**
 		 * Pixel location of the bottom of the drawn table in the viewport
 		 *  @type     int
 		 *  @default  0
 		 */
-		"tableBottom": 0,
+		tableBottom: 0,
 
 		/**
 		 * Pixel location of the boundary for when the next data set should be loaded and drawn
@@ -87734,7 +89525,7 @@ var Scroller = function ( dt, opts ) {
 		 *  @default  0
 		 *  @private
 		 */
-		"redrawTop": 0,
+		redrawTop: 0,
 
 		/**
 		 * Pixel location of the boundary for when the next data set should be loaded and drawn
@@ -87744,21 +89535,21 @@ var Scroller = function ( dt, opts ) {
 		 *  @default  0
 		 *  @private
 		 */
-		"redrawBottom": 0,
+		redrawBottom: 0,
 
 		/**
 		 * Auto row height or not indicator
 		 *  @type     bool
 		 *  @default  0
 		 */
-		"autoHeight": true,
+		autoHeight: true,
 
 		/**
 		 * Number of rows calculated as visible in the visible viewport
 		 *  @type     int
 		 *  @default  0
 		 */
-		"viewportRows": 0,
+		viewportRows: 0,
 
 		/**
 		 * setTimeout reference for state saving, used when state saving is enabled in the DataTable
@@ -87767,7 +89558,7 @@ var Scroller = function ( dt, opts ) {
 		 *  @type     int
 		 *  @default  0
 		 */
-		"stateTO": null,
+		stateTO: null,
 
 		/**
 		 * setTimeout reference for the redraw, used when server-side processing is enabled in the
@@ -87775,7 +89566,7 @@ var Scroller = function ( dt, opts ) {
 		 *  @type     int
 		 *  @default  null
 		 */
-		"drawTO": null,
+		drawTO: null,
 
 		heights: {
 			jump: null,
@@ -87795,13 +89586,18 @@ var Scroller = function ( dt, opts ) {
 			 *  @type     int
 			 *  @default  0
 			 */
-			viewport: null
+			viewport: null,
+			labelFactor: 1
 		},
 
 		topRowFloat: 0,
 		scrollDrawDiff: null,
 		loaderVisible: false,
-		forceReposition: false
+		forceReposition: false,
+		baseRowTop: 0,
+		baseScrollTop: 0,
+		mousedown: false,
+		lastScrollTop: 0
 	};
 
 	// @todo The defaults should extend a `c` property and the internal settings
@@ -87819,6 +89615,7 @@ var Scroller = function ( dt, opts ) {
 	 */
 	this.dom = {
 		"force":    document.createElement('div'),
+		"label":    $('<div class="dts_label">0</div>'),
 		"scroller": null,
 		"table":    null,
 		"loader":   null
@@ -87833,36 +89630,113 @@ var Scroller = function ( dt, opts ) {
 	this.s.dt.oScroller = this;
 
 	/* Let's do it */
-	this._fnConstruct();
+	this.construct();
 };
 
 
 
 $.extend( Scroller.prototype, {
 	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-	 * Public methods
-	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+	 * Public methods - to be exposed via the DataTables API
+	 */
+
+	/**
+	 * Calculate and store information about how many rows are to be displayed
+	 * in the scrolling viewport, based on current dimensions in the browser's
+	 * rendering. This can be particularly useful if the table is initially
+	 * drawn in a hidden element - for example in a tab.
+	 *  @param {bool} [redraw=true] Redraw the table automatically after the recalculation, with
+	 *    the new dimensions forming the basis for the draw.
+	 *  @returns {void}
+	 */
+	measure: function ( redraw )
+	{
+		if ( this.s.autoHeight )
+		{
+			this._calcRowHeight();
+		}
+
+		var heights = this.s.heights;
+
+		if ( heights.row ) {
+			heights.viewport = $.contains(document, this.dom.scroller) ?
+				this.dom.scroller.clientHeight :
+				this._parseHeight($(this.dom.scroller).css('height'));
+
+			// If collapsed (no height) use the max-height parameter
+			if ( ! heights.viewport ) {
+				heights.viewport = this._parseHeight($(this.dom.scroller).css('max-height'));
+			}
+
+			this.s.viewportRows = parseInt( heights.viewport / heights.row, 10 )+1;
+			this.s.dt._iDisplayLength = this.s.viewportRows * this.s.displayBuffer;
+		}
+
+		var label = this.dom.label.outerHeight();
+		heights.labelFactor = (heights.viewport-label) / heights.scroll;
+
+		if ( redraw === undefined || redraw )
+		{
+			this.s.dt.oInstance.fnDraw( false );
+		}
+	},
+
+	/**
+	 * Get information about current displayed record range. This corresponds to
+	 * the information usually displayed in the "Info" block of the table.
+	 *
+	 * @returns {object} info as an object:
+	 *  {
+	 *      start: {int}, // the 0-indexed record at the top of the viewport
+	 *      end:   {int}, // the 0-indexed record at the bottom of the viewport
+	 *  }
+	*/
+	pageInfo: function()
+	{
+		var 
+			dt = this.s.dt,
+			iScrollTop = this.dom.scroller.scrollTop,
+			iTotal = dt.fnRecordsDisplay(),
+			iPossibleEnd = Math.ceil(this.pixelsToRow(iScrollTop + this.s.heights.viewport, false, this.s.ani));
+
+		return {
+			start: Math.floor(this.pixelsToRow(iScrollTop, false, this.s.ani)),
+			end: iTotal < iPossibleEnd ? iTotal-1 : iPossibleEnd-1
+		};
+	},
+
+	/**
+	 * Calculate the row number that will be found at the given pixel position
+	 * (y-scroll).
+	 *
+	 * Please note that when the height of the full table exceeds 1 million
+	 * pixels, Scroller switches into a non-linear mode for the scrollbar to fit
+	 * all of the records into a finite area, but this function returns a linear
+	 * value (relative to the last non-linear positioning).
+	 *  @param {int} pixels Offset from top to calculate the row number of
+	 *  @param {int} [intParse=true] If an integer value should be returned
+	 *  @param {int} [virtual=false] Perform the calculations in the virtual domain
+	 *  @returns {int} Row index
+	 */
+	pixelsToRow: function ( pixels, intParse, virtual )
+	{
+		var diff = pixels - this.s.baseScrollTop;
+		var row = virtual ?
+			(this._domain( 'physicalToVirtual', this.s.baseScrollTop ) + diff) / this.s.heights.row :
+			( diff / this.s.heights.row ) + this.s.baseRowTop;
+
+		return intParse || intParse === undefined ?
+			parseInt( row, 10 ) :
+			row;
+	},
 
 	/**
 	 * Calculate the pixel position from the top of the scrolling container for
 	 * a given row
 	 *  @param {int} iRow Row number to calculate the position of
 	 *  @returns {int} Pixels
-	 *  @example
-	 *    $(document).ready(function() {
-	 *      $('#example').dataTable( {
-	 *        "sScrollY": "200px",
-	 *        "sAjaxSource": "media/dataset/large.txt",
-	 *        "sDom": "frtiS",
-	 *        "bDeferRender": true,
-	 *        "fnInitComplete": function (o) {
-	 *          // Find where row 25 is
-	 *          alert( o.oScroller.fnRowToPixels( 25 ) );
-	 *        }
-	 *      } );
-	 *    } );
 	 */
-	"fnRowToPixels": function ( rowIdx, intParse, virtual )
+	rowToPixels: function ( rowIdx, intParse, virtual )
 	{
 		var pixels;
 		var diff = rowIdx - this.s.baseRowTop;
@@ -87883,72 +89757,16 @@ $.extend( Scroller.prototype, {
 
 
 	/**
-	 * Calculate the row number that will be found at the given pixel position
-	 * (y-scroll).
-	 *
-	 * Please note that when the height of the full table exceeds 1 million
-	 * pixels, Scroller switches into a non-linear mode for the scrollbar to fit
-	 * all of the records into a finite area, but this function returns a linear
-	 * value (relative to the last non-linear positioning).
-	 *  @param {int} iPixels Offset from top to calculate the row number of
-	 *  @param {int} [intParse=true] If an integer value should be returned
-	 *  @param {int} [virtual=false] Perform the calculations in the virtual domain
-	 *  @returns {int} Row index
-	 *  @example
-	 *    $(document).ready(function() {
-	 *      $('#example').dataTable( {
-	 *        "sScrollY": "200px",
-	 *        "sAjaxSource": "media/dataset/large.txt",
-	 *        "sDom": "frtiS",
-	 *        "bDeferRender": true,
-	 *        "fnInitComplete": function (o) {
-	 *          // Find what row number is at 500px
-	 *          alert( o.oScroller.fnPixelsToRow( 500 ) );
-	 *        }
-	 *      } );
-	 *    } );
-	 */
-	"fnPixelsToRow": function ( pixels, intParse, virtual )
-	{
-		var diff = pixels - this.s.baseScrollTop;
-		var row = virtual ?
-			(this._domain( 'physicalToVirtual', this.s.baseScrollTop ) + diff) / this.s.heights.row :
-			( diff / this.s.heights.row ) + this.s.baseRowTop;
-
-		return intParse || intParse === undefined ?
-			parseInt( row, 10 ) :
-			row;
-	},
-
-
-	/**
 	 * Calculate the row number that will be found at the given pixel position (y-scroll)
-	 *  @param {int} iRow Row index to scroll to
-	 *  @param {bool} [bAnimate=true] Animate the transition or not
+	 *  @param {int} row Row index to scroll to
+	 *  @param {bool} [animate=true] Animate the transition or not
 	 *  @returns {void}
-	 *  @example
-	 *    $(document).ready(function() {
-	 *      $('#example').dataTable( {
-	 *        "sScrollY": "200px",
-	 *        "sAjaxSource": "media/dataset/large.txt",
-	 *        "sDom": "frtiS",
-	 *        "bDeferRender": true,
-	 *        "fnInitComplete": function (o) {
-	 *          // Immediately scroll to row 1000
-	 *          o.oScroller.fnScrollToRow( 1000 );
-	 *        }
-	 *      } );
-	 *     
-	 *      // Sometime later on use the following to scroll to row 500...
-	 *          var oSettings = $('#example').dataTable().fnSettings();
-	 *      oSettings.oScroller.fnScrollToRow( 500 );
-	 *    } );
 	 */
-	"fnScrollToRow": function ( iRow, bAnimate )
+	scrollToRow: function ( row, animate )
 	{
 		var that = this;
 		var ani = false;
-		var px = this.fnRowToPixels( iRow );
+		var px = this.rowToPixels( row );
 
 		// We need to know if the table will redraw or not before doing the
 		// scroll. If it will not redraw, then we need to use the currently
@@ -87956,25 +89774,25 @@ $.extend( Scroller.prototype, {
 		// need to calculate the table's new position from the virtual
 		// transform.
 		var preRows = ((this.s.displayBuffer-1)/2) * this.s.viewportRows;
-		var drawRow = iRow - preRows;
+		var drawRow = row - preRows;
 		if ( drawRow < 0 ) {
 			drawRow = 0;
 		}
 
 		if ( (px > this.s.redrawBottom || px < this.s.redrawTop) && this.s.dt._iDisplayStart !== drawRow ) {
 			ani = true;
-			px = this._domain( 'virtualToPhysical', iRow * this.s.heights.row );
+			px = this._domain( 'virtualToPhysical', row * this.s.heights.row );
 
 			// If we need records outside the current draw region, but the new
 			// scrolling position is inside that (due to the non-linear nature
 			// for larger numbers of records), we need to force position update.
 			if ( this.s.redrawTop < px && px < this.s.redrawBottom ) {
 				this.s.forceReposition = true;
-				bAnimate = false;
+				animate = false;
 			}
 		}
 
-		if ( typeof bAnimate == 'undefined' || bAnimate )
+		if ( typeof animate == 'undefined' || animate )
 		{
 			this.s.ani = ani;
 			$(this.dom.scroller).animate( {
@@ -87994,100 +89812,16 @@ $.extend( Scroller.prototype, {
 	},
 
 
-	/**
-	 * Calculate and store information about how many rows are to be displayed
-	 * in the scrolling viewport, based on current dimensions in the browser's
-	 * rendering. This can be particularly useful if the table is initially
-	 * drawn in a hidden element - for example in a tab.
-	 *  @param {bool} [bRedraw=true] Redraw the table automatically after the recalculation, with
-	 *    the new dimensions forming the basis for the draw.
-	 *  @returns {void}
-	 *  @example
-	 *    $(document).ready(function() {
-	 *      // Make the example container hidden to throw off the browser's sizing
-	 *      document.getElementById('container').style.display = "none";
-	 *      var oTable = $('#example').dataTable( {
-	 *        "sScrollY": "200px",
-	 *        "sAjaxSource": "media/dataset/large.txt",
-	 *        "sDom": "frtiS",
-	 *        "bDeferRender": true,
-	 *        "fnInitComplete": function (o) {
-	 *          // Immediately scroll to row 1000
-	 *          o.oScroller.fnScrollToRow( 1000 );
-	 *        }
-	 *      } );
-	 *     
-	 *      setTimeout( function () {
-	 *        // Make the example container visible and recalculate the scroller sizes
-	 *        document.getElementById('container').style.display = "block";
-	 *        oTable.fnSettings().oScroller.fnMeasure();
-	 *      }, 3000 );
-	 */
-	"fnMeasure": function ( bRedraw )
-	{
-		if ( this.s.autoHeight )
-		{
-			this._fnCalcRowHeight();
-		}
-
-		var heights = this.s.heights;
-
-		if ( heights.row ) {
-			heights.viewport = $.contains(document, this.dom.scroller) ?
-				$(this.dom.scroller).height() :
-				this._parseHeight($(this.dom.scroller).css('height'));
-
-			// If collapsed (no height) use the max-height parameter
-			if ( ! heights.viewport ) {
-				heights.viewport = this._parseHeight($(this.dom.scroller).css('max-height'));
-			}
-
-			this.s.viewportRows = parseInt( heights.viewport / heights.row, 10 )+1;
-			this.s.dt._iDisplayLength = this.s.viewportRows * this.s.displayBuffer;
-		}
-
-		if ( bRedraw === undefined || bRedraw )
-		{
-			this.s.dt.oInstance.fnDraw( false );
-		}
-	},
-
-
-	/**
-	 * Get information about current displayed record range. This corresponds to
-	 * the information usually displayed in the "Info" block of the table.
-	 *
-	 * @returns {object} info as an object:
-	 *  {
-	 *      start: {int}, // the 0-indexed record at the top of the viewport
-	 *      end:   {int}, // the 0-indexed record at the bottom of the viewport
-	 *  }
-	*/
-	"fnPageInfo": function()
-	{
-		var 
-			dt = this.s.dt,
-			iScrollTop = this.dom.scroller.scrollTop,
-			iTotal = dt.fnRecordsDisplay(),
-			iPossibleEnd = Math.ceil(this.fnPixelsToRow(iScrollTop + this.s.heights.viewport, false, this.s.ani));
-
-		return {
-			start: Math.floor(this.fnPixelsToRow(iScrollTop, false, this.s.ani)),
-			end: iTotal < iPossibleEnd ? iTotal-1 : iPossibleEnd-1
-		};
-	},
-
-
 	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-	 * Private methods (they are of course public in JS, but recommended as private)
-	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+	 * Constructor
+	 */
 
 	/**
 	 * Initialisation for Scroller
 	 *  @returns {void}
 	 *  @private
 	 */
-	"_fnConstruct": function ()
+	construct: function ()
 	{
 		var that = this;
 		var dt = this.s.dtApi;
@@ -88116,12 +89850,12 @@ $.extend( Scroller.prototype, {
 		this.dom.table.style.left = "0px";
 
 		// Add class to 'announce' that we are a Scroller table
-		$(dt.table().container()).addClass('DTS');
+		$(dt.table().container()).addClass('dts DTS');
 
 		// Add a 'loading' indicator
 		if ( this.s.loadingIndicator )
 		{
-			this.dom.loader = $('<div class="dataTables_processing DTS_Loading">'+this.s.dt.oLanguage.sLoadingRecords+'</div>')
+			this.dom.loader = $('<div class="dataTables_processing dts_loading">'+this.s.dt.oLanguage.sLoadingRecords+'</div>')
 				.css('display', 'none');
 
 			$(this.dom.scroller.parentNode)
@@ -88129,12 +89863,14 @@ $.extend( Scroller.prototype, {
 				.append( this.dom.loader );
 		}
 
+		this.dom.label.appendTo(this.dom.scroller);
+
 		/* Initial size calculations */
 		if ( this.s.heights.row && this.s.heights.row != 'auto' )
 		{
 			this.s.autoHeight = false;
 		}
-		this.fnMeasure( false );
+		this.measure( false );
 
 		// Scrolling callback to see if a page change is needed - use a throttled
 		// function for the save save callback so we aren't hitting it on every
@@ -88144,19 +89880,28 @@ $.extend( Scroller.prototype, {
 			that.s.dtApi.state.save();
 		}, 500 );
 		$(this.dom.scroller).on( 'scroll.dt-scroller', function (e) {
-			that._fnScroll.call( that );
+			that._scroll.call( that );
 		} );
 
 		// In iOS we catch the touchstart event in case the user tries to scroll
 		// while the display is already scrolling
 		$(this.dom.scroller).on('touchstart.dt-scroller', function () {
-			that._fnScroll.call( that );
+			that._scroll.call( that );
 		} );
+
+		$(this.dom.scroller)
+			.on('mousedown.dt-scroller', function () {
+				that.s.mousedown = true;
+			})
+			.on('mouseup.dt-scroller', function () {
+				that.s.mouseup = false;
+				that.dom.label.css('display', 'none');
+			});
 
 		// On resize, update the information element, since the number of rows shown might change
 		$(window).on( 'resize.dt-scroller', function () {
-			that.fnMeasure( false );
-			that._fnInfo();
+			that.measure( false );
+			that._info();
 		} );
 
 		// Add a state saving parameter to the DT state saving so we can restore the exact
@@ -88186,20 +89931,20 @@ $.extend( Scroller.prototype, {
 		}
 
 		dt.on( 'init.scroller', function () {
-			that.fnMeasure( false );
+			that.measure( false );
 
-			that._fnDrawCallback();
+			that._draw();
 
 			// Update the scroller when the DataTable is redrawn
 			dt.on( 'draw.scroller', function () {
-				that._fnDrawCallback();
+				that._draw();
 			});
 		} );
 
 		// Set height before the draw happens, allowing everything else to update
 		// on draw complete without worry for roder.
 		dt.on( 'preDraw.dt.scroller', function () {
-			that._fnScrollForce();
+			that._scrollForce();
 		} );
 
 		// Destructor
@@ -88218,216 +89963,61 @@ $.extend( Scroller.prototype, {
 	},
 
 
+	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+	 * Private methods
+	 */
+
 	/**
-	 * Scrolling function - fired whenever the scrolling position is changed.
-	 * This method needs to use the stored values to see if the table should be
-	 * redrawn as we are moving towards the end of the information that is
-	 * currently drawn or not. If needed, then it will redraw the table based on
-	 * the new position.
+	 * Automatic calculation of table row height. This is just a little tricky here as using
+	 * initialisation DataTables has tale the table out of the document, so we need to create
+	 * a new table and insert it into the document, calculate the row height and then whip the
+	 * table out.
 	 *  @returns {void}
 	 *  @private
 	 */
-	"_fnScroll": function ()
+	_calcRowHeight: function ()
 	{
-		var
-			that = this,
-			heights = this.s.heights,
-			iScrollTop = this.dom.scroller.scrollTop,
-			iTopRow;
+		var dt = this.s.dt;
+		var origTable = dt.nTable;
+		var nTable = origTable.cloneNode( false );
+		var tbody = $('<tbody/>').appendTo( nTable );
+		var container = $(
+			'<div class="'+dt.oClasses.sWrapper+' DTS">'+
+				'<div class="'+dt.oClasses.sScrollWrapper+'">'+
+					'<div class="'+dt.oClasses.sScrollBody+'"></div>'+
+				'</div>'+
+			'</div>'
+		);
 
-		if ( this.s.skip ) {
-			return;
-		}
+		// Want 3 rows in the sizing table so :first-child and :last-child
+		// CSS styles don't come into play - take the size of the middle row
+		$('tbody tr:lt(4)', origTable).clone().appendTo( tbody );
+        var rowsCount = $('tr', tbody).length;
 
-		if ( this.s.ingnoreScroll ) {
-			return;
-		}
-
-		/* If the table has been sorted or filtered, then we use the redraw that
-		 * DataTables as done, rather than performing our own
-		 */
-		if ( this.s.dt.bFiltered || this.s.dt.bSorted ) {
-			this.s.lastScrollTop = 0;
-			return;
-		}
-
-		/* Update the table's information display for what is now in the viewport */
-		this._fnInfo();
-
-		/* We don't want to state save on every scroll event - that's heavy
-		 * handed, so use a timeout to update the state saving only when the
-		 * scrolling has finished
-		 */
-		clearTimeout( this.s.stateTO );
-		this.s.stateTO = setTimeout( function () {
-			that.s.dtApi.state.save();
-		}, 250 );
-
-		/* Check if the scroll point is outside the trigger boundary which would required
-		 * a DataTables redraw
-		 */
-		if ( this.s.forceReposition || iScrollTop < this.s.redrawTop || iScrollTop > this.s.redrawBottom ) {
-
-			var preRows = Math.ceil( ((this.s.displayBuffer-1)/2) * this.s.viewportRows );
-
-			iTopRow = parseInt(this._domain( 'physicalToVirtual', iScrollTop ) / heights.row, 10) - preRows;
-			this.s.topRowFloat = this._domain( 'physicalToVirtual', iScrollTop ) / heights.row;
-			this.s.forceReposition = false;
-
-			if ( iTopRow <= 0 ) {
-				/* At the start of the table */
-				iTopRow = 0;
-			}
-			else if ( iTopRow + this.s.dt._iDisplayLength > this.s.dt.fnRecordsDisplay() ) {
-				/* At the end of the table */
-				iTopRow = this.s.dt.fnRecordsDisplay() - this.s.dt._iDisplayLength;
-				if ( iTopRow < 0 ) {
-					iTopRow = 0;
-				}
-			}
-			else if ( iTopRow % 2 !== 0 ) {
-				// For the row-striping classes (odd/even) we want only to start
-				// on evens otherwise the stripes will change between draws and
-				// look rubbish
-				iTopRow++;
-			}
-
-			if ( iTopRow != this.s.dt._iDisplayStart ) {
-				/* Cache the new table position for quick lookups */
-				this.s.tableTop = $(this.s.dt.nTable).offset().top;
-				this.s.tableBottom = $(this.s.dt.nTable).height() + this.s.tableTop;
-
-				var draw =  function () {
-					if ( that.s.scrollDrawReq === null ) {
-						that.s.scrollDrawReq = iScrollTop;
-					}
-
-					that.s.dt._iDisplayStart = iTopRow;
-					that.s.dt.oApi._fnDraw( that.s.dt );
-				};
-
-				/* Do the DataTables redraw based on the calculated start point - note that when
-				 * using server-side processing we introduce a small delay to not DoS the server...
-				 */
-				if ( this.s.dt.oFeatures.bServerSide ) {
-					clearTimeout( this.s.drawTO );
-					this.s.drawTO = setTimeout( draw, this.s.serverWait );
-				}
-				else {
-					draw();
-				}
-
-				if ( this.dom.loader && ! this.s.loaderVisible ) {
-					this.dom.loader.css( 'display', 'block' );
-					this.s.loaderVisible = true;
-				}
-			}
+        if ( rowsCount === 1 ) {
+            tbody.prepend('<tr><td>&#160;</td></tr>');
+            tbody.append('<tr><td>&#160;</td></tr>');
 		}
 		else {
-			this.s.topRowFloat = this.fnPixelsToRow( iScrollTop, false, true );
+            for (; rowsCount < 3; rowsCount++) {
+                tbody.append('<tr><td>&#160;</td></tr>');
+            }
+		}
+	
+		$('div.'+dt.oClasses.sScrollBody, container).append( nTable );
+
+		// If initialised using `dom`, use the holding element as the insert point
+		var insertEl = this.s.dt.nHolding || origTable.parentNode;
+
+		if ( ! $(insertEl).is(':visible') ) {
+			insertEl = 'body';
 		}
 
-		this.s.lastScrollTop = iScrollTop;
-		this.s.stateSaveThrottle();
+		container.appendTo( insertEl );
+		this.s.heights.row = $('tr', tbody).eq(1).outerHeight();
+
+		container.remove();
 	},
-
-
-	/**
-	 * Convert from one domain to another. The physical domain is the actual
-	 * pixel count on the screen, while the virtual is if we had browsers which
-	 * had scrolling containers of infinite height (i.e. the absolute value)
-	 *
-	 *  @param {string} dir Domain transform direction, `virtualToPhysical` or
-	 *    `physicalToVirtual` 
-	 *  @returns {number} Calculated transform
-	 *  @private
-	 */
-	_domain: function ( dir, val )
-	{
-		var heights = this.s.heights;
-		var coeff;
-
-		// If the virtual and physical height match, then we use a linear
-		// transform between the two, allowing the scrollbar to be linear
-		if ( heights.virtual === heights.scroll ) {
-			return val;
-		}
-
-		// Otherwise, we want a non-linear scrollbar to take account of the
-		// redrawing regions at the start and end of the table, otherwise these
-		// can stutter badly - on large tables 30px (for example) scroll might
-		// be hundreds of rows, so the table would be redrawing every few px at
-		// the start and end. Use a simple quadratic to stop this. It does mean
-		// the scrollbar is non-linear, but with such massive data sets, the
-		// scrollbar is going to be a best guess anyway
-		var xMax = (heights.scroll - heights.viewport) / 2;
-		var yMax = (heights.virtual - heights.viewport) / 2;
-
-		coeff = yMax / ( xMax * xMax );
-
-		if ( dir === 'virtualToPhysical' ) {
-			if ( val < yMax ) {
-				return Math.pow(val / coeff, 0.5);
-			}
-			else {
-				val = (yMax*2) - val;
-				return val < 0 ?
-					heights.scroll :
-					(xMax*2) - Math.pow(val / coeff, 0.5);
-			}
-		}
-		else if ( dir === 'physicalToVirtual' ) {
-			if ( val < xMax ) {
-				return val * val * coeff;
-			}
-			else {
-				val = (xMax*2) - val;
-				return val < 0 ?
-					heights.virtual :
-					(yMax*2) - (val * val * coeff);
-			}
-		}
-	},
-
-	/**
-	 * Parse CSS height property string as number
-	 *
-	 * An attempt is made to parse the string as a number. Currently supported units are 'px',
-	 * 'vh', and 'rem'. 'em' is partially supported; it works as long as the parent element's
-	 * font size matches the body element. Zero is returned for unrecognized strings.
-	 *  @param {string} cssHeight CSS height property string
-	 *  @returns {number} height
-	 *  @private
-	 */
-	_parseHeight: function(cssHeight) {
-		var height;
-		var matches = /^([+-]?(?:\d+(?:\.\d+)?|\.\d+))(px|em|rem|vh)$/.exec(cssHeight);
-
-		if (matches === null) {
-			return 0;
-		}
-
-		var value = parseFloat(matches[1]);
-		var unit = matches[2];
-
-		if ( unit === 'px' ) {
-			height = value;
-		}
-		else if ( unit === 'vh' ) {
-			height = ( value / 100 ) * $(window).height();
-		}
-		else if ( unit === 'rem' ) {
-			height = value * parseFloat($(':root').css('font-size'));
-		}
-		else if ( unit === 'em' ) {
-			height = value * parseFloat($('body').css('font-size'));
-		}
-
-		return height ?
-			height :
-			0;
-	},
-
 
 	/**
 	 * Draw callback function which is fired when the DataTable is redrawn. The main function of
@@ -88436,7 +90026,7 @@ $.extend( Scroller.prototype, {
 	 *  @returns {void}
 	 *  @private
 	 */
-	"_fnDrawCallback": function ()
+	_draw: function ()
 	{
 		var
 			that = this,
@@ -88453,25 +90043,16 @@ $.extend( Scroller.prototype, {
 		this.s.skip = true;
 
 		// If paging is reset
-		if ( (this.s.dt.bSorted || this.s.dt.bFiltered) && displayStart === 0 ) {
+		if ( (this.s.dt.bSorted || this.s.dt.bFiltered) && displayStart === 0 && !this.s.dt._drawHold ) {
 			this.s.topRowFloat = 0;
 		}
 
-		// Reposition the scrolling for the updated virtual position if needed
-		if ( displayStart === 0 ) {
-			// Linear calculation at the top of the table
-			iScrollTop = this.s.topRowFloat * heights.row;
-		}
-		else if ( displayStart + displayLen >= displayEnd ) {
-			// Linear calculation that the bottom as well
-			iScrollTop = heights.scroll - ((displayEnd - this.s.topRowFloat) * heights.row);
-		}
-		else {
-			// Domain scaled in the middle
-			iScrollTop = this._domain( 'virtualToPhysical', this.s.topRowFloat * heights.row );
-		}
+		iScrollTop = this.scrollType === 'jump' ?
+			this._domain( 'physicalToVirtual', this.s.topRowFloat * heights.row ) :
+			iScrollTop;
 
-		this.dom.scroller.scrollTop = iScrollTop;
+		// This doesn't work when scrolling with the mouse wheel
+		$(that.dom.scroller).scrollTop(iScrollTop);
 
 		// Store positional information so positional calculations can be based
 		// upon the current table draw position
@@ -88539,7 +90120,7 @@ $.extend( Scroller.prototype, {
 		// needed.  Only add the thread break if bInfo is set
 		if ( this.s.dt.oFeatures.bInfo ) {
 			setTimeout( function () {
-				that._fnInfo.call( that );
+				that._info.call( that );
 			}, 0 );
 		}
 
@@ -88550,82 +90131,63 @@ $.extend( Scroller.prototype, {
 		}
 	},
 
-
 	/**
-	 * Force the scrolling container to have height beyond that of just the
-	 * table that has been drawn so the user can scroll the whole data set.
+	 * Convert from one domain to another. The physical domain is the actual
+	 * pixel count on the screen, while the virtual is if we had browsers which
+	 * had scrolling containers of infinite height (i.e. the absolute value)
 	 *
-	 * Note that if the calculated required scrolling height exceeds a maximum
-	 * value (1 million pixels - hard-coded) the forcing element will be set
-	 * only to that maximum value and virtual / physical domain transforms will
-	 * be used to allow Scroller to display tables of any number of records.
-	 *  @returns {void}
+	 *  @param {string} dir Domain transform direction, `virtualToPhysical` or
+	 *    `physicalToVirtual` 
+	 *  @returns {number} Calculated transform
 	 *  @private
 	 */
-	_fnScrollForce: function ()
+	_domain: function ( dir, val )
 	{
 		var heights = this.s.heights;
-		var max = 1000000;
+		var diff;
+		var magic = 10000; // the point at which the non-linear calculations start to happen
 
-		heights.virtual = heights.row * this.s.dt.fnRecordsDisplay();
-		heights.scroll = heights.virtual;
-
-		if ( heights.scroll > max ) {
-			heights.scroll = max;
+		// If the virtual and physical height match, then we use a linear
+		// transform between the two, allowing the scrollbar to be linear
+		if ( heights.virtual === heights.scroll ) {
+			return val;
 		}
 
-		// Minimum height so there is always a row visible (the 'no rows found'
-		// if reduced to zero filtering)
-		this.dom.force.style.height = heights.scroll > this.s.heights.row ?
-			heights.scroll+'px' :
-			this.s.heights.row+'px';
+		// In the first 10k pixels and the last 10k pixels, we want the scrolling
+		// to be linear. After that it can be non-linear. It would be unusual for
+		// anyone to mouse wheel through that much.
+		if ( val < magic ) {
+			return val;
+		}
+		else if ( dir === 'virtualToPhysical' && val > heights.virtual - magic ) {
+			diff = heights.virtual - val;
+			return heights.scroll - diff;
+		}
+		else if ( dir === 'physicalToVirtual' && val > heights.scroll - magic ) {
+			diff = heights.scroll - val;
+			return heights.virtual - diff;
+		}
+
+		// Otherwise, we want a non-linear scrollbar to take account of the
+		// redrawing regions at the start and end of the table, otherwise these
+		// can stutter badly - on large tables 30px (for example) scroll might
+		// be hundreds of rows, so the table would be redrawing every few px at
+		// the start and end. Use a simple linear eq. to stop this, effectively
+		// causing a kink in the scrolling ratio. It does mean the scrollbar is
+		// non-linear, but with such massive data sets, the scrollbar is going
+		// to be a best guess anyway
+		var xMax = dir === 'virtualToPhysical' ?
+			heights.virtual :
+			heights.scroll;
+		var yMax = dir === 'virtualToPhysical' ?
+			heights.scroll :
+			heights.virtual;
+
+		var m = (yMax - magic) / (xMax - magic);
+		var c = magic - (m*magic);
+
+		return (m*val) + c;
 	},
-
-
-	/**
-	 * Automatic calculation of table row height. This is just a little tricky here as using
-	 * initialisation DataTables has tale the table out of the document, so we need to create
-	 * a new table and insert it into the document, calculate the row height and then whip the
-	 * table out.
-	 *  @returns {void}
-	 *  @private
-	 */
-	"_fnCalcRowHeight": function ()
-	{
-		var dt = this.s.dt;
-		var origTable = dt.nTable;
-		var nTable = origTable.cloneNode( false );
-		var tbody = $('<tbody/>').appendTo( nTable );
-		var container = $(
-			'<div class="'+dt.oClasses.sWrapper+' DTS">'+
-				'<div class="'+dt.oClasses.sScrollWrapper+'">'+
-					'<div class="'+dt.oClasses.sScrollBody+'"></div>'+
-				'</div>'+
-			'</div>'
-		);
-
-		// Want 3 rows in the sizing table so :first-child and :last-child
-		// CSS styles don't come into play - take the size of the middle row
-		$('tbody tr:lt(4)', origTable).clone().appendTo( tbody );
-		while( $('tr', tbody).length < 3 ) {
-			tbody.append( '<tr><td>&nbsp;</td></tr>' );
-		}
-
-		$('div.'+dt.oClasses.sScrollBody, container).append( nTable );
-
-		// If initialised using `dom`, use the holding element as the insert point
-		var insertEl = this.s.dt.nHolding || origTable.parentNode;
-
-		if ( ! $(insertEl).is(':visible') ) {
-			insertEl = 'body';
-		}
-
-		container.appendTo( insertEl );
-		this.s.heights.row = $('tr', tbody).eq(1).outerHeight();
-
-		container.remove();
-	},
-
 
 	/**
 	 * Update any information elements that are controlled by the DataTable based on the scrolling
@@ -88634,7 +90196,7 @@ $.extend( Scroller.prototype, {
 	 *  @returns {void}
 	 *  @private
 	 */
-	"_fnInfo": function ()
+	_info: function ()
 	{
 		if ( !this.s.dt.oFeatures.bInfo )
 		{
@@ -88645,10 +90207,10 @@ $.extend( Scroller.prototype, {
 			dt = this.s.dt,
 			language = dt.oLanguage,
 			iScrollTop = this.dom.scroller.scrollTop,
-			iStart = Math.floor( this.fnPixelsToRow(iScrollTop, false, this.s.ani)+1 ),
+			iStart = Math.floor( this.pixelsToRow(iScrollTop, false, this.s.ani)+1 ),
 			iMax = dt.fnRecordsTotal(),
 			iTotal = dt.fnRecordsDisplay(),
-			iPossibleEnd = Math.ceil( this.fnPixelsToRow(iScrollTop+this.s.heights.viewport, false, this.s.ani) ),
+			iPossibleEnd = Math.ceil( this.pixelsToRow(iScrollTop+this.s.heights.viewport, false, this.s.ani) ),
 			iEnd = iTotal < iPossibleEnd ? iTotal : iPossibleEnd,
 			sStart = dt.fnFormatNumber( iStart ),
 			sEnd = dt.fnFormatNumber( iEnd ),
@@ -88712,6 +90274,210 @@ $.extend( Scroller.prototype, {
 
 		// DT doesn't actually (yet) trigger this event, but it will in future
 		$(dt.nTable).triggerHandler( 'info.dt' );
+	},
+
+	/**
+	 * Parse CSS height property string as number
+	 *
+	 * An attempt is made to parse the string as a number. Currently supported units are 'px',
+	 * 'vh', and 'rem'. 'em' is partially supported; it works as long as the parent element's
+	 * font size matches the body element. Zero is returned for unrecognized strings.
+	 *  @param {string} cssHeight CSS height property string
+	 *  @returns {number} height
+	 *  @private
+	 */
+	_parseHeight: function(cssHeight) {
+		var height;
+		var matches = /^([+-]?(?:\d+(?:\.\d+)?|\.\d+))(px|em|rem|vh)$/.exec(cssHeight);
+
+		if (matches === null) {
+			return 0;
+		}
+
+		var value = parseFloat(matches[1]);
+		var unit = matches[2];
+
+		if ( unit === 'px' ) {
+			height = value;
+		}
+		else if ( unit === 'vh' ) {
+			height = ( value / 100 ) * $(window).height();
+		}
+		else if ( unit === 'rem' ) {
+			height = value * parseFloat($(':root').css('font-size'));
+		}
+		else if ( unit === 'em' ) {
+			height = value * parseFloat($('body').css('font-size'));
+		}
+
+		return height ?
+			height :
+			0;
+	},
+
+	/**
+	 * Scrolling function - fired whenever the scrolling position is changed.
+	 * This method needs to use the stored values to see if the table should be
+	 * redrawn as we are moving towards the end of the information that is
+	 * currently drawn or not. If needed, then it will redraw the table based on
+	 * the new position.
+	 *  @returns {void}
+	 *  @private
+	 */
+	_scroll: function ()
+	{
+		var
+			that = this,
+			heights = this.s.heights,
+			iScrollTop = this.dom.scroller.scrollTop,
+			iTopRow;
+
+		if ( this.s.skip ) {
+			return;
+		}
+
+		if ( this.s.ingnoreScroll ) {
+			return;
+		}
+
+		if ( iScrollTop === this.s.lastScrollTop ) {
+			return;
+		}
+
+		/* If the table has been sorted or filtered, then we use the redraw that
+		 * DataTables as done, rather than performing our own
+		 */
+		if ( this.s.dt.bFiltered || this.s.dt.bSorted ) {
+			this.s.lastScrollTop = 0;
+			return;
+		}
+
+		/* Update the table's information display for what is now in the viewport */
+		this._info();
+
+		/* We don't want to state save on every scroll event - that's heavy
+		 * handed, so use a timeout to update the state saving only when the
+		 * scrolling has finished
+		 */
+		clearTimeout( this.s.stateTO );
+		this.s.stateTO = setTimeout( function () {
+			that.s.dtApi.state.save();
+		}, 250 );
+
+		this.s.scrollType = Math.abs(iScrollTop - this.s.lastScrollTop) > heights.viewport ?
+			'jump' :
+			'cont';
+
+		this.s.topRowFloat = this.s.scrollType === 'cont' ?
+			this.pixelsToRow( iScrollTop, false, false ) :
+			this._domain( 'physicalToVirtual', iScrollTop ) / heights.row;
+
+		if ( this.s.topRowFloat < 0 ) {
+			this.s.topRowFloat = 0;
+		}
+
+		/* Check if the scroll point is outside the trigger boundary which would required
+		 * a DataTables redraw
+		 */
+		if ( this.s.forceReposition || iScrollTop < this.s.redrawTop || iScrollTop > this.s.redrawBottom ) {
+			var preRows = Math.ceil( ((this.s.displayBuffer-1)/2) * this.s.viewportRows );
+
+			iTopRow = parseInt(this.s.topRowFloat, 10) - preRows;
+			this.s.forceReposition = false;
+
+			if ( iTopRow <= 0 ) {
+				/* At the start of the table */
+				iTopRow = 0;
+			}
+			else if ( iTopRow + this.s.dt._iDisplayLength > this.s.dt.fnRecordsDisplay() ) {
+				/* At the end of the table */
+				iTopRow = this.s.dt.fnRecordsDisplay() - this.s.dt._iDisplayLength;
+				if ( iTopRow < 0 ) {
+					iTopRow = 0;
+				}
+			}
+			else if ( iTopRow % 2 !== 0 ) {
+				// For the row-striping classes (odd/even) we want only to start
+				// on evens otherwise the stripes will change between draws and
+				// look rubbish
+				iTopRow++;
+			}
+
+
+			if ( iTopRow != this.s.dt._iDisplayStart ) {
+				/* Cache the new table position for quick lookups */
+				this.s.tableTop = $(this.s.dt.nTable).offset().top;
+				this.s.tableBottom = $(this.s.dt.nTable).height() + this.s.tableTop;
+
+				var draw =  function () {
+					if ( that.s.scrollDrawReq === null ) {
+						that.s.scrollDrawReq = iScrollTop;
+					}
+
+					that.s.dt._iDisplayStart = iTopRow;
+					that.s.dt.oApi._fnDraw( that.s.dt );
+				};
+
+				/* Do the DataTables redraw based on the calculated start point - note that when
+				 * using server-side processing we introduce a small delay to not DoS the server...
+				 */
+				if ( this.s.dt.oFeatures.bServerSide ) {
+					clearTimeout( this.s.drawTO );
+					this.s.drawTO = setTimeout( draw, this.s.serverWait );
+				}
+				else {
+					draw();
+				}
+
+				if ( this.dom.loader && ! this.s.loaderVisible ) {
+					this.dom.loader.css( 'display', 'block' );
+					this.s.loaderVisible = true;
+				}
+			}
+		}
+		else {
+			this.s.topRowFloat = this.pixelsToRow( iScrollTop, false, true );
+		}
+
+		this.s.lastScrollTop = iScrollTop;
+		this.s.stateSaveThrottle();
+
+		if ( this.s.scrollType === 'jump' && this.s.mousedown ) {
+			this.dom.label
+				.html( this.s.dt.fnFormatNumber( parseInt( this.s.topRowFloat, 10 )+1 ) )
+				.css( 'top', iScrollTop + (iScrollTop * heights.labelFactor ) )
+				.css( 'display', 'block' );
+		}
+	},
+
+	/**
+	 * Force the scrolling container to have height beyond that of just the
+	 * table that has been drawn so the user can scroll the whole data set.
+	 *
+	 * Note that if the calculated required scrolling height exceeds a maximum
+	 * value (1 million pixels - hard-coded) the forcing element will be set
+	 * only to that maximum value and virtual / physical domain transforms will
+	 * be used to allow Scroller to display tables of any number of records.
+	 *  @returns {void}
+	 *  @private
+	 */
+	_scrollForce: function ()
+	{
+		var heights = this.s.heights;
+		var max = 1000000;
+
+		heights.virtual = heights.row * this.s.dt.fnRecordsDisplay();
+		heights.scroll = heights.virtual;
+
+		if ( heights.scroll > max ) {
+			heights.scroll = max;
+		}
+
+		// Minimum height so there is always a row visible (the 'no rows found'
+		// if reduced to zero filtering)
+		this.dom.force.style.height = heights.scroll > this.s.heights.row ?
+			heights.scroll+'px' :
+			this.s.heights.row+'px';
 	}
 } );
 
@@ -88728,62 +90494,19 @@ $.extend( Scroller.prototype, {
  *  @name Scroller.defaults
  *  @static
  */
-Scroller.defaults = /** @lends Scroller.defaults */{
+Scroller.defaults = {
 	/**
-	 * Indicate if Scroller show show trace information on the console or not. This can be
-	 * useful when debugging Scroller or if just curious as to what it is doing, but should
-	 * be turned off for production.
-	 *  @type     bool
-	 *  @default  false
+	 * Scroller uses the boundary scaling factor to decide when to redraw the table - which it
+	 * typically does before you reach the end of the currently loaded data set (in order to
+	 * allow the data to look continuous to a user scrolling through the data). If given as 0
+	 * then the table will be redrawn whenever the viewport is scrolled, while 1 would not
+	 * redraw the table until the currently loaded data has all been shown. You will want
+	 * something in the middle - the default factor of 0.5 is usually suitable.
+	 *  @type     float
+	 *  @default  0.5
 	 *  @static
-	 *  @example
-	 *    var oTable = $('#example').dataTable( {
-	 *        "sScrollY": "200px",
-	 *        "sDom": "frtiS",
-	 *        "bDeferRender": true,
-	 *        "oScroller": {
-	 *          "trace": true
-	 *        }
-	 *    } );
 	 */
-	"trace": false,
-
-	/**
-	 * Scroller will attempt to automatically calculate the height of rows for it's internal
-	 * calculations. However the height that is used can be overridden using this parameter.
-	 *  @type     int|string
-	 *  @default  auto
-	 *  @static
-	 *  @example
-	 *    var oTable = $('#example').dataTable( {
-	 *        "sScrollY": "200px",
-	 *        "sDom": "frtiS",
-	 *        "bDeferRender": true,
-	 *        "oScroller": {
-	 *          "rowHeight": 30
-	 *        }
-	 *    } );
-	 */
-	"rowHeight": "auto",
-
-	/**
-	 * When using server-side processing, Scroller will wait a small amount of time to allow
-	 * the scrolling to finish before requesting more data from the server. This prevents
-	 * you from DoSing your own server! The wait time can be configured by this parameter.
-	 *  @type     int
-	 *  @default  200
-	 *  @static
-	 *  @example
-	 *    var oTable = $('#example').dataTable( {
-	 *        "sScrollY": "200px",
-	 *        "sDom": "frtiS",
-	 *        "bDeferRender": true,
-	 *        "oScroller": {
-	 *          "serverWait": 100
-	 *        }
-	 *    } );
-	 */
-	"serverWait": 200,
+	boundaryScale: 0.5,
 
 	/**
 	 * The display buffer is what Scroller uses to calculate how many rows it should pre-fetch
@@ -88798,39 +90521,8 @@ Scroller.defaults = /** @lends Scroller.defaults */{
 	 *  @type     int
 	 *  @default  7
 	 *  @static
-	 *  @example
-	 *    var oTable = $('#example').dataTable( {
-	 *        "sScrollY": "200px",
-	 *        "sDom": "frtiS",
-	 *        "bDeferRender": true,
-	 *        "oScroller": {
-	 *          "displayBuffer": 10
-	 *        }
-	 *    } );
 	 */
-	"displayBuffer": 9,
-
-	/**
-	 * Scroller uses the boundary scaling factor to decide when to redraw the table - which it
-	 * typically does before you reach the end of the currently loaded data set (in order to
-	 * allow the data to look continuous to a user scrolling through the data). If given as 0
-	 * then the table will be redrawn whenever the viewport is scrolled, while 1 would not
-	 * redraw the table until the currently loaded data has all been shown. You will want
-	 * something in the middle - the default factor of 0.5 is usually suitable.
-	 *  @type     float
-	 *  @default  0.5
-	 *  @static
-	 *  @example
-	 *    var oTable = $('#example').dataTable( {
-	 *        "sScrollY": "200px",
-	 *        "sDom": "frtiS",
-	 *        "bDeferRender": true,
-	 *        "oScroller": {
-	 *          "boundaryScale": 0.75
-	 *        }
-	 *    } );
-	 */
-	"boundaryScale": 0.5,
+	displayBuffer: 9,
 
 	/**
 	 * Show (or not) the loading element in the background of the table. Note that you should
@@ -88838,17 +90530,27 @@ Scroller.defaults = /** @lends Scroller.defaults */{
 	 *  @type     boolean
 	 *  @default  false
 	 *  @static
-	 *  @example
-	 *    var oTable = $('#example').dataTable( {
-	 *        "sScrollY": "200px",
-	 *        "sDom": "frtiS",
-	 *        "bDeferRender": true,
-	 *        "oScroller": {
-	 *          "loadingIndicator": true
-	 *        }
-	 *    } );
 	 */
-	"loadingIndicator": false
+	loadingIndicator: false,
+
+	/**
+	 * Scroller will attempt to automatically calculate the height of rows for it's internal
+	 * calculations. However the height that is used can be overridden using this parameter.
+	 *  @type     int|string
+	 *  @default  auto
+	 *  @static
+	 */
+	rowHeight: "auto",
+
+	/**
+	 * When using server-side processing, Scroller will wait a small amount of time to allow
+	 * the scrolling to finish before requesting more data from the server. This prevents
+	 * you from DoSing your own server! The wait time can be configured by this parameter.
+	 *  @type     int
+	 *  @default  200
+	 *  @static
+	 */
+	serverWait: 200
 };
 
 Scroller.oDefaults = Scroller.defaults;
@@ -88866,34 +90568,13 @@ Scroller.oDefaults = Scroller.defaults;
  *  @name      Scroller.version
  *  @static
  */
-Scroller.version = "1.5.0";
+Scroller.version = "2.0.0";
 
 
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * Initialisation
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-
-// Legacy `dom` parameter initialisation support
-if ( typeof $.fn.dataTable == "function" &&
-     typeof $.fn.dataTableExt.fnVersionCheck == "function" &&
-     $.fn.dataTableExt.fnVersionCheck('1.10.0') )
-{
-	$.fn.dataTableExt.aoFeatures.push( {
-		"fnInit": function( oDTSettings ) {
-			var init = oDTSettings.oInit;
-			var opts = init.scroller || init.oScroller || {};
-			
-			new Scroller( oDTSettings, opts );
-		},
-		"cFeature": "S",
-		"sFeature": "Scroller"
-	} );
-}
-else
-{
-	alert( "Warning: Scroller requires DataTables 1.10.0 or greater - www.datatables.net/download");
-}
 
 // Attach a listener to the document which listens for DataTables initialisation
 // events so we can automatically initialise
@@ -88932,7 +90613,7 @@ Api.register( 'scroller().rowToPixels()', function ( rowIdx, intParse, virtual )
 	var ctx = this.context;
 
 	if ( ctx.length && ctx[0].oScroller ) {
-		return ctx[0].oScroller.fnRowToPixels( rowIdx, intParse, virtual );
+		return ctx[0].oScroller.rowToPixels( rowIdx, intParse, virtual );
 	}
 	// undefined
 } );
@@ -88942,7 +90623,7 @@ Api.register( 'scroller().pixelsToRow()', function ( pixels, intParse, virtual )
 	var ctx = this.context;
 
 	if ( ctx.length && ctx[0].oScroller ) {
-		return ctx[0].oScroller.fnPixelsToRow( pixels, intParse, virtual );
+		return ctx[0].oScroller.pixelsToRow( pixels, intParse, virtual );
 	}
 	// undefined
 } );
@@ -88951,7 +90632,7 @@ Api.register( 'scroller().pixelsToRow()', function ( pixels, intParse, virtual )
 Api.register( ['scroller().scrollToRow()', 'scroller.toPosition()'], function ( idx, ani ) {
 	this.iterator( 'table', function ( ctx ) {
 		if ( ctx.oScroller ) {
-			ctx.oScroller.fnScrollToRow( idx, ani );
+			ctx.oScroller.scrollToRow( idx, ani );
 		}
 	} );
 
@@ -88968,7 +90649,7 @@ Api.register( 'row().scrollTo()', function ( ani ) {
 				.indexes()
 				.indexOf( rowIdx );
 
-			ctx.oScroller.fnScrollToRow( displayIdx, ani );
+			ctx.oScroller.scrollToRow( displayIdx, ani );
 		}
 	} );
 
@@ -88978,7 +90659,7 @@ Api.register( 'row().scrollTo()', function ( ani ) {
 Api.register( 'scroller.measure()', function ( redraw ) {
 	this.iterator( 'table', function ( ctx ) {
 		if ( ctx.oScroller ) {
-			ctx.oScroller.fnMeasure( redraw );
+			ctx.oScroller.measure( redraw );
 		}
 	} );
 
@@ -88989,7 +90670,7 @@ Api.register( 'scroller.page()', function() {
 	var ctx = this.context;
 
 	if ( ctx.length && ctx[0].oScroller ) {
-		return ctx[0].oScroller.fnPageInfo();
+		return ctx[0].oScroller.pageInfo();
 	}
 	// undefined
 } );
@@ -88998,7 +90679,7 @@ return Scroller;
 }));
 
 
-/*! Select for DataTables 1.2.6
+/*! Select for DataTables 1.3.0
  * 2015-2018 SpryMedia Ltd - datatables.net/license/mit
  */
 
@@ -89006,7 +90687,7 @@ return Scroller;
  * @summary     Select for DataTables
  * @description A collection of API methods, events and buttons for DataTables
  *   that provides selection options of the items in a DataTable
- * @version     1.2.6
+ * @version     1.3.0
  * @file        dataTables.select.js
  * @author      SpryMedia Ltd (www.sprymedia.co.uk)
  * @contact     datatables.net/forums
@@ -89054,7 +90735,7 @@ var DataTable = $.fn.dataTable;
 // Version information for debugger
 DataTable.select = {};
 
-DataTable.select.version = '1.2.6';
+DataTable.select.version = '1.3.0';
 
 DataTable.select.init = function ( dt ) {
 	var ctx = dt.settings()[0];
@@ -89099,6 +90780,10 @@ DataTable.select.init = function ( dt ) {
 
 		if ( opts.style !== undefined ) {
 			style = opts.style;
+			setStyle = true;
+		}
+		else {
+			style = 'os';
 			setStyle = true;
 		}
 
@@ -89353,7 +91038,7 @@ function enableMouseSelection ( dt )
 
 			// If text was selected (click and drag), then we shouldn't change
 			// the row's selected state
-			if ( window.getSelection ) {
+			if ( matchSelection ) {
 				var selection = window.getSelection();
 
 				// If the element that contains the selection is not in the table, we can ignore it
@@ -89366,7 +91051,7 @@ function enableMouseSelection ( dt )
 			}
 
 			var ctx = dt.settings()[0];
-			var wrapperClass = dt.settings()[0].oClasses.sWrapper.replace(/ /g, '.');
+			var wrapperClass = $.trim(dt.settings()[0].oClasses.sWrapper).replace(/ +/g, '.');
 
 			// Ignore clicks inside a sub-table
 			if ( $(e.target).closest('div.'+wrapperClass)[0] != dt.table().container() ) {

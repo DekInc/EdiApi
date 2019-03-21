@@ -621,8 +621,8 @@ namespace EdiApi.Controllers
                         HashId = Isa.HashId,
                         CodUsr = CodUsr
                     };
-                    //string FtpRes = SendEdiFtp(EdiStrO, "856 notif envio");
-                    string FtpRes = "ok";
+                    string FtpRes = SendEdiFtp(EdiStrO, "856 notif envio");
+                    //string FtpRes = "ok";
                     if (FtpRes != "ok")
                         return FtpRes;
                     DbO.EdiRepSent.Add(Rep856N);
@@ -682,42 +682,7 @@ namespace EdiApi.Controllers
             {
                 return "Error: " + e1.ToString();
             }
-        }
-        //[HttpPost]
-        //public string LoginExtern(string Json)
-        //{
-        //    return "";
-        //}
-        //[HttpPost]
-        //public string LoginExtern([FromBody]UserModel UserO)
-        //{
-        //    return "";
-        //}        
-        [HttpPost]
-        public string LoginExtern(UserModel UserEnc)
-        {
-            try
-            {
-                string UserDecrypted = Encoding.UTF8.GetString(CryptoHelper.DecryptData(Convert.FromBase64String(UserEnc.User)));
-                string PasswordDecrypted = Encoding.UTF8.GetString(CryptoHelper.DecryptData(Convert.FromBase64String(UserEnc.Password)));
-                UsuariosExternos UserO = (
-                    from U in DbO.UsuariosExternos
-                    where U.CodUsr == UserDecrypted
-                    && U.UsrPassword == PasswordDecrypted
-                    select U
-                    ).Fod();
-                if (UserO == null)
-                    return string.Empty;
-                UserO.HashId = EdiBase.GetHashId();
-                DbO.UsuariosExternos.Update(UserO);
-                DbO.SaveChanges();
-                return UserO.HashId;
-            }
-            catch (Exception e1)
-            {
-                return "Error: " + e1.ToString();
-            }
-        }
+        }                    
         [HttpGet]
         public string LastRep() {
             try
@@ -743,6 +708,64 @@ namespace EdiApi.Controllers
             {
                 return string.Empty;
             }            
+        }
+        ////////Extranet
+        [HttpPost]
+        public RetData<IEnumerable<FE830DataAux>> GetStock(object ClientId)
+        {
+            DateTime StartTime = DateTime.Now;
+            RetData<IEnumerable<FE830DataAux>> RetDataO = new RetData<IEnumerable<FE830DataAux>>();
+            try
+            {
+                RetDataO = new RetData<IEnumerable<FE830DataAux>>
+                {
+                    Data = ManualDB.SP_GetExistencias(ref DbO, Convert.ToInt32(ClientId)),
+                    Info = new RetInfo()
+                    {
+                        CodError = 0,
+                        Mensaje = "ok",
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };                
+            }
+            catch (Exception exm1)
+            {
+                RetDataO = new RetData<IEnumerable<FE830DataAux>>
+                {
+                    Info = new RetInfo()
+                    {
+                        CodError = -1,
+                        Mensaje = exm1.ToString(),
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            }
+            return RetDataO;
+        }
+        [HttpPost]
+        public string LoginExtern(UserModel UserEnc)
+        {
+            try
+            {
+                string UserDecrypted = Encoding.UTF8.GetString(CryptoHelper.DecryptData(Convert.FromBase64String(UserEnc.User)));
+                string PasswordDecrypted = Encoding.UTF8.GetString(CryptoHelper.DecryptData(Convert.FromBase64String(UserEnc.Password)));
+                UsuariosExternos UserO = (
+                    from U in DbO.UsuariosExternos
+                    where U.CodUsr == UserDecrypted
+                    && U.UsrPassword == PasswordDecrypted
+                    select U
+                    ).Fod();
+                if (UserO == null)
+                    return string.Empty;
+                UserO.HashId = EdiBase.GetHashId();
+                DbO.UsuariosExternos.Update(UserO);
+                DbO.SaveChanges();
+                return $"UserO.HashId|{UserO.ClienteId}";
+            }
+            catch (Exception e1)
+            {
+                return "Error: " + e1.ToString();
+            }
         }
     }
 }

@@ -264,6 +264,10 @@ table.dataTable thead th, table.dataTable thead td {
     width: 20vw;
     margin: 0 auto;
 }
+.imgLogoExtern{
+    width: 80px;
+    height: 36px;
+}
 
 .divLogo {
     width: 100%;
@@ -397,4 +401,9 @@ table.dataTable thead th, table.dataTable thead td {
 .nav-link:hover {
     border-left: 1px dashed #fcd280;
     border-right: 1px dashed #fcd280;
+}
+.navbar-brand {
+}
+.divMainExtern{
+    margin-top: 10px;
 }

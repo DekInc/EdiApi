@@ -218,14 +218,14 @@
         });
         HashId = $.urlParam('HashId');
         if (HashId == null) {
-            @*$.ajax({
+            $.ajax({
                 method: "GET",
                 url: "@this.Url.Action("TranslateForms830")"
             });  
             $.ajax({
                 method: "GET",
                 url: "@this.Url.Action("AutoSendInventary830")"
-            });*@
+            });
         }
     });
 </script>
