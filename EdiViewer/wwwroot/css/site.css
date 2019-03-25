@@ -283,7 +283,13 @@ table.dataTable thead th, table.dataTable thead td {
 .modal-header {
     background: linear-gradient(35deg, #4b7099, #7ba0c9);
 }
-
+.modal-footer{
+    display: block;
+}
+.colPopButton{
+    padding-top: 8px;
+    padding-bottom: 8px;
+}
 #divMensajePop1 {
     font-size: 12pt;
     box-sizing: border-box;
@@ -294,6 +300,10 @@ table.dataTable thead th, table.dataTable thead td {
 .modal-content {
     display: flex;
     flex-direction: row;
+}
+.modal-content-normal {
+    display: flex !important;
+    flex-direction: column !important;
 }
 
 .modal-body {
@@ -421,4 +431,7 @@ table.dataTable thead th, table.dataTable thead td {
 #btnNewDis{
     margin-top: 10px;
     margin-bottom: 10px;
+}
+.txtCantPedir{
+    width: 100px;
 }

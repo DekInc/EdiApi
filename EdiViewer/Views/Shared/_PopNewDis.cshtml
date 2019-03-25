@@ -1,27 +1,47 @@
 ﻿<div class="modal fade2" id="modalPopNewDis" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-xl" role="document">
-        <div class="modal-content">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content modal-content-normal">
             <div class="modal-header">
                 <h5 class="modal-title" id="exampleModalLabel"></h5>                
             </div>
             <div class="modal-body">
                 <div id="divMensajePop1">
-                    Hola mundo
-                    <div id="divLista"></div>
+                    <p>Por favor confirme los productos del pedido y la fecha del mismo</p>
+                    <p>
+                        <label class="label" for="dtp1">Fecha y hora de envió</label><br />
+                        <input class="form-control datepicker" data-link-format="dd/mm/yyyy hh:ii" id="dtp1" maxlength="19" />
+                    </p>
+                    <div id="divList"></div>
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-success">Aceptar</button>
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                <div class="container">
+                    <div class="row">
+                        <div class="col colPopButton">
+                            <button type="button" class="btn btn-secondary">Guardar pedido</button>
+                        </div>
+                        <div class="col colPopButton">
+                            <button type="button" class="btn btn-success">Enviar pedido</button>
+                        </div>
+                        <div class="col colPopButton">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 </div>
 <script>
     function onInit() {
-        $('#divLista').html('');
+        $('#divList').html('');
         for (var i = 0; i < arrayProductos.length; i++) {
-            $('#divLista').html($('#divLista').html() + arrayProductos[i].codProducto + '<br />');
+            if (arrayProductos[i].cantPedir !== 0) {
+                $('#divList').html($('#divList').html() + arrayProductos[i].codProducto.replace(/º/g, ' ') + ' - ' + arrayProductos[i].cantPedir + '<br />');
+            }
         }
+        if ($('#divList').html() == '')
+            $('#divList').html('No hay productos seleccionados');
+        $('#dtp1').datetimepicker({ format: 'dd/mm/yyyy hh:ii' });
     }    
 </script>

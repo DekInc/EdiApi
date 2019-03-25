@@ -20,8 +20,15 @@ namespace EdiViewer.Controllers
         }
         public async Task<IActionResult> Inventario()
         {
-            RetData<Clientes> ClienteO = await ApiClientFactory.Instance.GetClient(HttpContext.Session.GetObjSession<int>("Session.ClientId"));
-            ViewBag.ClientName = ClienteO.Data.Nombre;
+            try
+            {
+                RetData<Clientes> ClienteO = await ApiClientFactory.Instance.GetClient(HttpContext.Session.GetObjSession<int>("Session.ClientId"));
+                ViewBag.ClientName = ClienteO.Data.Nombre;
+            }
+            catch (Exception e1)
+            {
+                ViewBag.ClientName = e1.ToString();
+            }            
             return View();
         }        
         public async Task<IActionResult> GetInventory()

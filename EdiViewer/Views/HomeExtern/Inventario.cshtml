@@ -15,7 +15,7 @@
                 <div>
                     <b>Cliente: </b>@ViewBag.ClientName
                 </div>
-                <button class="btn btn-primary" id="btnNewDis" data-togle="tooltip" data-html="true" title="Seleccione los productos a pedir y acá click acá para solicitarlos">Nuevo pedido</button>
+                <button class="btn btn-primary" id="btnNewDis" data-togle="tooltip" data-html="true" title="Seleccione los productos a pedir y acá click acá para solicitarlos">Enviar pedido</button>
                 <form id="formReportes" accept-charset="UTF-8" method="post">
                     <table id="tblReportes" class="table table-striped table-bordered nowrap table-hover display tblReportes" cellspacing="0" role="grid">
                         <thead>
@@ -23,8 +23,8 @@
                                 <th>CodProducto GLC</th>
                                 <th>Producto</th>
                                 <th>Existencia</th>
+                                <th>Cantidad a pedir</th>
                                 <th>Unidad de medida</th>
-                                <th></th>
                             </tr>
                         </thead>
                     </table>
@@ -78,6 +78,22 @@
                     //    menErrorEdi(json.errorMessage);
                     //    return null;
                     //}
+                    json.data.forEach(pr => {
+                        var existe = false;
+                        for (var j = 0; j < arrayProductos.length; j++) {
+                            if (arrayProductos[j].codProducto == pr.codProducto.replace(/ /g, 'º')) {
+                                existe = true;                                
+                            }
+                        }
+                        if (!existe) {
+                            arrayProductos.push({
+                                codProducto: pr.codProducto.replace(/ /g, 'º'),
+                                producto: pr.producto,
+                                existencia: pr.existencia,
+                                cantPedir: 0
+                            });
+                        }
+                    });                    
                     return json.data;
                 }
             },
@@ -86,17 +102,23 @@
                 { "data": "codProducto", "name": "CodProducto", "autoWidth": true, "defaultContent": "" },
                 { "data": "producto", "name": "Producto", "autoWidth": true, "defaultContent": "" },
                 { "data": "existencia", "name": "Existencia", "autoWidth": true, "defaultContent": "" },
-                { "data": "unidadDeMedida", "name": "UnidadDeMedida", "autoWidth": true, "defaultContent": "" },
                 {
                     //data: "0",
                     render: function (data, type, row) {
-                        if (type === 'display') {
-                            return '<input id="chkProducto' + row.codProducto.replace(/ /g, 'º') + '" name="chkProducto' + row.codProducto.replace(/ /g, 'º') + '" type="checkbox" class="editor-active">';
-                        }
+                        if (type === 'display') {                            
+                            var cant = 0;
+                            for (var j = 0; j < arrayProductos.length; j++) {
+                                if (arrayProductos[j].codProducto == row.codProducto.replace(/ /g, 'º')) {
+                                    cant = arrayProductos[j].cantPedir;
+                                }
+                            }
+                            return '<input id="TxtProducto' + row.codProducto.replace(/ /g, 'º') + '" name="TxtProducto' + row.codProducto.replace(/ /g, 'º') + '" type="textbox" class="editor-active form-control txtCantPedir" value="' + cant + '" onkeypress="return changeProdPedido(isNumberKey(event), ' + "'" + row.codProducto.replace(/ /g, 'º') + "'" + ', this)">';
+                        }                        
                         return '';
                     },
                     className: "dt-body-center"
-                }
+                },
+                { "data": "unidadDeMedida", "name": "UnidadDeMedida", "autoWidth": true, "defaultContent": "" }                
             ]
         });
     }
@@ -114,20 +136,27 @@
                 if (chkState)
                     $(Ele).closest("tr").removeClass('selected');
                 else {
-                    $(Ele).closest("tr").addClass('selected');
-                    arrayProductos.push({
-                        codProducto: $($(this).closest("tr").find('td:eq(0)')).text(),
-                        producto: $($(this).closest("tr").find('td:eq(1)')).text(),
-                        existencia: $($(this).closest("tr").find('td:eq(2)')).text(),
-                    });
+                    $(Ele).closest("tr").addClass('selected');                    
                 }
             });
             return false;
             //}
         });
-        $('#btnNewDis').on('click', function (e) {            
+        $('#btnNewDis').on('click', function (e) {
+            $('#exampleModalLabel').html('Creación de pedido');
             ModalPopNewDis = $('#modalPopNewDis').modal();
             onInit();
         });        
     });
+    function changeProdPedido(isValid, codProd, txtCant) {
+        if (!isValid) return isValid;
+        setTimeout(function () {
+            for (var j = 0; j < arrayProductos.length; j++) {
+                if (arrayProductos[j].codProducto == codProd) {
+                    arrayProductos[j].cantPedir = $(txtCant).val();
+                }
+            }            
+        }, 366);
+        return isValid;
+    }
 </script>
