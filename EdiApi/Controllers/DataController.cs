@@ -767,5 +767,35 @@ namespace EdiApi.Controllers
                 return "Error: " + e1.ToString();
             }
         }
+        [HttpPost]
+        public RetData<Clientes> GetClient(object ClientId)
+        {
+            DateTime StartTime = DateTime.Now;
+            try
+            {
+                return new RetData<Clientes>
+                {
+                    Data = WmsDbO.Clientes.Where(C => C.ClienteId == Convert.ToInt32(ClientId)).Fod(),
+                    Info = new RetInfo()
+                    {
+                        CodError = 0,
+                        Mensaje = "ok",
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };                
+            }
+            catch (Exception e1)
+            {
+                return new RetData<Clientes>
+                {
+                    Info = new RetInfo()
+                    {
+                        CodError = -1,
+                        Mensaje = e1.ToString(),
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            }
+        }
     }
 }

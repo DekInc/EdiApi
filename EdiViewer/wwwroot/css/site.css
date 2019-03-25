@@ -209,7 +209,7 @@ hr {
 }
 
 #cbTo {
-    min-width: 320px;
+    max-width: 320px;
 }
 
 .text-wrap {
@@ -250,18 +250,20 @@ table.dataTable thead th, table.dataTable thead td {
 }
 
 .mainJumbo {
-    width: 98vw;
+    /*width: 98vw;*/
     height: 90vh;
     /*background: #b7baa5 !important;*/
 }
 
 .cardLogin {
-    width: 520px;
+    max-width: 520px;
     margin: 0 auto;
 }
 
 .imgLogo {
-    width: 20vw;
+    box-sizing:border-box;
+    /*width: 20%;*/
+    max-width: 50vw;
     margin: 0 auto;
 }
 .imgLogoExtern{
@@ -270,6 +272,7 @@ table.dataTable thead th, table.dataTable thead td {
 }
 
 .divLogo {
+    box-sizing: border-box;
     width: 100%;
     display: inline-block;
     position: relative;
@@ -404,6 +407,18 @@ table.dataTable thead th, table.dataTable thead td {
 }
 .navbar-brand {
 }
-.divMainExtern{
+.divMainExtern {
+    margin-top: 20px;
+    margin-bottom: 40px;
+    width: 99vw;
+    left: 0;
+    position: absolute;
+}
+.imgProfile {
+    width: 40px;
+    height: 40px;
+}
+#btnNewDis{
     margin-top: 10px;
+    margin-bottom: 10px;
 }

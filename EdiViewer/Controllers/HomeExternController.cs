@@ -18,8 +18,10 @@ namespace EdiViewer.Controllers
             HttpContext.Session.SetObjSession("Session.HashId", string.Empty);
             return new RedirectResult("/Account/");
         }
-        public IActionResult Inventario()
+        public async Task<IActionResult> Inventario()
         {
+            RetData<Clientes> ClienteO = await ApiClientFactory.Instance.GetClient(HttpContext.Session.GetObjSession<int>("Session.ClientId"));
+            ViewBag.ClientName = ClienteO.Data.Nombre;
             return View();
         }        
         public async Task<IActionResult> GetInventory()

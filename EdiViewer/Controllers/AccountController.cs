@@ -26,15 +26,15 @@ namespace EdiViewer.Controllers
                     return View("Index", new Models.ErrorModel() { ErrorMessage = System.Net.WebUtility.HtmlEncode(HashId.Replace(Environment.NewLine, "<br />")) });
                 if (string.IsNullOrEmpty(HashId))
                 {
-                    //string UserEncrypted = ApiClientFactory.Instance.Encrypt(TxtUser);
-                    //string PasswordEncrypted = ApiClientFactory.Instance.Encrypt(TxtPassword);
-                    //HashId = await ApiClientFactory.Instance.LoginExtern(UserEncrypted, PasswordEncrypted);
-                    //if (string.IsNullOrEmpty(HashId))
-                    //    return LocalRedirect("/Account/?error=USER_INCORRECT");
-                    //HttpContext.Session.SetObjSession("Session.IsExtern", true);
-                    //IsExtern = true;
-                    //HttpContext.Session.SetObjSession("Session.ClientId", HashId.Split('|')[1]);
-                    //HashId = HashId.Split('|')[0];
+                    string UserEncrypted = ApiClientFactory.Instance.Encrypt(TxtUser);
+                    string PasswordEncrypted = ApiClientFactory.Instance.Encrypt(TxtPassword);
+                    HashId = await ApiClientFactory.Instance.LoginExtern(UserEncrypted, PasswordEncrypted);
+                    if (string.IsNullOrEmpty(HashId))
+                        return LocalRedirect("/Account/?error=USER_INCORRECT");
+                    HttpContext.Session.SetObjSession("Session.IsExtern", true);
+                    IsExtern = true;
+                    HttpContext.Session.SetObjSession("Session.ClientId", HashId.Split('|')[1]);
+                    HashId = HashId.Split('|')[0];
                 } else
                 {
                     HttpContext.Session.SetObjSession("Session.IsExtern", false);
@@ -43,11 +43,11 @@ namespace EdiViewer.Controllers
                 if (HashId.StartsWith("Error:"))
                     return View("Index", new Models.ErrorModel() { ErrorMessage = System.Net.WebUtility.HtmlEncode(HashId.Replace(Environment.NewLine, "<br />")) });
                 HttpContext.Session.SetObjSession("Session.HashId", HashId);
-                HttpContext.Session.SetObjSession("Session.Idusr", TxtUser);
+                HttpContext.Session.SetObjSession("Session.CodUsr", TxtUser);
                 if (string.IsNullOrEmpty(HashId))
                     return LocalRedirect("/Account/?error=USER_INCORRECT");
                 if (IsExtern)
-                    return LocalRedirect("/HomeExtern/");
+                    return LocalRedirect("/HomeExtern/Inventario");
                 else
                     return LocalRedirect("/");
             }

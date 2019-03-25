@@ -125,7 +125,7 @@
         //    domtblReportes.clear().draw();
         domtblReportes = $("#tblReportes").DataTable({
             select: true,
-            responsive: false,
+            responsive: true,
             destroy: true,
             "scrollX": true,
             "processing": true, // for show progress bar
@@ -156,12 +156,12 @@
                         return json.data;
                     }
                     if (json.errorMessage != '') {
-                        menErrorEdi(json.errorMessage);
+                        menErrorEdi(json.errorMessage, '');
                         return null;
                     }
                     if (json.data[0].despachoId == 0) {
                         if (json.data[0].errorMessage != '') {
-                            menErrorEdi(json.data[0].errorMessage);
+                            menErrorEdi(json.data[0].errorMessage, '');
                             return null;
                         }
                     }
@@ -301,20 +301,20 @@
             success: function (json) {
                 $('#btnSubmit').removeAttr('disabled');
                 if (json.data == '') {
-                    menErrorEdi('Seleccione un despacho');
+                    menErrorEdi('Seleccione un despacho', '');
                 }
                 else if (json.data == 'ok') {
                     domtblReportes.ajax.reload();
-                    menErrorEdi('Notificación enviada');
+                    menErrorEdi('Notificación enviada', '');
                 }
-                else { menErrorEdi(json.data); }
+                else { menErrorEdi(json.data, ''); }
                 $('#divSpin1').hide();
             },
             error: function (xhr, ajaxOptions, thrownError) {
                 $('#btnSubmit').removeAttr('disabled');
                 $('#divSpin1').hide();
-                menErrorEdi(xhr.status);
-                menErrorEdi(thrownError);
+                menErrorEdi(xhr.status, '');
+                menErrorEdi(thrownError, '');
             }
         });
     });

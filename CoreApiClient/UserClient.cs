@@ -85,6 +85,12 @@ namespace CoreApiClient
             string JsonRes = await PostAsyncJson<string>(CreateRequestUri(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Data/GetStock")), JsonParams);
             return JsonConvert.DeserializeObject<RetData<IEnumerable<FE830DataAux>>>(JsonRes);
         }
+        public async Task<RetData<Clientes>> GetClient(int ClientId)
+        {
+            string JsonParams = JsonConvert.SerializeObject(ClientId);
+            string JsonRes = await PostAsyncJson<string>(CreateRequestUri(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Data/GetClient")), JsonParams);
+            return JsonConvert.DeserializeObject<RetData<Clientes>>(JsonRes);
+        }
         //public async Task<List<UsersModel>> GetUsers()
         //{
         //    var requestUrl = CreateRequestUri(string.Format(System.Globalization.CultureInfo.InvariantCulture,

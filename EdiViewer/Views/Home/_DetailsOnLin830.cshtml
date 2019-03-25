@@ -164,16 +164,16 @@
                                             
                                         }
                                         else if (json.data == 'ok') {                                            
-                                            menErrorEdi('Información guardada');
+                                            menErrorEdi('Información guardada', '');
                                         }
-                                        else { menErrorEdi(json.data); }       
+                                        else { menErrorEdi(json.data, ''); }       
                                         $(spinName).hide();
                                     },
                                     error: function (xhr, ajaxOptions, thrownError) {
                                         $(btnName).removeAttr('disabled');
                                         $(spinName).hide();
-                                        menErrorEdi(xhr.status);
-                                        menErrorEdi(thrownError);                
+                                        menErrorEdi(xhr.status, '');
+                                        menErrorEdi(thrownError, '');
                                     }
                                 });
                             });

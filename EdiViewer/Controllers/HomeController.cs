@@ -73,7 +73,7 @@ namespace EdiViewer.Controllers
         [HttpGet]
         public async Task<string> AutoSendInventary830(string Force = "false")
         {
-            string Idusr = HttpContext.Session.GetObjSession<string>("Session.Idusr");
+            string Idusr = HttpContext.Session.GetObjSession<string>("Session.CodUsr");
             if (string.IsNullOrEmpty(Idusr)) return string.Empty;
             RetInfo RetReporteO = await ApiClientFactory.Instance.AutoSendInventary830(Force, Idusr);
             return "";
