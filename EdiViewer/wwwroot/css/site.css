@@ -50,7 +50,7 @@ body {
     background: linear-gradient(#eee, rgb(232, 232, 252)) !important;
 }
 
-.tblReportes {
+.tblReportes, .tblPedidos {
     width: 100%;
     min-width: 60vw;
     text-align: left;
@@ -58,11 +58,11 @@ body {
 .dataTables_scrollHeadInner {
     box-sizing: border-box !important;
 }
-.tblReportes thead tr {
+.tblReportes thead tr, .tblPedidos thead tr {
     background: linear-gradient(35deg, rgb(218, 148, 51), rgb(255, 185, 88));
 }
 
-.tblReportes tbody {
+.tblReportes tbody, .tblPedidos tbody {
     cursor: pointer;
 }
 
@@ -263,7 +263,7 @@ table.dataTable thead th, table.dataTable thead td {
 .imgLogo {
     box-sizing:border-box;
     /*width: 20%;*/
-    max-width: 50vw;
+    max-width: 35vh;
     margin: 0 auto;
 }
 .imgLogoExtern{
@@ -368,7 +368,7 @@ table.dataTable thead th, table.dataTable thead td {
     font-weight: 600;
 }
 
-.tblReportes div, .divBoxsize div {
+.tblReportes div, .divBoxsize div, .tblPedidos div {
     box-sizing: border-box;
 }
 
@@ -376,7 +376,7 @@ table.dataTable thead th, table.dataTable thead td {
     background: #999;
     border: 1px solid #000;
 }
-.tblReportes tbody tr:hover {
+.tblReportes tbody tr:hover, .tblPedidos tbody tr:hover {
     background-color: #acbad4 !important;
 }
 .sorting_1 {
@@ -434,4 +434,45 @@ table.dataTable thead th, table.dataTable thead td {
 }
 .txtCantPedir{
     width: 100px;
+}
+table.dataTable.dtr-inline.collapsed > tbody > tr.parent > td:first-child:before, table.dataTable.dtr-inline.collapsed > tbody > tr.parent > th:first-child:before {
+    font-size: 18pt;
+    width: 20px;
+    height: 20px;
+    vertical-align: middle;
+    text-align: center;
+    border: 0px solid #000;
+    line-height: 0.93;
+    z-index: 6;
+    display: block;
+    position: static;
+    float: left;
+    margin-right: 6px;
+}
+table.dataTable.dtr-inline.collapsed > tbody > tr[role="row"] > td:first-child:before, table.dataTable.dtr-inline.collapsed > tbody > tr[role="row"] > th:first-child:before {
+    font-size: 18pt;
+    width: 20px;
+    height: 20px;
+    vertical-align: middle;
+    text-align: center;
+    border: 0px solid #000;
+    line-height: 0.93;
+    z-index: 6;
+    display: block;
+    position: static;
+    float: left;
+    margin-right: 6px;
+}
+.pagination {
+    /*position: absolute;*/
+}
+.dt-bootstrap4 .col-md-5{
+    flex: unset !important;
+    max-width: unset !important;
+}
+.dataTables_paginate {
+    display: inline-block;
+}
+#dtp2{
+    width: 200px;
 }

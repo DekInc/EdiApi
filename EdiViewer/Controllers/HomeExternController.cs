@@ -72,5 +72,30 @@ namespace EdiViewer.Controllers
                 return Json(new { draw = 0, recordsFiltered = 0, recordsTotal = 0, errorMessage = e1.ToString(), ListTo = "" });
             }
         }
+        [HttpGet]
+        public async Task<RetData<IEnumerable<PedidosExternos>>> GetPedidosExternos(int Id)
+        {
+            return await ApiClientFactory.Instance.GetPedidosExternos(Id);
+        }
+        [HttpGet]
+        public async Task<bool> SetPedidoExterno(object CodProducto, object CantPedir, object FechaPed, object Status)
+        {
+            try
+            {
+                PedidosExternos PedidoExterno = new PedidosExternos()
+                {
+                    ClienteId = HttpContext.Session.GetObjSession<int>("Session.ClientId"),
+                    FechaCreacion = DateTime.Now.ToString(ApplicationSettings.DateTimeFormatT),
+                    FechaPedido = Convert.ToString(FechaPed),
+                    IdEstado = Convert.ToInt32(Status)
+                };
+                RetData<PedidosExternos> RetDataO = await ApiClientFactory.Instance.SetPedidoExterno(PedidoExterno);
+                return true;
+            }
+            catch
+            {
+                return false;
+            }            
+        }
     }
 }

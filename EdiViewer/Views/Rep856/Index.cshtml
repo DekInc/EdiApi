@@ -125,8 +125,9 @@
         //    domtblReportes.clear().draw();
         domtblReportes = $("#tblReportes").DataTable({
             select: true,
-            responsive: true,
+            responsive: window.mobileAndTabletcheck(),
             destroy: true,
+            info: false,
             "scrollX": true,
             "processing": true, // for show progress bar
             "serverSide": true, // for process server side

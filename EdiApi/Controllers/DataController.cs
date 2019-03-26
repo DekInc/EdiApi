@@ -797,5 +797,129 @@ namespace EdiApi.Controllers
                 };
             }
         }
+        [HttpPost]
+        public RetData<IEnumerable<PedidosExternos>> GetPedidosExternos(object Id)
+        {
+            DateTime StartTime = DateTime.Now;
+            try
+            {
+                return new RetData<IEnumerable<PedidosExternos>>
+                {
+                    Data = (Id == null? DbO.PedidosExternos : DbO.PedidosExternos.Where(Pe => Pe.Id == Convert.ToInt32(Id))),
+                    Info = new RetInfo()
+                    {
+                        CodError = 0,
+                        Mensaje = "ok",
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            }
+            catch (Exception e1)
+            {
+                return new RetData<IEnumerable<PedidosExternos>>
+                {
+                    Info = new RetInfo()
+                    {
+                        CodError = -1,
+                        Mensaje = e1.ToString(),
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            }
+        }
+        [HttpPost]
+        public RetData<IEnumerable<PedidosDetExternos>> GetPedidosDetExternos(object PedidoId)
+        {
+            DateTime StartTime = DateTime.Now;
+            try
+            {
+                return new RetData<IEnumerable<PedidosDetExternos>>
+                {
+                    Data = (PedidoId == null ? DbO.PedidosDetExternos : DbO.PedidosDetExternos.Where(Pe => Pe.PedidoId == Convert.ToInt32(PedidoId))),
+                    Info = new RetInfo()
+                    {
+                        CodError = 0,
+                        Mensaje = "ok",
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            }
+            catch (Exception e1)
+            {
+                return new RetData<IEnumerable<PedidosDetExternos>>
+                {
+                    Info = new RetInfo()
+                    {
+                        CodError = -1,
+                        Mensaje = e1.ToString(),
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            }
+        }
+        [HttpPost]
+        public RetData<PedidosExternos> SetPedidoExterno(PedidosExternos PedidoExterno)
+        {
+            DateTime StartTime = DateTime.Now;
+            try
+            {
+                DbO.PedidosExternos.Add(PedidoExterno);
+                DbO.SaveChanges();
+                return new RetData<PedidosExternos>
+                {
+                    Data = PedidoExterno,
+                    Info = new RetInfo()
+                    {
+                        CodError = 0,
+                        Mensaje = "ok",
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            }
+            catch (Exception e1)
+            {
+                return new RetData<PedidosExternos>
+                {
+                    Info = new RetInfo()
+                    {
+                        CodError = -1,
+                        Mensaje = e1.ToString(),
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            }
+        }
+        [HttpPost]
+        public RetData<PedidosDetExternos> SetPedidoDetExterno(PedidosDetExternos PedidoDetExterno)
+        {
+            DateTime StartTime = DateTime.Now;
+            try
+            {
+                DbO.PedidosDetExternos.Add(PedidoDetExterno);
+                DbO.SaveChanges();
+                return new RetData<PedidosDetExternos>
+                {
+                    Data = PedidoDetExterno,
+                    Info = new RetInfo()
+                    {
+                        CodError = 0,
+                        Mensaje = "ok",
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            }
+            catch (Exception e1)
+            {
+                return new RetData<PedidosDetExternos>
+                {
+                    Info = new RetInfo()
+                    {
+                        CodError = -1,
+                        Mensaje = e1.ToString(),
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            }
+        }
     }
 }

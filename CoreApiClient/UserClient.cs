@@ -91,6 +91,26 @@ namespace CoreApiClient
             string JsonRes = await PostAsyncJson<string>(CreateRequestUri(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Data/GetClient")), JsonParams);
             return JsonConvert.DeserializeObject<RetData<Clientes>>(JsonRes);
         }
+        public async Task<RetData<IEnumerable<PedidosExternos>>> GetPedidosExternos(int Id)
+        {
+            string JsonParams = JsonConvert.SerializeObject(Id);
+            return await PostGetAsyncJson<RetData<IEnumerable<PedidosExternos>>>(CreateRequestUri(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Data/GetPedidosExternos")), JsonParams);
+        }
+        public async Task<RetData<IEnumerable<PedidosDetExternos>>> GetPedidosDetExternos(int PedidoId)
+        {
+            string JsonParams = JsonConvert.SerializeObject(PedidoId);
+            return await PostGetAsyncJson<RetData<IEnumerable<PedidosDetExternos>>>(CreateRequestUri(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Data/GetPedidosDetExternos")), JsonParams);
+        }
+        public async Task<RetData<PedidosExternos>> SetPedidoExterno(PedidosExternos PedidoExterno)
+        {            
+            string JsonParams = JsonConvert.SerializeObject(PedidoExterno);
+            return await PostGetAsyncJson<RetData<PedidosExternos>>(CreateRequestUri(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Data/SetPedidoExterno")), JsonParams);
+        }
+        public async Task<RetData<PedidosDetExternos>> SetPedidoDetExterno(PedidosDetExternos PedidoDetExterno)
+        {
+            string JsonParams = JsonConvert.SerializeObject(PedidoDetExterno);
+            return await PostGetAsyncJson<RetData<PedidosDetExternos>>(CreateRequestUri(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Data/SetPedidoDetExterno")), JsonParams);
+        }
         //public async Task<List<UsersModel>> GetUsers()
         //{
         //    var requestUrl = CreateRequestUri(string.Format(System.Globalization.CultureInfo.InvariantCulture,

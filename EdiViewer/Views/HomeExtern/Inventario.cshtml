@@ -54,8 +54,9 @@
     function fillTblReportes() {
         domtblReportes = $("#tblReportes").DataTable({
             select: true,
-            responsive: true,
+            responsive: window.mobileAndTabletcheck(),
             destroy: true,
+            info: false,
             "scrollX": true,
             "processing": true, // for show progress bar
             "serverSide": true, // for process server side
@@ -143,7 +144,7 @@
             //}
         });
         $('#btnNewDis').on('click', function (e) {
-            $('#exampleModalLabel').html('Creación de pedido');
+            $('#exampleModalLabel').html('Enviar pedido');
             ModalPopNewDis = $('#modalPopNewDis').modal();
             onInit();
         });        

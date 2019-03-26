@@ -40,7 +40,15 @@ namespace CoreApiClient
             response.EnsureSuccessStatusCode();
             string data = await response.Content.ReadAsStringAsync();
             return data;
-        }        
+        }
+        private async Task<T> PostGetAsyncJson<T>(Uri requestUrl, string JsonParams)
+        {
+            var StringContent = new StringContent(JsonParams, Encoding.UTF8, "application/json");
+            var response = await _httpClient.PostAsync(requestUrl, StringContent);
+            response.EnsureSuccessStatusCode();
+            string data = await response.Content.ReadAsStringAsync();
+            return JsonConvert.DeserializeObject<T>(data);
+        }
         //private async Task<Message<T>> PostAsync<T>(Uri requestUrl, T content)
         //{
         //    var response = await _httpClient.PostAsync(requestUrl.ToString(), CreateHttpContent<T>(content));

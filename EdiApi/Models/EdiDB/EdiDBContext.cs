@@ -56,6 +56,9 @@ namespace EdiApi.Models.EdiDB
         public virtual DbSet<LearTd3856> LearTd3856 { get; set; }
         public virtual DbSet<LearTd5856> LearTd5856 { get; set; }
         public virtual DbSet<LearUit830> LearUit830 { get; set; }
+        public virtual DbSet<PedidosDetExternos> PedidosDetExternos { get; set; }
+        public virtual DbSet<PedidosEstadosExternos> PedidosEstadosExternos { get; set; }
+        public virtual DbSet<PedidosExternos> PedidosExternos { get; set; }
         public virtual DbSet<UsuariosExternos> UsuariosExternos { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -121,6 +124,9 @@ namespace EdiApi.Models.EdiDB
 
                 entity.ToTable("LEAR_ATH830");
 
+                entity.HasIndex(e => e.ParentHashId)
+                    .HasName("IndexLEAR_ATH830IParentHashId");
+
                 entity.Property(e => e.HashId)
                     .HasMaxLength(128)
                     .ValueGeneratedNever();
@@ -145,6 +151,9 @@ namespace EdiApi.Models.EdiDB
                 entity.HasKey(e => e.HashId);
 
                 entity.ToTable("LEAR_BFR830");
+
+                entity.HasIndex(e => e.ParentHashId)
+                    .HasName("IndexLEAR_BFR830IParentHashId");
 
                 entity.Property(e => e.HashId)
                     .HasMaxLength(128)
@@ -183,6 +192,9 @@ namespace EdiApi.Models.EdiDB
 
                 entity.ToTable("LEAR_BSN856");
 
+                entity.HasIndex(e => e.ParentHashId)
+                    .HasName("IndexLEAR_BSN856IParentHashId");
+
                 entity.Property(e => e.HashId)
                     .HasMaxLength(128)
                     .ValueGeneratedNever();
@@ -207,6 +219,9 @@ namespace EdiApi.Models.EdiDB
                 entity.HasKey(e => e.HashId);
 
                 entity.ToTable("LEAR_CLD856");
+
+                entity.HasIndex(e => e.ParentHashId)
+                    .HasName("IndexLEAR_CLD856IParentHashId");
 
                 entity.Property(e => e.HashId)
                     .HasMaxLength(128)
@@ -248,6 +263,9 @@ namespace EdiApi.Models.EdiDB
 
                 entity.ToTable("LEAR_CTT856");
 
+                entity.HasIndex(e => e.ParentHashId)
+                    .HasName("IndexLEAR_CTT856IParentHashId");
+
                 entity.Property(e => e.HashId)
                     .HasMaxLength(128)
                     .ValueGeneratedNever();
@@ -266,6 +284,9 @@ namespace EdiApi.Models.EdiDB
                 entity.HasKey(e => e.HashId);
 
                 entity.ToTable("LEAR_DTM856");
+
+                entity.HasIndex(e => e.ParentHashId)
+                    .HasName("IndexLEAR_DTM856IParentHashId");
 
                 entity.Property(e => e.HashId)
                     .HasMaxLength(128)
@@ -309,6 +330,9 @@ namespace EdiApi.Models.EdiDB
 
                 entity.ToTable("LEAR_ETD856");
 
+                entity.HasIndex(e => e.ParentHashId)
+                    .HasName("IndexLEAR_ETD856IParentHashId");
+
                 entity.Property(e => e.HashId)
                     .HasMaxLength(128)
                     .ValueGeneratedNever();
@@ -334,6 +358,9 @@ namespace EdiApi.Models.EdiDB
 
                 entity.ToTable("LEAR_FST830");
 
+                entity.HasIndex(e => e.ParentHashId)
+                    .HasName("IndexLEAR_FST830IParentHashId");
+
                 entity.Property(e => e.HashId)
                     .HasMaxLength(128)
                     .ValueGeneratedNever();
@@ -358,6 +385,9 @@ namespace EdiApi.Models.EdiDB
                 entity.HasKey(e => e.HashId);
 
                 entity.ToTable("LEAR_GS830");
+
+                entity.HasIndex(e => e.ParentHashId)
+                    .HasName("IndexLEAR_GS830IParentHashId");
 
                 entity.Property(e => e.HashId)
                     .HasMaxLength(128)
@@ -390,6 +420,9 @@ namespace EdiApi.Models.EdiDB
 
                 entity.ToTable("LEAR_GS856");
 
+                entity.HasIndex(e => e.ParentHashId)
+                    .HasName("IndexLEAR_GS856IParentHashId");
+
                 entity.Property(e => e.HashId)
                     .HasMaxLength(128)
                     .ValueGeneratedNever();
@@ -421,6 +454,9 @@ namespace EdiApi.Models.EdiDB
 
                 entity.ToTable("LEAR_HLOL856");
 
+                entity.HasIndex(e => e.ParentHashId)
+                    .HasName("IndexLEAR_HLOL856IParentHashId");
+
                 entity.Property(e => e.HashId)
                     .HasMaxLength(128)
                     .ValueGeneratedNever();
@@ -442,6 +478,9 @@ namespace EdiApi.Models.EdiDB
 
                 entity.ToTable("LEAR_HLSL856");
 
+                entity.HasIndex(e => e.ParentHashId)
+                    .HasName("IndexLEAR_HLSL856IParentHashId");
+
                 entity.Property(e => e.HashId)
                     .HasMaxLength(128)
                     .ValueGeneratedNever();
@@ -462,6 +501,9 @@ namespace EdiApi.Models.EdiDB
                 entity.HasKey(e => e.HashId);
 
                 entity.ToTable("LEAR_ISA830");
+
+                entity.HasIndex(e => e.ParentHashId)
+                    .HasName("IndexLEAR_ISA830IParentHashId");
 
                 entity.Property(e => e.HashId)
                     .HasMaxLength(128)
@@ -510,6 +552,9 @@ namespace EdiApi.Models.EdiDB
 
                 entity.ToTable("LEAR_ISA856");
 
+                entity.HasIndex(e => e.ParentHashId)
+                    .HasName("IndexLEAR_ISA856IParentHashId");
+
                 entity.Property(e => e.HashId)
                     .HasMaxLength(128)
                     .ValueGeneratedNever();
@@ -557,6 +602,9 @@ namespace EdiApi.Models.EdiDB
 
                 entity.ToTable("LEAR_LIN830");
 
+                entity.HasIndex(e => e.ParentHashId)
+                    .HasName("IndexLEAR_LIN830IParentHashId");
+
                 entity.Property(e => e.HashId)
                     .HasMaxLength(128)
                     .ValueGeneratedNever();
@@ -587,6 +635,9 @@ namespace EdiApi.Models.EdiDB
                 entity.HasKey(e => e.HashId);
 
                 entity.ToTable("LEAR_LIN856");
+
+                entity.HasIndex(e => e.ParentHashId)
+                    .HasName("IndexLEAR_LIN856IParentHashId");
 
                 entity.Property(e => e.HashId)
                     .HasMaxLength(128)
@@ -669,6 +720,9 @@ namespace EdiApi.Models.EdiDB
 
                 entity.ToTable("LEAR_MEA856");
 
+                entity.HasIndex(e => e.ParentHashId)
+                    .HasName("IndexLEAR_MEA856IParentHashId");
+
                 entity.Property(e => e.HashId)
                     .HasMaxLength(128)
                     .ValueGeneratedNever();
@@ -691,6 +745,9 @@ namespace EdiApi.Models.EdiDB
                 entity.HasKey(e => e.HashId);
 
                 entity.ToTable("LEAR_N1830");
+
+                entity.HasIndex(e => e.ParentHashId)
+                    .HasName("IndexLEAR_N1830IParentHashId");
 
                 entity.Property(e => e.HashId)
                     .HasMaxLength(128)
@@ -715,6 +772,9 @@ namespace EdiApi.Models.EdiDB
 
                 entity.ToTable("LEAR_N1856");
 
+                entity.HasIndex(e => e.ParentHashId)
+                    .HasName("IndexLEAR_N1856IParentHashId");
+
                 entity.Property(e => e.HashId)
                     .HasMaxLength(128)
                     .ValueGeneratedNever();
@@ -735,6 +795,9 @@ namespace EdiApi.Models.EdiDB
                 entity.HasKey(e => e.HashId);
 
                 entity.ToTable("LEAR_N4830");
+
+                entity.HasIndex(e => e.ParentHashId)
+                    .HasName("IndexLEAR_N4830IParentHashId");
 
                 entity.Property(e => e.HashId)
                     .HasMaxLength(128)
@@ -765,6 +828,9 @@ namespace EdiApi.Models.EdiDB
 
                 entity.ToTable("LEAR_NTE830");
 
+                entity.HasIndex(e => e.ParentHashId)
+                    .HasName("IndexLEAR_NTE830IParentHashId");
+
                 entity.Property(e => e.HashId)
                     .HasMaxLength(128)
                     .ValueGeneratedNever();
@@ -783,6 +849,9 @@ namespace EdiApi.Models.EdiDB
                 entity.HasKey(e => e.HashId);
 
                 entity.ToTable("LEAR_PRF856");
+
+                entity.HasIndex(e => e.ParentHashId)
+                    .HasName("IndexLEAR_PRF856IParentHashId");
 
                 entity.Property(e => e.HashId)
                     .HasMaxLength(128)
@@ -806,6 +875,9 @@ namespace EdiApi.Models.EdiDB
                 entity.HasKey(e => e.HashId);
 
                 entity.ToTable("LEAR_PRS830");
+
+                entity.HasIndex(e => e.ParentHashId)
+                    .HasName("IndexLEAR_PRS830IParentHashId");
 
                 entity.Property(e => e.HashId)
                     .HasMaxLength(128)
@@ -853,6 +925,9 @@ namespace EdiApi.Models.EdiDB
 
                 entity.ToTable("LEAR_REF830");
 
+                entity.HasIndex(e => e.ParentHashId)
+                    .HasName("IndexLEAR_REF830IParentHashId");
+
                 entity.Property(e => e.HashId)
                     .HasMaxLength(128)
                     .ValueGeneratedNever();
@@ -874,6 +949,9 @@ namespace EdiApi.Models.EdiDB
 
                 entity.ToTable("LEAR_REF856");
 
+                entity.HasIndex(e => e.ParentHashId)
+                    .HasName("IndexLEAR_REF856IParentHashId");
+
                 entity.Property(e => e.HashId)
                     .HasMaxLength(128)
                     .ValueGeneratedNever();
@@ -893,6 +971,9 @@ namespace EdiApi.Models.EdiDB
 
                 entity.ToTable("LEAR_SDP830");
 
+                entity.HasIndex(e => e.ParentHashId)
+                    .HasName("IndexLEAR_SDP830IParentHashId");
+
                 entity.Property(e => e.HashId)
                     .HasMaxLength(128)
                     .ValueGeneratedNever();
@@ -911,6 +992,9 @@ namespace EdiApi.Models.EdiDB
                 entity.HasKey(e => e.HashId);
 
                 entity.ToTable("LEAR_SHP830");
+
+                entity.HasIndex(e => e.ParentHashId)
+                    .HasName("IndexLEAR_SHP830IParentHashId");
 
                 entity.Property(e => e.HashId)
                     .HasMaxLength(128)
@@ -939,6 +1023,9 @@ namespace EdiApi.Models.EdiDB
 
                 entity.ToTable("LEAR_SN1856");
 
+                entity.HasIndex(e => e.ParentHashId)
+                    .HasName("IndexLEAR_SN1856IParentHashId");
+
                 entity.Property(e => e.HashId)
                     .HasMaxLength(128)
                     .ValueGeneratedNever();
@@ -960,6 +1047,9 @@ namespace EdiApi.Models.EdiDB
 
                 entity.ToTable("LEAR_ST830");
 
+                entity.HasIndex(e => e.ParentHashId)
+                    .HasName("IndexLEAR_ST830IParentHashId");
+
                 entity.Property(e => e.HashId)
                     .HasMaxLength(128)
                     .ValueGeneratedNever();
@@ -978,6 +1068,9 @@ namespace EdiApi.Models.EdiDB
                 entity.HasKey(e => e.HashId);
 
                 entity.ToTable("LEAR_ST856");
+
+                entity.HasIndex(e => e.ParentHashId)
+                    .HasName("IndexLEAR_ST856IParentHashId");
 
                 entity.Property(e => e.HashId)
                     .HasMaxLength(128)
@@ -998,6 +1091,9 @@ namespace EdiApi.Models.EdiDB
 
                 entity.ToTable("LEAR_TD1856");
 
+                entity.HasIndex(e => e.ParentHashId)
+                    .HasName("IndexLEAR_TD1856IParentHashId");
+
                 entity.Property(e => e.HashId)
                     .HasMaxLength(128)
                     .ValueGeneratedNever();
@@ -1016,6 +1112,9 @@ namespace EdiApi.Models.EdiDB
                 entity.HasKey(e => e.HashId);
 
                 entity.ToTable("LEAR_TD3856");
+
+                entity.HasIndex(e => e.ParentHashId)
+                    .HasName("IndexLEAR_TD3856IParentHashId");
 
                 entity.Property(e => e.HashId)
                     .HasMaxLength(128)
@@ -1037,6 +1136,9 @@ namespace EdiApi.Models.EdiDB
                 entity.HasKey(e => e.HashId);
 
                 entity.ToTable("LEAR_TD5856");
+
+                entity.HasIndex(e => e.ParentHashId)
+                    .HasName("IndexLEAR_TD5856IParentHashId");
 
                 entity.Property(e => e.HashId)
                     .HasMaxLength(128)
@@ -1065,6 +1167,9 @@ namespace EdiApi.Models.EdiDB
 
                 entity.ToTable("LEAR_UIT830");
 
+                entity.HasIndex(e => e.ParentHashId)
+                    .HasName("IndexLEAR_UIT830IParentHashId");
+
                 entity.Property(e => e.HashId)
                     .HasMaxLength(128)
                     .ValueGeneratedNever();
@@ -1076,21 +1181,38 @@ namespace EdiApi.Models.EdiDB
                 entity.Property(e => e.UnitOfMeasure).HasMaxLength(2);
             });
 
+            modelBuilder.Entity<PedidosDetExternos>(entity =>
+            {
+                entity.Property(e => e.CodProducto).HasMaxLength(50);
+            });
+
+            modelBuilder.Entity<PedidosEstadosExternos>(entity =>
+            {
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.Property(e => e.Descripcion).HasMaxLength(64);
+            });
+
+            modelBuilder.Entity<PedidosExternos>(entity =>
+            {
+                entity.Property(e => e.ClienteId).HasColumnName("ClienteID");
+
+                entity.Property(e => e.FechaCreacion).HasMaxLength(16);
+
+                entity.Property(e => e.FechaPedido).HasMaxLength(16);
+            });
+
             modelBuilder.Entity<UsuariosExternos>(entity =>
             {
                 entity.Property(e => e.ClienteId).HasColumnName("ClienteID");
 
-                entity.Property(e => e.CodUsr)
-                    .HasMaxLength(128)
-                    .IsUnicode(false);
+                entity.Property(e => e.CodUsr).HasMaxLength(128);
 
-                entity.Property(e => e.NomUsr)
-                    .HasMaxLength(128)
-                    .IsUnicode(false);
+                entity.Property(e => e.HashId).HasMaxLength(128);
 
-                entity.Property(e => e.UsrPassword)
-                    .HasMaxLength(256)
-                    .IsUnicode(false);
+                entity.Property(e => e.NomUsr).HasMaxLength(128);
+
+                entity.Property(e => e.UsrPassword).HasMaxLength(256);
             });
         }
     }

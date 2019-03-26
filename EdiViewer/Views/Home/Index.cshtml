@@ -102,8 +102,9 @@
     $(document).ready(function () {
         domtblReportes = $("#tblReportes").DataTable({
             select: true,
-            responsive: true,
+            responsive: window.mobileAndTabletcheck(),
             destroy: true,
+            info: false,
             "scrollX": true,
             "processing": true, // for show progress bar  
             "serverSide": true, // for process server side  
@@ -162,6 +163,7 @@
             select: true,
             responsive: true,
             destroy: true,
+            info: false,
             "scrollX": true,
             "processing": true, // for show progress bar  
             "serverSide": true, // for process server side  
