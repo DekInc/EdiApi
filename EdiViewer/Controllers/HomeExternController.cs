@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
 using ComModels;
+using EdiViewer.Models;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 
 namespace EdiViewer.Controllers
 {
@@ -23,7 +26,20 @@ namespace EdiViewer.Controllers
             try
             {
                 RetData<Clientes> ClienteO = await ApiClientFactory.Instance.GetClient(HttpContext.Session.GetObjSession<int>("Session.ClientId"));
+                RetData<Tuple<IEnumerable<PedidosExternos>, IEnumerable<PedidosDetExternos>>> ListDis = await ApiClientFactory.Instance.GetPedidosExternos(HttpContext.Session.GetObjSession<int>("Session.ClientId"));
+                if (ListDis.Data.Item1.Fod().IdEstado == 1)
+                {
+
+                }
                 ViewBag.ClientName = ClienteO.Data.Nombre;
+                if (!ClienteO.Data.EstatusId.HasValue) { 
+                    HttpContext.Session.SetObjSession("Session.IdPedidoExterno", 0);
+                } else {
+                    if (ClienteO.Data.EstatusId.Value != 0)
+                        HttpContext.Session.SetObjSession("Session.IdPedidoExterno", ClienteO.Data.EstatusId.Value);
+                    else
+                        HttpContext.Session.SetObjSession("Session.IdPedidoExterno", 0);
+                }
             }
             catch (Exception e1)
             {
@@ -54,12 +70,17 @@ namespace EdiViewer.Controllers
                 int recordsTotal = 0;
 
                 // Getting all Customer data  
-                RetData<IEnumerable<FE830DataAux>> StockData = await ApiClientFactory.Instance.GetStock(HttpContext.Session.GetObjSession<int>("Session.ClientId"));
-                
+                RetData<IEnumerable<ExistenciasExternModel>> StockData = await ApiClientFactory.Instance.GetStock(HttpContext.Session.GetObjSession<int>("Session.ClientId"));
+                if (StockData.Info.CodError != 0)
+                    return Json(new { draw = 0, recordsFiltered = 0, recordsTotal = 0, errorMessage = StockData.Info.Mensaje, ListTo = "" });
                 if (StockData.Data.Count() == 0)
                 {
                     return Json(new { draw = 0, recordsFiltered = 0, recordsTotal = 0, errorMessage = (StockData.Info.CodError != 0? StockData.Info.Mensaje : string.Empty) });
-                }                
+                }
+                if (!(string.IsNullOrEmpty(sortColumn) && string.IsNullOrEmpty(sortColumnDirection)))
+                {
+                    StockData.Data = StockData.Data.AsQueryable().OrderBy(sortColumn + " " + sortColumnDirection);
+                }
                 //total number of rows count
                 recordsTotal = StockData.Data.Count();
                 //Paging
@@ -72,29 +93,31 @@ namespace EdiViewer.Controllers
                 return Json(new { draw = 0, recordsFiltered = 0, recordsTotal = 0, errorMessage = e1.ToString(), ListTo = "" });
             }
         }
-        [HttpGet]
-        public async Task<RetData<IEnumerable<PedidosExternos>>> GetPedidosExternos(int Id)
+        //[HttpGet]
+        //public async Task<RetData<IEnumerable<PedidosExternos>>> GetPedidosExternos(int Id)
+        //{
+        //    return await ApiClientFactory.Instance.GetPedidosExternos(Id);
+        //}
+        [HttpPost]
+        public async Task<RetInfo> SetPedidoExterno([FromBody]string Json)
         {
-            return await ApiClientFactory.Instance.GetPedidosExternos(Id);
-        }
-        [HttpGet]
-        public async Task<bool> SetPedidoExterno(object CodProducto, object CantPedir, object FechaPed, object Status)
-        {
+            DateTime StartTime = DateTime.Now;
+            IEnumerable<PedidoExternoModel> ListDis = JsonConvert.DeserializeObject<IEnumerable<PedidoExternoModel>>(Json.ToString());
+            foreach (PedidoExternoModel Pe in ListDis)
+                Pe.codProducto = Pe.codProducto.Replace("^", " ");
             try
-            {
-                PedidosExternos PedidoExterno = new PedidosExternos()
-                {
-                    ClienteId = HttpContext.Session.GetObjSession<int>("Session.ClientId"),
-                    FechaCreacion = DateTime.Now.ToString(ApplicationSettings.DateTimeFormatT),
-                    FechaPedido = Convert.ToString(FechaPed),
-                    IdEstado = Convert.ToInt32(Status)
-                };
-                RetData<PedidosExternos> RetDataO = await ApiClientFactory.Instance.SetPedidoExterno(PedidoExterno);
-                return true;
+            {                
+                RetData<PedidosExternos> RetDataO = await ApiClientFactory.Instance.SetPedidoExterno(ListDis, HttpContext.Session.GetObjSession<int>("Session.ClientId"), 1);                
+                    return RetDataO.Info;
             }
-            catch
+            catch (Exception e2)
             {
-                return false;
+                return new RetInfo()
+                {
+                    CodError = -1,
+                    Mensaje = e2.ToString(),
+                    ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                };
             }            
         }
     }

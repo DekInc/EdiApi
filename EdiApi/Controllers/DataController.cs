@@ -709,28 +709,28 @@ namespace EdiApi.Controllers
                 return string.Empty;
             }            
         }
-        ////////Extranet
+        ////////Extranet        
         [HttpPost]
-        public RetData<IEnumerable<FE830DataAux>> GetStock(object ClientId)
+        public RetData<IEnumerable<ExistenciasExternModel>> GetStock(object ClientId)
         {
             DateTime StartTime = DateTime.Now;
-            RetData<IEnumerable<FE830DataAux>> RetDataO = new RetData<IEnumerable<FE830DataAux>>();
+            RetData<IEnumerable<ExistenciasExternModel>> RetDataO = new RetData<IEnumerable<ExistenciasExternModel>>();
             try
             {
-                RetDataO = new RetData<IEnumerable<FE830DataAux>>
+                RetDataO = new RetData<IEnumerable<ExistenciasExternModel>>
                 {
-                    Data = ManualDB.SP_GetExistencias(ref DbO, Convert.ToInt32(ClientId)),
+                    Data = ManualDB.SP_GetExistenciasExtern(ref DbO, Convert.ToInt32(ClientId)),
                     Info = new RetInfo()
                     {
                         CodError = 0,
                         Mensaje = "ok",
                         ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
                     }
-                };                
+                };
             }
             catch (Exception exm1)
             {
-                RetDataO = new RetData<IEnumerable<FE830DataAux>>
+                RetDataO = new RetData<IEnumerable<ExistenciasExternModel>>
                 {
                     Info = new RetInfo()
                     {
@@ -773,9 +773,18 @@ namespace EdiApi.Controllers
             DateTime StartTime = DateTime.Now;
             try
             {
+                int? IdPedidoExterno = (
+                    from Pe in DbO.PedidosExternos
+                    where Pe.ClienteId == Convert.ToInt32(ClientId)
+                    && Pe.IdEstado == 1
+                    orderby Pe.Id descending
+                    select Pe.Id                    
+                    ).Fod();
+                Clientes ClienteO = WmsDbO.Clientes.Where(C => C.ClienteId == Convert.ToInt32(ClientId)).Fod();
+                ClienteO.EstatusId = IdPedidoExterno;
                 return new RetData<Clientes>
                 {
-                    Data = WmsDbO.Clientes.Where(C => C.ClienteId == Convert.ToInt32(ClientId)).Fod(),
+                    Data = ClienteO,
                     Info = new RetInfo()
                     {
                         CodError = 0,
@@ -798,14 +807,28 @@ namespace EdiApi.Controllers
             }
         }
         [HttpPost]
-        public RetData<IEnumerable<PedidosExternos>> GetPedidosExternos(object Id)
+        public RetData<Tuple<IEnumerable<PedidosExternos>, IEnumerable<PedidosDetExternos>>> GetPedidosExternos(object ClienteId)
         {
             DateTime StartTime = DateTime.Now;
             try
             {
-                return new RetData<IEnumerable<PedidosExternos>>
+                IEnumerable<PedidosExternos> ListPe = (
+                    from Pe in DbO.PedidosExternos
+                    where Pe.ClienteId == Convert.ToInt32(ClienteId)
+                    orderby Pe.Id descending
+                    select Pe
+                    );
+                IEnumerable<PedidosDetExternos> ListDePe = (
+                    from Dp in DbO.PedidosDetExternos
+                    from Pe in DbO.PedidosExternos
+                    where Dp.PedidoId == Pe.Id
+                    && Pe.ClienteId == Convert.ToInt32(ClienteId)
+                    orderby Dp.Id descending
+                    select Dp
+                    );
+                return new RetData<Tuple<IEnumerable<PedidosExternos>, IEnumerable<PedidosDetExternos>>>
                 {
-                    Data = (Id == null? DbO.PedidosExternos : DbO.PedidosExternos.Where(Pe => Pe.Id == Convert.ToInt32(Id))),
+                    Data = new Tuple<IEnumerable<PedidosExternos>, IEnumerable<PedidosDetExternos>>(ListPe, ListDePe),
                     Info = new RetInfo()
                     {
                         CodError = 0,
@@ -816,7 +839,7 @@ namespace EdiApi.Controllers
             }
             catch (Exception e1)
             {
-                return new RetData<IEnumerable<PedidosExternos>>
+                return new RetData<Tuple<IEnumerable<PedidosExternos>, IEnumerable<PedidosDetExternos>>>
                 {
                     Info = new RetInfo()
                     {
@@ -858,12 +881,30 @@ namespace EdiApi.Controllers
             }
         }
         [HttpPost]
-        public RetData<PedidosExternos> SetPedidoExterno(PedidosExternos PedidoExterno)
+        public RetData<PedidosExternos> SetPedidoExterno(IEnumerable<PedidoExternoModel> ListDis, int ClienteId, int IdEstado)
         {
             DateTime StartTime = DateTime.Now;
             try
             {
+                if (ListDis.Count() == 0)
+                    throw new Exception("No hay productos en la lista. WebAPI.");
+                PedidosExternos PedidoExterno = new PedidosExternos() {
+                    ClienteId = ClienteId,
+                    FechaCreacion = DateTime.Now.ToString(ApplicationSettings.DateTimeFormat),
+                    IdEstado = IdEstado,
+                    FechaPedido = ListDis.Fod().dateProm
+                };
                 DbO.PedidosExternos.Add(PedidoExterno);
+                DbO.SaveChanges();
+                foreach (PedidoExternoModel PedidoDet in ListDis)
+                {
+                    PedidosDetExternos PedidoExtDet = new PedidosDetExternos() {
+                        CodProducto = PedidoDet.codProducto,
+                        PedidoId = PedidoExterno.Id,
+                        CantPedir = Convert.ToDouble(PedidoDet.cantPedir)
+                    };
+                    DbO.PedidosDetExternos.Add(PedidoExtDet);
+                }
                 DbO.SaveChanges();
                 return new RetData<PedidosExternos>
                 {

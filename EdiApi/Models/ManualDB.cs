@@ -118,5 +118,43 @@ namespace EdiApi.Models
             }
             return ListExists;
         }
+        public static IEnumerable<ExistenciasExternModel> SP_GetExistenciasExtern(ref Models.EdiDB.EdiDBContext _DbO, int _IdClient)
+        {
+            List<ExistenciasExternModel> ListExists = new List<ExistenciasExternModel>();
+            using (DbCommand Cmd = _DbO.Database.GetDbConnection().CreateCommand())
+            {
+                Cmd.CommandText = $"[dbo].[SP_GetExistenciasExtern] {_IdClient}";
+                _DbO.Database.OpenConnection();
+                DbDataReader Dr = Cmd.ExecuteReader();
+                if (Dr.HasRows)
+                {
+                    while (Dr.Read())
+                    {
+                        ListExists.Add(new ExistenciasExternModel()
+                        {
+                            Cliente = Convert.ToString(Dr.GetValue(0)),
+                            Bodega = Convert.ToString(Dr.GetValue(1)),
+                            CodProducto = Convert.ToString(Dr.GetValue(2)),
+                            Descripcion = Convert.ToString(Dr.GetValue(3)),
+                            Existencia = Convert.ToDouble(Dr.GetValue(4)),
+                            Reservado = Convert.ToDouble(Dr.GetValue(5)),
+                            Disponible = Convert.ToDouble(Dr.GetValue(6)),
+                            ClienteID = Convert.ToInt32(Dr.GetValue(7)),
+                            BodegaID = Convert.ToInt32(Dr.GetValue(8)),
+                            Bultos = Convert.ToInt32(Dr.GetValue(9)),
+                            Peso = Convert.ToDouble(Dr.GetValue(10)),
+                            Volumen = Convert.ToDouble(Dr.GetValue(11)),
+                            Uxb = Convert.ToInt32(Dr.GetValue(12)),
+                            Lote = Convert.ToString(Dr.GetValue(13)),
+                            Contenedor = Convert.ToString(Dr.GetValue(14))
+                        });
+                    }
+                }
+                _DbO.Database.CloseConnection();
+                if (!Dr.IsClosed)
+                    Dr.Close();
+            }
+            return ListExists;
+        }
     }
 }

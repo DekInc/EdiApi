@@ -17,14 +17,22 @@
                 </div>
                 <button class="btn btn-primary" id="btnNewDis" data-togle="tooltip" data-html="true" title="Seleccione los productos a pedir y acá click acá para solicitarlos">Enviar pedido</button>
                 <form id="formReportes" accept-charset="UTF-8" method="post">
-                    <table id="tblReportes" class="table table-striped table-bordered nowrap table-hover display tblReportes" cellspacing="0" role="grid">
+                    <table id="tblReportes" class="table table-striped table-bordered table-hover display tblReportes" cellspacing="0" role="grid">
                         <thead>
                             <tr>
-                                <th>CodProducto GLC</th>
+                                <th>Cod Producto</th>
+                                <th>Bodega</th>
                                 <th>Producto</th>
                                 <th>Existencia</th>
+                                <th>Reservado</th>
+                                <th>Disponible</th>
+                                <th>Bultos</th>
+                                <th>Peso</th>
+                                <th>Volumen</th>
+                                <th>Unidades x Bulto</th>
+                                <th>Lote</th>
+                                <th>Contenedor</th>
                                 <th>Cantidad a pedir</th>
-                                <th>Unidad de medida</th>
                             </tr>
                         </thead>
                     </table>
@@ -75,23 +83,24 @@
                 "type": "POST",
                 "datatype": "json",
                 "dataSrc": function (json) {
-                    //if (json.errorMessage != '') {
-                    //    menErrorEdi(json.errorMessage);
-                    //    return null;
-                    //}
+                    if (json.errorMessage != '') {
+                        menErrorEdi(json.errorMessage);
+                        return json.data;
+                    }
                     json.data.forEach(pr => {
                         var existe = false;
                         for (var j = 0; j < arrayProductos.length; j++) {
-                            if (arrayProductos[j].codProducto == pr.codProducto.replace(/ /g, 'º')) {
+                            if (arrayProductos[j].codProducto == pr.descripcion.replace(/ /g, '^')) {
                                 existe = true;                                
                             }
                         }
                         if (!existe) {
                             arrayProductos.push({
-                                codProducto: pr.codProducto.replace(/ /g, 'º'),
-                                producto: pr.producto,
+                                codProducto: pr.codProducto.replace(/ /g, '^'),
+                                producto: pr.descripcion,
                                 existencia: pr.existencia,
-                                cantPedir: 0
+                                cantPedir: 0,
+                                dateProm: ''
                             });
                         }
                     });                    
@@ -99,27 +108,35 @@
                 }
             },
             "order": [[0, "asc"]],
-            "columns": [                
+            "columns": [
                 { "data": "codProducto", "name": "CodProducto", "autoWidth": true, "defaultContent": "" },
-                { "data": "producto", "name": "Producto", "autoWidth": true, "defaultContent": "" },
+                { "data": "bodega", "name": "Bodega", "autoWidth": true, "defaultContent": "" },                
+                { "data": "descripcion", "name": "descripcion", "autoWidth": true, "defaultContent": "" },
                 { "data": "existencia", "name": "Existencia", "autoWidth": true, "defaultContent": "" },
+                { "data": "reservado", "name": "Reservado", "autoWidth": true, "defaultContent": "" },
+                { "data": "disponible", "name": "Disponible", "autoWidth": true, "defaultContent": "" },
+                { "data": "bultos", "name": "Bultos", "autoWidth": true, "defaultContent": "" },
+                { "data": "peso", "name": "Peso", "autoWidth": true, "defaultContent": "" },
+                { "data": "volumen", "name": "Volumen", "autoWidth": true, "defaultContent": "" },
+                { "data": "uxb", "name": "uxb", "autoWidth": true, "defaultContent": "" },
+                { "data": "lote", "name": "Lote", "autoWidth": true, "defaultContent": "" },
+                { "data": "contenedor", "Contenedor": "Existencia", "autoWidth": true, "defaultContent": "" },
                 {
                     //data: "0",
                     render: function (data, type, row) {
                         if (type === 'display') {                            
                             var cant = 0;
                             for (var j = 0; j < arrayProductos.length; j++) {
-                                if (arrayProductos[j].codProducto == row.codProducto.replace(/ /g, 'º')) {
+                                if (arrayProductos[j].codProducto == row.codProducto.replace(/ /g, '^')) {
                                     cant = arrayProductos[j].cantPedir;
                                 }
                             }
-                            return '<input id="TxtProducto' + row.codProducto.replace(/ /g, 'º') + '" name="TxtProducto' + row.codProducto.replace(/ /g, 'º') + '" type="textbox" class="editor-active form-control txtCantPedir" value="' + cant + '" onkeypress="return changeProdPedido(isNumberKey(event), ' + "'" + row.codProducto.replace(/ /g, 'º') + "'" + ', this)">';
+                            return '<input id="TxtProducto' + row.codProducto.replace(/ /g, '^') + '" name="TxtProducto' + row.codProducto.replace(/ /g, '^') + '" type="textbox" class="editor-active form-control txtCantPedir" value="' + cant + '" onkeypress="return changeProdPedido(isNumberKey(event), ' + "'" + row.codProducto.replace(/ /g, '^') + "'" + ', this)">';
                         }                        
                         return '';
                     },
                     className: "dt-body-center"
                 },
-                { "data": "unidadDeMedida", "name": "UnidadDeMedida", "autoWidth": true, "defaultContent": "" }                
             ]
         });
     }
@@ -144,7 +161,7 @@
             //}
         });
         $('#btnNewDis').on('click', function (e) {
-            $('#exampleModalLabel').html('Enviar pedido');
+            $('#exampleModalLabel2').html('Enviar pedido');
             ModalPopNewDis = $('#modalPopNewDis').modal();
             onInit();
         });        
