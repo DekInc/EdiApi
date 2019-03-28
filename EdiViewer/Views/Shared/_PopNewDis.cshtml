@@ -9,7 +9,7 @@
                     <p>Por favor confirme los productos del pedido y la fecha del mismo</p>
                     <p>
                         <label class="label" for="dtp2">Fecha y hora esperada</label><br />
-                        <input class="form-control datepicker" data-link-format="dd/mm/yyyy hh:ii" id="dtp2" maxlength="19" />
+                        <input class="form-control datepicker" data-link-format="dd/mm/yyyy hh:ii" id="dtp2" maxlength="19" value="@(ViewBag.DateLastDis == null? string.Empty : ViewBag.DateLastDis)" />
                     </p>
                     <div class="container" id="divList">
                         <table id="tblPedidos" class="table table-striped table-bordered table-hover display" cellspacing="0" role="grid">
@@ -37,7 +37,7 @@
 <script>
     var domtblPedidos = null;
     var arrayProductos2 = [];
-    $('#btnSaveDis').on('click', function () {
+    function SaveSendDis(actionUrl, op1) {
         if (arrayProductos.length == 0)
             return;
         if ($('#dtp2').val() == '') {
@@ -50,18 +50,30 @@
             method: "POST",
             contentType: "application/json; charset=utf-8",
             dataType: "JSON",
-            url: "@this.Url.Action("SetPedidoExterno")",
+            url: actionUrl,
             data: JSON.stringify(arrayProductos.filter(Pr => Pr.cantPedir != 0)),
             success: function (json) {
                 if (json.codError != 0)
-                    menErrorEdi(json.mensaje, 'Error del servicio');
-                else
-                    menErrorEdi('Se ha guardado el pedido para ser modificado después, el pedido no ha sido enviado a GLC.', 'Mensaje de aplicativo');
+                    menErrorEdi(json.mensaje, 'Error');
+                else {
+                    if (op1 == 0)
+                        menErrorEdi('Se ha guardado el pedido para ser modificado después, el pedido no ha sido enviado a GLC.', 'Mensaje de aplicativo');
+                    if (op1 == 1) {
+                        //Redirect a lista de pedidos
+                        
+                    }
+                }
             },
             error: function (json) {
                 menErrorEdi(json.mensaje, 'Error interno del visor');
             }
         });
+    }
+    $('#btnSaveDis').on('click', function () {
+        SaveSendDis("@this.Url.Action("SetPedidoExterno")", 0);
+    });
+    $('#btnSendDis').on('click', function () {
+        SaveSendDis("@this.Url.Action("SendPedidoExterno")", 1);
     });
     function onInit() {
         var contentListProd = '';
@@ -101,18 +113,6 @@
                 { "data": "cantPedir", "name": "Cant pedir", "autoWidth": true, "defaultContent": "" }
             ]
         });
-
-
-
-        //$('#divList').html('');
-        //for (var i = 0; i < arrayProductos.length; i++) {
-        //    if (arrayProductos[i].cantPedir !== 0) {
-        //        contentListProd += '<div class="row"><div class="col">' + arrayProductos[i].codProducto.replace(/^/g, ' ') + '</div><div class="col">' + arrayProductos[i].producto + '</div><div class="col">' + arrayProductos[i].cantPedir + '</div></div>';
-        //    }
-        //}
-        //$('#divList').html($('#divList').html() + contentListProd + '<br />');
-        //if ($('#divList').html() == '')
-        //    $('#divList').html('No hay productos seleccionados');
         $('#dtp2').datetimepicker({ format: 'dd/mm/yyyy hh:ii' });
     }
 </script>

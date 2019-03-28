@@ -21,15 +21,32 @@ namespace EdiViewer.Controllers
             HttpContext.Session.SetObjSession("Session.HashId", string.Empty);
             return new RedirectResult("/Account/");
         }
+        public async Task<IActionResult> Pedidos()
+        {
+            RetData<IEnumerable<PedidosWmsModel>> ListPe = await ApiClientFactory.Instance.GetPedidosWms(HttpContext.Session.GetObjSession<int>("Session.ClientId"));
+            return View(ListPe.Data);
+        }
         public async Task<IActionResult> Inventario()
         {
             try
             {
+                ViewBag.ListOldDis = null;
+                ViewBag.DateLastDis = null;
+                ViewBag.PedidoId = null;
+                HttpContext.Session.SetObjSession("PedidoId", null);
                 RetData<Clientes> ClienteO = await ApiClientFactory.Instance.GetClient(HttpContext.Session.GetObjSession<int>("Session.ClientId"));
                 RetData<Tuple<IEnumerable<PedidosExternos>, IEnumerable<PedidosDetExternos>>> ListDis = await ApiClientFactory.Instance.GetPedidosExternos(HttpContext.Session.GetObjSession<int>("Session.ClientId"));
-                if (ListDis.Data.Item1.Fod().IdEstado == 1)
+                if (ListDis.Data.Item1.Count() > 0)
                 {
-
+                    if (ListDis.Data.Item1.Fod().IdEstado == 1)
+                    {
+                        ViewBag.DateLastDis = ListDis.Data.Item1.Fod().FechaPedido;
+                        HttpContext.Session.SetObjSession("PedidoId", ListDis.Data.Item1.Fod().Id);
+                        if (ListDis.Data.Item2.Count() > 0)
+                        {
+                            ViewBag.ListOldDis = JsonConvert.SerializeObject(ListDis.Data.Item2.Where(Pde => Pde.PedidoId == ListDis.Data.Item1.Fod().Id).Select(Pd => new { codProducto = Pd.CodProducto.Replace(" ", "^"), cantPedir = Pd.CantPedir }));
+                        }
+                    }
                 }
                 ViewBag.ClientName = ClienteO.Data.Nombre;
                 if (!ClienteO.Data.EstatusId.HasValue) { 
@@ -92,23 +109,39 @@ namespace EdiViewer.Controllers
             {
                 return Json(new { draw = 0, recordsFiltered = 0, recordsTotal = 0, errorMessage = e1.ToString(), ListTo = "" });
             }
-        }
-        //[HttpGet]
-        //public async Task<RetData<IEnumerable<PedidosExternos>>> GetPedidosExternos(int Id)
-        //{
-        //    return await ApiClientFactory.Instance.GetPedidosExternos(Id);
-        //}
+        }        
         [HttpPost]
         public async Task<RetInfo> SetPedidoExterno([FromBody]string Json)
         {
+            return await SetPedidoExterno2(Json, 1);
+        }
+        [HttpPost]
+        public async Task<RetInfo> SendPedidoExterno([FromBody]string Json)
+        {
+            return await SetPedidoExterno2(Json, 2);            
+        }
+        private async Task<RetInfo> SetPedidoExterno2(string Json, int IdEstado)
+        {
             DateTime StartTime = DateTime.Now;
             IEnumerable<PedidoExternoModel> ListDis = JsonConvert.DeserializeObject<IEnumerable<PedidoExternoModel>>(Json.ToString());
+            if (ListDis.Count() == 0)
+            {
+                return new RetInfo()
+                {
+                    CodError = -1,
+                    Mensaje = "No hay productos en la lista",
+                    ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                };
+            }
             foreach (PedidoExternoModel Pe in ListDis)
+            {
+                Pe.id = HttpContext.Session.GetObjSession<int?>("PedidoId");
                 Pe.codProducto = Pe.codProducto.Replace("^", " ");
+            }
             try
-            {                
-                RetData<PedidosExternos> RetDataO = await ApiClientFactory.Instance.SetPedidoExterno(ListDis, HttpContext.Session.GetObjSession<int>("Session.ClientId"), 1);                
-                    return RetDataO.Info;
+            {
+                RetData<PedidosExternos> RetDataO = await ApiClientFactory.Instance.SetPedidoExterno(ListDis, HttpContext.Session.GetObjSession<int>("Session.ClientId"), IdEstado);
+                return RetDataO.Info;
             }
             catch (Exception e2)
             {
@@ -118,7 +151,7 @@ namespace EdiViewer.Controllers
                     Mensaje = e2.ToString(),
                     ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
                 };
-            }            
+            }
         }
     }
 }

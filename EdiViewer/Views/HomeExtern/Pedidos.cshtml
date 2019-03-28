@@ -1,0 +1,14 @@
+﻿@using ComModels
+@{
+    ViewData["Title"] = "Pedidos";
+    Layout = "_LayoutExtern";
+}
+@model IEnumerable<PedidosWmsModel>
+<div class="container">
+    @foreach (PedidosWmsModel item in Model)
+    {
+        <div class="row">
+            @item.CodProducto
+        </div>
+    }
+</div>

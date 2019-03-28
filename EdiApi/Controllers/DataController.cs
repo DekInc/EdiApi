@@ -892,10 +892,18 @@ namespace EdiApi.Controllers
                     ClienteId = ClienteId,
                     FechaCreacion = DateTime.Now.ToString(ApplicationSettings.DateTimeFormat),
                     IdEstado = IdEstado,
-                    FechaPedido = ListDis.Fod().dateProm
+                    FechaPedido = ListDis.Fod().dateProm,
+                    Id = ListDis.Fod().id ?? 0
                 };
-                DbO.PedidosExternos.Add(PedidoExterno);
-                DbO.SaveChanges();
+                if (PedidoExterno.Id == 0)
+                    DbO.PedidosExternos.Add(PedidoExterno);
+                else
+                {
+                    DbO.PedidosExternos.Update(PedidoExterno);
+                    foreach (PedidosDetExternos Pde in DbO.PedidosDetExternos.Where(Pd => Pd.PedidoId == PedidoExterno.Id))
+                        DbO.PedidosDetExternos.Remove(Pde);
+                }
+                DbO.SaveChanges();                
                 foreach (PedidoExternoModel PedidoDet in ListDis)
                 {
                     PedidosDetExternos PedidoExtDet = new PedidosDetExternos() {
@@ -920,6 +928,36 @@ namespace EdiApi.Controllers
             catch (Exception e1)
             {
                 return new RetData<PedidosExternos>
+                {
+                    Info = new RetInfo()
+                    {
+                        CodError = -1,
+                        Mensaje = e1.ToString(),
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            }
+        }
+        [HttpPost]
+        public RetData<IEnumerable<PedidosWmsModel>> GetPedidosWms(int ClienteId)
+        {
+            DateTime StartTime = DateTime.Now;
+            try
+            {                
+                return new RetData<IEnumerable<PedidosWmsModel>>
+                {
+                    Data = ManualDB.SP_GetPedidosWms(ref DbO, ClienteId),
+                    Info = new RetInfo()
+                    {
+                        CodError = 0,
+                        Mensaje = "ok",
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            }
+            catch (Exception e1)
+            {
+                return new RetData<IEnumerable<PedidosWmsModel>>
                 {
                     Info = new RetInfo()
                     {

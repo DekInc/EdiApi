@@ -3,12 +3,18 @@
     ViewData["Title"] = "Inventario";
     Layout = "_LayoutExtern";
 }
-
+<script>
+    var arrayProductosOld = [];
+    @if(ViewBag.ListOldDis != null)
+    {
+        <text>arrayProductosOld = </text>Html.Raw(ViewBag.ListOldDis);
+    }
+</script>
 <div class="container">
     <div class="card-deck cardMain">
         <div class="card box-shadow">
             <div class="card-header">
-                <h4 class="my-0 font-weight-normal">Inventario</h4>
+                <h4 class="my-0 font-weight-normal">Inventario / realizar pedidos</h4>
             </div>
             <div class="card-body box-shadow">
                 <br />
@@ -90,7 +96,7 @@
                     json.data.forEach(pr => {
                         var existe = false;
                         for (var j = 0; j < arrayProductos.length; j++) {
-                            if (arrayProductos[j].codProducto == pr.descripcion.replace(/ /g, '^')) {
+                            if (arrayProductos[j].codProducto == pr.codProducto.replace(/ /g, '^')) {
                                 existe = true;                                
                             }
                         }
@@ -103,7 +109,10 @@
                                 dateProm: ''
                             });
                         }
-                    });                    
+                    });  
+                    arrayProductosOld.forEach(pr2 => {
+                        arrayProductos.filter(Prod => Prod.codProducto == pr2.codProducto)[0].cantPedir = pr2.cantPedir;
+                    }); 
                     return json.data;
                 }
             },
@@ -170,7 +179,7 @@
         if (!isValid) return isValid;
         setTimeout(function () {
             for (var j = 0; j < arrayProductos.length; j++) {
-                if (arrayProductos[j].codProducto == codProd) {
+                if (arrayProductos[j].codProducto == codProd) {                    
                     arrayProductos[j].cantPedir = $(txtCant).val();
                 }
             }            

@@ -83,11 +83,11 @@ FROM
              It.lote,
              T.contenedor
       FROM wms_test_29_01_2019.dbo.Transacciones AS T WITH(NOLOCK)
-      INNER JOIN wms_test_29_01_2019.dbo.DetalleTransacciones AS Dt WITH(NOLOCK) ON Dt.TransaccionID = T.TransaccionID AND T.ClienteID = @IdClient
-      INNER JOIN wms_test_29_01_2019.dbo.Inventario AS I WITH(NOLOCK) ON I.InventarioID = Dt.InventarioID AND I.ClienteID = @IdClient
+      INNER JOIN wms_test_29_01_2019.dbo.DetalleTransacciones AS Dt WITH(NOLOCK) ON Dt.TransaccionID = T.TransaccionID
+      INNER JOIN wms_test_29_01_2019.dbo.Inventario AS I WITH(NOLOCK) ON I.InventarioID = Dt.InventarioID
       INNER JOIN wms_test_29_01_2019.dbo.ItemInventario AS It WITH(NOLOCK) ON It.InventarioID = Dt.InventarioID
       LEFT JOIN wms_test_29_01_2019.dbo.Racks AS R WITH(NOLOCK) ON R.Rack = I.Rack
-      INNER JOIN wms_test_29_01_2019.dbo.Producto AS P WITH(NOLOCK) ON P.CodProducto = It.CodProducto AND P.ClienteID = @IdClient
+      INNER JOIN wms_test_29_01_2019.dbo.Producto AS P WITH(NOLOCK) ON P.CodProducto = It.CodProducto
       LEFT OUTER JOIN wms_test_29_01_2019.dbo.DocumentosxTransaccion AS Dtr WITH(NOLOCK) ON Dtr.TransaccionID = T.TransaccionID
       LEFT OUTER JOIN
         (SELECT Sy.InventarioID,
@@ -151,6 +151,7 @@ LEFT OUTER JOIN
 AND Pedidos.ClienteID = Inv.ClienteID
 AND Pedidos.BodegaID = Inv.BodegaID
 AND IsNull(Pedidos.lote, '') = IsNull(Inv.lote, '')
-WHERE (Inv.Existencia > 0) 
+--WHERE (Inv.Existencia > 0) 
+ORDER BY Inv.CodProducto
 END 
 GO --EXEC [SP_GetExistenciasExtern] 618

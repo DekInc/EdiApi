@@ -7,6 +7,7 @@ namespace ComModels
 {
     public class PedidoExternoModel
     {
+        public int? id { set; get; }
         public string codProducto { set; get; }
         public string producto { set; get; }
         public float existencia { set; get; }
