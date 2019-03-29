@@ -939,14 +939,14 @@ namespace EdiApi.Controllers
             }
         }
         [HttpPost]
-        public RetData<IEnumerable<PedidosWmsModel>> GetPedidosWms(int ClienteId)
+        public RetData<IEnumerable<PedidosWmsModel>> GetPedidosWms(object ClienteId)
         {
             DateTime StartTime = DateTime.Now;
             try
             {                
                 return new RetData<IEnumerable<PedidosWmsModel>>
                 {
-                    Data = ManualDB.SP_GetPedidosWms(ref DbO, ClienteId),
+                    Data = ManualDB.SP_GetPedidosWms(ref DbO, Convert.ToInt32(ClienteId)),
                     Info = new RetInfo()
                     {
                         CodError = 0,

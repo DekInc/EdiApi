@@ -1,6 +1,6 @@
-﻿@using ComModels
+﻿
 @{
-    ViewData["Title"] = "Pedidos";
+    ViewData["Title"] = "Detalle de peticiones";
     Layout = "_LayoutExtern";
 }
 <div id="mainDiv">
@@ -8,28 +8,22 @@
         <div class="card-deck cardMain">
             <div class="card box-shadow">
                 <div class="card-header">
-                    <h4 class="my-0 font-weight-normal">Estado de pedido</h4>
+                    <h4 class="my-0 font-weight-normal">Detalle de petición de pedido</h4>
                 </div>
-                <div class="card-body">                    
+                <div class="card-body">
                     <div class="clearfix"></div>
                     <br />
                     <form id="formReportes" accept-charset="UTF-8" method="post">
                         <table id="tblReportes" class="table table-striped table-bordered nowrap table-hover display tblReportes" cellspacing="0">
                             <thead>
                                 <tr>
-                                    <th>Num pedido</th>
-                                    <th>Fecha de pedido</th>
-                                    <th>Estado</th>
-                                    <th>Bodega</th>
-                                    <th>Regimen</th>
                                     <th>Cod producto</th>
-                                    <th>Cantidad</th>
-                                    <th>Observación</th>
+                                    <th>Cantidad pedida</th>
                                 </tr>
                             </thead>
                         </table>
                         <br />
-                        <br />                        
+                        <br />
                     </form>
                 </div>
             </div>
@@ -48,7 +42,7 @@
         }
         return decodeURI(results[1]) || 0;
     }
-    function fillTblReportes() {        
+    function fillTblReportes() {
         domtblReportes = $("#tblReportes").DataTable({
             select: true,
             responsive: window.mobileAndTabletcheck(),
@@ -68,28 +62,22 @@
                 "emptyTable": "No hay información"
             },
             "ajax": {
-                "url": "@this.Url.Action("GetPedidos")",
+                "url": "@this.Url.Action("GetPeticionDet")",
                 "type": "POST",
                 "datatype": "json",
-                "dataSrc": function (json) {                    
+                "dataSrc": function (json) {
                     return json.data;
                 }
-            },            
-            "order": [[1, "desc"]],
-            "columns": [                
-                { "data": "pedidoBarcode", "name": "pedidoBarcode", "autoWidth": true, "defaultContent": "" },
-                { "data": "fechaPedido", "name": "fechaPedido", "autoWidth": true, "defaultContent": "" },
-                { "data": "estatus", "name": "Estatus", "autoWidth": true, "defaultContent": "" },
-                { "data": "nomBodega", "name": "nomBodega", "autoWidth": true, "defaultContent": "" },
-                { "data": "regimen", "name": "regimen", "autoWidth": true, "defaultContent": "" },
+            },
+            "order": [[0, "asc"]],
+            "columns": [
                 { "data": "codProducto", "name": "codProducto", "autoWidth": true, "defaultContent": "" },
-                { "data": "cantidad", "name": "cantidad", "autoWidth": true, "defaultContent": "" },
-                { "data": "observacion", "name": "observacion", "autoWidth": true, "defaultContent": "" }
+                { "data": "cantPedir", "name": "cantPedir", "autoWidth": true, "defaultContent": "" },                
             ]
         });
-    }   
+    }
+    var a2;
     $(document).ready(function () {
-        fillTblReportes();
-        
+        fillTblReportes();        
     });
 </script>
