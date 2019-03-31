@@ -31,7 +31,9 @@
         </div>
     </div>
 </div>
+@await Html.PartialAsync("_PopPeticionDet")
 <script>
+    var ModalPopPeticionDet = null;
     var domtblReportes = null;
     var HashId = '';
     var foo = function () {
@@ -100,10 +102,11 @@
                 domtblReportes.$('tr.selected').removeClass('selected');
                 $(this).addClass('selected');
                 //trigger update
-                //if ($(this).closest("tr").find('td:eq(5)').text().toLowerCase().includes('error')) {                    
+                //if ($(this).closest("tr").find('td:eq(5)').text().toLowerCase().includes('error')) {
                 //    menErrorEdi("El reporte contiene errores y no puede visualizarse");
-                //} else                 
-                window.location.href = '@this.Url.Action("PeticionDet")?PedidoId=' + $($(this).closest("tr").find('td:eq(2)').find('span')[0]).attr('alt');
+                //} else
+                //window.location.href = 'this.Url.Action("PeticionDet")?PedidoId=' + $($(this).closest("tr").find('td:eq(2)').find('span')[0]).attr('alt');
+                ModalPopPeticionDet = $('#modalPopPeticionDet').modal();
             }
         });
     });
