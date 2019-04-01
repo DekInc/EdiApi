@@ -7,7 +7,7 @@
     var arrayProductosOld = [];
     @if(ViewBag.ListOldDis != null)
     {
-        <text>arrayProductosOld = </text>Html.Raw(ViewBag.ListOldDis);
+        <text>arrayProductosOld = </text> @Html.Raw(ViewBag.ListOldDis);
     }
 </script>
 <div class="container">
@@ -32,13 +32,13 @@
                                 <th>Existencia</th>
                                 <th>Reservado</th>
                                 <th>Disponible</th>
+                                <th>Cantidad a pedir</th>
                                 <th>Bultos</th>
                                 <th>Peso</th>
                                 <th>Volumen</th>
                                 <th>Unidades x Bulto</th>
                                 <th>Lote</th>
                                 <th>Contenedor</th>
-                                <th>Cantidad a pedir</th>
                             </tr>
                         </thead>
                     </table>
@@ -69,15 +69,14 @@
     function fillTblReportes() {
         domtblReportes = $("#tblReportes").DataTable({
             select: true,
-            responsive: window.mobileAndTabletcheck(),
+            responsive: true,
             destroy: true,
             info: false,
-            "scrollX": true,
             "processing": true, // for show progress bar
             "serverSide": true, // for process server side
             "filter": false, // this is for disable filter (search box)
             "orderMulti": false, // for disable multiple column at once
-            "lengthMenu": [[25, 35, 50, 60], [25, 35, 50, 60]],
+            "lengthMenu": [[15, 25, 35, 50, 60], [15, 25, 35, 50, 60]],
             "language":
             {
                 "processing": "<div class='divAjax'>Obteniendo datos<br /><img style='width:50px; height:50px;' src='/images/ajax.gif' /></div>",
@@ -125,16 +124,10 @@
                 { "data": "existencia", "name": "Existencia", "autoWidth": true, "defaultContent": "" },
                 { "data": "reservado", "name": "Reservado", "autoWidth": true, "defaultContent": "" },
                 { "data": "disponible", "name": "Disponible", "autoWidth": true, "defaultContent": "" },
-                { "data": "bultos", "name": "Bultos", "autoWidth": true, "defaultContent": "" },
-                { "data": "peso", "name": "Peso", "autoWidth": true, "defaultContent": "" },
-                { "data": "volumen", "name": "Volumen", "autoWidth": true, "defaultContent": "" },
-                { "data": "uxb", "name": "uxb", "autoWidth": true, "defaultContent": "" },
-                { "data": "lote", "name": "Lote", "autoWidth": true, "defaultContent": "" },
-                { "data": "contenedor", "Contenedor": "Existencia", "autoWidth": true, "defaultContent": "" },
                 {
                     //data: "0",
                     render: function (data, type, row) {
-                        if (type === 'display') {                            
+                        if (type === 'display') {
                             var cant = 0;
                             for (var j = 0; j < arrayProductos.length; j++) {
                                 if (arrayProductos[j].codProducto == row.codProducto.replace(/ /g, '^')) {
@@ -142,34 +135,22 @@
                                 }
                             }
                             return '<input id="TxtProducto' + row.codProducto.replace(/ /g, '^') + '" name="TxtProducto' + row.codProducto.replace(/ /g, '^') + '" type="textbox" class="editor-active form-control txtCantPedir" value="' + cant + '" onkeypress="return changeProdPedido(isNumberKey(event), ' + "'" + row.codProducto.replace(/ /g, '^') + "'" + ', this)">';
-                        }                        
+                        }
                         return '';
                     },
                     className: "dt-body-center"
                 },
+                { "data": "bultos", "name": "Bultos", "autoWidth": true, "defaultContent": "" },
+                { "data": "peso", "name": "Peso", "autoWidth": true, "defaultContent": "" },
+                { "data": "volumen", "name": "Volumen", "autoWidth": true, "defaultContent": "" },
+                { "data": "uxb", "name": "uxb", "autoWidth": true, "defaultContent": "" },
+                { "data": "lote", "name": "Lote", "autoWidth": true, "defaultContent": "" },
+                { "data": "contenedor", "Contenedor": "Existencia", "autoWidth": true, "defaultContent": "" }                
             ]
         });
     }
     $(document).ready(function () {
-        fillTblReportes();
-        $('#tblReportes tbody').on('click', 'tr', function (e) {
-            e.preventDefault();
-            domtblReportes.$('tr.selected').removeClass('selected');
-            var chk = $(this).closest("tr").find('td:eq(4)').find('input')[0];
-            var idChk = $(chk).prop('id');
-            if (idChk == null) return;
-            var chkState = $(chk).prop('checked');
-            $("input[name^='" + idChk + "']").each(function (Ind, Ele) {
-                $(Ele).prop('checked', !chkState);
-                if (chkState)
-                    $(Ele).closest("tr").removeClass('selected');
-                else {
-                    $(Ele).closest("tr").addClass('selected');                    
-                }
-            });
-            return false;
-            //}
-        });
+        fillTblReportes();        
         $('#btnNewDis').on('click', function (e) {
             $('#exampleModalLabel2').html('Enviar pedido');
             ModalPopNewDis = $('#modalPopNewDis').modal();

@@ -116,6 +116,10 @@ namespace CoreApiClient
             string JsonParams = JsonConvert.SerializeObject(ClienteId);
             return await PostGetAsyncJson<RetData<IEnumerable<PedidosWmsModel>>>(CreateRequestUri(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Data/GetPedidosWms")), JsonParams);
         }
+        public async Task<RetData<IEnumerable<ClientesModel>>> GetClientsOrders()
+        {
+            return await GetAsync<RetData<IEnumerable<ClientesModel>>>(CreateRequestUri(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Data/GetClientsOrders")));
+        }
         //public async Task<List<UsersModel>> GetUsers()
         //{
         //    var requestUrl = CreateRequestUri(string.Format(System.Globalization.CultureInfo.InvariantCulture,

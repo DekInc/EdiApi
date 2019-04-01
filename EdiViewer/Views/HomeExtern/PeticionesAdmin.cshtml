@@ -11,6 +11,40 @@
                     <h4 class="my-0 font-weight-normal">Ordenes</h4>
                 </div>
                 <div class="card-body">
+                    <form id="formSearch">
+                        <div class="container">
+                            <div class="row">
+                                <div class="col-sm">
+                                    <label>Cliente</label><br />
+                                    <select class="form-control" id="cbClient" name="cbClient"></select>
+                                    <div class="form-check margin5">
+                                        <input class="form-check-input" id="chkPending" name="chkPending" type="checkbox" checked="checked" />
+                                        <label class="form-check-label" for="chkPending">Mostrar solo pendientes</label>
+                                    </div>
+                                </div>
+                                <div class="col-sm">
+                                    <label class="label" for="dtp1">Fecha y hora esperada</label><br />
+                                    <input class="form-control datepicker" data-date-format="dd/mm/yyyy" id="dtp1" maxlength="10" />
+                                </div>                                
+                            </div>
+                            <div class="row margin5">
+                                <div class="col-sm">
+                                    <button id="btnFiltrar" class="btn btn-primary" type="button">
+                                        &nbsp;&nbsp;&nbsp;Mostrar&nbsp;&nbsp;&nbsp;
+                                        <div id="divSpinFiltrar" class="spinner-border spinner-border-sm text-danger" style="display: none" role="status">
+                                            <span class="sr-only">Loading...</span>
+                                        </div>
+                                    </button>
+                                    <button id="btnLimpiar" class="btn btn-primary" type="button">
+                                        &nbsp;&nbsp;&nbsp;Limpiar&nbsp;&nbsp;&nbsp;
+                                        <div id="divSpinLimpiar" class="spinner-border spinner-border-sm text-danger" style="display: none" role="status">
+                                            <span class="sr-only">Loading...</span>
+                                        </div>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
                     <div class="clearfix"></div>
                     <br />
                     <form id="formReportes" accept-charset="UTF-8" method="post">
@@ -31,7 +65,7 @@
         </div>
     </div>
 </div>
-@await Html.PartialAsync("_PopPeticionDet")
+@await Html.PartialAsync("_PopPeticionDetAdmin")
 <script>
     var ModalPopPeticionDet = null;
     var domtblReportes = null;
@@ -66,10 +100,11 @@
                 "emptyTable": "No hay información"
             },
             "ajax": {
-                "url": "@this.Url.Action("GetPeticiones")",
+                "url": "@this.Url.Action("GetPeticionesAdmin")?ClienteId=" + $('#cbClient').val(),
                 "type": "POST",
                 "datatype": "json",
                 "dataSrc": function (json) {
+                    $('#divSpinFiltrar').hide();
                     return json.data;
                 }
             },
@@ -115,19 +150,43 @@
                 "url": "@this.Url.Action("GetPeticionDet")",
                 "type": "POST",
                 "datatype": "json",
-                "dataSrc": function (json) {
+                "dataSrc": function (json) {                    
                     return json.data;
                 }
             },
             "order": [[0, "asc"]],
             "columns": [
                 { "data": "codProducto", "name": "codProducto", "autoWidth": true, "defaultContent": "" },
-                { "data": "cantPedir", "name": "cantPedir", "autoWidth": true, "defaultContent": "" },                
+                { "data": "cantPedir", "name": "cantPedir", "autoWidth": true, "defaultContent": "" },
             ]
         });
     }
+    function fillCbClients() {
+        $.ajax({
+            method: "GET",
+            url: "@this.Url.Action("GetClientsOrders")",
+            success: function (data) {                
+                if (data.codError != 0) {
+                    menErrorEdi(xhr.status, 'Error');
+                    return;
+                }
+                $.each(data.data, function (i, item) {
+                    $('#cbClient').append($('<option>', {
+                        value: item.clienteId,
+                        text: item.nombre,
+                        selected: false
+                    }));
+                });
+            },
+            error: function (xhr, ajaxOptions, thrownError) {                
+                menErrorEdi(xhr.status, 'Error throw in js');
+                menErrorEdi(thrownError, 'Error throw in js');
+            }
+        }); 
+    }
     $(document).ready(function () {
-        fillTblReportes();
+        fillCbClients();
+        //fillTblReportes();
         $('#tblReportes tbody').on('click', 'tr', function () {
             if ($(this).hasClass('selected')) {
                 $(this).removeClass('selected');
@@ -140,10 +199,19 @@
                 //    menErrorEdi("El reporte contiene errores y no puede visualizarse");
                 //} else
                 //window.location.href = 'this.Url.Action("PeticionDet")?PedidoId=' + $($(this).closest("tr").find('td:eq(2)').find('span')[0]).attr('alt');
-                $('#exampleModalLabel3').html('Detalle de orden');
+                $('#exampleModalLabel3').html('Detalle de peticiones');
                 fillPeticionDet();
                 ModalPopPeticionDet = $('#modalPopPeticionDet').modal();
             }
+        });        
+        $('#btnFiltrar').on("click", function () {
+            $('#divSpinFiltrar').show();
+            fillTblReportes();
+        });
+        $('#btnLimpiar').on("click", function () {
+            $('#divSpinLimpiar').show();            
+            $('#dtp1').val('');            
+            $('#chkPending').prop('checked', true);            
         });
     });
 </script>

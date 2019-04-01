@@ -709,7 +709,48 @@ namespace EdiApi.Controllers
                 return string.Empty;
             }            
         }
-        ////////Extranet        
+        ////////Extranet
+        [HttpGet]
+        public RetData<IEnumerable<ClientesModel>> GetClientsOrders()
+        {
+            DateTime StartTime = DateTime.Now;
+            try
+            {
+                IEnumerable<int?> ListIdClients = (
+                    from Pe in DbO.PedidosExternos
+                    orderby Pe.ClienteId
+                    select Pe.ClienteId
+                    ).Distinct();
+                IEnumerable<ClientesModel> ListClients = (
+                    from Lc in ListIdClients
+                    from C in WmsDbO.Clientes
+                    where C.ClienteId == Lc
+                    select new ClientesModel() { ClienteId = C.ClienteId, Nombre = C.Nombre }
+                    );
+                return new RetData<IEnumerable<ClientesModel>>
+                {
+                    Data = ListClients,
+                    Info = new RetInfo()
+                    {
+                        CodError = 0,
+                        Mensaje = "ok",
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            }
+            catch (Exception e1)
+            {
+                return new RetData<IEnumerable<ClientesModel>>
+                {
+                    Info = new RetInfo()
+                    {
+                        CodError = -1,
+                        Mensaje = e1.ToString(),
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            }
+        }
         [HttpPost]
         public RetData<IEnumerable<ExistenciasExternModel>> GetStock(object ClientId)
         {
