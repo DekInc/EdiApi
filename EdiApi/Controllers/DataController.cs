@@ -891,6 +891,106 @@ namespace EdiApi.Controllers
                 };
             }
         }
+        [HttpGet]
+        public RetData<Tuple<IEnumerable<PedidosExternos>, IEnumerable<PedidosDetExternos>, IEnumerable<Clientes>>> GetPedidosExternosPendientes()
+        {
+            DateTime StartTime = DateTime.Now;
+            try
+            {
+                List<Clientes> ListClients = new List<Clientes>();
+                IEnumerable<PedidosExternos> ListPe = (
+                    from Pe in DbO.PedidosExternos
+                    where Pe.IdEstado == 2
+                    orderby Pe.Id descending
+                    select Pe
+                    );
+                    (
+                    from C in WmsDbO.Clientes
+                    from Pe in ListPe
+                    where C.ClienteId == Pe.ClienteId
+                    select C
+                    ).Distinct().ToList().ForEach(Cl => {
+                        foreach (PedidosExternos PedC in ListPe.Where(Ped => Ped.ClienteId == Cl.ClienteId))
+                        {
+                            ListClients.Add(new Clientes() { ClienteId = Cl.ClienteId, Nombre = Cl.Nombre });
+                        }
+                    });
+                IEnumerable<PedidosDetExternos> ListDePe = (
+                    from Dp in DbO.PedidosDetExternos
+                    from Pe in DbO.PedidosExternos
+                    where Dp.PedidoId == Pe.Id
+                    && Pe.IdEstado == 2
+                    orderby Dp.Id descending
+                    select Dp
+                    );
+                return new RetData<Tuple<IEnumerable<PedidosExternos>, IEnumerable<PedidosDetExternos>, IEnumerable<Clientes>>>
+                {
+                    Data = new Tuple<IEnumerable<PedidosExternos>, IEnumerable<PedidosDetExternos>, IEnumerable<Clientes>>(ListPe, ListDePe, ListClients),
+                    Info = new RetInfo()
+                    {
+                        CodError = 0,
+                        Mensaje = "ok",
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            }
+            catch (Exception e1)
+            {
+                return new RetData<Tuple<IEnumerable<PedidosExternos>, IEnumerable<PedidosDetExternos>, IEnumerable<Clientes>>>
+                {
+                    Info = new RetInfo()
+                    {
+                        CodError = -1,
+                        Mensaje = e1.ToString(),
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            }
+        }
+        [HttpPost]
+        public RetData<Tuple<IEnumerable<PedidosExternos>, IEnumerable<PedidosDetExternos>>> GetPedidosExternosAdmin(object PedidoId)
+        {
+            DateTime StartTime = DateTime.Now;
+            try
+            {
+                IEnumerable<PedidosExternos> ListPe = (
+                    from Pe in DbO.PedidosExternos
+                    where Pe.Id == Convert.ToInt32(PedidoId)
+                    orderby Pe.Id descending
+                    select Pe
+                    );
+                IEnumerable<PedidosDetExternos> ListDePe = (
+                    from Dp in DbO.PedidosDetExternos
+                    from Pe in DbO.PedidosExternos
+                    where Dp.PedidoId == Pe.Id
+                    && Dp.PedidoId == Convert.ToInt32(PedidoId)
+                    orderby Dp.Id descending
+                    select Dp
+                    );
+                return new RetData<Tuple<IEnumerable<PedidosExternos>, IEnumerable<PedidosDetExternos>>>
+                {
+                    Data = new Tuple<IEnumerable<PedidosExternos>, IEnumerable<PedidosDetExternos>>(ListPe, ListDePe),
+                    Info = new RetInfo()
+                    {
+                        CodError = 0,
+                        Mensaje = "ok",
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            }
+            catch (Exception e1)
+            {
+                return new RetData<Tuple<IEnumerable<PedidosExternos>, IEnumerable<PedidosDetExternos>>>
+                {
+                    Info = new RetInfo()
+                    {
+                        CodError = -1,
+                        Mensaje = e1.ToString(),
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            }
+        }
         [HttpPost]
         public RetData<IEnumerable<PedidosDetExternos>> GetPedidosDetExternos(object PedidoId)
         {
@@ -929,11 +1029,14 @@ namespace EdiApi.Controllers
             {
                 if (ListDis.Count() == 0)
                     throw new Exception("No hay productos en la lista. WebAPI.");
+                string DateProm = "";
+                foreach (PedidoExternoModel Pem in ListDis)
+                    if (!string.IsNullOrEmpty(Pem.dateProm)) DateProm = Pem.dateProm;
                 PedidosExternos PedidoExterno = new PedidosExternos() {
                     ClienteId = ClienteId,
                     FechaCreacion = DateTime.Now.ToString(ApplicationSettings.DateTimeFormat),
                     IdEstado = IdEstado,
-                    FechaPedido = ListDis.Fod().dateProm,
+                    FechaPedido = DateProm,
                     Id = ListDis.Fod().id ?? 0
                 };
                 if (PedidoExterno.Id == 0)

@@ -69,7 +69,7 @@
                 "url": "@this.Url.Action("GetPeticiones")",
                 "type": "POST",
                 "datatype": "json",
-                "dataSrc": function (json) {
+                "dataSrc": function (json) {                    
                     return json.data;
                 }
             },
@@ -92,7 +92,7 @@
             ]
         });
     }
-    function fillPeticionDet() {
+    function fillPeticionDet(pedidoId) {
         domtblPeticionDet = $("#tblPeticionDet").DataTable({
             select: true,
             responsive: window.mobileAndTabletcheck(),
@@ -112,7 +112,7 @@
                 "emptyTable": "No hay información"
             },
             "ajax": {
-                "url": "@this.Url.Action("GetPeticionDet")",
+                "url": "@this.Url.Action("GetPeticionDet")?PedidoId=" + pedidoId,
                 "type": "POST",
                 "datatype": "json",
                 "dataSrc": function (json) {
@@ -140,10 +140,11 @@
                 //    menErrorEdi("El reporte contiene errores y no puede visualizarse");
                 //} else
                 //window.location.href = 'this.Url.Action("PeticionDet")?PedidoId=' + $($(this).closest("tr").find('td:eq(2)').find('span')[0]).attr('alt');
-                $('#exampleModalLabel3').html('Detalle de orden');
-                fillPeticionDet();
-                ModalPopPeticionDet = $('#modalPopPeticionDet').modal();
+                //console.log($($(this).closest("tr").find('td:eq(2)').find('span')[0]).attr('alt'));                
             }
+            $('#exampleModalLabel3').html('Detalle de orden');
+            fillPeticionDet($($(this).closest("tr").find('td:eq(2)').find('span')[0]).attr('alt'));
+            ModalPopPeticionDet = $('#modalPopPeticionDet').modal();
         });
     });
 </script>

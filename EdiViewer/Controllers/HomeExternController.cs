@@ -38,6 +38,18 @@ namespace EdiViewer.Controllers
             HttpContext.Session.SetObjSession("PedidoId", PedidoId);
             return View();
         }
+        public async Task<IActionResult> GetPedidosExternosPendientes()
+        {
+            try
+            {
+                RetData<Tuple<IEnumerable<PedidosExternos>, IEnumerable<PedidosDetExternos>, IEnumerable<Clientes>>> ListDis = await ApiClientFactory.Instance.GetPedidosExternosPendientes();
+                return Json(new { codError = ListDis.Info.CodError, errorMessage = ListDis.Info.Mensaje, data = ListDis.Data });
+            }
+            catch (Exception e1)
+            {
+                return Json(new { codError = -1, errorMessage = e1.ToString() });
+            }
+        }        
         public async Task<IActionResult> GetClientsOrders()
         {            
             try
@@ -129,10 +141,10 @@ namespace EdiViewer.Controllers
                 // Getting all Customer data  
                 RetData<Tuple<IEnumerable<PedidosExternos>, IEnumerable<PedidosDetExternos>>> ListPe = await ApiClientFactory.Instance.GetPedidosExternos(HttpContext.Session.GetObjSession<int>("Session.ClientId"));
                 if (ListPe.Info.CodError != 0)
-                    return Json(new { draw = 0, recordsFiltered = 0, recordsTotal = 0, errorMessage = ListPe.Info.Mensaje, ListTo = "" });
+                    return Json(new { draw = 0, recordsFiltered = 0, recordsTotal = 0, errorMessage = ListPe.Info.Mensaje, data = "" });
                 if (ListPe.Data.Item1.Count() == 0)
                 {
-                    return Json(new { draw = 0, recordsFiltered = 0, recordsTotal = 0, errorMessage = (ListPe.Info.CodError != 0 ? ListPe.Info.Mensaje : string.Empty) });
+                    return Json(new { draw = 0, recordsFiltered = 0, recordsTotal = 0, errorMessage = (ListPe.Info.CodError != 0 ? ListPe.Info.Mensaje : string.Empty), data = "" });
                 }
                 IEnumerable<PedidosExternos> ListPed = ListPe.Data.Item1;
                 if (!(string.IsNullOrEmpty(sortColumn) && string.IsNullOrEmpty(sortColumnDirection)))
@@ -156,10 +168,10 @@ namespace EdiViewer.Controllers
             }
             catch (Exception e1)
             {
-                return Json(new { draw = 0, recordsFiltered = 0, recordsTotal = 0, errorMessage = e1.ToString(), ListTo = "" });
+                return Json(new { draw = 0, recordsFiltered = 0, recordsTotal = 0, errorMessage = e1.ToString(), data = "" });
             }
         }
-        public async Task<IActionResult> GetPeticionesAdmin(int ClienteId)
+        public async Task<IActionResult> GetPeticionesAdmin(int ClienteId, string dtp1 = "", string chkPending = "")
         {
             try
             {
@@ -184,13 +196,22 @@ namespace EdiViewer.Controllers
                 // Getting all Customer data  
                 RetData<Tuple<IEnumerable<PedidosExternos>, IEnumerable<PedidosDetExternos>>> ListPe = await ApiClientFactory.Instance.GetPedidosExternos(ClienteId);
                 if (ListPe.Info.CodError != 0)
-                    return Json(new { draw = 0, recordsFiltered = 0, recordsTotal = 0, errorMessage = ListPe.Info.Mensaje, ListTo = "" });
+                    return Json(new { draw = 0, recordsFiltered = 0, recordsTotal = 0, errorMessage = ListPe.Info.Mensaje, data = "" });
                 if (ListPe.Data.Item1.Count() == 0)
                 {
-                    return Json(new { draw = 0, recordsFiltered = 0, recordsTotal = 0, errorMessage = (ListPe.Info.CodError != 0 ? ListPe.Info.Mensaje : string.Empty) });
+                    return Json(new { draw = 0, recordsFiltered = 0, recordsTotal = 0, errorMessage = (ListPe.Info.CodError != 0 ? ListPe.Info.Mensaje : string.Empty), data = "" });
                 }
-                IEnumerable<PedidosExternos> ListPed = ListPe.Data.Item1;                
-                if (!(string.IsNullOrEmpty(sortColumn) && string.IsNullOrEmpty(sortColumnDirection)))
+                IEnumerable<PedidosExternos> ListPed = ListPe.Data.Item1.Where(Pe => Pe.IdEstado != 1);
+                if (!string.IsNullOrEmpty(dtp1))
+                {
+                    ListPed = ListPe.Data.Item1.Where(Pe => Pe.FechaCreacion.StartsWith(dtp1));
+                }
+                if (!string.IsNullOrEmpty(chkPending))
+                {
+                    if (chkPending.ToLower() == "true")
+                        ListPed = ListPe.Data.Item1.Where(Pe => Pe.IdEstado == 2);
+                }
+                if (!(string.IsNullOrEmpty(sortColumn) && string.IsNullOrEmpty(sortColumnDirection) && !string.IsNullOrEmpty(sortColumn)))
                 {
                     if (sortColumn == "fechaPedido")
                     {
@@ -211,10 +232,10 @@ namespace EdiViewer.Controllers
             }
             catch (Exception e1)
             {
-                return Json(new { draw = 0, recordsFiltered = 0, recordsTotal = 0, errorMessage = e1.ToString(), ListTo = "" });
+                return Json(new { draw = 0, recordsFiltered = 0, recordsTotal = 0, errorMessage = e1.ToString(), data = "" });
             }
         }
-        public async Task<IActionResult> GetPeticionDet()
+        public async Task<IActionResult> GetPeticionDet(int PedidoId)
         {
             try
             {
@@ -239,12 +260,12 @@ namespace EdiViewer.Controllers
                 // Getting all Customer data  
                 RetData<Tuple<IEnumerable<PedidosExternos>, IEnumerable<PedidosDetExternos>>> ListPe = await ApiClientFactory.Instance.GetPedidosExternos(HttpContext.Session.GetObjSession<int>("Session.ClientId"));
                 if (ListPe.Info.CodError != 0)
-                    return Json(new { draw = 0, recordsFiltered = 0, recordsTotal = 0, errorMessage = ListPe.Info.Mensaje, ListTo = "" });
+                    return Json(new { draw = 0, recordsFiltered = 0, recordsTotal = 0, errorMessage = ListPe.Info.Mensaje, data = "" });
                 if (ListPe.Data.Item2.Count() == 0)
                 {
-                    return Json(new { draw = 0, recordsFiltered = 0, recordsTotal = 0, errorMessage = (ListPe.Info.CodError != 0 ? ListPe.Info.Mensaje : string.Empty) });
+                    return Json(new { draw = 0, recordsFiltered = 0, recordsTotal = 0, errorMessage = (ListPe.Info.CodError != 0 ? ListPe.Info.Mensaje : string.Empty), data = "" });
                 }
-                IEnumerable<PedidosDetExternos> ListPed = ListPe.Data.Item2.Where(Pd => Pd.PedidoId == HttpContext.Session.GetObjSession<int>("PedidoId"));
+                IEnumerable<PedidosDetExternos> ListPed = ListPe.Data.Item2.Where(Pd => Pd.PedidoId == PedidoId);
                 if (!(string.IsNullOrEmpty(sortColumn) && string.IsNullOrEmpty(sortColumnDirection)))
                 {
                     ListPed = ListPed.AsQueryable().OrderBy(sortColumn + " " + sortColumnDirection);
@@ -258,7 +279,54 @@ namespace EdiViewer.Controllers
             }
             catch (Exception e1)
             {
-                return Json(new { draw = 0, recordsFiltered = 0, recordsTotal = 0, errorMessage = e1.ToString(), ListTo = "" });
+                return Json(new { draw = 0, recordsFiltered = 0, recordsTotal = 0, errorMessage = e1.ToString(), data = "" });
+            }
+        }
+        public async Task<IActionResult> GetPeticionDetAdmin(int PedidoId)
+        {
+            try
+            {
+                //var dict = Request.Form.ToDictionary(x => x.Key, x => x.Value.ToString());
+                var draw = HttpContext.Request.Form["draw"].Fod();
+                // Skiping number of Rows count  
+                var start = Request.Form["start"].Fod();
+                // Paging Length 10,20  
+                var length = Request.Form["length"].Fod();
+                // Sort Column Name  
+                var sortColumn = Request.Form["columns[" + Request.Form["order[0][column]"].Fod() + "][name]"].Fod();
+                // Sort Column Direction ( asc ,desc)  
+                var sortColumnDirection = Request.Form["order[0][dir]"].Fod();
+                // Search Value from (Search box)  
+                var searchValue = Request.Form["search[value]"].Fod();
+
+                //Paging Size (10,20,50,100)  
+                int pageSize = length != null ? Convert.ToInt32(length) : 0;
+                int skip = start != null ? Convert.ToInt32(start) : 0;
+                int recordsTotal = 0;
+
+                // Getting all Customer data  
+                RetData<Tuple<IEnumerable<PedidosExternos>, IEnumerable<PedidosDetExternos>>> ListPe = await ApiClientFactory.Instance.GetPedidosExternosAdmin(PedidoId);
+                if (ListPe.Info.CodError != 0)
+                    return Json(new { draw = 0, recordsFiltered = 0, recordsTotal = 0, errorMessage = ListPe.Info.Mensaje, data = "" });
+                if (ListPe.Data.Item2.Count() == 0)
+                {
+                    return Json(new { draw = 0, recordsFiltered = 0, recordsTotal = 0, errorMessage = (ListPe.Info.CodError != 0 ? ListPe.Info.Mensaje : string.Empty), data = "" });
+                }
+                IEnumerable<PedidosDetExternos> ListPed = ListPe.Data.Item2.Where(Pd => Pd.PedidoId == PedidoId);
+                if (!(string.IsNullOrEmpty(sortColumn) && string.IsNullOrEmpty(sortColumnDirection)))
+                {
+                    ListPed = ListPed.AsQueryable().OrderBy(sortColumn + " " + sortColumnDirection);
+                }
+                //total number of rows count
+                recordsTotal = ListPed.Count();
+                //Paging
+                ListPed = ListPed.Skip(skip).Take(pageSize);
+                //Returning Json Data
+                return Json(new { draw, recordsFiltered = recordsTotal, recordsTotal, data = ListPed, errorMessage = "" });
+            }
+            catch (Exception e1)
+            {
+                return Json(new { draw = 0, recordsFiltered = 0, recordsTotal = 0, errorMessage = e1.ToString(), data = "" });
             }
         }
         public async Task<IActionResult> Inventario()
@@ -327,7 +395,7 @@ namespace EdiViewer.Controllers
                     return Json(new { draw = 0, recordsFiltered = 0, recordsTotal = 0, errorMessage = StockData.Info.Mensaje, ListTo = "" });
                 if (StockData.Data.Count() == 0)
                 {
-                    return Json(new { draw = 0, recordsFiltered = 0, recordsTotal = 0, errorMessage = (StockData.Info.CodError != 0? StockData.Info.Mensaje : string.Empty) });
+                    return Json(new { draw = 0, recordsFiltered = 0, recordsTotal = 0, errorMessage = (StockData.Info.CodError != 0? StockData.Info.Mensaje : string.Empty), data = "" });
                 }
                 if (!(string.IsNullOrEmpty(sortColumn) && string.IsNullOrEmpty(sortColumnDirection)))
                 {

@@ -476,3 +476,14 @@ table.dataTable.dtr-inline.collapsed > tbody > tr[role="row"] > td:first-child:b
 #dtp2{
     width: 200px;
 }
+.dtp3 {
+    width: 200px;
+}
+.noShow{
+    /*display: none;*/
+}
+
+
+
+
+

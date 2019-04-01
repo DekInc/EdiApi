@@ -3,6 +3,11 @@
     ViewData["Title"] = "Ordenes";
     Layout = "_LayoutExtern";
 }
+<style>
+    .btn {
+        margin-top: 10px;
+    }
+</style>
 <div id="mainDiv">
     <div class="container">
         <div class="card-deck cardMain">
@@ -23,9 +28,9 @@
                                     </div>
                                 </div>
                                 <div class="col-sm">
-                                    <label class="label" for="dtp1">Fecha y hora esperada</label><br />
-                                    <input class="form-control datepicker" data-date-format="dd/mm/yyyy" id="dtp1" maxlength="10" />
-                                </div>                                
+                                    <label class="label" for="dtp1">Fecha esperada de envió</label><br />
+                                    <input class="form-control datepicker dtp3" data-date-format="dd/mm/yyyy" id="dtp1" maxlength="10" />
+                                </div>
                             </div>
                             <div class="row margin5">
                                 <div class="col-sm">
@@ -38,6 +43,12 @@
                                     <button id="btnLimpiar" class="btn btn-primary" type="button">
                                         &nbsp;&nbsp;&nbsp;Limpiar&nbsp;&nbsp;&nbsp;
                                         <div id="divSpinLimpiar" class="spinner-border spinner-border-sm text-danger" style="display: none" role="status">
+                                            <span class="sr-only">Loading...</span>
+                                        </div>
+                                    </button>
+                                    <button id="btnPrintAll" class="btn btn-primary" type="button">
+                                        &nbsp;&nbsp;&nbsp;Exportar ordenes pendientes&nbsp;&nbsp;&nbsp;
+                                        <div id="divSpinPrintAll" class="spinner-border spinner-border-sm text-danger" style="display: none" role="status">
                                             <span class="sr-only">Loading...</span>
                                         </div>
                                     </button>
@@ -63,8 +74,22 @@
                 </div>
             </div>
         </div>
+        <table id="tblExport1" class="noShow">
+            <thead>
+                <tr>
+                    <th>Fecha de creación</th>
+                    <th>Fecha y hora esperada</th>
+                    <th>ClienteId</th>
+                    <th>Cliente</th>
+                    <th>Cod producto</th>
+                    <th>Cantidad pedida</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
     </div>
 </div>
+
 @await Html.PartialAsync("_PopPeticionDetAdmin")
 <script>
     var ModalPopPeticionDet = null;
@@ -83,7 +108,7 @@
     function fillTblReportes() {
         domtblReportes = $("#tblReportes").DataTable({
             select: true,
-            responsive: window.mobileAndTabletcheck(),
+            responsive: false,
             destroy: true,
             info: false,
             "scrollX": true,
@@ -100,7 +125,7 @@
                 "emptyTable": "No hay información"
             },
             "ajax": {
-                "url": "@this.Url.Action("GetPeticionesAdmin")?ClienteId=" + $('#cbClient').val(),
+                "url": "@this.Url.Action("GetPeticionesAdmin")?ClienteId=" + $('#cbClient').val() + '&dtp1=' + $('#dtp1').val() + '&chkPending=' + $('#chkPending').prop('checked'),
                 "type": "POST",
                 "datatype": "json",
                 "dataSrc": function (json) {
@@ -110,14 +135,15 @@
             },
             "order": [[1, "desc"]],
             "columns": [
-                { "data": "fechaCreacion", "name": "pedidoBarcode", "autoWidth": true, "defaultContent": "" },
+                { "data": "fechaCreacion", "name": "fechaCreacion", "autoWidth": true, "defaultContent": "" },
                 { "data": "fechaPedido", "name": "fechaPedido", "autoWidth": true, "defaultContent": "" },
                 {
                     data: "idEstado",
+                    name: "idEstado",
                     render: function (data, type, row) {
                         if (type === 'display') {
                             if (row.idEstado == 1) return '<span alt="' + row.id + '">Guardado</span>';
-                            if (row.idEstado == 2) return '<span alt="' + row.id + '">Enviado</span>';
+                            if (row.idEstado == 2) return '<span alt="' + row.id + '">Pendiente</span>';
                             if (row.idEstado == 3) return '<span alt="' + row.id + '">Despachado</span>';
                         }
                         return '';
@@ -127,10 +153,10 @@
             ]
         });
     }
-    function fillPeticionDet() {
+    function fillPeticionDet(pedidoId) {
         domtblPeticionDet = $("#tblPeticionDet").DataTable({
             select: true,
-            responsive: window.mobileAndTabletcheck(),
+            responsive: false,
             destroy: true,
             info: false,
             "scrollX": false,
@@ -147,7 +173,7 @@
                 "emptyTable": "No hay información"
             },
             "ajax": {
-                "url": "@this.Url.Action("GetPeticionDet")",
+                "url": "@this.Url.Action("GetPeticionDetAdmin")?PedidoId=" + pedidoId,
                 "type": "POST",
                 "datatype": "json",
                 "dataSrc": function (json) {                    
@@ -167,7 +193,7 @@
             url: "@this.Url.Action("GetClientsOrders")",
             success: function (data) {                
                 if (data.codError != 0) {
-                    menErrorEdi(xhr.status, 'Error');
+                    menErrorEdi(data.errorMessage, 'Error');
                     return;
                 }
                 $.each(data.data, function (i, item) {
@@ -183,35 +209,68 @@
                 menErrorEdi(thrownError, 'Error throw in js');
             }
         }); 
-    }
+    }    
     $(document).ready(function () {
         fillCbClients();
-        //fillTblReportes();
-        $('#tblReportes tbody').on('click', 'tr', function () {
-            if ($(this).hasClass('selected')) {
-                $(this).removeClass('selected');
-            }
-            else {
-                domtblReportes.$('tr.selected').removeClass('selected');
-                $(this).addClass('selected');
-                //trigger update
-                //if ($(this).closest("tr").find('td:eq(5)').text().toLowerCase().includes('error')) {
-                //    menErrorEdi("El reporte contiene errores y no puede visualizarse");
-                //} else
-                //window.location.href = 'this.Url.Action("PeticionDet")?PedidoId=' + $($(this).closest("tr").find('td:eq(2)').find('span')[0]).attr('alt');
-                $('#exampleModalLabel3').html('Detalle de peticiones');
-                fillPeticionDet();
-                ModalPopPeticionDet = $('#modalPopPeticionDet').modal();
-            }
-        });        
+        $('#dtp1').datepicker();
+        //fillTblReportes();                
         $('#btnFiltrar').on("click", function () {
             $('#divSpinFiltrar').show();
             fillTblReportes();
+            $('#tblReportes tbody').on('click', 'tr', function () {
+                if ($(this).hasClass('selected')) {
+                    $(this).removeClass('selected');
+                }
+                else {
+                    domtblReportes.$('tr.selected').removeClass('selected');
+                    $(this).addClass('selected');                    
+                }
+                $('#exampleModalLabel3').html('Detalle de peticiones');
+                fillPeticionDet($($(this).closest("tr").find('td:eq(2)').find('span')[0]).attr('alt'));
+                ModalPopPeticionDet = $('#modalPopPeticionDet').modal();
+            });
         });
         $('#btnLimpiar').on("click", function () {
-            $('#divSpinLimpiar').show();            
-            $('#dtp1').val('');            
-            $('#chkPending').prop('checked', true);            
+            window.location.href = window.location.href;
+        });
+        $('#btnPrintAll').on("click", function () {
+            $.ajax({
+            method: "GET",
+            url: "@this.Url.Action("GetPedidosExternosPendientes")",
+            success: function (data) {
+                if (data.codError != 0) {
+                    menErrorEdi(data.errorMessage, 'Error');
+                    return;
+                }
+                $.each(data.data.item1, function (i, pedido) {
+                    $.each(data.data.item3.filter(C => C.clienteId == pedido.clienteId), function (j, cliente) {
+                        $("#tblExport1").find('tbody')
+                            .append($('<tr>')
+                                .append($('<td>')
+                                    .append(pedido.fechaCreacion)
+                                    .append($('<td>')
+                                        .append(pedido.fechaPedido)
+                                        .append($('<td>')
+                                            .append(pedido.clienteId)
+                                            .append($('<td>')
+                                                .append(pedido.clienteId)
+                                                .append($('<td>')
+                                                    .append(cliente.nombre)
+                                            ))))));
+                    });                    
+                });
+                    //<th>Fecha de creación</th>
+                    //    <th>Fecha y hora esperada</th>
+                    //    <th>ClienteId</th>
+                    //    <th>Cliente</th>
+                    //    <th>Cod producto</th>
+                    //    <th>Cantidad pedida</th>
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                menErrorEdi(xhr.status, 'Error throw in js');
+                menErrorEdi(thrownError, 'Error throw in js');
+            }
+            });
         });
     });
 </script>

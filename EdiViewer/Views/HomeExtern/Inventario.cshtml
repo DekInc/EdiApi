@@ -56,6 +56,7 @@
     var ModalPopNewDis = null;
     var domtblReportes = null;
     var arrayProductos = [];
+    var tabIndexSort = 20;
     var HashId = '';
     var foo = function () {
     };
@@ -89,6 +90,7 @@
                 "type": "POST",
                 "datatype": "json",
                 "dataSrc": function (json) {
+                    if (json.data == '') return '';
                     if (json.errorMessage != '') {
                         menErrorEdi(json.errorMessage);
                         return json.data;
@@ -134,7 +136,8 @@
                                     cant = arrayProductos[j].cantPedir;
                                 }
                             }
-                            return '<input id="TxtProducto' + row.codProducto.replace(/ /g, '^') + '" name="TxtProducto' + row.codProducto.replace(/ /g, '^') + '" type="textbox" class="editor-active form-control txtCantPedir" value="' + cant + '" onkeypress="return changeProdPedido(isNumberKey(event), ' + "'" + row.codProducto.replace(/ /g, '^') + "'" + ', this)">';
+                            tabIndexSort++;
+                            return '<input id="TxtProducto' + row.codProducto.replace(/ /g, '^') + '" name="TxtProducto' + row.codProducto.replace(/ /g, '^') + '" type="textbox" class="editor-active form-control txtCantPedir" tabIndex="' + tabIndexSort + '" value="' + cant + '" onkeypress="return changeProdPedido(isNumberKey(event), ' + "'" + row.codProducto.replace(/ /g, '^') + "'" + ', this)">';
                         }
                         return '';
                     },

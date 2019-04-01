@@ -96,6 +96,15 @@ namespace CoreApiClient
             string JsonParams = JsonConvert.SerializeObject(ClienteId);
             return await PostGetAsyncJson<RetData<Tuple<IEnumerable<PedidosExternos>, IEnumerable<PedidosDetExternos>>>>(CreateRequestUri(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Data/GetPedidosExternos")), JsonParams);
         }
+        public async Task<RetData<Tuple<IEnumerable<PedidosExternos>, IEnumerable<PedidosDetExternos>, IEnumerable<Clientes>>>> GetPedidosExternosPendientes()
+        {
+            return await GetAsync<RetData<Tuple<IEnumerable<PedidosExternos>, IEnumerable<PedidosDetExternos>, IEnumerable<Clientes>>>>(CreateRequestUri(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Data/GetPedidosExternosPendientes")));
+        }
+        public async Task<RetData<Tuple<IEnumerable<PedidosExternos>, IEnumerable<PedidosDetExternos>>>> GetPedidosExternosAdmin(int PedidoId)
+        {
+            string JsonParams = JsonConvert.SerializeObject(PedidoId);
+            return await PostGetAsyncJson<RetData<Tuple<IEnumerable<PedidosExternos>, IEnumerable<PedidosDetExternos>>>>(CreateRequestUri(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Data/GetPedidosExternosAdmin")), JsonParams);
+        }
         public async Task<RetData<IEnumerable<PedidosDetExternos>>> GetPedidosDetExternos(int PedidoId)
         {
             string JsonParams = JsonConvert.SerializeObject(PedidoId);
@@ -119,7 +128,7 @@ namespace CoreApiClient
         public async Task<RetData<IEnumerable<ClientesModel>>> GetClientsOrders()
         {
             return await GetAsync<RetData<IEnumerable<ClientesModel>>>(CreateRequestUri(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Data/GetClientsOrders")));
-        }
+        }        
         //public async Task<List<UsersModel>> GetUsers()
         //{
         //    var requestUrl = CreateRequestUri(string.Format(System.Globalization.CultureInfo.InvariantCulture,
