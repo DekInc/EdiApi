@@ -19,7 +19,8 @@ SELECT P.ClienteID,
        R.Regimen,
        Dp.CodProducto,
        Dp.Cantidad,
-       P.Observacion
+       P.Observacion,
+	   P.PedidoID
 FROM wms_test_29_01_2019.dbo.Pedido AS P WITH(NOLOCK)
 INNER JOIN wms_test_29_01_2019.dbo.Estatus AS E WITH(NOLOCK) ON E.EstatusID = P.EstatusID
 INNER JOIN wms_test_29_01_2019.dbo.Bodegas AS B WITH(NOLOCK) ON B.BodegaID = P.BodegaID

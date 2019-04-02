@@ -1142,5 +1142,37 @@ namespace EdiApi.Controllers
                 };
             }
         }
+        [HttpPost]
+        public RetData<IEnumerable<TsqlDespachosWmsComplex>> GetPedidosDet(object PedidoId)
+        {
+            DateTime StartTime = DateTime.Now;
+            try
+            {
+                IEnumerable<TsqlDespachosWmsComplex> ListPedidoDet = ManualDB.SP_GetSNDet(ref DbO);
+                ListPedidoDet = ListPedidoDet.Where(Dp => Dp.PedidoId == Convert.ToInt32(PedidoId));
+                return new RetData<IEnumerable<TsqlDespachosWmsComplex>>
+                {
+                    Data = ListPedidoDet,
+                    Info = new RetInfo()
+                    {
+                        CodError = 0,
+                        Mensaje = "ok",
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            }
+            catch (Exception e1)
+            {
+                return new RetData<IEnumerable<TsqlDespachosWmsComplex>>
+                {
+                    Info = new RetInfo()
+                    {
+                        CodError = -1,
+                        Mensaje = e1.ToString(),
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            }            
+        }
     }
 }

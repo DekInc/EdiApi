@@ -79,7 +79,8 @@ namespace EdiApi.Models
                             NoMarchamo = Convert.ToString(Dr.GetValue(16)),
                             Observacion = Convert.ToString(Dr.GetValue(17)), 
                             TotalValue = Convert.ToDouble(Dr.GetValue(20)),
-                            NumeroOc = Convert.ToString(Dr.GetValue(21))
+                            NumeroOc = Convert.ToString(Dr.GetValue(21)),
+                            PedidoId = Convert.ToInt32(Dr.GetValue(22))
                         });
                     }
                 }
@@ -178,7 +179,8 @@ namespace EdiApi.Models
                             Regimen = Convert.ToString(Dr.GetValue(5)),
                             CodProducto = Convert.ToString(Dr.GetValue(6)),
                             Cantidad = Convert.ToDouble(Dr.GetValue(7)),
-                            Observacion = Convert.ToString(Dr.GetValue(8))
+                            Observacion = Convert.ToString(Dr.GetValue(8)),
+                            PedidoId = Convert.ToInt32(Dr.GetValue(9))
                         });
                     }
                 }

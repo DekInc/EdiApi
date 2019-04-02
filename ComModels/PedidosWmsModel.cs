@@ -16,5 +16,6 @@ namespace ComModels
         public string CodProducto { get; set; }
         public string Cantidad { get; set; }
         public string Observacion { get; set; }
+        public int PedidoId { get; set; }
     }
 }

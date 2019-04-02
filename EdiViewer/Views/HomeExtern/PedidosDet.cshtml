@@ -1,7 +1,99 @@
-﻿
+﻿@using ComModels
+@model RetData<IEnumerable<TsqlDespachosWmsComplex>>
 @{
-    ViewData["Title"] = "PedidosDet";
+    ViewData["Title"] = "Detalle de pedidos";
 }
-
-<h2>PedidosDet</h2>
-
+<div id="mainDiv">
+    <div class="container">
+        <div class="card-deck cardMain">
+            <div class="card box-shadow">
+                <div class="card-header">
+                    <h4 class="my-0 font-weight-normal">Entrega de carga</h4>
+                </div>
+                <div class="card-body">
+                    <div class="clearfix"></div>
+                    <br />
+                    <div><b>Cliente:</b> @Model.Data.Fod().Cliente</div>
+                    <div><b>Número de entrega:</b> @Model.Data.Fod().DespachoId</div>
+                    <div><b>Fecha de entrega:</b> @Model.Data.Fod().FechaSalidaStr</div>
+                    <div>
+                        <table class="table table-striped table-bordered nowrap table-hover display tblReportes">
+                            <caption>TRANSPORTISTA TERRESTRE</caption>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        Transportista
+                                    </td>
+                                    <td>
+                                        @Model.Data.Fod().Motorista
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        No placa
+                                    </td>
+                                    <td>
+                                        @Model.Data.Fod().DocumentoMotorista
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        No DM
+                                    </td>
+                                    <td>
+                                        @Model.Data.Fod().DocumentoFiscal
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        Nombre del chofer
+                                    </td>
+                                    <td>
+                                        @Model.Data.Fod().Motorista
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        Marchamo
+                                    </td>
+                                    <td>
+                                        @Model.Data.Fod().NoMarchamo
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <br />
+                        <table class="table table-bordered">
+                            <caption>OBSERVACIONES</caption>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        @Model.Data.Fod().Observacion
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Pzs</th>
+                                    <th>Cod producto</th>
+                                    <th>Descripción</th>
+                                    <th>Peso</th>
+                                    <th>Volumen</th>
+                                </tr>                                
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        @Model.Data.Fod().Observacion
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

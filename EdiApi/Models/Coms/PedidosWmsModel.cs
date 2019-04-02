@@ -16,5 +16,6 @@ namespace EdiApi.Models
         public string CodProducto { get; set; }
         public double Cantidad { get; set; }
         public string Observacion { get; set; }
+        public int PedidoId { get; set; }
     }
 }

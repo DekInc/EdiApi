@@ -25,9 +25,10 @@ namespace EdiViewer.Controllers
         {
             return View();
         }
-        public IActionResult PedidosDet()
+        public async Task<IActionResult> PedidosDet(int PedidoId)
         {
-            return View();
+            RetData<IEnumerable<TsqlDespachosWmsComplex>> ListPe = await ApiClientFactory.Instance.GetPedidosDet(PedidoId);
+            return View(ListPe);
         }
         public IActionResult Peticiones()
         {

@@ -128,7 +128,12 @@ namespace CoreApiClient
         public async Task<RetData<IEnumerable<ClientesModel>>> GetClientsOrders()
         {
             return await GetAsync<RetData<IEnumerable<ClientesModel>>>(CreateRequestUri(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Data/GetClientsOrders")));
-        }        
+        }
+        public async Task<RetData<IEnumerable<TsqlDespachosWmsComplex>>> GetPedidosDet(int PedidoId)
+        {
+            string JsonParams = JsonConvert.SerializeObject(PedidoId);
+            return await PostGetAsyncJson<RetData<IEnumerable<TsqlDespachosWmsComplex>>>(CreateRequestUri(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Data/GetPedidosDet")), JsonParams);
+        }
         //public async Task<List<UsersModel>> GetUsers()
         //{
         //    var requestUrl = CreateRequestUri(string.Format(System.Globalization.CultureInfo.InvariantCulture,

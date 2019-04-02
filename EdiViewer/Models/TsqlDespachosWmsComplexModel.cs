@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace EdiViewer.Models
 {
-    public class TsqlDespachosWmsComplex
+    public class TsqlDespachosWmsComplexModel
     {
         public int DespachoId { get; set; }
         public DateTime? FechaSalida { get; set; }

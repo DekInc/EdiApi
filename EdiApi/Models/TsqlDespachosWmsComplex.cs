@@ -49,5 +49,6 @@ namespace EdiApi.Models
         public string ErrorMessage { get; set; }
         public string Cliente { get; set; }
         public int Procesado { get; set; }
+        public int PedidoId { get; set; }
     }
 }

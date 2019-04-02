@@ -81,8 +81,19 @@
                 }
             },            
             "order": [[1, "desc"]],
-            "columns": [                
-                { "data": "pedidoBarcode", "name": "pedidoBarcode", "autoWidth": true, "defaultContent": "" },
+            "columns": [
+                {
+                    data: "pedidoBarcode",
+                    name: "pedidoBarcode",
+                    render: function (data, type, row) {
+                        if (type === 'display') {
+                            return '<span alt="' + row.pedidoId + '">' + row.pedidoBarcode + '</span>';
+                        }
+                        return '';
+                    },
+                    className: "dt-body-center"
+                },
+                //{ "data": "pedidoBarcode", "name": "pedidoBarcode", "autoWidth": true, "defaultContent": "" },
                 { "data": "fechaPedido", "name": "fechaPedido", "autoWidth": true, "defaultContent": "" },
                 { "data": "estatus", "name": "Estatus", "autoWidth": true, "defaultContent": "" },
                 { "data": "nomBodega", "name": "nomBodega", "autoWidth": true, "defaultContent": "" },
@@ -92,9 +103,19 @@
                 { "data": "observacion", "name": "observacion", "autoWidth": true, "defaultContent": "" }
             ]
         });
-    }   
+    }
     $(document).ready(function () {
         fillTblReportes();
-        
+        $('#tblReportes tbody').on('click', 'tr', function () {
+            if ($(this).hasClass('selected')) {
+                $(this).removeClass('selected');
+            }
+            else {
+                domtblReportes.$('tr.selected').removeClass('selected');
+                $(this).addClass('selected');                
+            }
+            var pedidoIdC = $($(this).closest("tr").find('td:eq(0)').find('span')[0]).attr('alt');
+            window.location.href = '@this.Url.Action("PedidosDet")?PedidoId=' + pedidoIdC;
+        });
     });
 </script>
