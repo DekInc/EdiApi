@@ -87,7 +87,7 @@
                     name: "pedidoBarcode",
                     render: function (data, type, row) {
                         if (type === 'display') {
-                            return '<span alt="' + row.pedidoId + '">' + row.pedidoBarcode + '</span>';
+                            return '<span class="thisSpan" alt="' + row.pedidoId + '">' + row.pedidoBarcode + '</span>';
                         }
                         return '';
                     },
@@ -106,7 +106,10 @@
     }
     $(document).ready(function () {
         fillTblReportes();
-        $('#tblReportes tbody').on('click', 'tr', function () {
+        $('#tblReportes tbody').on('click', 'tr', function (Event) {
+            var idFrom = $($(this).closest("tr").find('.thisSpan')[0]).attr('alt');
+            if ($(Event.currentTarget).prop('class').indexOf('parent') !== -1)
+                return;
             if ($(this).hasClass('selected')) {
                 $(this).removeClass('selected');
             }
@@ -114,8 +117,8 @@
                 domtblReportes.$('tr.selected').removeClass('selected');
                 $(this).addClass('selected');                
             }
-            var pedidoIdC = $($(this).closest("tr").find('td:eq(0)').find('span')[0]).attr('alt');
-            window.location.href = '@this.Url.Action("PedidosDet")?PedidoId=' + pedidoIdC;
+            //var pedidoIdC = $($(this).closest("tr").find('td:eq(0)').find('span')[0]).attr('alt');
+            window.location.href = '@this.Url.Action("PedidosDet")?PedidoId=' + idFrom;
         });
     });
 </script>

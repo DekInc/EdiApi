@@ -42,6 +42,12 @@ body {
     left: 0;
     position: absolute;
 }
+.mainDiv2 {
+    box-sizing: border-box;
+    width: unset !important;
+    left: 0;
+    position: relative !important;
+}
 
 .jumbotron {
     border-top: 1px solid rgb(212, 206, 214);
@@ -98,6 +104,7 @@ label {
     background: linear-gradient(35deg, rgb(65, 111, 170), rgb(122, 175, 243));
     font-weight: bold;
     font-style: italic;
+    max-width: 100vw;
 }
 
 .btn-link {
@@ -115,6 +122,25 @@ label {
     background: linear-gradient(35deg, rgb(65, 111, 170), rgb(122, 175, 243));  
     font-size: 13pt;
     font-weight: bold;
+}
+.cardHeaderTable {
+    background-color: unset;
+    background: linear-gradient(35deg, rgb(200, 168, 137), rgb(230, 198, 167));
+    font-size: 13pt;
+    font-weight: bold;
+}
+.divInfoGen{
+    line-height: 1.8666em;
+}
+.tblTransportist {
+    min-width: 460px;
+}
+.cardTransportist{
+    /*max-width: 70%;*/
+}
+.bg-dark {
+    position: absolute !important;
+    max-width: 100vw;
 }
 h4 {
     font-size: 16pt;
@@ -311,6 +337,8 @@ table.dataTable thead th, table.dataTable thead td {
 .modal-body {
     box-sizing: border-box;
     width: 73%;
+    max-height: calc(100vh - 80px);
+    overflow-y: auto;
 }
 
 .fade2 {
@@ -320,10 +348,10 @@ table.dataTable thead th, table.dataTable thead td {
     /*display: block !important;*/
 }
 
-    .fade2.show {
-        opacity: 1;
-        transform: scale(1);
-    }
+.fade2.show {
+    opacity: 1;
+    transform: scale(1);
+}
 
 #divSpin1 {
     box-sizing: border-box;
@@ -449,7 +477,7 @@ table.dataTable.dtr-inline.collapsed > tbody > tr.parent > td:first-child:before
     display: block;
     position: static;
     float: left;
-    margin-right: 6px;
+    margin-right: 6px;    
 }
 table.dataTable.dtr-inline.collapsed > tbody > tr[role="row"] > td:first-child:before, table.dataTable.dtr-inline.collapsed > tbody > tr[role="row"] > th:first-child:before {
     font-size: 18pt;

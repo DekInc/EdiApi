@@ -58,6 +58,7 @@
             destroy: true,
             info: false,
             "scrollX": true,
+            "scrollY": true,
             "processing": true, // for show progress bar
             "serverSide": true, // for process server side
             "filter": false, // this is for disable filter (search box)
@@ -86,9 +87,9 @@
                     data: "idEstado",
                     render: function (data, type, row) {
                         if (type === 'display') {
-                            if (row.idEstado == 1) return '<span alt="' + row.id + '">Guardado</span>';
-                            if (row.idEstado == 2) return '<span alt="' + row.id + '">Enviado</span>';
-                            if (row.idEstado == 3) return '<span alt="' + row.id + '">Despachado</span>';
+                            if (row.idEstado == 1) return '<span class="thisSpan" alt="' + row.id + '">Guardado</span>';
+                            if (row.idEstado == 2) return '<span class="thisSpan" alt="' + row.id + '">Enviado</span>';
+                            if (row.idEstado == 3) return '<span class="thisSpan" alt="' + row.id + '">Despachado</span>';
                         }
                         return '';
                     },
@@ -109,6 +110,7 @@
             destroy: true,
             info: false,
             "scrollX": false,
+            "scrollY": true,
             "processing": true, // for show progress bar
             "serverSide": true, // for process server side
             "filter": false, // this is for disable filter (search box)
@@ -138,22 +140,19 @@
     }
     $(document).ready(function () {
         fillTblReportes();
-        $('#tblReportes tbody').on('click', 'tr', function () {
+        $('#tblReportes tbody').on('click', 'tr', function (Event) {            
+            var idFrom = $($(this).closest("tr").find('.thisSpan')[0]).attr('alt');
+            if ($(Event.currentTarget).prop('class').indexOf('parent') !== -1)
+                return;            
             if ($(this).hasClass('selected')) {
                 $(this).removeClass('selected');
             }
             else {
                 domtblReportes.$('tr.selected').removeClass('selected');
                 $(this).addClass('selected');
-                //trigger update
-                //if ($(this).closest("tr").find('td:eq(5)').text().toLowerCase().includes('error')) {
-                //    menErrorEdi("El reporte contiene errores y no puede visualizarse");
-                //} else
-                //window.location.href = 'this.Url.Action("PeticionDet")?PedidoId=' + $($(this).closest("tr").find('td:eq(2)').find('span')[0]).attr('alt');
-                //console.log($($(this).closest("tr").find('td:eq(2)').find('span')[0]).attr('alt'));                
             }
             $('#exampleModalLabel3').html('Detalle de orden');
-            fillPeticionDet($($(this).closest("tr").find('td:eq(2)').find('span')[0]).attr('alt'));
+            fillPeticionDet(idFrom);
             ModalPopPeticionDet = $('#modalPopPeticionDet').modal();
         });
     });
