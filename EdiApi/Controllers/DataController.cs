@@ -904,17 +904,15 @@ namespace EdiApi.Controllers
                     orderby Pe.Id descending
                     select Pe
                     );
-                    (
-                    from C in WmsDbO.Clientes
-                    from Pe in ListPe
-                    where C.ClienteId == Pe.ClienteId
-                    select C
-                    ).Distinct().ToList().ForEach(Cl => {
-                        foreach (PedidosExternos PedC in ListPe.Where(Ped => Ped.ClienteId == Cl.ClienteId))
-                        {
-                            ListClients.Add(new Clientes() { ClienteId = Cl.ClienteId, Nombre = Cl.Nombre });
-                        }
-                    });
+                foreach (PedidosExternos PedC in ListPe)
+                {
+
+                    ListClients.Add(
+                        (from C in WmsDbO.Clientes
+                        where C.ClienteId == PedC.ClienteId
+                        select new Clientes() { ClienteId = C.ClienteId, Nombre = C.Nombre }).Fod()
+                    );
+                }
                 IEnumerable<PedidosDetExternos> ListDePe = (
                     from Dp in DbO.PedidosDetExternos
                     from Pe in DbO.PedidosExternos

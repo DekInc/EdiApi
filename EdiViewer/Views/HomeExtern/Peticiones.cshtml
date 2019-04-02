@@ -50,6 +50,11 @@
         domtblReportes = $("#tblReportes").DataTable({
             select: true,
             responsive: window.mobileAndTabletcheck(),
+            dom: 'Bfrtip',
+            buttons: [
+                'excelHtml5',
+                'pdfHtml5'
+            ],
             destroy: true,
             info: false,
             "scrollX": true,
@@ -96,6 +101,11 @@
         domtblPeticionDet = $("#tblPeticionDet").DataTable({
             select: true,
             responsive: window.mobileAndTabletcheck(),
+            dom: 'Bfrtip',
+            buttons: [
+                'excelHtml5',
+                'pdfHtml5'
+            ],
             destroy: true,
             info: false,
             "scrollX": false,

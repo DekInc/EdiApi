@@ -71,6 +71,11 @@
         domtblReportes = $("#tblReportes").DataTable({
             select: true,
             responsive: true,
+            dom: 'Bfrtip',
+            buttons: [
+                'excelHtml5',
+                'pdfHtml5'
+            ],
             destroy: true,
             info: false,
             "processing": true, // for show progress bar

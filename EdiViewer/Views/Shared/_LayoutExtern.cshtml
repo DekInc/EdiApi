@@ -12,6 +12,7 @@
     <link rel="stylesheet" href="~/lib/DataTables/Scroller-2.0.0/css/scroller.dataTables.min.css" />
     <link rel="stylesheet" href="~/lib/bootstrap421/css/bootstrap-datepicker.min.css" />
     <link rel="stylesheet" href="~/lib/datetimepicker/bootstrap-datetimepicker.min.css" />
+    <link rel="stylesheet" href="~/lib/DataTables/Buttons-1.5.6/css/buttons.dataTables.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap431/js/bootstrap.bundle.min.js"></script>
@@ -21,6 +22,10 @@
     <script src="~/lib/DataTables/Scroller-2.0.0/js/dataTables.scroller.min.js"></script>
     <script src="~/lib/bootstrap421/js/bootstrap-datepicker.min.js"></script>
     <script src="~/lib/datetimepicker/bootstrap-datetimepicker.min.js"></script>
+    <script src="~/lib/DataTables/Buttons-1.5.6/js/buttons.html5.min.js"></script>
+    <script src="~/js/jszip.min.js"></script>
+    <script src="~/js/pdfmake.min.js"></script>
+    <script src="~/js/vfs_fonts.js"></script>
     <script src="~/js/push.min.js"></script>
     <script src="~/js/jquery.tableToExcel.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
@@ -46,7 +51,6 @@
                     </a>
                     <div class="dropdown-menu mr-auto" aria-labelledby="navbarDropdown">
                         <a class="dropdown-item" asp-area="" asp-controller="HomeExtern" asp-action="Inventario">Inventario y pedidos</a>
-                        <div class="dropdown-divider"></div>                        
                     </div>
                 </li>
                 <li class="nav-item dropdown">
@@ -54,8 +58,6 @@
                         Reportes
                     </a>
                     <div class="dropdown-menu mr-auto" aria-labelledby="navbarDropdown2">
-                        <a class="dropdown-item" asp-area="" asp-controller="HomeExtern" asp-action="PeticionesAdmin">Admin ordenes</a>
-                        <div class="dropdown-divider"></div>
                         <a class="dropdown-item" asp-area="" asp-controller="HomeExtern" asp-action="Peticiones">Ordenes</a>
                         <div class="dropdown-divider"></div>
                         <a class="dropdown-item" asp-area="" asp-controller="HomeExtern" asp-action="Pedidos">Estado de pedidos</a>
@@ -85,7 +87,7 @@
         @RenderBody()
         <div class="fixed-bottom footer2">
             <hr />
-            <p>&copy; 2019 - EdiViewer - @Html.ShowVersion()</p>
+            <p>&copy; 2019 - Intranet / Extranet - @Html.ShowVersion()</p>
         </div>
         <script>
             $(document).ready(function () {

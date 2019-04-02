@@ -95,7 +95,9 @@ label {
 }
 
 .footer2 {
-    background: #fff;
+    background: linear-gradient(35deg, rgb(65, 111, 170), rgb(122, 175, 243));
+    font-weight: bold;
+    font-style: italic;
 }
 
 .btn-link {
@@ -480,10 +482,21 @@ table.dataTable.dtr-inline.collapsed > tbody > tr[role="row"] > td:first-child:b
     width: 200px;
 }
 .noShow{
-    /*display: none;*/
+    display: none;
 }
-
-
-
-
+.dropdown-menu {
+    background-color: rgb(88, 111, 141);
+    border: unset !important;
+}
+.dropdown-item {
+    font-size: 11pt !important;
+    font-style: italic !important;
+    color: #FFF !important;
+}
+.dropdown-item:hover, .dropdown-menu:hover {
+    color: #F00 !important;
+}
+.imgButton{
+    height: 22px;
+}
 
