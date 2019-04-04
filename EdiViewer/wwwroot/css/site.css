@@ -59,6 +59,7 @@ body {
 .tblReportes, .tblPedidos {
     width: 100%;
     min-width: 60vw;
+    max-width: 99vw;
     text-align: left;
 }
 .dataTables_scrollHeadInner {
@@ -554,4 +555,7 @@ table.dataTable.dtr-inline.collapsed > tbody > tr[role="row"] > td:first-child:b
     font-size: 16pt !important;
     font-weight: bold !important;
     padding-bottom: 16px;
+}
+#tblReportes_paginate {
+    /*max-width: 460px;*/
 }

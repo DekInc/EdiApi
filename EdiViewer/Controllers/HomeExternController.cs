@@ -33,14 +33,14 @@ namespace EdiViewer.Controllers
             else
                 return View();
         }
-        public async Task<string> UpdateDis()
-        {
-            RetData<IEnumerable<TsqlDespachosWmsComplex>> ListPe = await ApiClientFactory.Instance.GetPedidosDet(PedidoId);
-            if (ListPe.Info.CodError == 0)
-                return View(ListPe);
-            else
-                return View();
-        }
+        //public async Task<string> UpdateDis()
+        //{
+        //    RetData<IEnumerable<TsqlDespachosWmsComplex>> ListPe = await ApiClientFactory.Instance.GetPedidosDet(PedidoId);
+        //    if (ListPe.Info.CodError == 0)
+        //        return View(ListPe);
+        //    else
+        //        return View();
+        //}
         public IActionResult Peticiones()
         {
             return View();

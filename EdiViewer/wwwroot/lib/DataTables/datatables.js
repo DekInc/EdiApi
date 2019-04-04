@@ -75087,7 +75087,7 @@ DataTable.ext.renderer.pageButton.bootstrap = function ( settings, host, idx, bu
 							.html( btnDisplay )
 						)
 						.appendTo( container );
-
+                    console.log(container.find('li').length);
 					settings.oApi._fnBindAction(
 						node, {action: button}, clickHandler
 					);
