@@ -47,34 +47,32 @@
             <ul class="navbar-nav mr-auto">
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown1" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        edi 830
+                        Pedidos
                     </a>
                     <div class="dropdown-menu mr-auto" aria-labelledby="navbarDropdown1">
-                        <a class="dropdown-item" asp-area="" asp-controller="Home" asp-action="Index">Pedidos LEAR</a>
-                        <div class="dropdown-divider"></div>
-                        <a class="dropdown-item" href="~/files/learspec830.pdf" target="_new">830 specs</a>
+                        <a class="dropdown-item" asp-area="" asp-controller="Home" asp-action="Index">Pedidos Lear</a>
+                        <a class="dropdown-item" asp-area="" asp-controller="Home" asp-action="PeticionesAdmin">Pedidos Payless</a>
                     </div>
                 </li>
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown2" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        edi 856
+                        Despacho
                     </a>
                     <div class="dropdown-menu mr-auto" aria-labelledby="navbarDropdown2">
-                        <a class="dropdown-item" asp-area="" asp-controller="Rep856" asp-action="Index">Rep 856</a>
-                        <div class="dropdown-divider"></div>
-                        <a class="dropdown-item" href="~/files/learspec856.pdf" target="_new">856 specs</a>
+                        <a class="dropdown-item" asp-area="" asp-controller="Rep856" asp-action="Index">Confirmación Lear</a>                                                
                     </div>
                 </li>
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown3" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        Reportes
+                        Ayuda
                     </a>
                     <div class="dropdown-menu mr-auto" aria-labelledby="navbarDropdown3">
-                        <a class="dropdown-item" asp-area="" asp-controller="Home" asp-action="PeticionesAdmin">Admin ordenes</a>
+                        <a class="dropdown-item" href="~/files/learspec830.pdf" target="_new">830 specs</a>
+                        <a class="dropdown-item" href="~/files/learspec856.pdf" target="_new">856 specs</a>
                     </div>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link active" asp-area="" asp-controller="Home" asp-action="Exit">Salir</a>
+                    <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Exit">Salir</a>
                 </li>
             </ul>            
         </div>

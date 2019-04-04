@@ -1002,7 +1002,7 @@ DataTable.ext.buttons.excelHtml5 = {
 	},
 
 	text: function ( dt ) {
-		return dt.i18n( 'buttons.excel', 'Excel' );
+        return dt.i18n('buttons.excel', 'Excel' );
 	},
 
 	action: function ( e, dt, button, config ) {

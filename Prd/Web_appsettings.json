@@ -1,0 +1,11 @@
+{
+    "Logging": {
+        "LogLevel": {
+            "Default": "Warning"
+        }
+    },
+    "EdiWebApi": {
+        "ApiUri": "http://localhost:44374/"
+    },
+    "AllowedHosts": "*"
+}

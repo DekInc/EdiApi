@@ -33,6 +33,14 @@ namespace EdiViewer.Controllers
             else
                 return View();
         }
+        public async Task<string> UpdateDis()
+        {
+            RetData<IEnumerable<TsqlDespachosWmsComplex>> ListPe = await ApiClientFactory.Instance.GetPedidosDet(PedidoId);
+            if (ListPe.Info.CodError == 0)
+                return View(ListPe);
+            else
+                return View();
+        }
         public IActionResult Peticiones()
         {
             return View();
@@ -197,16 +205,44 @@ namespace EdiViewer.Controllers
             {
                 return Json(new { draw = 0, recordsFiltered = 0, recordsTotal = 0, errorMessage = e1.ToString(), data = "" });
             }
-        }        
+        }
+        public async Task<RetData<string>> GetClientName()
+        {            
+            DateTime StartTime = DateTime.Now;
+            try
+            {
+                RetData<Clientes> ClienteO = await ApiClientFactory.Instance.GetClient(HttpContext.Session.GetObjSession<int>("Session.ClientId"));
+                string ClientName = string.Empty;
+                if (ClienteO.Info.CodError == 0)
+                    ClientName = ClienteO.Data.Nombre;
+                return new RetData<string>()
+                {
+                    Data = ClientName,
+                    Info = ClienteO.Info
+                };
+            }
+            catch (Exception e2)
+            {
+                return new RetData<string>()
+                {
+                    Info = new RetInfo()
+                    {
+                        CodError = -1,
+                        Mensaje = e2.ToString(),
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            }
+        }
         public async Task<IActionResult> Inventario()
         {
             try
             {
                 ViewBag.ListOldDis = null;
-                ViewBag.DateLastDis = null;
+                ViewBag.DateLastDis = DateTime.Now.ToString(ApplicationSettings.DateTimeFormatT);
                 ViewBag.PedidoId = null;
                 HttpContext.Session.SetObjSession("PedidoId", null);
-                RetData<Clientes> ClienteO = await ApiClientFactory.Instance.GetClient(HttpContext.Session.GetObjSession<int>("Session.ClientId"));
+                //RetData<Clientes> ClienteO = await ApiClientFactory.Instance.GetClient(HttpContext.Session.GetObjSession<int>("Session.ClientId"));
                 RetData<Tuple<IEnumerable<PedidosExternos>, IEnumerable<PedidosDetExternos>>> ListDis = await ApiClientFactory.Instance.GetPedidosExternos(HttpContext.Session.GetObjSession<int>("Session.ClientId"));
                 if (ListDis.Data.Item1.Count() > 0)
                 {
@@ -220,23 +256,61 @@ namespace EdiViewer.Controllers
                         }
                     }
                 }
-                ViewBag.ClientName = ClienteO.Data.Nombre;
-                if (!ClienteO.Data.EstatusId.HasValue) { 
-                    HttpContext.Session.SetObjSession("Session.IdPedidoExterno", 0);
-                } else {
-                    if (ClienteO.Data.EstatusId.Value != 0)
-                        HttpContext.Session.SetObjSession("Session.IdPedidoExterno", ClienteO.Data.EstatusId.Value);
-                    else
-                        HttpContext.Session.SetObjSession("Session.IdPedidoExterno", 0);
-                }
+                //ViewBag.ClientName = ClienteO.Data.Nombre;
+                //if (!ClienteO.Data.EstatusId.HasValue) { 
+                //    HttpContext.Session.SetObjSession("Session.IdPedidoExterno", 0);
+                //} else {
+                //    if (ClienteO.Data.EstatusId.Value != 0)
+                //        HttpContext.Session.SetObjSession("Session.IdPedidoExterno", ClienteO.Data.EstatusId.Value);
+                //    else
+                //        HttpContext.Session.SetObjSession("Session.IdPedidoExterno", 0);
+                //}
             }
             catch (Exception e1)
             {
                 ViewBag.ClientName = e1.ToString();
             }            
             return View();
-        }        
-        public async Task<IActionResult> GetInventory()
+        }
+        [HttpPost]
+        public async Task<RetData<IEnumerable<ExistenciasExternModel>>> GetInventoryJson(bool chkOnlyAvailable, [FromBody]string ListDis)
+        {
+            DateTime StartTime = DateTime.Now;            
+            try
+            {
+                IEnumerable<PedidoExternoModel> ListDis2 = JsonConvert.DeserializeObject<IEnumerable<PedidoExternoModel>>(ListDis);
+                RetData<IEnumerable<ExistenciasExternModel>> StockData = await ApiClientFactory.Instance.GetStock(HttpContext.Session.GetObjSession<int>("Session.ClientId"));
+                if (chkOnlyAvailable && StockData.Info.CodError == 0)
+                    StockData.Data = StockData.Data.Where(Sd => Sd.Disponible > 0);
+                if (ListDis2.Count() > 0)
+                {
+                    foreach (ExistenciasExternModel Ee in StockData.Data)
+                        Ee.ClienteID = 0;
+                    ListDis2.Where(D => D.cantPedir != "0").ToList().ForEach(Pr => {
+                        IEnumerable<ExistenciasExternModel> ProdFound = StockData.Data.Where(Sd => Sd.CodProducto.Trim() == Pr.codProducto.Replace("^", " ").Trim());
+                        ProdFound.Fod().ClienteID = 0;
+                        if (ProdFound.Count() > 0)
+                            ProdFound.Fod().ClienteID = Convert.ToInt32(Pr.cantPedir);
+                        else
+                            throw new Exception("El producto " + Pr.codProducto + " no fue encontrado en el array.");
+                    });
+                }
+                return StockData;
+            }
+            catch (Exception e1)
+            {
+                return new RetData<IEnumerable<ExistenciasExternModel>>()
+                {
+                    Info = new RetInfo()
+                    {
+                        CodError = -1,
+                        Mensaje = e1.ToString(),
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            }
+        }
+        public async Task<IActionResult> GetInventory(bool chkOnlyAvailable)
         {
             try
             {
@@ -261,11 +335,13 @@ namespace EdiViewer.Controllers
                 // Getting all Customer data  
                 RetData<IEnumerable<ExistenciasExternModel>> StockData = await ApiClientFactory.Instance.GetStock(HttpContext.Session.GetObjSession<int>("Session.ClientId"));
                 if (StockData.Info.CodError != 0)
-                    return Json(new { draw = 0, recordsFiltered = 0, recordsTotal = 0, errorMessage = StockData.Info.Mensaje, ListTo = "" });
+                    return Json(new { draw = 0, recordsFiltered = 0, recordsTotal = 0, errorMessage = StockData.Info.Mensaje, data = "" });
                 if (StockData.Data.Count() == 0)
                 {
                     return Json(new { draw = 0, recordsFiltered = 0, recordsTotal = 0, errorMessage = (StockData.Info.CodError != 0? StockData.Info.Mensaje : string.Empty), data = "" });
                 }
+                if (chkOnlyAvailable)
+                    StockData.Data = StockData.Data.Where(Sd => Sd.Disponible > 0);
                 if (!(string.IsNullOrEmpty(sortColumn) && string.IsNullOrEmpty(sortColumnDirection)))
                 {
                     StockData.Data = StockData.Data.AsQueryable().OrderBy(sortColumn + " " + sortColumnDirection);
@@ -279,7 +355,7 @@ namespace EdiViewer.Controllers
             }
             catch (Exception e1)
             {
-                return Json(new { draw = 0, recordsFiltered = 0, recordsTotal = 0, errorMessage = e1.ToString(), ListTo = "" });
+                return Json(new { draw = 0, recordsFiltered = 0, recordsTotal = 0, errorMessage = e1.ToString(), data = "" });
             }
         }        
         [HttpPost]

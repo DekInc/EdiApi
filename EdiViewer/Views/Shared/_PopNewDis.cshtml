@@ -90,6 +90,10 @@
         domtblPedidos = $("#tblPedidos").DataTable({
             select: true,
             responsive: window.mobileAndTabletcheck(),
+            dom: 'Bfrtip',
+            buttons: [
+                'excelHtml5'
+            ],
             destroy: true,
             info: false,
             "scrollX": true,

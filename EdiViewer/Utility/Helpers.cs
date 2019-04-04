@@ -155,7 +155,7 @@ namespace EdiViewer.Utility.Helper
         }
         public static string ShowVersion(this IHtmlHelper htmlHelper)
         {
-            return "versión 1.0.1.0";
+            return "versión 1.0.1.2";
         }
     }
 }

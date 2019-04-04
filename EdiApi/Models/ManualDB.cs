@@ -45,12 +45,12 @@ namespace EdiApi.Models
             //List<GetSNSP> L = await WmsDbO.Query<GetSNSP>().FromSql("EXEC [dbo].[GetSN]").ToListAsync();
             return ListSn;
         }
-        public static IEnumerable<TsqlDespachosWmsComplex> SP_GetSNDet(ref Models.EdiDB.EdiDBContext _DbO)
+        public static IEnumerable<TsqlDespachosWmsComplex> SP_GetSNDet(ref Models.EdiDB.EdiDBContext _DbO, int PedidoId)
         {
             List<TsqlDespachosWmsComplex> ListSn = new List<TsqlDespachosWmsComplex>();
             using (DbCommand Cmd = _DbO.Database.GetDbConnection().CreateCommand())
             {
-                Cmd.CommandText = $"[dbo].[GetSNDet]";
+                Cmd.CommandText = $"[dbo].[GetSNDet] " + PedidoId.ToString();
                 _DbO.Database.OpenConnection();
                 DbDataReader Dr = Cmd.ExecuteReader();
                 if (Dr.HasRows)

@@ -294,8 +294,7 @@ table.dataTable thead th, table.dataTable thead td {
     max-width: 35vh;
     margin: 0 auto;
 }
-.imgLogoExtern{
-    width: 80px;
+.imgLogoExtern{    
     height: 36px;
 }
 
@@ -305,6 +304,7 @@ table.dataTable thead th, table.dataTable thead td {
     display: inline-block;
     position: relative;
     margin: 0 auto;
+    padding-bottom: 16px;
     text-align: center;
 }
 
@@ -527,4 +527,31 @@ table.dataTable.dtr-inline.collapsed > tbody > tr[role="row"] > td:first-child:b
 .imgButton{
     height: 22px;
 }
-
+.modalMessageBoxBody, .modalMessageBoxButtons {
+    background: rgb(154, 190, 230);
+}
+.modalContentMessageBox{
+    background: unset !important;
+    border: unset !important;
+}
+.modal-header {
+    border: unset !important;
+    border-radius: unset !important;
+}
+.modal-footer {
+    border: unset !important;
+    border-radius: unset !important;
+    vertical-align: middle;
+}
+.btnModal{
+    vertical-align: middle;
+    position: relative;
+    display: inline-block;
+    margin: 0 auto;
+    box-sizing: border-box;
+}
+#spanClientName{
+    font-size: 16pt !important;
+    font-weight: bold !important;
+    padding-bottom: 16px;
+}

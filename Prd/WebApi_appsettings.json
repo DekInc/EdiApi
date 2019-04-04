@@ -1,0 +1,41 @@
+{
+    "Logging": {
+        "LogLevel": {
+            "Default": "Warning"
+        }
+    },
+    "MaxEdiComs": {
+        "Value": "4096"
+    },
+    "EdiFtp": {
+        "Host": "ftp://ftp.iexchangeweb.com",
+        "HostFailover": "ftp://ftp2.iexchangeweb.com",
+        "EdiUser": "GRU16420",
+        "EdiPassword": "ODN1cFnp",
+        "DirIn": "recv",
+        "DirOut": "send",
+        "DirChecked": "recv/rcvd"
+    },
+    "ConnectionStrings": {
+        "EdiDB": "Server=192.168.1.227;Database=EdiDB; Connection Timeout=60;User Id=onlyread_user;Password=read$$&&;",
+        "wmsDB": "Server=192.168.1.227;Database=wms;  Connection Timeout=60;User Id=onlyread_user;Password=read$$&&;",
+        "Remps_globalDB": "Server=192.168.20.245;Database=Remps_global;Connection Timeout=60;User Id=wmsadmin;Password=wms2018$;"
+    },
+    "IMapConfig": {
+        "Host": "dnecr.ml",
+        "PortIn": "143",
+        "PortOut": "143",
+        "SSL": "false",
+        "User": "EdiTest@dnecr.ml",
+        "Password": "Pass1234567890"
+    },
+    "IMapConfig2": {
+        "Host": "nova.miamispeedhost.com",
+        "PortIn": "110",
+        "PortOut": "25",
+        "SSL": "false",
+        "User": "documentosedi@grupologistico.com.sv",
+        "Password": "DDglcamerica2019*/"
+    },
+    "AllowedHosts": "*"
+}

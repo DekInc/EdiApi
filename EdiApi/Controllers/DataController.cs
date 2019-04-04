@@ -323,7 +323,7 @@ namespace EdiApi.Controllers
                 string ThisDate = DateTime.Now.ToString(ApplicationSettings.ToDateTimeFormat);
                 string ThisTime = DateTime.Now.ToString(ApplicationSettings.ToTimeFormat);
                 IEnumerable<string> ListDispatch = listDispatch.Split('|');
-                IEnumerable<TsqlDespachosWmsComplex> ListSNO = ManualDB.SP_GetSNDet(ref DbO);
+                IEnumerable<TsqlDespachosWmsComplex> ListSNO = ManualDB.SP_GetSNDet(ref DbO, 0);
                 List<LearEquivalencias> ListEquivalencias = DbO.LearEquivalencias.ToList();
                 List<TsqlDespachosWmsComplex> ListSN = (from Ls in ListSNO
                                                         from Ld in ListDispatch
@@ -621,8 +621,8 @@ namespace EdiApi.Controllers
                         HashId = Isa.HashId,
                         CodUsr = CodUsr
                     };
-                    string FtpRes = SendEdiFtp(EdiStrO, "856 notif envio");
-                    //string FtpRes = "ok";
+                    //string FtpRes = SendEdiFtp(EdiStrO, "856 notif envio");
+                    string FtpRes = "ok";
                     if (FtpRes != "ok")
                         return FtpRes;
                     DbO.EdiRepSent.Add(Rep856N);
@@ -918,7 +918,7 @@ namespace EdiApi.Controllers
                     from Pe in DbO.PedidosExternos
                     where Dp.PedidoId == Pe.Id
                     && Pe.IdEstado == 2
-                    orderby Dp.Id descending
+                    orderby Dp.CodProducto
                     select Dp
                     );
                 return new RetData<Tuple<IEnumerable<PedidosExternos>, IEnumerable<PedidosDetExternos>, IEnumerable<Clientes>>>
@@ -1085,10 +1085,27 @@ namespace EdiApi.Controllers
         {
             DateTime StartTime = DateTime.Now;
             try
-            {                
+            {
+                IEnumerable<PedidosWmsModel> ListDis = ManualDB.SP_GetPedidosWms(ref DbO, Convert.ToInt32(ClienteId));
+                ListDis = (
+                    from Ld in ListDis
+                    group Ld by Ld.PedidoId into G
+                    select new PedidosWmsModel() {
+                        Cantidad = 0,
+                        ClienteId = G.Fod().ClienteId,
+                        CodProducto = "",
+                        Estatus = G.Fod().Estatus,
+                        FechaPedido = G.Fod().FechaPedido,
+                        NomBodega = G.Fod().NomBodega,
+                        Observacion = G.Fod().Observacion,
+                        PedidoBarcode = G.Fod().PedidoBarcode,
+                        PedidoId = G.Fod().PedidoId,
+                        Regimen = G.Fod().Regimen
+                    }
+                ).Distinct();
                 return new RetData<IEnumerable<PedidosWmsModel>>
                 {
-                    Data = ManualDB.SP_GetPedidosWms(ref DbO, Convert.ToInt32(ClienteId)),
+                    Data = ListDis,
                     Info = new RetInfo()
                     {
                         CodError = 0,
@@ -1148,7 +1165,7 @@ namespace EdiApi.Controllers
             DateTime StartTime = DateTime.Now;
             try
             {
-                IEnumerable<TsqlDespachosWmsComplex> ListPedidoDet = ManualDB.SP_GetSNDet(ref DbO);
+                IEnumerable<TsqlDespachosWmsComplex> ListPedidoDet = ManualDB.SP_GetSNDet(ref DbO, Convert.ToInt32(PedidoId));
                 ListPedidoDet = ListPedidoDet.Where(Dp => Dp.PedidoId == Convert.ToInt32(PedidoId));
                 return new RetData<IEnumerable<TsqlDespachosWmsComplex>>
                 {

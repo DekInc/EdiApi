@@ -1,6 +1,6 @@
 ﻿@using ComModels
 @{
-    ViewData["Title"] = "Ordenes";
+    ViewData["Title"] = "Ordenes pendientes";
     Layout = "_LayoutExtern";
 }
 <div id="mainDiv">
@@ -8,7 +8,7 @@
         <div class="card-deck cardMain">
             <div class="card box-shadow">
                 <div class="card-header">
-                    <h4 class="my-0 font-weight-normal">Ordenes</h4>
+                    <h4 class="my-0 font-weight-normal">Ordenes pendientes</h4>
                 </div>
                 <div class="card-body">
                     <div class="clearfix"></div>
@@ -17,6 +17,7 @@
                         <table id="tblReportes" class="table table-striped table-bordered nowrap table-hover display tblReportes" cellspacing="0">
                             <thead>
                                 <tr>
+                                    <th>Id orden</th>
                                     <th>Fecha de creación</th>
                                     <th>Fecha y hora esperada</th>
                                     <th>Estado</th>
@@ -52,8 +53,7 @@
             responsive: window.mobileAndTabletcheck(),
             dom: 'Bfrtip',
             buttons: [
-                'excelHtml5',
-                'pdfHtml5'
+                'excelHtml5'
             ],
             destroy: true,
             info: false,
@@ -75,20 +75,25 @@
                 "url": "@this.Url.Action("GetPeticiones")",
                 "type": "POST",
                 "datatype": "json",
-                "dataSrc": function (json) {                    
+                "dataSrc": function (json) {
+                    if (json.errorMessage != '') {
+                        menErrorEdi(json.errorMessage, 'Error');
+                        return '';
+                    }
                     return json.data;
                 }
             },
-            "order": [[1, "desc"]],
+            "order": [[2, "desc"]],
             "columns": [
-                { "data": "fechaCreacion", "name": "pedidoBarcode", "autoWidth": true, "defaultContent": "" },
+                { "data": "id", "name": "id", "autoWidth": true, "defaultContent": "" },
+                { "data": "fechaCreacion", "name": "fechaCreacion", "autoWidth": true, "defaultContent": "" },
                 { "data": "fechaPedido", "name": "fechaPedido", "autoWidth": true, "defaultContent": "" },
                 {
                     data: "idEstado",
                     render: function (data, type, row) {
                         if (type === 'display') {
                             if (row.idEstado == 1) return '<span class="thisSpan" alt="' + row.id + '">Guardado</span>';
-                            if (row.idEstado == 2) return '<span class="thisSpan" alt="' + row.id + '">Enviado</span>';
+                            if (row.idEstado == 2) return '<span class="thisSpan" alt="' + row.id + '">Pendiente</span>';
                             if (row.idEstado == 3) return '<span class="thisSpan" alt="' + row.id + '">Despachado</span>';
                         }
                         return '';
@@ -104,8 +109,7 @@
             responsive: window.mobileAndTabletcheck(),
             dom: 'Bfrtip',
             buttons: [
-                'excelHtml5',
-                'pdfHtml5'
+                'excelHtml5'
             ],
             destroy: true,
             info: false,
