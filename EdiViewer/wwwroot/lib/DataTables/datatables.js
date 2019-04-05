@@ -75021,7 +75021,7 @@ DataTable.ext.renderer.pageButton.bootstrap = function ( settings, host, idx, bu
 				api.page( e.data.action ).draw( 'page' );
 			}
 		};
-
+        var afterSep = false;
 		for ( i=0, ien=buttons.length ; i<ien ; i++ ) {
 			button = buttons[i];
 
@@ -75085,13 +75085,21 @@ DataTable.ext.renderer.pageButton.bootstrap = function ( settings, host, idx, bu
 								'class': 'page-link'
 							} )
 							.html( btnDisplay )
-						)
-						.appendTo( container );
-                    console.log(container.find('li').length);
+						);
+                    if (!isNaN(parseFloat(btnDisplay)) && isFinite(btnDisplay)) {
+                        if (btnDisplay < 3 || afterSep)
+                            node.appendTo(container);
+                    } else {
+                        if (btnDisplay == "&#x2026;")
+                        afterSep = true;
+                        node.appendTo(container);
+                    }
+                    //console.log(container.find('li').length);
+                    //console.log(btnDisplay);
+                    //Hilmer
 					settings.oApi._fnBindAction(
 						node, {action: button}, clickHandler
 					);
-
 					counter++;
 				}
 			}

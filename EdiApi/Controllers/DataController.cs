@@ -867,6 +867,19 @@ namespace EdiApi.Controllers
                     orderby Dp.Id descending
                     select Dp
                     );
+                foreach (PedidosExternos Pe in ListPe.Where(Lp => Lp.IdEstado == 1))
+                {
+                    foreach (PedidosDetExternos Pde in ListDePe)
+                    {
+                        IEnumerable<Producto> ListProdTemp = (
+                            from Prod in WmsDbO.Producto
+                            where Prod.CodProducto == Pde.CodProducto
+                            select Prod
+                            );
+                        if (ListProdTemp.Count() > 0)
+                            Pde.Producto = ListProdTemp.Fod().Descripcion;
+                    }
+                }
                 return new RetData<Tuple<IEnumerable<PedidosExternos>, IEnumerable<PedidosDetExternos>>>
                 {
                     Data = new Tuple<IEnumerable<PedidosExternos>, IEnumerable<PedidosDetExternos>>(ListPe, ListDePe),

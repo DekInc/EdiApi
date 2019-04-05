@@ -252,7 +252,7 @@ namespace EdiViewer.Controllers
                         HttpContext.Session.SetObjSession("PedidoId", ListDis.Data.Item1.Fod().Id);
                         if (ListDis.Data.Item2.Count() > 0)
                         {
-                            ViewBag.ListOldDis = JsonConvert.SerializeObject(ListDis.Data.Item2.Where(Pde => Pde.PedidoId == ListDis.Data.Item1.Fod().Id).Select(Pd => new { codProducto = Pd.CodProducto.Replace(" ", "^"), cantPedir = Pd.CantPedir }));
+                            ViewBag.ListOldDis = JsonConvert.SerializeObject(ListDis.Data.Item2.Where(Pde => Pde.PedidoId == ListDis.Data.Item1.Fod().Id).Select(Pd => new { codProducto = Pd.CodProducto.Replace(" ", "^"), cantPedir = Pd.CantPedir, producto = Pd.Producto }));
                         }
                     }
                 }
@@ -335,11 +335,12 @@ namespace EdiViewer.Controllers
                 // Getting all Customer data  
                 RetData<IEnumerable<ExistenciasExternModel>> StockData = await ApiClientFactory.Instance.GetStock(HttpContext.Session.GetObjSession<int>("Session.ClientId"));
                 if (StockData.Info.CodError != 0)
-                    return Json(new { draw = 0, recordsFiltered = 0, recordsTotal = 0, errorMessage = StockData.Info.Mensaje, data = "" });
+                    return Json(new { draw = 0, recordsFiltered = 0, recordsTotal = 0, errorMessage = StockData.Info.Mensaje, data = "", listAllProd = "" });
                 if (StockData.Data.Count() == 0)
                 {
-                    return Json(new { draw = 0, recordsFiltered = 0, recordsTotal = 0, errorMessage = (StockData.Info.CodError != 0? StockData.Info.Mensaje : string.Empty), data = "" });
+                    return Json(new { draw = 0, recordsFiltered = 0, recordsTotal = 0, errorMessage = (StockData.Info.CodError != 0? StockData.Info.Mensaje : string.Empty), data = "", listAllProd = "" });
                 }
+                IEnumerable<ExistenciasExternModel> ListAllProd = StockData.Data;
                 if (chkOnlyAvailable)
                     StockData.Data = StockData.Data.Where(Sd => Sd.Disponible > 0);
                 if (!(string.IsNullOrEmpty(sortColumn) && string.IsNullOrEmpty(sortColumnDirection)))
@@ -351,11 +352,11 @@ namespace EdiViewer.Controllers
                 //Paging
                 StockData.Data = StockData.Data.Skip(skip).Take(pageSize);
                 //Returning Json Data
-                return Json(new { draw, recordsFiltered = recordsTotal, recordsTotal, data = StockData.Data, errorMessage = "" });
+                return Json(new { draw, recordsFiltered = recordsTotal, recordsTotal, data = StockData.Data, errorMessage = "", listAllProd = ListAllProd });
             }
             catch (Exception e1)
             {
-                return Json(new { draw = 0, recordsFiltered = 0, recordsTotal = 0, errorMessage = e1.ToString(), data = "" });
+                return Json(new { draw = 0, recordsFiltered = 0, recordsTotal = 0, errorMessage = e1.ToString(), data = "", listAllProd = "" });
             }
         }        
         [HttpPost]

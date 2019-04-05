@@ -476,9 +476,9 @@ table.dataTable.dtr-inline.collapsed > tbody > tr.parent > td:first-child:before
     line-height: 0.93;
     z-index: 6;
     display: block;
-    position: static;
+    position: absolute;
     float: left;
-    margin-right: 6px;    
+    margin-right: 6px;
 }
 table.dataTable.dtr-inline.collapsed > tbody > tr[role="row"] > td:first-child:before, table.dataTable.dtr-inline.collapsed > tbody > tr[role="row"] > th:first-child:before {
     font-size: 18pt;
@@ -490,7 +490,7 @@ table.dataTable.dtr-inline.collapsed > tbody > tr[role="row"] > td:first-child:b
     line-height: 0.93;
     z-index: 6;
     display: block;
-    position: static;
+    position: absolute;
     float: left;
     margin-right: 6px;
 }
@@ -554,8 +554,19 @@ table.dataTable.dtr-inline.collapsed > tbody > tr[role="row"] > td:first-child:b
 #spanClientName{
     font-size: 16pt !important;
     font-weight: bold !important;
-    padding-bottom: 16px;
+    padding-bottom: 26px;
 }
 #tblReportes_paginate {
     /*max-width: 460px;*/
+}
+@media screen and (max-width: 767px) {
+    .limitText {
+        max-width: 40vw;
+        white-space: pre-wrap;
+        overflow-wrap: break-word;
+    }
+}
+.dataTables_processing{
+    border: unset !important;
+    background: unset !important;
 }

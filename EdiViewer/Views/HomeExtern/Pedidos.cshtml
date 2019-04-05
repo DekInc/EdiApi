@@ -95,7 +95,18 @@
                 { "data": "estatus", "name": "Estatus", "autoWidth": true, "defaultContent": "" },
                 { "data": "nomBodega", "name": "nomBodega", "autoWidth": true, "defaultContent": "" },
                 { "data": "regimen", "name": "regimen", "autoWidth": true, "defaultContent": "" },
-                { "data": "observacion", "name": "observacion", "autoWidth": true, "defaultContent": "" }
+                {
+                    data: "observacion",
+                    name: "observacion",
+                    render: function (data, type, row) {
+                        if (type === 'display') {
+                            return '<span class="thisSpan" alt="' + row.pedidoId + '">' + row.observacion + '</span>';
+                        }
+                        return '';
+                    },
+                    className: "dt-body-center"
+                }
+                //{ "data": "observacion", "name": "observacion", "autoWidth": true, "defaultContent": "" }
             ]
         });
     }

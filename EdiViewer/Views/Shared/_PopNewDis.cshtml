@@ -45,7 +45,11 @@
             menErrorEdi('La fecha está vacia', 'Error');
             return;
         }
-        arrayProductos[0].dateProm = $('#dtp2').val();
+        console.log($('#dtp2').val());
+        //arrayProductos[0].dateProm = $('#dtp2').val();
+        $.each(arrayProductos, function (i, Pr) {
+            Pr.dateProm = $('#dtp2').val();
+        });
         $.ajax({
             method: "POST",
             contentType: "application/json; charset=utf-8",
@@ -113,7 +117,17 @@
             "order": [[0, "asc"]],
             "columns": [
                 { "data": "codProducto", "name": "Cod Producto", "autoWidth": true, "defaultContent": "" },
-                { "data": "producto", "name": "Producto", "autoWidth": true, "defaultContent": "" },
+                {
+                    data: "producto",
+                    render: function (data, type, row) {
+                        if (type === 'display') {
+                            return '<div class="limitText">' + row.producto + '</div>';
+                        }
+                        return '';
+                    },
+                    className: "dt-body-center"
+                },
+                //{ "data": "producto", "name": "Producto", "autoWidth": true, "defaultContent": "" },
                 { "data": "cantPedir", "name": "Cant pedir", "autoWidth": true, "defaultContent": "" }
             ]
         });

@@ -10,6 +10,12 @@
         <text>arrayProductosOld = </text> @Html.Raw(ViewBag.ListOldDis);
     }
 </script>
+<style>
+    .margin5 {
+        margin-bottom: 10px;
+        margin-top: 10px;
+    }    
+</style>
 <div class="container">
     <div class="card-deck cardMain">
         <div class="card box-shadow">
@@ -47,8 +53,8 @@
                                 <th>Peso</th>
                                 <th>Volumen</th>
                                 <th>Unidades x Bulto</th>
-                                <th>Lote</th>
-                                <th>Contenedor</th>
+                                @*<th>Lote</th>
+                                <th>Contenedor</th>*@
                             </tr>
                         </thead>
                     </table>
@@ -75,8 +81,8 @@
             <th>Peso</th>
             <th>Volumen</th>
             <th>Unidades x Bulto</th>
-            <th>Lote</th>
-            <th>Contenedor</th>
+            @*<th>Lote</th>
+            <th>Contenedor</th>*@
         </tr>
     </thead>
     <tbody></tbody>
@@ -95,6 +101,19 @@
             return null;
         }
         return decodeURI(results[1]) || 0;
+    }
+    function reDrawObjects() {
+        $('#spanClientName').css('display', 'block');
+        if (window.mobileAndTabletcheck()) {
+            $('#btnNewDis').addClass('btn-block');
+            $('#btnNewDis').css('margin-bottom', '16px');
+            $('#btnNewDis').css('margin-top', '16px');
+            $('#spanClientName').css('text-align', 'center');            
+            $('#btnExportDis').addClass('btn-block');
+            $('#btnExportDis').css('margin-bottom', '16px');
+        } else {
+            $('#spanClientName').css('margin-bottom', '10px');
+        }
     }
     function fillTblReportes() {
         domtblReportes = $("#tblReportes").DataTable({
@@ -124,7 +143,7 @@
                         menErrorEdi(json.errorMessage);
                         return json.data;
                     }
-                    json.data.forEach(pr => {
+                    json.listAllProd.forEach(pr => {
                         var existe = false;
                         for (var j = 0; j < arrayProductos.length; j++) {
                             if (arrayProductos[j].codProducto == pr.codProducto.replace(/ /g, '^')) {
@@ -142,7 +161,8 @@
                         }
                     });  
                     arrayProductosOld.forEach(pr2 => {
-                        arrayProductos.filter(Prod => Prod.codProducto == pr2.codProducto)[0].cantPedir = pr2.cantPedir;
+                        if (arrayProductos.filter(Prod => Prod.codProducto == pr2.codProducto).length > 0)
+                            arrayProductos.filter(Prod => Prod.codProducto == pr2.codProducto)[0].cantPedir = pr2.cantPedir;
                     }); 
                     return json.data;
                 }
@@ -155,8 +175,18 @@
             }],
             "columns": [
                 { "data": "codProducto", "name": "CodProducto", "autoWidth": true, "defaultContent": "" },
-                { "data": "bodega", "name": "Bodega", "autoWidth": true, "defaultContent": "" },                
-                { "data": "descripcion", "name": "descripcion", "autoWidth": true, "defaultContent": "" },
+                { "data": "bodega", "name": "Bodega", "autoWidth": true, "defaultContent": "" },
+                {
+                    data: "descripcion",
+                    render: function (data, type, row) {
+                        if (type === 'display') {
+                            return '<div class="limitText">' + row.descripcion + '</div>';
+                        }
+                        return '';
+                    },
+                    className: "dt-body-center"
+                },
+                //{ "data": "descripcion", "name": "descripcion", "autoWidth": true, "defaultContent": "" },
                 { "data": "existencia", "name": "Existencia", "autoWidth": true, "defaultContent": "" },
                 { "data": "reservado", "name": "Reservado", "autoWidth": true, "defaultContent": "" },
                 { "data": "disponible", "name": "Disponible", "autoWidth": true, "defaultContent": "" },
@@ -180,9 +210,9 @@
                 { "data": "bultos", "name": "Bultos", "autoWidth": true, "defaultContent": "" },
                 { "data": "peso", "name": "Peso", "autoWidth": true, "defaultContent": "" },
                 { "data": "volumen", "name": "Volumen", "autoWidth": true, "defaultContent": "" },
-                { "data": "uxb", "name": "uxb", "autoWidth": true, "defaultContent": "" },
-                { "data": "lote", "name": "Lote", "autoWidth": true, "defaultContent": "" },
-                { "data": "contenedor", "Contenedor": "Existencia", "autoWidth": true, "defaultContent": "" }                
+                { "data": "uxb", "name": "uxb", "autoWidth": true, "defaultContent": "" }
+                //{ "data": "lote", "name": "Lote", "autoWidth": true, "defaultContent": "" },
+                //{ "data": "contenedor", "Contenedor": "Existencia", "autoWidth": true, "defaultContent": "" }                
             ]
         });
     }
@@ -217,7 +247,8 @@
     }
     $(document).ready(function () {
         getClientName();
-        fillTblReportes();        
+        fillTblReportes();
+        reDrawObjects();
         $('#btnNewDis').on('click', function (e) {
             $('#exampleModalLabel2').html('Enviar pedido');
             ModalPopNewDis = $('#modalPopNewDis').modal();
