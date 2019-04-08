@@ -56,6 +56,7 @@ namespace EdiApi.Models.EdiDB
         public virtual DbSet<LearTd3856> LearTd3856 { get; set; }
         public virtual DbSet<LearTd5856> LearTd5856 { get; set; }
         public virtual DbSet<LearUit830> LearUit830 { get; set; }
+        public virtual DbSet<PaylessProdPriori> PaylessProdPriori { get; set; }
         public virtual DbSet<PedidosDetExternos> PedidosDetExternos { get; set; }
         public virtual DbSet<PedidosEstadosExternos> PedidosEstadosExternos { get; set; }
         public virtual DbSet<PedidosExternos> PedidosExternos { get; set; }
@@ -1181,9 +1182,34 @@ namespace EdiApi.Models.EdiDB
                 entity.Property(e => e.UnitOfMeasure).HasMaxLength(2);
             });
 
+            modelBuilder.Entity<PaylessProdPriori>(entity =>
+            {
+                entity.ToTable("PAYLESS_ProdPriori");
+
+                entity.Property(e => e.Cargada).HasMaxLength(255);
+
+                entity.Property(e => e.Categoria).HasMaxLength(255);
+
+                entity.Property(e => e.Cp)
+                    .HasColumnName("CP")
+                    .HasMaxLength(255);
+
+                entity.Property(e => e.Etiquetada).HasMaxLength(255);
+
+                entity.Property(e => e.Oid).HasColumnName("OID");
+
+                entity.Property(e => e.Periodo).HasMaxLength(10);
+
+                entity.Property(e => e.Pickeada).HasMaxLength(255);
+
+                entity.Property(e => e.Preinspeccion).HasMaxLength(255);
+            });
+
             modelBuilder.Entity<PedidosDetExternos>(entity =>
             {
                 entity.Property(e => e.CodProducto).HasMaxLength(50);
+
+                entity.Property(e => e.Producto).HasMaxLength(1);
             });
 
             modelBuilder.Entity<PedidosEstadosExternos>(entity =>

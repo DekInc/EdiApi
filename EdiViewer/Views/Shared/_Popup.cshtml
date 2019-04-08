@@ -21,5 +21,10 @@
     $('#modalPop1').on("shown.bs.modal", function () {
         $('#btnOkMessageBox').css({ top: ($('#btnOkMessageBox').closest('div').height() - ($('#btnOkMessageBox').height())) * 0.466 + 'px' });
         //$('#btnOkMessageBox').position().top
+        $('#btnOkMessageBox').focus();
+    });
+    $('#btnOkMessageBox').on('click', function () {
+        if (funcbtnOkMessageBox != null)
+            funcbtnOkMessageBox();
     });
 </script>

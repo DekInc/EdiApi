@@ -1204,5 +1204,37 @@ namespace EdiApi.Controllers
                 };
             }            
         }
+        [HttpPost]
+        public RetData<IEnumerable<PaylessProdPriori>> GetPaylessProdPriori(object Period)
+        {
+            DateTime StartTime = DateTime.Now;
+            try
+            {
+
+                IEnumerable<PaylessProdPriori> ListPaylessProdPriori = DbO.PaylessProdPriori.Where(Pp => Pp.Periodo == Convert.ToString(Period));
+                return new RetData<IEnumerable<PaylessProdPriori>>
+                {
+                    Data = ListPaylessProdPriori,
+                    Info = new RetInfo()
+                    {
+                        CodError = 0,
+                        Mensaje = "ok",
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            }
+            catch (Exception e1)
+            {
+                return new RetData<IEnumerable<PaylessProdPriori>>
+                {
+                    Info = new RetInfo()
+                    {
+                        CodError = -1,
+                        Mensaje = e1.ToString(),
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            }
+        }
     }
 }

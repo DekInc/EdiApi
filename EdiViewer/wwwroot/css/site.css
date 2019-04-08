@@ -570,3 +570,6 @@ table.dataTable.dtr-inline.collapsed > tbody > tr[role="row"] > td:first-child:b
     border: unset !important;
     background: unset !important;
 }
+.maxWidth320 {
+    max-width: 320px;
+}

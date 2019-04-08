@@ -27,10 +27,20 @@
                     <span id="spanClientName"></span>
                     <hr />
                 </div>
-                <div class="form-check margin5">
-                    <input class="form-check-input" id="chkOnlyAvailable" name="chkOnlyAvailable" type="checkbox" />
-                    <label class="form-check-label" for="chkOnlyAvailable">Mostrar solo Disponibles > 0</label>
-                </div>
+                <div>
+                    <div class="row border">
+                        <div class="col">
+                            @*<label class="label" for="TxtCodProducto">Cod producto</label><br />*@
+                            <input class="form-control maxWidth320" id="TxtCodProducto" maxlength="50" placeholder="Cod producto" />
+                        </div>
+                        <div class="col">
+                            <div class="form-check margin5">
+                                <input class="form-check-input" id="chkOnlyAvailable" name="chkOnlyAvailable" type="checkbox" />
+                                <label class="form-check-label" for="chkOnlyAvailable">Mostrar solo Disponibles > 0</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>                
                 <button class="btn btn-primary" id="btnNewDis" data-togle="tooltip" data-html="true" title="Seleccione los productos a pedir y acá click acá para solicitarlos">Enviar pedido</button>
                 <button class="btn btn-primary" id="btnExportDis" data-togle="tooltip" data-html="true" title="Exportar pedido en Excel">
                     Exportar pedido a Excel <img src="/images/excel.png" class="imgButton">

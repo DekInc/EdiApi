@@ -49,7 +49,11 @@ namespace EdiViewer.Controllers
         {
             HttpContext.Session.SetObjSession("PedidoId", PedidoId);
             return View();
-        }                    
+        }
+        public IActionResult CargaProdPriori()
+        {
+            return View();
+        }
         public async Task<IActionResult> GetPedidos()
         {
             try
@@ -400,6 +404,52 @@ namespace EdiViewer.Controllers
                     Mensaje = e2.ToString(),
                     ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
                 };
+            }
+        }
+        public async Task<IActionResult> GetPaylessProdPriori()
+        {
+            try
+            {
+                //var dict = Request.Form.ToDictionary(x => x.Key, x => x.Value.ToString());
+                var draw = HttpContext.Request.Form["draw"].Fod();
+                // Skiping number of Rows count  
+                var start = Request.Form["start"].Fod();
+                // Paging Length 10,20  
+                var length = Request.Form["length"].Fod();
+                // Sort Column Name  
+                var sortColumn = Request.Form["columns[" + Request.Form["order[0][column]"].Fod() + "][name]"].Fod();
+                // Sort Column Direction ( asc ,desc)  
+                var sortColumnDirection = Request.Form["order[0][dir]"].Fod();
+                // Search Value from (Search box)  
+                var searchValue = Request.Form["search[value]"].Fod();
+
+                //Paging Size (10,20,50,100)  
+                int pageSize = length != null ? Convert.ToInt32(length) : 0;
+                int skip = start != null ? Convert.ToInt32(start) : 0;
+                int recordsTotal = 0;
+
+                // Getting all Customer data  
+                RetData<IEnumerable<PaylessProdPriori>> ListProdPriori = await ApiClientFactory.Instance.GetPaylessProdPriori("08/04/2019");
+                if (ListProdPriori.Info.CodError != 0)
+                    return Json(new { draw = 0, recordsFiltered = 0, recordsTotal = 0, errorMessage = ListProdPriori.Info.Mensaje, data = "", });
+                if (ListProdPriori.Data.Count() == 0)
+                {
+                    return Json(new { draw = 0, recordsFiltered = 0, recordsTotal = 0, errorMessage = (ListProdPriori.Info.CodError != 0 ? ListProdPriori.Info.Mensaje : string.Empty), data = "" });
+                }
+                if (!(string.IsNullOrEmpty(sortColumn) && string.IsNullOrEmpty(sortColumnDirection)))
+                {
+                    ListProdPriori.Data = ListProdPriori.Data.AsQueryable().OrderBy(sortColumn + " " + sortColumnDirection);
+                }
+                //total number of rows count
+                recordsTotal = ListProdPriori.Data.Count();
+                //Paging
+                ListProdPriori.Data = ListProdPriori.Data.Skip(skip).Take(pageSize);
+                //Returning Json Data
+                return Json(new { draw, recordsFiltered = recordsTotal, recordsTotal, data = ListProdPriori.Data, errorMessage = "" });
+            }
+            catch (Exception e1)
+            {
+                return Json(new { draw = 0, recordsFiltered = 0, recordsTotal = 0, errorMessage = e1.ToString(), data = "", listAllProd = "" });
             }
         }
     }

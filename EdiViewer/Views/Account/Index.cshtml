@@ -46,6 +46,10 @@
         }
         return decodeURI(results[1]) || 0;
     }
+    function funcbtnOkMessageBox() {        
+        $('#TxtUser').focus();
+        setTimeout(function () { $('#TxtUser').focus(); }, 366);
+    }
     $(document).ready(function () {
         $('#TxtUser').focus();
         error = $.urlParam('error');
