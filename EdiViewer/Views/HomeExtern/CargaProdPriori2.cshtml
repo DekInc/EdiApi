@@ -1,0 +1,73 @@
+﻿@using ComModels
+@{
+    ViewData["Title"] = "Carga de planilla de productos";
+    Layout = "_LayoutExtern";
+}
+<div id="mainDiv">
+    <div class="container">
+        <div class="card-deck cardMain">
+            <div class="card box-shadow">
+                <div class="card-header">
+                    <h4 class="my-0 font-weight-normal">Carga de planilla de productos</h4>
+                </div>
+                <div class="card-body">
+                    <div id="gridProd" style="min-height: 460px; width: 100%;">
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>    
+    var foo = function () {
+    };
+    $.urlParam = function (name) {
+        var results = new RegExp('[\?&]' + name + '=([^&#]*)').exec(window.location.href);
+        if (results == null) {
+            return null;
+        }
+        return decodeURI(results[1]) || 0;
+    }
+    function refreshGrid(auto) {
+        w2ui.grid.autoLoad = auto;
+        w2ui.grid.skip(0);
+    }
+    function crearGrid() {
+        var config = {
+            grid: {
+                name: 'gridProd',
+                url: "@this.Url.Action("GetPaylessProdPriori2")",
+                show: {
+                    footer: true,
+                    toolbar: true
+                },                
+                columns: [
+                    { field: "id", caption: "Id", sortable: true},
+                    { field: "periodo", caption: "Periodo", sortable: true},
+                    { field: "oid", caption: "OID", sortable: true},
+                    { field: "barcode", caption: "Barcode", sortable: true},
+                    { field: "estado", caption: "Estado", sortable: true},
+                    { field: "pri", caption: "Pri", sortable: true},
+                    { field: "poolP", caption: "PoolP", sortable: true},
+                    { field: "producto", caption: "Producto", sortable: true},
+                    { field: "talla", caption: "Talla", sortable: true},
+                    { field: "lote", caption: "Lote", sortable: true},
+                    { field: "categoria", caption: "Categoria", sortable: true},
+                    { field: "departamento", caption: "Departamento", sortable: true},
+                    { field: "cp", caption: "Cp", sortable: true},
+                    { field: "pickeada", caption: "Pickeada", sortable: true},
+                    { field: "etiquetada", caption: "Etiquetada", sortable: true},
+                    { field: "preinspeccion", caption: "Preinspeccion", sortable: true},
+                    { field: "cargada", caption: "Cargada", sortable: true},
+                    { field: "m3", caption: "m3", sortable: true},
+                    { field: "peso", caption: "Peso", sortable: true}
+                ]
+            }
+        };
+        $('#gridProd').w2grid(config.grid);
+    }
+    $(document).ready(function () {
+        crearGrid();
+    });
+</script>
