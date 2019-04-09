@@ -1,0 +1,104 @@
+﻿<div class="modal fade2" id="modalPopNewProdUpload" tabindex="-1" role="dialog" aria-labelledby="modalPopNewProdUploadLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal" role="document">
+        <div class="modal-content modal-content-normal">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalPopNewProdUploadLabel">Carga productos en Excel</h5>
+                @*<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>*@
+            </div>
+            <div class="modal-body">
+                <div id="divPopNewProdUploadContent">
+                    <form method="post" enctype="multipart/form-data">
+                        <div class="row">
+                            <div class="col">
+                                Seleccione el periodo y un archivo de Excel a cargar (extensión .xls o .xlsx), si ingresa un periodo existente se va a substituir y/o agregar información
+                                <br />
+                                <div>
+                                    <input class="form-control datepicker" data-date-format="dd/mm/yyyy" id="dtpPeriodUpload" placeholder="Periodo" maxlength="10" />
+                                </div>
+                                <br />
+                                <div class="custom-file">
+                                    <input type="file" class="custom-file-input" id="fUpload" name="fUpload">
+                                    <label class="custom-file-label" for="fUpload"></label>
+                                </div>
+                            </div>
+                        </div>
+                        <br />
+                        <div class="row">
+                            <div class="col">
+                                <input class="btn btn-primary" type="button" id="btnUpload" value="Cargar archivo" />
+                                <div id="dvData">
+
+                                </div>
+                            </div>
+                        </div>
+                        <br />
+                    </form>
+                </div>
+            </div>
+            <div class="modal-footer text-center">
+                <button id="btnPopNewProdUploadLabelOk" type="button" class="btn btn-success btnModal" data-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        $('#dtpPeriodUpload').datepicker();
+        $('#btnUpload').on('click', function () {
+            var fileExtension = ['xls', 'xlsx'];
+            var filename = $('#fUpload').val();
+            if (filename.length == 0) {
+                alert("Por favor seleccione un archivo.");
+                return false;
+            }
+            else {
+                var extension = filename.replace(/^.*\./, '');
+                if ($.inArray(extension, fileExtension) == -1) {
+                    alert("Solo se permiten archivos de Excel con extensiones: .xls y .xlsx");
+                    return false;
+                }
+            }
+            var fdata = new FormData();
+            var fileUpload = $("#fUpload").get(0);
+            var files = fileUpload.files;
+            fdata.append(files[0].name, files[0]);
+            $.ajax({
+                type: "POST",
+                url: "@this.Url.Action("OnPostImport")",
+                beforeSend: function (xhr) {
+                    xhr.setRequestHeader("XSRF-TOKEN",
+                        $('input:hidden[name="__RequestVerificationToken"]').val());
+                },
+                data: fdata,
+                contentType: false,
+                processData: false,
+                success: function (response) {
+                    if (response.info.codError != null) {
+                        if (response.info.codError != 0) {
+                            menErrorEdi(response.info.mensaje, 'Error en el proceso');
+                            return;
+                        }
+                    }
+                    if (response.length == 0)
+                        alert('Error al subir el archivo');
+                    else {
+                        if (response.info.mensaje == 'ok')
+                            menErrorEdi('Archivo cargado', 'Información');
+                        $('#dvData').html(response);
+                    }
+                },
+                error: function (e) {
+                    $('#dvData').html(e.responseText);
+                }
+            });
+        })
+    });
+    $('#modalPopNewProdUpload').on("shown.bs.modal", function () {        
+        $('#btnPopNewProdUploadLabelOk').focus();
+    });
+    $('#btnPopNewProdUploadLabelOk').on('click', function () {
+        
+    });
+</script>

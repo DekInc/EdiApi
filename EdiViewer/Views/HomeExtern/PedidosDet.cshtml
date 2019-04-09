@@ -6,125 +6,150 @@
 }
 @if (Model.Info.CodError == 0)
 {
-    <div id="mainDiv" class="mainDiv2">
-        <div class="container">
-            <div class="card-deck cardMain">
-                <div class="card box-shadow">
-                    <div class="card-header">
-                        <h4 class="my-0 font-weight-normal">Entrega de carga</h4>
-                    </div>
-                    <div class="card-body">
-                        <div class="clearfix"></div>
-                        <br />
-                        <div class="divInfoGen">
-                            <div><b>Cliente:</b> @Model.Data.Fod().Cliente</div>
-                            <div><b>Número de entrega:</b> @Model.Data.Fod().DespachoId</div>
-                            <div><b>Fecha de entrega:</b> @Model.Data.Fod().FechaSalidaStr</div>
+    @if (Model.Data.Count() > 0)
+    {
+        <div id="mainDiv" class="mainDiv2">
+            <div class="container">
+                <div class="card-deck cardMain">
+                    <div class="card box-shadow">
+                        <div class="card-header">
+                            <h4 class="my-0 font-weight-normal">Entrega de carga</h4>
                         </div>
-                        <div>
-                            <div class="card-deck cardTransportist">
-                                <div class="card box-shadow">
-                                    <div class="card-header card-csdp">
-                                        TRANSPORTISTA TERRESTRE
-                                    </div>
-                                    <div class="card-body">
-                                        <table class="table table-bordered table-responsive">
-                                            <tbody>
-                                                <tr>
-                                                    <td>
-                                                        <b>Transportista</b>
-                                                    </td>
-                                                    <td>
-                                                        @Model.Data.Fod().Motorista
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td>
-                                                        <b>No placa</b>
-                                                    </td>
-                                                    <td>
-                                                        @Model.Data.Fod().DocumentoMotorista
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td>
-                                                        <b>No DM</b>
-                                                    </td>
-                                                    <td>
-                                                        @Model.Data.Fod().DocumentoFiscal
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td>
-                                                        <b>Nombre del chofer</b>
-                                                    </td>
-                                                    <td>
-                                                        @Model.Data.Fod().Motorista
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td>
-                                                        <b>Marchamo</b>
-                                                    </td>
-                                                    <td>
-                                                        @Model.Data.Fod().NoMarchamo
-                                                    </td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
-                            </div>
+                        <div class="card-body">
+                            <div class="clearfix"></div>
                             <br />
-                            <div class="card-deck cardTransportist">
-                                <div class="card box-shadow">
-                                    <div class="card-header card-csdp">
-                                        OBSERVACIONES
-                                    </div>
-                                    <div class="card-body">
-                                        @Model.Data.Fod().Observacion
-                                    </div>
-                                </div>
+                            <div class="divInfoGen">
+                                <div><b>Cliente:</b> @Model.Data.Fod().Cliente</div>
+                                <div><b>Número de entrega:</b> @Model.Data.Fod().DespachoId</div>
+                                <div><b>Fecha de entrega:</b> @Model.Data.Fod().FechaSalidaStr</div>
                             </div>
-                            <br />
-                            <div class="card-deck cardTransportist">
-                                <div class="card box-shadow">
-                                    <div class="card-header card-csdp">
-                                        DETALLE
-                                    </div>
-                                    <div class="card-body">
-                                        <table class="table table-bordered table-responsive">
-                                            <thead>
-                                                <tr>
-                                                    <th><b>Pzs</b></th>
-                                                    <th><b>Cod producto</b></th>
-                                                    <th><b>Descripción</b></th>
-                                                    <th><b>Peso</b></th>
-                                                    <th><b>Volumen</b></th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                @foreach (TsqlDespachosWmsComplex Producto in Model.Data)
-                                                {
+                            <div>
+                                <div class="card-deck cardTransportist">
+                                    <div class="card box-shadow">
+                                        <div class="card-header card-csdp">
+                                            TRANSPORTISTA TERRESTRE
+                                        </div>
+                                        <div class="card-body">
+                                            <table class="table table-bordered table-responsive">
+                                                <tbody>
                                                     <tr>
-                                                        <td>@Producto.Quantity</td>
-                                                        <td>@Producto.CodProducto</td>
-                                                        <td>@Producto.Producto</td>
-                                                        <td>@Producto.Weight</td>
-                                                        <td>@Producto.Volume</td>
+                                                        <td>
+                                                            <b>Transportista</b>
+                                                        </td>
+                                                        <td>
+                                                            @Model.Data.Fod().Motorista
+                                                        </td>
                                                     </tr>
-                                                }
-                                            </tbody>
-                                        </table>
+                                                    <tr>
+                                                        <td>
+                                                            <b>No placa</b>
+                                                        </td>
+                                                        <td>
+                                                            @Model.Data.Fod().DocumentoMotorista
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>
+                                                            <b>No DM</b>
+                                                        </td>
+                                                        <td>
+                                                            @Model.Data.Fod().DocumentoFiscal
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>
+                                                            <b>Nombre del chofer</b>
+                                                        </td>
+                                                        <td>
+                                                            @Model.Data.Fod().Motorista
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>
+                                                            <b>Marchamo</b>
+                                                        </td>
+                                                        <td>
+                                                            @Model.Data.Fod().NoMarchamo
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                                <br />
+                                <div class="card-deck cardTransportist">
+                                    <div class="card box-shadow">
+                                        <div class="card-header card-csdp">
+                                            OBSERVACIONES
+                                        </div>
+                                        <div class="card-body">
+                                            @Model.Data.Fod().Observacion
+                                        </div>
+                                    </div>
+                                </div>
+                                <br />
+                                <div class="card-deck cardTransportist">
+                                    <div class="card box-shadow">
+                                        <div class="card-header card-csdp">
+                                            DETALLE
+                                        </div>
+                                        <div class="card-body">
+                                            <table id="tblDisInfo" class="table table-bordered table-responsive tblReportes">
+                                                <thead>
+                                                    <tr>
+                                                        <th><b>Pzs</b></th>
+                                                        <th><b>Cod producto</b></th>
+                                                        <th><b>Descripción</b></th>
+                                                        <th><b>Peso</b></th>
+                                                        <th><b>Volumen</b></th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @foreach (TsqlDespachosWmsComplex Producto in Model.Data)
+                                                    {
+                                                        <tr>
+                                                            <td>@Producto.Quantity</td>
+                                                            <td>@Producto.CodProducto</td>
+                                                            <td>@Producto.Producto</td>
+                                                            <td>@Producto.Weight</td>
+                                                            <td>@Producto.Volume</td>
+                                                        </tr>
+                                                    }
+                                                </tbody>
+                                            </table>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
+                            <br />
+                            <button class="btn btn-primary" id="btnBack" data-togle="tooltip" data-html="true" title="Regresar" onclick="location.href='@this.Url.Action("Pedidos")'">Regresar</button>
                         </div>
-                        <br />
-                        <button class="btn btn-primary" id="btnBack" data-togle="tooltip" data-html="true" title="Regresar" onclick="location.href='@this.Url.Action("Pedidos")'">Regresar</button>
                     </div>
                 </div>
             </div>
         </div>
+        <script>
+            $(document).ready(function () {
+                console.log('Llegue');
+                $("#tblDisInfo").DataTable({ responsive: true });
+            });
+        </script>
+    }
+    else
+    {
+        <div style="color: darkred">
+            <br />
+            Error al mostrar detalles
+            <br />
+        </div>
+    }
+}
+else
+{
+    <div style="color: darkred">
+        <br />
+        Error al mostrar detalles
+        <br />
     </div>
 }

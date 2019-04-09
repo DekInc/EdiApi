@@ -1,12 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Linq.Dynamic.Core;
+using System.Reflection;
+using System.Text;
 using System.Threading.Tasks;
 using ComModels;
 using EdiViewer.Models;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using NPOI.HSSF.UserModel;
+using NPOI.SS.UserModel;
+using NPOI.XSSF.UserModel;
 
 namespace EdiViewer.Controllers
 {
@@ -57,6 +64,130 @@ namespace EdiViewer.Controllers
         public IActionResult CargaProdPriori2()
         {
             return View();
+        }
+        public string ImportarExcel()
+        {
+            return "";
+        }
+        public RetData<string> OnPostImport()
+        {
+            DateTime StartTime = DateTime.Now;
+            List<string> ListCols = new List<string>();
+            List<PaylessUploadFileModel> ListExcelRows = new List<PaylessUploadFileModel>();
+            try
+            {
+                IFormFile FileUploaded = Request.Form.Files[0];
+                StringBuilder sb = new StringBuilder();
+                if (FileUploaded.Length > 0)
+                {
+                    string FileExtension = Path.GetExtension(FileUploaded.FileName).ToLower();
+                    ISheet Sheet;
+                    using (MemoryStream stream = new MemoryStream())
+                    {
+                        FileUploaded.CopyTo(stream);
+                        stream.Position = 0;
+                        if (FileExtension == ".xls")
+                        {
+                            HSSFWorkbook hssfwb = new HSSFWorkbook(stream); //This will read the Excel 97-2000 formats  
+                            Sheet = hssfwb.GetSheetAt(0); //get first sheet from workbook  
+                        }
+                        else if (FileExtension == ".xlsx")
+                        {
+                            XSSFWorkbook hssfwb = new XSSFWorkbook(stream); //This will read 2007 Excel format  
+                            Sheet = hssfwb.GetSheetAt(0); //get first sheet from workbook   
+                        }
+                        else
+                        {
+                            return new RetData<string>()
+                            {
+                                Data = "",
+                                Info = new RetInfo()
+                                {
+                                    CodError = -1,
+                                    Mensaje = "El archivo no tiene la extensión .xls o .xlsx",
+                                    ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                                }
+                            };
+                        }
+                        IRow HeaderRow = Sheet.GetRow(0); //Get Header Row
+                        PaylessUploadFileModel NewRow = new PaylessUploadFileModel();
+                        int CellCount = HeaderRow.LastCellNum;
+                        sb.Append("<table class='table'><tr>");
+                        for (int j = 0; j < CellCount; j++)
+                        {
+                            bool PropExists = false;
+                            foreach (PropertyInfo Pi in NewRow.GetType().GetProperties())
+                            {
+                                if (Pi.Name.ToLower() == ((NPOI.SS.UserModel.ICell)HeaderRow.GetCell(j)).ToString().ToLower())
+                                {
+                                    PropExists = true;
+                                    ListCols.Add(Pi.Name);
+                                }
+                            }
+                            if (!PropExists)
+                            {
+                                return new RetData<string>()
+                                {
+                                    Data = "",
+                                    Info = new RetInfo()
+                                    {
+                                        CodError = -1,
+                                        Mensaje = "El archivo contiene columnas que no han sido establecidas, nombre de columna que da error: " + ((NPOI.SS.UserModel.ICell)HeaderRow.GetCell(j)).ToString(),
+                                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                                    }
+                                };
+                            }
+                            //NPOI.SS.UserModel.ICell cell = HeaderRow.GetCell(j);
+                            //if (cell == null || string.IsNullOrWhiteSpace(cell.ToString())) continue;
+                            //sb.Append("<th>" + cell.ToString() + "</th>");
+                        }
+                        //sb.Append("</tr>");
+                        //sb.AppendLine("<tr>");
+                        for (int i = (Sheet.FirstRowNum + 1); i <= Sheet.LastRowNum; i++) //Read Excel File
+                        {
+                            IRow row = Sheet.GetRow(i);
+                            PaylessUploadFileModel NewRowInsert = new PaylessUploadFileModel();
+                            if (row == null) continue;
+                            if (row.Cells.All(d => d.CellType == CellType.Blank)) continue;
+                            for (int j = row.FirstCellNum; j < CellCount; j++)
+                            {
+                                if (row.GetCell(j) != null)
+                                {
+                                    //ListCols[j]
+                                    NewRowInsert.GetType().GetProperty(ListCols[j]).SetValue(NewRowInsert, row.GetCell(j).ToString());
+                                    //sb.Append("<td>" + row.GetCell(j).ToString() + "</td>");
+                                }
+                            }
+                            ListExcelRows.Add(NewRowInsert);
+                            //sb.AppendLine("</tr>");
+                        }                        
+                        //sb.Append("</table>");
+                    }
+                }
+                return new RetData<string>()
+                {
+                    Data = "",
+                    Info = new RetInfo()
+                    {
+                        CodError = 0,
+                        Mensaje = "ok",
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            }
+            catch (Exception ex1)
+            {
+                return new RetData<string>()
+                {
+                    Data = "",
+                    Info = new RetInfo()
+                    {
+                        CodError = -1,
+                        Mensaje = ex1.ToString(),
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            }
         }
         public async Task<IActionResult> GetPedidos()
         {

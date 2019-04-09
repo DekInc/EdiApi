@@ -49,13 +49,13 @@
                     </div>
                 </button>
                 <form id="formReportes" accept-charset="UTF-8" method="post">
-                    <table id="tblReportes" class="table table-striped table-bordered nowrap table-hover display tblReportes" cellspacing="0" role="grid">
+                    <table id="tblReportes" class="table table-striped table-bordered nowrap table-hover display tblReportes" cellspacing="0" role="grid" style="width: 100%;">
                         <thead>
                             <tr>
                                 <th>Cod Producto</th>
                                 <th>Bodega</th>
-                                <th>Producto</th>
                                 <th>Existencia</th>
+                                <th>Producto</th>                                
                                 <th>Reservado</th>
                                 <th>Disponible</th>
                                 <th>Cantidad a pedir</th>
@@ -185,7 +185,9 @@
             }],
             "columns": [
                 { "data": "codProducto", "name": "CodProducto", "autoWidth": true, "defaultContent": "" },
-                { "data": "bodega", "name": "Bodega", "autoWidth": true, "defaultContent": "" },
+                { "data": "bodega", "name": "Bodega", "autoWidth": true, "defaultContent": "" },                
+                //{ "data": "descripcion", "name": "descripcion", "autoWidth": true, "defaultContent": "" },
+                { "data": "existencia", "name": "Existencia", "autoWidth": true, "defaultContent": "" },
                 {
                     data: "descripcion",
                     render: function (data, type, row) {
@@ -196,8 +198,6 @@
                     },
                     className: "dt-body-center"
                 },
-                //{ "data": "descripcion", "name": "descripcion", "autoWidth": true, "defaultContent": "" },
-                { "data": "existencia", "name": "Existencia", "autoWidth": true, "defaultContent": "" },
                 { "data": "reservado", "name": "Reservado", "autoWidth": true, "defaultContent": "" },
                 { "data": "disponible", "name": "Disponible", "autoWidth": true, "defaultContent": "" },
                 {
