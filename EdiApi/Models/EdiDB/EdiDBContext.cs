@@ -57,6 +57,8 @@ namespace EdiApi.Models.EdiDB
         public virtual DbSet<LearTd5856> LearTd5856 { get; set; }
         public virtual DbSet<LearUit830> LearUit830 { get; set; }
         public virtual DbSet<PaylessProdPriori> PaylessProdPriori { get; set; }
+        public virtual DbSet<PaylessProdPrioriDet> PaylessProdPrioriDet { get; set; }
+        public virtual DbSet<PaylessProdPrioriM> PaylessProdPrioriM { get; set; }
         public virtual DbSet<PedidosDetExternos> PedidosDetExternos { get; set; }
         public virtual DbSet<PedidosEstadosExternos> PedidosEstadosExternos { get; set; }
         public virtual DbSet<PedidosExternos> PedidosExternos { get; set; }
@@ -1203,6 +1205,44 @@ namespace EdiApi.Models.EdiDB
                 entity.Property(e => e.Pickeada).HasMaxLength(255);
 
                 entity.Property(e => e.Preinspeccion).HasMaxLength(255);
+            });
+
+            modelBuilder.Entity<PaylessProdPrioriDet>(entity =>
+            {
+                entity.ToTable("PAYLESS_ProdPrioriDet");
+
+                entity.Property(e => e.Cargada).HasMaxLength(255);
+
+                entity.Property(e => e.Categoria).HasMaxLength(255);
+
+                entity.Property(e => e.Cp)
+                    .HasColumnName("CP")
+                    .HasMaxLength(255);
+
+                entity.Property(e => e.Etiquetada).HasMaxLength(255);
+
+                entity.Property(e => e.IdPaylessProdPrioriM).HasColumnName("IdPAYLESS_ProdPrioriM");
+
+                entity.Property(e => e.Oid).HasColumnName("OID");
+
+                entity.Property(e => e.Pickeada).HasMaxLength(255);
+
+                entity.Property(e => e.Preinspeccion).HasMaxLength(255);
+            });
+
+            modelBuilder.Entity<PaylessProdPrioriM>(entity =>
+            {
+                entity.ToTable("PAYLESS_ProdPrioriM");
+
+                entity.Property(e => e.CodUsr).HasMaxLength(128);
+
+                entity.Property(e => e.InsertDate).HasMaxLength(10);
+
+                entity.Property(e => e.Periodo).HasMaxLength(10);
+
+                entity.Property(e => e.Transporte).HasMaxLength(12);
+
+                entity.Property(e => e.UpdateDate).HasMaxLength(10);
             });
 
             modelBuilder.Entity<PedidosDetExternos>(entity =>

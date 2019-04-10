@@ -8,11 +8,11 @@
         <div class="card-deck cardMain">
             <div class="card box-shadow">
                 <div class="card-header">
-                    <h4 class="my-0 font-weight-normal">Carga de planilla de productos</h4>
+                    <h4 class="my-0 font-weight-normal">Planilla de productos</h4>
                 </div>
                 <div class="card-body">
                     <br />
-                    <button class="btn btn-primary" id="btnNewUpload" data-togle="tooltip" data-html="true" title="Nueva carga de archivo">Cargar archivo Excel</button>
+                    <span id="spanClientName">Payless Shoe Source - Pricesmart SPS</span>                    
                     <div class="clearfix"></div>
                     <br />
                     <form id="formReportes" accept-charset="UTF-8" method="post">
@@ -25,7 +25,7 @@
                                     <th>Barcode</th>
                                     <th>Estado</th>
                                     <th>Prioridad</th>
-                                    <th>Pool P</th>
+                                    <th>Tienda</th>
                                     <th>Producto</th>
                                     <th>Talla</th>
                                     <th>Lote</th>
@@ -102,10 +102,55 @@
             },
             "order": [[7, "asc"]],
             "columnDefs": [
-            {
+                {
                 "targets": [0],
                 "visible": false
-            }],
+                },
+                {
+                    "targets": [2],
+                    "visible": false
+                },
+                {
+                    "targets": [4],
+                    "visible": false
+                },
+                {
+                    "targets": [5],
+                    "visible": false
+                },
+                {
+                    "targets": [7],
+                    "visible": false
+                },
+                {
+                    "targets": [11],
+                    "visible": false
+                },
+                {
+                    "targets": [13],
+                    "visible": false
+                },
+                {
+                    "targets": [14],
+                    "visible": false
+                },
+                {
+                    "targets": [15],
+                    "visible": false
+                },
+                {
+                    "targets": [16],
+                    "visible": false
+                },
+                {
+                    "targets": [17],
+                    "visible": false
+                },
+                {
+                    "targets": [18],
+                    "visible": false
+                }
+            ],
             "columns": [
                 { "data": "id", "name": "id", "autoWidth": true, "defaultContent": "" },
                 { "data": "periodo", "name": "periodo", "autoWidth": true, "defaultContent": "" },
@@ -113,7 +158,18 @@
                 { "data": "barcode", "name": "barcode", "autoWidth": true, "defaultContent": "" },
                 { "data": "estado", "name": "estado", "autoWidth": true, "defaultContent": "" },
                 { "data": "pri", "name": "pri", "autoWidth": true, "defaultContent": "" },
-                { "data": "poolP", "name": "poolP", "autoWidth": true, "defaultContent": "" },
+                {
+                    //data: "pedidoBarcode",
+                    name: "tienda",
+                    render: function (data, type, row) {
+                        if (type === 'display') {
+                            return '<span class="">' +7365 + '</span>';
+                        }
+                        return '';
+                    },
+                    className: "dt-body-center"
+                },
+                //{ "data": "poolP", "name": "poolP", "autoWidth": true, "defaultContent": "" },
                 { "data": "producto", "name": "producto", "autoWidth": true, "defaultContent": "" },
                 { "data": "talla", "name": "talla", "autoWidth": true, "defaultContent": "" },
                 { "data": "lote", "name": "lote", "autoWidth": true, "defaultContent": "" },

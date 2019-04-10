@@ -61,6 +61,10 @@ namespace EdiViewer.Controllers
         {
             return View();
         }
+        public IActionResult CargaProdPrioriAdmin()
+        {
+            return View();
+        }
         public IActionResult CargaProdPriori2()
         {
             return View();
@@ -158,7 +162,7 @@ namespace EdiViewer.Controllers
                                     //sb.Append("<td>" + row.GetCell(j).ToString() + "</td>");
                                 }
                             }
-                            ListExcelRows.Add(NewRowInsert);
+                            ListExcelRows.Add(NewRowInsert); 
                             //sb.AppendLine("</tr>");
                         }                        
                         //sb.Append("</table>");
