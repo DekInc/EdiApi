@@ -7,8 +7,8 @@ CREATE TABLE PAYLESS_ProdPrioriM(
 	[ClienteId] [int] NULL,
 	Transporte [nvarchar](12),
 	[CodUsr] nvarchar(128),
-	InsertDate nvarchar(10),
-	UpdateDate nvarchar(10)
+	InsertDate nvarchar(16),
+	UpdateDate nvarchar(16)
 )
 
 IF OBJECT_ID('PAYLESS_ProdPrioriDet', 'U') IS NOT NULL 
@@ -17,23 +17,23 @@ IF OBJECT_ID('PAYLESS_ProdPrioriDet', 'U') IS NOT NULL
 CREATE TABLE [dbo].[PAYLESS_ProdPrioriDet](
 	[Id] [int] IDENTITY(1,1) PRIMARY KEY,	
 	IdPAYLESS_ProdPrioriM int not null,
-	[OID] [float] NULL,
-	[Barcode] [float] NULL,
-	[Estado] [float] NULL,
-	[Pri] [float] NULL,
-	[PoolP] [float] NULL,
-	[Producto] [float] NULL,
-	[Talla] [float] NULL,
-	[Lote] [float] NULL,
-	[Categoria] [nvarchar](255) NULL,
-	[Departamento] [float] NULL,
-	[CP] [nvarchar](255) NULL,
-	[Pickeada] [nvarchar](255) NULL,
-	[Etiquetada] [nvarchar](255) NULL,
-	[Preinspeccion] [nvarchar](255) NULL,
-	[Cargada] [nvarchar](255) NULL,
+	[OID] nvarchar(16) NULL,
+	[Barcode] nvarchar(16) NULL,
+	[Estado] nvarchar(4) NULL,
+	[Pri] nvarchar(4) NULL,
+	[PoolP] nvarchar(4) NULL,
+	[Producto] nvarchar(16) NULL,
+	[Talla] nvarchar(8) NULL,
+	[Lote] nvarchar(8) NULL,
+	[Categoria] nvarchar(256) NULL,
+	[Departamento] nvarchar(16) NULL,
+	[CP] nvarchar(8) NULL,
+	[Pickeada] nvarchar(24) NULL,
+	[Etiquetada] nvarchar(24) NULL,
+	[Preinspeccion] nvarchar(32) NULL,
+	[Cargada] nvarchar(24) NULL,
 	[M3] [float] NULL,
-	[Peso] [float] NULL	
+	[Peso] [float] NULL
 ) ON [PRIMARY]
 GO
 

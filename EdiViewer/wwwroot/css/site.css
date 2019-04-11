@@ -66,6 +66,15 @@ body {
 #formReportes {
     max-width: 99vw;
 }
+table{
+    max-width: 98vw;
+}
+.card-deck {
+    margin-left: 10px;
+    margin-right: 10px;
+    margin-top: 10px;
+    margin-bottom: 25px;
+}
 .table:before {
     content: '\A';
 }
@@ -519,7 +528,10 @@ table.dataTable.dtr-inline.collapsed > tbody > tr[role="row"] > td:first-child:b
 .dtp3 {
     width: 200px;
 }
-.noShow{
+#dtpPeriodoBuscar {
+    width: 200px;
+}
+.noShow {
     display: none;
 }
 .dropdown-menu {

@@ -18,6 +18,10 @@
                                     <input class="form-control datepicker" data-date-format="dd/mm/yyyy" id="dtpPeriodUpload" placeholder="Periodo" maxlength="10" />
                                 </div>
                                 <br />
+                                <div>
+                                    <input class="form-control" id="txtTransporte" name="txtTransporte" placeholder="#Transporte" maxlength="16" />
+                                </div>
+                                <br />
                                 <div class="custom-file">
                                     <input type="file" class="custom-file-input" id="fUpload" name="fUpload">
                                     <label class="custom-file-label" for="fUpload"></label>
@@ -27,7 +31,12 @@
                         <br />
                         <div class="row">
                             <div class="col">
-                                <input class="btn btn-primary" type="button" id="btnUpload" value="Cargar archivo" />
+                                <button class="btn btn-primary" type="button" id="btnUpload">
+                                    &nbsp;&nbsp;&nbsp;Cargar archivo&nbsp;&nbsp;&nbsp;
+                                    <div id="divSpinUploadFile" class="spinner-border spinner-border-sm text-danger" style="display: none" role="status">
+                                        <span class="sr-only">Loading...</span>
+                                    </div>
+                                </button>
                                 <div id="dvData">
 
                                 </div>
@@ -47,26 +56,31 @@
     $(document).ready(function () {
         $('#dtpPeriodUpload').datepicker();
         $('#btnUpload').on('click', function () {
+            if ($('#dtpPeriodUpload').val() == '') {
+                menErrorEdi('El valor del periodo no puede estar vacio', 'Error');
+                return;
+            }
             var fileExtension = ['xls', 'xlsx'];
             var filename = $('#fUpload').val();
-            if (filename.length == 0) {
-                alert("Por favor seleccione un archivo.");
+            if (filename.length == 0) {                
+                menErrorEdi('Por favor seleccione un archivo', 'Error');
                 return false;
             }
             else {
                 var extension = filename.replace(/^.*\./, '');
                 if ($.inArray(extension, fileExtension) == -1) {
-                    alert("Solo se permiten archivos de Excel con extensiones: .xls y .xlsx");
+                    menErrorEdi('Solo se permiten archivos de Excel con extensiones: .xls y .xlsx', 'Error');
                     return false;
                 }
             }
+            $('#divSpinUploadFile').show();
             var fdata = new FormData();
             var fileUpload = $("#fUpload").get(0);
             var files = fileUpload.files;
             fdata.append(files[0].name, files[0]);
             $.ajax({
                 type: "POST",
-                url: "@this.Url.Action("OnPostImport")",
+                url: "@this.Url.Action("SetPaylessProdPriori")?dtpPeriodUpload=" + $('#dtpPeriodUpload').val() + '&txtTransporte=' + $('#txtTransporte').val(),
                 beforeSend: function (xhr) {
                     xhr.setRequestHeader("XSRF-TOKEN",
                         $('input:hidden[name="__RequestVerificationToken"]').val());
@@ -75,6 +89,7 @@
                 contentType: false,
                 processData: false,
                 success: function (response) {
+                    $('#divSpinUploadFile').hide();
                     if (response.info.codError != null) {
                         if (response.info.codError != 0) {
                             menErrorEdi(response.info.mensaje, 'Error en el proceso');
@@ -82,15 +97,16 @@
                         }
                     }
                     if (response.length == 0)
-                        alert('Error al subir el archivo');
+                        menErrorEdi('Error al subir el archivo', 'Error');
                     else {
                         if (response.info.mensaje == 'ok')
                             menErrorEdi('Archivo cargado', 'Información');
                         $('#dvData').html(response);
                     }
                 },
-                error: function (e) {
-                    $('#dvData').html(e.responseText);
+                error: function (resp) {
+                    $('#divSpinUploadFile').hide();
+                    menErrorEdi(resp.info.mensaje);
                 }
             });
         })

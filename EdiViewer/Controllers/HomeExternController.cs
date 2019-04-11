@@ -73,7 +73,7 @@ namespace EdiViewer.Controllers
         {
             return "";
         }
-        public RetData<string> OnPostImport()
+        public async Task<RetData<string>> SetPaylessProdPriori(string dtpPeriodUpload, string txtTransporte)
         {
             DateTime StartTime = DateTime.Now;
             List<string> ListCols = new List<string>();
@@ -92,13 +92,27 @@ namespace EdiViewer.Controllers
                         stream.Position = 0;
                         if (FileExtension == ".xls")
                         {
-                            HSSFWorkbook hssfwb = new HSSFWorkbook(stream); //This will read the Excel 97-2000 formats  
-                            Sheet = hssfwb.GetSheetAt(0); //get first sheet from workbook  
+                            try
+                            {
+                                HSSFWorkbook hssfwb = new HSSFWorkbook(stream);
+                                Sheet = hssfwb.GetSheetAt(0);
+                            }
+                            catch (Exception e2)
+                            {
+                                throw new Exception("El archivo no es de Excel. Utilice un formato propio de Microsoft Excel. " + e2.ToString());
+                            }                            
                         }
                         else if (FileExtension == ".xlsx")
                         {
-                            XSSFWorkbook hssfwb = new XSSFWorkbook(stream); //This will read 2007 Excel format  
-                            Sheet = hssfwb.GetSheetAt(0); //get first sheet from workbook   
+                            try
+                            {
+                                XSSFWorkbook hssfwb = new XSSFWorkbook(stream);
+                                Sheet = hssfwb.GetSheetAt(0);
+                            }
+                            catch (Exception e3)
+                            {
+                                throw new Exception("El archivo no es de Excel. Utilice un formato propio de Microsoft Excel. " + e3.ToString());
+                            }                            
                         }
                         else
                         {
@@ -113,7 +127,7 @@ namespace EdiViewer.Controllers
                                 }
                             };
                         }
-                        IRow HeaderRow = Sheet.GetRow(0); //Get Header Row
+                        IRow HeaderRow = Sheet.GetRow(0);
                         PaylessUploadFileModel NewRow = new PaylessUploadFileModel();
                         int CellCount = HeaderRow.LastCellNum;
                         sb.Append("<table class='table'><tr>");
@@ -141,13 +155,8 @@ namespace EdiViewer.Controllers
                                     }
                                 };
                             }
-                            //NPOI.SS.UserModel.ICell cell = HeaderRow.GetCell(j);
-                            //if (cell == null || string.IsNullOrWhiteSpace(cell.ToString())) continue;
-                            //sb.Append("<th>" + cell.ToString() + "</th>");
                         }
-                        //sb.Append("</tr>");
-                        //sb.AppendLine("<tr>");
-                        for (int i = (Sheet.FirstRowNum + 1); i <= Sheet.LastRowNum; i++) //Read Excel File
+                        for (int i = (Sheet.FirstRowNum + 1); i <= Sheet.LastRowNum; i++)
                         {
                             IRow row = Sheet.GetRow(i);
                             PaylessUploadFileModel NewRowInsert = new PaylessUploadFileModel();
@@ -157,27 +166,47 @@ namespace EdiViewer.Controllers
                             {
                                 if (row.GetCell(j) != null)
                                 {
-                                    //ListCols[j]
-                                    NewRowInsert.GetType().GetProperty(ListCols[j]).SetValue(NewRowInsert, row.GetCell(j).ToString());
-                                    //sb.Append("<td>" + row.GetCell(j).ToString() + "</td>");
+                                    try
+                                    {
+                                        switch (NewRowInsert.GetType().GetProperty(ListCols[j]).PropertyType.Name)
+                                        {
+                                            case "String":
+                                                NewRowInsert.GetType().GetProperty(ListCols[j]).SetValue(NewRowInsert, row.GetCell(j).ToString());
+                                                break;
+                                            default:
+                                                if (!string.IsNullOrEmpty(row.GetCell(j).ToString()))
+                                                {
+                                                    if (ListCols[j].Equals("m3", StringComparison.OrdinalIgnoreCase) || ListCols[j].Equals("peso", StringComparison.OrdinalIgnoreCase))
+                                                        NewRowInsert.GetType().GetProperty(ListCols[j]).SetValue(NewRowInsert, Convert.ToDouble(row.GetCell(j).ToString()));
+                                                }
+                                                break;
+                                        }                                        
+                                    }
+                                    catch (Exception ec1)
+                                    {
+                                        return new RetData<string>()
+                                        {
+                                            Data = "",
+                                            Info = new RetInfo()
+                                            {
+                                                CodError = -1,
+                                                Mensaje = $"Error en conversión para el campo {ListCols[j]} {ec1.ToString()}",
+                                                ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                                            }
+                                        };
+                                    }                                    
                                 }
                             }
                             ListExcelRows.Add(NewRowInsert); 
-                            //sb.AppendLine("</tr>");
                         }                        
-                        //sb.Append("</table>");
                     }
                 }
-                return new RetData<string>()
-                {
-                    Data = "",
-                    Info = new RetInfo()
-                    {
-                        CodError = 0,
-                        Mensaje = "ok",
-                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
-                    }
-                };
+                if (ListExcelRows.Count > 0) {
+                    if (string.IsNullOrEmpty(ListExcelRows.LastOrDefault().Barcode))
+                        ListExcelRows.RemoveAt(ListExcelRows.Count - 1);
+                }
+                RetData<string> Ret = await ApiClientFactory.Instance.SetPaylessProdPriori(ListExcelRows, HttpContext.Session.GetObjSession<int>("Session.ClientId"), dtpPeriodUpload, HttpContext.Session.GetObjSession<string>("Session.CodUsr"), txtTransporte);
+                return Ret;
             }
             catch (Exception ex1)
             {
@@ -549,37 +578,91 @@ namespace EdiViewer.Controllers
         {
             try
             {
-                RetData<IEnumerable<PaylessProdPriori>> ListProdPriori = await ApiClientFactory.Instance.GetPaylessProdPriori("08/04/2019");
+                RetData<Tuple<IEnumerable<PaylessProdPrioriM>, IEnumerable<PaylessProdPrioriDet>>> ListProdPriori = await ApiClientFactory.Instance.GetPaylessProdPriori("08/04/2019");
                 if (ListProdPriori.Info.CodError != 0)
                     return Json(new { errorMessage = ListProdPriori.Info.Mensaje, data = "", });
-                if (ListProdPriori.Data.Count() == 0)
+                if (ListProdPriori.Data.Item2.Count() == 0)
                 {
-                    return Json(new { total = ListProdPriori.Data.Count(), errorMessage = (ListProdPriori.Info.CodError != 0 ? ListProdPriori.Info.Mensaje : string.Empty), records = "" });
+                    return Json(new { total = ListProdPriori.Data.Item2.Count(), errorMessage = (ListProdPriori.Info.CodError != 0 ? ListProdPriori.Info.Mensaje : string.Empty), records = "" });
                 }                                
-                return Json(new { total = ListProdPriori.Data.Count(), records = ListProdPriori.Data, errorMessage = "" });
+                return Json(new { total = ListProdPriori.Data.Item2.Count(), records = ListProdPriori.Data, errorMessage = "" });
             }
             catch (Exception e1)
             {
                 return Json(new { total = "", errorMessage = e1.ToString(), records = "", listAllProd = "" });
             }
         }
-        public async Task<IActionResult> GetPaylessProdPriori()
+        //
+        public async Task<IActionResult> GetPaylessProdPrioriAdmin(string dtpPeriodoBuscar)
         {
             try
             {
-                RetData<IEnumerable<PaylessProdPriori>> ListProdPriori = await ApiClientFactory.Instance.GetPaylessProdPriori("08/04/2019");
-                if (ListProdPriori.Info.CodError != 0)
-                    return Json(new { errorMessage = ListProdPriori.Info.Mensaje, data = "", });
-                if (ListProdPriori.Data.Count() == 0)
+                if (string.IsNullOrEmpty(dtpPeriodoBuscar)) dtpPeriodoBuscar = "";
+                //var dict = Request.Form.ToDictionary(x => x.Key, x => x.Value.ToString());
+                var draw = HttpContext.Request.Form["draw"].Fod();
+                // Skiping number of Rows count  
+                var start = Request.Form["start"].Fod();
+                // Paging Length 10,20  
+                var length = Request.Form["length"].Fod();
+                // Sort Column Name  
+                var sortColumn = Request.Form["columns[" + Request.Form["order[0][column]"].Fod() + "][name]"].Fod();
+                // Sort Column Direction ( asc ,desc)  
+                var sortColumnDirection = Request.Form["order[0][dir]"].Fod();
+                // Search Value from (Search box)  
+                var searchValue = Request.Form["search[value]"].Fod();
+                //Paging Size (10,20,50,100)  
+                int pageSize = length != null ? Convert.ToInt32(length) : 0;
+                int skip = start != null ? Convert.ToInt32(start) : 0;
+                int recordsTotal = 0;
+                if (string.IsNullOrEmpty(dtpPeriodoBuscar))
                 {
-                    return Json(new { errorMessage = (ListProdPriori.Info.CodError != 0 ? ListProdPriori.Info.Mensaje : string.Empty), data = "" });
+                    return Json(new { draw = 0, recordsFiltered = 0, recordsTotal = 0, errorMessage = "", data = "" });
                 }
-                return Json(new { data = ListProdPriori.Data, errorMessage = "" });
+                RetData<Tuple<IEnumerable<PaylessProdPrioriM>, IEnumerable<PaylessProdPrioriDet>>> ListProd = await ApiClientFactory.Instance.GetPaylessProdPriori(dtpPeriodoBuscar);                
+                if (ListProd.Info.CodError != 0)
+                    return Json(new { draw = 0, recordsFiltered = 0, recordsTotal = 0, errorMessage = ListProd.Info.Mensaje, data = "" });
+                if (ListProd.Data == null)
+                {
+                    return Json(new { draw = 0, recordsFiltered = 0, recordsTotal = 0, errorMessage = (ListProd.Info.CodError != 0 ? ListProd.Info.Mensaje : string.Empty), data = "" });
+                }
+                if (ListProd.Data.Item2.Count() == 0)
+                {
+                    return Json(new { draw = 0, recordsFiltered = 0, recordsTotal = 0, errorMessage = (ListProd.Info.CodError != 0 ? ListProd.Info.Mensaje : string.Empty), data = "" });
+                }
+                IEnumerable<PaylessProdPrioriDet> ListProdPriori = ListProd.Data.Item2;
+                if (!(string.IsNullOrEmpty(sortColumn) && string.IsNullOrEmpty(sortColumnDirection)))
+                {
+                    ListProdPriori = ListProd.Data.Item2.AsQueryable().OrderBy(sortColumn + " " + sortColumnDirection);
+                }
+                //total number of rows count
+                recordsTotal = ListProdPriori.Count();
+                //Paging
+                ListProdPriori = ListProdPriori.Skip(skip).Take(pageSize);
+                //Returning Json Data
+                return Json(new { draw, recordsFiltered = recordsTotal, recordsTotal, data = ListProdPriori, errorMessage = "" });
             }
             catch (Exception e1)
             {
-                return Json(new { errorMessage = e1.ToString(), data = "" });
+                return Json(new { draw = 0, recordsFiltered = 0, recordsTotal = 0, errorMessage = e1.ToString(), data = "" });
             }
         }
+        //public async Task<IActionResult> GetPaylessProdPriori()
+        //{
+        //    try
+        //    {
+        //        RetData<IEnumerable<PaylessProdPrioriDet>> ListProdPriori = await ApiClientFactory.Instance.GetPaylessProdPriori("08/04/2019");
+        //        if (ListProdPriori.Info.CodError != 0)
+        //            return Json(new { errorMessage = ListProdPriori.Info.Mensaje, data = "", });
+        //        if (ListProdPriori.Data.Count() == 0)
+        //        {
+        //            return Json(new { errorMessage = (ListProdPriori.Info.CodError != 0 ? ListProdPriori.Info.Mensaje : string.Empty), data = "" });
+        //        }
+        //        return Json(new { data = ListProdPriori.Data, errorMessage = "" });
+        //    }
+        //    catch (Exception e1)
+        //    {
+        //        return Json(new { errorMessage = e1.ToString(), data = "" });
+        //    }
+        //}
     }
 }

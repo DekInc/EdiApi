@@ -1205,16 +1205,103 @@ namespace EdiApi.Controllers
             }            
         }
         [HttpPost]
-        public RetData<IEnumerable<PaylessProdPriori>> GetPaylessProdPriori(object Period)
+        public RetData<Tuple<IEnumerable<PaylessProdPrioriM>, IEnumerable<PaylessProdPrioriDet>>> GetPaylessProdPriori(object Period)
+        {
+            DateTime StartTime = DateTime.Now;
+            try
+            {
+                IEnumerable<PaylessProdPrioriM> PpM = DbO.PaylessProdPrioriM.Where(Pp => Pp.Periodo == Period.ToString());
+                if (PpM.Count() > 0)
+                {
+                    IEnumerable<PaylessProdPrioriDet> ListPaylessProdPrioriDet = DbO.PaylessProdPrioriDet.Where(Pp => Pp.IdPaylessProdPrioriM == PpM.Fod().Id);
+                    return new RetData<Tuple<IEnumerable<PaylessProdPrioriM>, IEnumerable<PaylessProdPrioriDet>>>
+                    {
+                        Data = new Tuple<IEnumerable<PaylessProdPrioriM>, IEnumerable<PaylessProdPrioriDet>>(PpM, ListPaylessProdPrioriDet),
+                        Info = new RetInfo()
+                        {
+                            CodError = 0,
+                            Mensaje = "ok",
+                            ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                        }
+                    };
+                } else
+                {
+                    return new RetData<Tuple<IEnumerable<PaylessProdPrioriM>, IEnumerable<PaylessProdPrioriDet>>>
+                    {
+                        Info = new RetInfo()
+                        {
+                            CodError = 0,
+                            Mensaje = "ok",
+                            ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                        }
+                    };
+                }
+            }
+            catch (Exception e1)
+            {
+                return new RetData<Tuple<IEnumerable<PaylessProdPrioriM>, IEnumerable<PaylessProdPrioriDet>>>
+                {
+                    Info = new RetInfo()
+                    {
+                        CodError = -1,
+                        Mensaje = e1.ToString(),
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            }
+        }
+        [HttpPost]
+        public RetData<string> SetPaylessProdPriori(IEnumerable<PaylessUploadFileModel> ListUpload, int ClienteId, string Periodo, string codUsr, string transporte)
         {
             DateTime StartTime = DateTime.Now;
             try
             {
 
-                IEnumerable<PaylessProdPriori> ListPaylessProdPriori = DbO.PaylessProdPriori.Where(Pp => Pp.Periodo == Convert.ToString(Period));
-                return new RetData<IEnumerable<PaylessProdPriori>>
+                IEnumerable<PaylessProdPrioriM> ListPaylessProdPrioriM = DbO.PaylessProdPrioriM.Where(Pp => Pp.Periodo == Periodo);
+                if (ListPaylessProdPrioriM.Count() > 0)
                 {
-                    Data = ListPaylessProdPriori,
+                    IEnumerable<PaylessProdPrioriDet> ListPaylessProdPrioriDet = DbO.PaylessProdPrioriDet.Where(Pd => Pd.IdPaylessProdPrioriM == ListPaylessProdPrioriM.Fod().Id);
+                    DbO.PaylessProdPrioriDet.RemoveRange(ListPaylessProdPrioriDet);
+                }
+                DbO.PaylessProdPrioriM.RemoveRange(ListPaylessProdPrioriM);
+                PaylessProdPrioriM NewMas = new PaylessProdPrioriM()
+                {
+                    ClienteId = ClienteId,
+                    Periodo = Periodo,
+                    InsertDate = DateTime.Now.ToString(ApplicationSettings.DateTimeFormat),
+                    CodUsr = codUsr,
+                    Transporte = transporte
+                };
+                DbO.PaylessProdPrioriM.Add(NewMas);
+                DbO.SaveChanges();
+                foreach (PaylessUploadFileModel Uf in ListUpload)
+                {
+                    DbO.PaylessProdPrioriDet.Add(new PaylessProdPrioriDet()
+                    {
+                        Barcode = Uf.Barcode,
+                        Cargada = Uf.Cargada,
+                        Categoria = Uf.Categoria,
+                        Cp = Uf.Cp,
+                        Departamento = Uf.Departamento,
+                        Estado = Uf.Estado,
+                        Etiquetada = Uf.Etiquetada,
+                        IdPaylessProdPrioriM = NewMas.Id,
+                        Lote = Uf.Lote,
+                        M3 = Uf.M3,
+                        Oid = Uf.Oid,
+                        Peso = Uf.Peso,
+                        Pickeada = Uf.Pickeada,
+                        PoolP = Uf.Poolp,
+                        Preinspeccion = Uf.Preinspeccion,
+                        Pri = Uf.Pri,
+                        Producto = Uf.Producto,
+                        Talla = Uf.Talla
+                    });
+                }
+                DbO.SaveChanges();
+                return new RetData<string>
+                {
+                    Data = "",
                     Info = new RetInfo()
                     {
                         CodError = 0,
@@ -1225,7 +1312,7 @@ namespace EdiApi.Controllers
             }
             catch (Exception e1)
             {
-                return new RetData<IEnumerable<PaylessProdPriori>>
+                return new RetData<string>
                 {
                     Info = new RetInfo()
                     {

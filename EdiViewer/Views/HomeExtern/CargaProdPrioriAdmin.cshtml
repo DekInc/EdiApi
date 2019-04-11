@@ -11,8 +11,32 @@
                     <h4 class="my-0 font-weight-normal">Carga de planilla de productos</h4>
                 </div>
                 <div class="card-body">
-                    <br />
-                    <button class="btn btn-primary" id="btnNewUpload" data-togle="tooltip" data-html="true" title="Nueva carga de archivo">Cargar archivo Excel</button>
+                    <form id="formSearch">
+                        <div class="container div856Search">
+                            <div class="row">                                
+                                <div class="col-sm">
+                                    <input class="form-control datepicker" data-date-format="dd/mm/yyyy" id="dtpPeriodoBuscar" placeholder="Periodo" maxlength="10" />
+                                </div>                                
+                            </div>
+                            <div class="row margin5">
+                                <div class="col-sm">
+                                    <button id="btnFiltrar" class="btn btn-primary" type="button">
+                                        &nbsp;&nbsp;&nbsp;Buscar&nbsp;&nbsp;&nbsp;
+                                        <div id="divSpinFiltrar" class="spinner-border spinner-border-sm text-danger" style="display: none" role="status">
+                                            <span class="sr-only">Loading...</span>
+                                        </div>
+                                    </button>
+                                    <button id="btnLimpiar" class="btn btn-primary" type="button">
+                                        &nbsp;&nbsp;&nbsp;Limpiar&nbsp;&nbsp;&nbsp;
+                                        <div id="divSpinLimpiar" class="spinner-border spinner-border-sm text-danger" style="display: none" role="status">
+                                            <span class="sr-only">Loading...</span>
+                                        </div>
+                                    </button>
+                                    <button id="btnNewUpload" class="btn btn-primary" type="button">Cargar archivo Excel</button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
                     <div class="clearfix"></div>
                     <br />
                     <form id="formReportes" accept-charset="UTF-8" method="post">
@@ -89,14 +113,16 @@
                 "emptyTable": "No hay información"
             },
             "ajax": {
-                "url": "@this.Url.Action("GetPaylessProdPriori")",
+                "url": "@this.Url.Action("GetPaylessProdPrioriAdmin")?dtpPeriodoBuscar=" + $('#dtpPeriodoBuscar').val(),
                 "type": "POST",
                 "datatype": "json",
                 "dataSrc": function (json) {
+                    $('#divSpinFiltrar').hide();
                     if (json.errorMessage != '') {
                         menErrorEdi(json.errorMessage, 'Error');
                         return '';
                     }
+                    $("#tblReportes").show();
                     return json.data;
                 }
             },
@@ -130,9 +156,25 @@
         });
     }
     $(document).ready(function () {
-        fillTblReportes();
-        $('#btnNewUpload').on('click', function () {
+        $('#dtpPeriodoBuscar').datepicker();
+        $('#btnNewUpload').on('click', function (Event) {
             $('#modalPopNewProdUpload').modal();
         });
+        $('#btnFiltrar').on("click", function (Event) {            
+            $('#divSpinFiltrar').show();
+            fillTblReportes();
+        });
+        $('#btnLimpiar').on("click", function (Event) {
+            $('#divSpinFiltrar').hide();
+            $('#dtpPeriodoBuscar').val('');
+            fillTblReportes();
+        });
+        if (window.mobileAndTabletcheck()) {
+            $('.div856Search').css({ "max-width": "unset" });
+            $('#dtpPeriodoBuscar').css({ "width": "100%" });
+            $('.btn').css({ "margin-bottom": "10px" });
+            $('.btn').addClass('btn-block');
+            $("#tblReportes").hide();
+        }
     });
 </script>

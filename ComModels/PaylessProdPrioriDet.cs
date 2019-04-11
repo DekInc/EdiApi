@@ -1,17 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
-namespace EdiViewer.Models
+namespace ComModels
 {
-    public class PaylessUploadFileModel
+    public partial class PaylessProdPrioriDet
     {
+        public int Id { get; set; }
+        public int IdPaylessProdPrioriM { get; set; }
         public string Oid { get; set; }
         public string Barcode { get; set; }
         public string Estado { get; set; }
         public string Pri { get; set; }
-        public string Poolp { get; set; }
+        public string PoolP { get; set; }
         public string Producto { get; set; }
         public string Talla { get; set; }
         public string Lote { get; set; }
@@ -22,7 +22,7 @@ namespace EdiViewer.Models
         public string Etiquetada { get; set; }
         public string Preinspeccion { get; set; }
         public string Cargada { get; set; }
-        public string M3 { get; set; }
-        public string Peso { get; set; }
+        public double? M3 { get; set; }
+        public double? Peso { get; set; }
     }
 }

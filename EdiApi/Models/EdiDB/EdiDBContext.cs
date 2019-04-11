@@ -19,6 +19,10 @@ namespace EdiApi.Models.EdiDB
         public virtual DbSet<EdiRepSent> EdiRepSent { get; set; }
         public virtual DbSet<EdiSegName> EdiSegName { get; set; }
         public virtual DbSet<EdiUsrSystem> EdiUsrSystem { get; set; }
+        public virtual DbSet<IenetAccesses> IenetAccesses { get; set; }
+        public virtual DbSet<IenetGroups> IenetGroups { get; set; }
+        public virtual DbSet<IenetGroupsAccesses> IenetGroupsAccesses { get; set; }
+        public virtual DbSet<IenetUsers> IenetUsers { get; set; }
         public virtual DbSet<LearAth830> LearAth830 { get; set; }
         public virtual DbSet<LearBfr830> LearBfr830 { get; set; }
         public virtual DbSet<LearBsn856> LearBsn856 { get; set; }
@@ -119,6 +123,52 @@ namespace EdiApi.Models.EdiDB
             modelBuilder.Entity<EdiUsrSystem>(entity =>
             {
                 entity.Property(e => e.HashId).HasMaxLength(128);
+            });
+
+            modelBuilder.Entity<IenetAccesses>(entity =>
+            {
+                entity.ToTable("IEnetAccesses");
+
+                entity.Property(e => e.Descr).HasMaxLength(128);
+            });
+
+            modelBuilder.Entity<IenetGroups>(entity =>
+            {
+                entity.ToTable("IEnetGroups");
+
+                entity.Property(e => e.Descr).HasMaxLength(128);
+            });
+
+            modelBuilder.Entity<IenetGroupsAccesses>(entity =>
+            {
+                entity.ToTable("IEnetGroupsAccesses");
+
+                entity.Property(e => e.IdIenetAccess).HasColumnName("IdIEnetAccess");
+
+                entity.Property(e => e.IdIenetGroup).HasColumnName("IdIEnetGroup");
+            });
+
+            modelBuilder.Entity<IenetUsers>(entity =>
+            {
+                entity.ToTable("IEnetUsers");
+
+                entity.Property(e => e.ClienteId).HasColumnName("ClienteID");
+
+                entity.Property(e => e.CodUsr)
+                    .IsRequired()
+                    .HasMaxLength(128);
+
+                entity.Property(e => e.HashId).HasMaxLength(128);
+
+                entity.Property(e => e.IdIenetGroup).HasColumnName("IdIEnetGroup");
+
+                entity.Property(e => e.NomUsr)
+                    .IsRequired()
+                    .HasMaxLength(128);
+
+                entity.Property(e => e.UsrPassword)
+                    .IsRequired()
+                    .HasMaxLength(128);
             });
 
             modelBuilder.Entity<LearAth830>(entity =>
@@ -1211,23 +1261,41 @@ namespace EdiApi.Models.EdiDB
             {
                 entity.ToTable("PAYLESS_ProdPrioriDet");
 
-                entity.Property(e => e.Cargada).HasMaxLength(255);
+                entity.Property(e => e.Barcode).HasMaxLength(16);
 
-                entity.Property(e => e.Categoria).HasMaxLength(255);
+                entity.Property(e => e.Cargada).HasMaxLength(24);
+
+                entity.Property(e => e.Categoria).HasMaxLength(256);
 
                 entity.Property(e => e.Cp)
                     .HasColumnName("CP")
-                    .HasMaxLength(255);
+                    .HasMaxLength(8);
 
-                entity.Property(e => e.Etiquetada).HasMaxLength(255);
+                entity.Property(e => e.Departamento).HasMaxLength(16);
+
+                entity.Property(e => e.Estado).HasMaxLength(4);
+
+                entity.Property(e => e.Etiquetada).HasMaxLength(24);
 
                 entity.Property(e => e.IdPaylessProdPrioriM).HasColumnName("IdPAYLESS_ProdPrioriM");
 
-                entity.Property(e => e.Oid).HasColumnName("OID");
+                entity.Property(e => e.Lote).HasMaxLength(8);
 
-                entity.Property(e => e.Pickeada).HasMaxLength(255);
+                entity.Property(e => e.Oid)
+                    .HasColumnName("OID")
+                    .HasMaxLength(16);
 
-                entity.Property(e => e.Preinspeccion).HasMaxLength(255);
+                entity.Property(e => e.Pickeada).HasMaxLength(24);
+
+                entity.Property(e => e.PoolP).HasMaxLength(4);
+
+                entity.Property(e => e.Preinspeccion).HasMaxLength(32);
+
+                entity.Property(e => e.Pri).HasMaxLength(4);
+
+                entity.Property(e => e.Producto).HasMaxLength(16);
+
+                entity.Property(e => e.Talla).HasMaxLength(8);
             });
 
             modelBuilder.Entity<PaylessProdPrioriM>(entity =>
@@ -1236,13 +1304,13 @@ namespace EdiApi.Models.EdiDB
 
                 entity.Property(e => e.CodUsr).HasMaxLength(128);
 
-                entity.Property(e => e.InsertDate).HasMaxLength(10);
+                entity.Property(e => e.InsertDate).HasMaxLength(16);
 
                 entity.Property(e => e.Periodo).HasMaxLength(10);
 
                 entity.Property(e => e.Transporte).HasMaxLength(12);
 
-                entity.Property(e => e.UpdateDate).HasMaxLength(10);
+                entity.Property(e => e.UpdateDate).HasMaxLength(16);
             });
 
             modelBuilder.Entity<PedidosDetExternos>(entity =>
