@@ -8,15 +8,40 @@
         <div class="card-deck cardMain">
             <div class="card box-shadow">
                 <div class="card-header">
-                    <h4 class="my-0 font-weight-normal">Carga de planilla de productos</h4>
+                    <h4 class="my-0 font-weight-normal">Carga de planilla de productos&nbsp;<img class="imgHeaderHelp" src="~/images/help.png" title="Pantalla utilizada para cargar el excel inicial de productos a enviar" alt="Pantalla utilizada para cargar el excel inicial de productos a enviar"></h4>
                 </div>
                 <div class="card-body">
                     <form id="formSearch">
                         <div class="container div856Search">
-                            <div class="row">                                
+                            <div class="row">
                                 <div class="col-sm">
-                                    <input class="form-control datepicker" data-date-format="dd/mm/yyyy" id="dtpPeriodoBuscar" placeholder="Periodo" maxlength="10" />
-                                </div>                                
+                                    <label for="dtpPeriodoBuscar">Periodo</label>
+                                    <input class="form-control datepicker" data-date-format="dd/mm/yyyy" id="dtpPeriodoBuscar" placeholder="dd/mm/yyyy" maxlength="10" />
+                                </div>
+                                <div class="col-sm">
+                                    <label for="TxtBarcode">Barcode</label>
+                                    <input class="form-control" id="TxtBarcode" placeholder="" maxlength="16" />
+                                </div>
+                                <div class="col-sm">
+                                    <label for="TxtPrioridad">Prioridad</label>
+                                    <input class="form-control" id="TxtPrioridad" placeholder="" maxlength="8" />
+                                </div>
+                                <div class="col-sm">
+                                    <label for="TxtPoolP">Pool point</label>
+                                    <input class="form-control" id="TxtPoolP" placeholder="" maxlength="8" />
+                                </div>
+                                <div class="col-sm">
+                                    <label for="TxtEstilo">Estilo</label>
+                                    <input class="form-control" id="TxtEstilo" placeholder="" maxlength="8" />
+                                </div>
+                                <div class="col-sm">
+                                    <label for="TxtTalla">Talla</label>
+                                    <input class="form-control" id="TxtTalla" placeholder="" maxlength="8" />
+                                </div>
+                                <div class="col-sm">
+                                    <label for="TxtPo">PO</label>
+                                    <input class="form-control" id="TxtPo" placeholder="" maxlength="8" />
+                                </div>
                             </div>
                             <div class="row margin5">
                                 <div class="col-sm">
@@ -33,6 +58,7 @@
                                         </div>
                                     </button>
                                     <button id="btnNewUpload" class="btn btn-primary" type="button">Cargar archivo Excel</button>
+                                    <button id="btnUploadResume" class="btn btn-primary" type="button">Ver consolidado</button>
                                 </div>
                             </div>
                         </div>
@@ -44,15 +70,14 @@
                             <thead>
                                 <tr>
                                     <th>Id</th>
-                                    <th>Periodo</th>
                                     <th>OID</th>
                                     <th>Barcode</th>
                                     <th>Estado</th>
                                     <th>Prioridad</th>
                                     <th>Pool P</th>
-                                    <th>Producto</th>
+                                    <th>Estilo</th>
                                     <th>Talla</th>
-                                    <th>Lote</th>
+                                    <th>PO</th>
                                     <th>Categoria</th>
                                     <th>Departamento</th>
                                     <th>CP</th>
@@ -113,7 +138,10 @@
                 "emptyTable": "No hay información"
             },
             "ajax": {
-                "url": "@this.Url.Action("GetPaylessProdPrioriAdmin")?dtpPeriodoBuscar=" + $('#dtpPeriodoBuscar').val(),
+                "url": "@this.Url.Action("GetPaylessProdPrioriAdmin")?dtpPeriodoBuscar="
+                    + $('#dtpPeriodoBuscar').val() + '&TxtBarcode=' + $('#TxtBarcode').val() + '&TxtPrioridad=' + $('#TxtPrioridad').val()
+                    + '&TxtPoolP=' + $('#TxtPoolP').val() + '&TxtEstilo=' + $('#TxtEstilo').val()
+                    + '&TxtTalla=' + $('#TxtTalla').val() + '&TxtPo=' + $('#TxtPo').val(),
                 "type": "POST",
                 "datatype": "json",
                 "dataSrc": function (json) {
@@ -126,7 +154,6 @@
                     return json.data;
                 }
             },
-            "order": [[7, "asc"]],
             "columnDefs": [
             {
                 "targets": [0],
@@ -134,15 +161,14 @@
             }],
             "columns": [
                 { "data": "id", "name": "id", "autoWidth": true, "defaultContent": "" },
-                { "data": "periodo", "name": "periodo", "autoWidth": true, "defaultContent": "" },
                 { "data": "oid", "name": "oid", "autoWidth": true, "defaultContent": "" },
                 { "data": "barcode", "name": "barcode", "autoWidth": true, "defaultContent": "" },
                 { "data": "estado", "name": "estado", "autoWidth": true, "defaultContent": "" },
                 { "data": "pri", "name": "pri", "autoWidth": true, "defaultContent": "" },
                 { "data": "poolP", "name": "poolP", "autoWidth": true, "defaultContent": "" },
-                { "data": "producto", "name": "producto", "autoWidth": true, "defaultContent": "" },
+                { "data": "estilo", "name": "Estilo", "autoWidth": true, "defaultContent": "" },
                 { "data": "talla", "name": "talla", "autoWidth": true, "defaultContent": "" },
-                { "data": "lote", "name": "lote", "autoWidth": true, "defaultContent": "" },
+                { "data": "po", "name": "Po", "autoWidth": true, "defaultContent": "" },
                 { "data": "categoria", "name": "categoria", "autoWidth": true, "defaultContent": "" },
                 { "data": "departamento", "name": "departamento", "autoWidth": true, "defaultContent": "" },
                 { "data": "cp", "name": "cp", "autoWidth": true, "defaultContent": "" },
@@ -157,10 +183,15 @@
     }
     $(document).ready(function () {
         $('#dtpPeriodoBuscar').datepicker();
+        $('.imgHeaderHelp').tooltip();
         $('#btnNewUpload').on('click', function (Event) {
             $('#modalPopNewProdUpload').modal();
         });
         $('#btnFiltrar').on("click", function (Event) {            
+            if ($('#dtpPeriodoBuscar').val() == '') {
+                menErrorEdi('El periodo es necesario para una búsqueda', 'Error');
+                return;
+            }
             $('#divSpinFiltrar').show();
             fillTblReportes();
         });
@@ -168,6 +199,9 @@
             $('#divSpinFiltrar').hide();
             $('#dtpPeriodoBuscar').val('');
             fillTblReportes();
+        });
+        $('#btnUploadResume').on('click', function (Event) {
+            window.location.href = '@this.Url.Action("CargaProdPriori")';
         });
         if (window.mobileAndTabletcheck()) {
             $('.div856Search').css({ "max-width": "unset" });

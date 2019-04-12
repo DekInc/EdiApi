@@ -12,9 +12,9 @@ namespace EdiApi.Models
         public string Estado { get; set; }
         public string Pri { get; set; }
         public string Poolp { get; set; }
-        public string Producto { get; set; }
+        public string Estilo { get; set; }
         public string Talla { get; set; }
-        public string Lote { get; set; }
+        public string Po { get; set; }
         public string Categoria { get; set; }
         public string Departamento { get; set; }
         public string Cp { get; set; }

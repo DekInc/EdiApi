@@ -1286,15 +1286,15 @@ namespace EdiApi.Controllers
                         Estado = Uf.Estado,
                         Etiquetada = Uf.Etiquetada,
                         IdPaylessProdPrioriM = NewMas.Id,
-                        Lote = Uf.Lote,
+                        Estilo = Uf.Estilo,
                         M3 = Uf.M3,
+                        Po = Uf.Po,
                         Oid = Uf.Oid,
                         Peso = Uf.Peso,
                         Pickeada = Uf.Pickeada,
                         PoolP = Uf.Poolp,
                         Preinspeccion = Uf.Preinspeccion,
                         Pri = Uf.Pri,
-                        Producto = Uf.Producto,
                         Talla = Uf.Talla
                     });
                 }

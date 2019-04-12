@@ -1275,11 +1275,11 @@ namespace EdiApi.Models.EdiDB
 
                 entity.Property(e => e.Estado).HasMaxLength(4);
 
+                entity.Property(e => e.Estilo).HasMaxLength(16);
+
                 entity.Property(e => e.Etiquetada).HasMaxLength(24);
 
                 entity.Property(e => e.IdPaylessProdPrioriM).HasColumnName("IdPAYLESS_ProdPrioriM");
-
-                entity.Property(e => e.Lote).HasMaxLength(8);
 
                 entity.Property(e => e.Oid)
                     .HasColumnName("OID")
@@ -1287,13 +1287,13 @@ namespace EdiApi.Models.EdiDB
 
                 entity.Property(e => e.Pickeada).HasMaxLength(24);
 
+                entity.Property(e => e.Po).HasMaxLength(8);
+
                 entity.Property(e => e.PoolP).HasMaxLength(4);
 
                 entity.Property(e => e.Preinspeccion).HasMaxLength(32);
 
                 entity.Property(e => e.Pri).HasMaxLength(4);
-
-                entity.Property(e => e.Producto).HasMaxLength(16);
 
                 entity.Property(e => e.Talla).HasMaxLength(8);
             });

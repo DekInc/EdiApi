@@ -1,6 +1,6 @@
 ﻿@using ComModels
 @{
-    ViewData["Title"] = "Carga de planilla de productos";
+    ViewData["Title"] = "Consolidado de planilla de productos";
     Layout = "_LayoutExtern";
 }
 <div id="mainDiv">
@@ -8,11 +8,59 @@
         <div class="card-deck cardMain">
             <div class="card box-shadow">
                 <div class="card-header">
-                    <h4 class="my-0 font-weight-normal">Planilla de productos</h4>
+                    <h4 class="my-0 font-weight-normal">Consolidado de planilla de productos&nbsp;<img class="imgHeaderHelp" src="~/images/help.png" title="Pantalla utilizada para visualizar excel inicial consolidado" alt="Pantalla utilizada para visualizar excel inicial consolidado"></h4>
                 </div>
                 <div class="card-body">
-                    <br />
-                    <span id="spanClientName">Payless Shoe Source - Pricesmart SPS</span>                    
+                    <form id="formSearch">
+                        <div class="container div856Search">
+                            <div class="row">
+                                <div class="col-sm">
+                                    <label for="dtpPeriodoBuscar">Periodo</label>
+                                    <input class="form-control datepicker" data-date-format="dd/mm/yyyy" id="dtpPeriodoBuscar" placeholder="dd/mm/yyyy" maxlength="10" />
+                                </div>
+                                <div class="col-sm">
+                                    <label for="TxtBarcode">Barcode</label>
+                                    <input class="form-control" id="TxtBarcode" placeholder="" maxlength="16" />
+                                </div>
+                                <div class="col-sm">
+                                    <label for="TxtTienda">Tienda</label>
+                                    <input class="form-control" id="TxtTienda" placeholder="" maxlength="8" />
+                                </div>
+                                <div class="col-sm">
+                                    <label for="TxtEstilo">Estilo</label>
+                                    <input class="form-control" id="TxtEstilo" placeholder="" maxlength="8" />
+                                </div>
+                                <div class="col-sm">
+                                    <label for="TxtTalla">Talla</label>
+                                    <input class="form-control" id="TxtTalla" placeholder="" maxlength="8" />
+                                </div>
+                                <div class="col-sm">
+                                    <label for="TxtCategoria">Categoria</label>
+                                    <input class="form-control" id="TxtCategoria" placeholder="" maxlength="8" />
+                                </div>
+                                <div class="col-sm">
+                                    <label for="TxtCp">Cp</label>
+                                    <input class="form-control" id="TxtCp" placeholder="" maxlength="8" />
+                                </div>
+                            </div>
+                            <div class="row margin5">
+                                <div class="col-sm">
+                                    <button id="btnFiltrar" class="btn btn-primary" type="button">
+                                        &nbsp;&nbsp;&nbsp;Buscar&nbsp;&nbsp;&nbsp;
+                                        <div id="divSpinFiltrar" class="spinner-border spinner-border-sm text-danger" style="display: none" role="status">
+                                            <span class="sr-only">Loading...</span>
+                                        </div>
+                                    </button>
+                                    <button id="btnLimpiar" class="btn btn-primary" type="button">
+                                        &nbsp;&nbsp;&nbsp;Limpiar&nbsp;&nbsp;&nbsp;
+                                        <div id="divSpinLimpiar" class="spinner-border spinner-border-sm text-danger" style="display: none" role="status">
+                                            <span class="sr-only">Loading...</span>
+                                        </div>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
                     <div class="clearfix"></div>
                     <br />
                     <form id="formReportes" accept-charset="UTF-8" method="post">
@@ -20,24 +68,14 @@
                             <thead>
                                 <tr>
                                     <th>Id</th>
-                                    <th>Periodo</th>
-                                    <th>OID</th>
                                     <th>Barcode</th>
-                                    <th>Estado</th>
-                                    <th>Prioridad</th>
                                     <th>Tienda</th>
-                                    <th>Producto</th>
-                                    <th>Talla</th>
-                                    <th>Lote</th>
-                                    <th>Categoria</th>
                                     <th>Departamento</th>
+                                    <th>Estilo</th>
+                                    <th>Talla</th>
+                                    <th>Categoria</th>
                                     <th>CP</th>
-                                    <th>Pickeada</th>
-                                    <th>Etiquetada</th>
-                                    <th>Preinspección</th>
-                                    <th>Cargada</th>
-                                    <th>M3</th>
-                                    <th>Peso</th>
+                                    <th></th>
                                 </tr>
                             </thead>
                         </table>
@@ -89,10 +127,14 @@
                 "emptyTable": "No hay información"
             },
             "ajax": {
-                "url": "@this.Url.Action("GetPaylessProdPriori")",
+                "url": "@this.Url.Action("GetPaylessProdPriori")?dtpPeriodoBuscar="
+                    + $('#dtpPeriodoBuscar').val() + '&TxtBarcode=' + $('#TxtBarcode').val() + '&TxtTienda=' + $('#TxtTienda').val()
+                    + '&TxtEstilo=' + $('#TxtEstilo').val() + '&TxtTalla=' + $('#TxtTalla').val()
+                    + '&TxtCategoria=' + $('#TxtCategoria').val() + '&TxtCp=' + $('#TxtCp').val(),
                 "type": "POST",
                 "datatype": "json",
                 "dataSrc": function (json) {
+                    $('#divSpinFiltrar').hide();                    
                     if (json.errorMessage != '') {
                         menErrorEdi(json.errorMessage, 'Error');
                         return '';
@@ -100,95 +142,74 @@
                     return json.data;
                 }
             },
-            "order": [[7, "asc"]],
+            "order": [[1, "asc"]],
             "columnDefs": [
                 {
                 "targets": [0],
                 "visible": false
-                },
-                {
-                    "targets": [2],
-                    "visible": false
-                },
-                {
-                    "targets": [4],
-                    "visible": false
-                },
-                {
-                    "targets": [5],
-                    "visible": false
-                },
-                {
-                    "targets": [7],
-                    "visible": false
-                },
-                {
-                    "targets": [11],
-                    "visible": false
-                },
-                {
-                    "targets": [13],
-                    "visible": false
-                },
-                {
-                    "targets": [14],
-                    "visible": false
-                },
-                {
-                    "targets": [15],
-                    "visible": false
-                },
-                {
-                    "targets": [16],
-                    "visible": false
-                },
-                {
-                    "targets": [17],
-                    "visible": false
-                },
-                {
-                    "targets": [18],
-                    "visible": false
                 }
             ],
             "columns": [
                 { "data": "id", "name": "id", "autoWidth": true, "defaultContent": "" },
-                { "data": "periodo", "name": "periodo", "autoWidth": true, "defaultContent": "" },
-                { "data": "oid", "name": "oid", "autoWidth": true, "defaultContent": "" },
                 { "data": "barcode", "name": "barcode", "autoWidth": true, "defaultContent": "" },
-                { "data": "estado", "name": "estado", "autoWidth": true, "defaultContent": "" },
-                { "data": "pri", "name": "pri", "autoWidth": true, "defaultContent": "" },
                 {
                     //data: "pedidoBarcode",
                     name: "tienda",
                     render: function (data, type, row) {
                         if (type === 'display') {
-                            return '<span class="">' +7365 + '</span>';
+                            return '<span class="">' + row.barcode.substring(0, 4) + '</span>';
                         }
                         return '';
                     },
                     className: "dt-body-center"
                 },
-                //{ "data": "poolP", "name": "poolP", "autoWidth": true, "defaultContent": "" },
-                { "data": "producto", "name": "producto", "autoWidth": true, "defaultContent": "" },
+                { "data": "departamento", "name": "Departamento", "autoWidth": true, "defaultContent": "" },
+                { "data": "estilo", "name": "Estilo", "autoWidth": true, "defaultContent": "" },
                 { "data": "talla", "name": "talla", "autoWidth": true, "defaultContent": "" },
-                { "data": "lote", "name": "lote", "autoWidth": true, "defaultContent": "" },
                 { "data": "categoria", "name": "categoria", "autoWidth": true, "defaultContent": "" },
-                { "data": "departamento", "name": "departamento", "autoWidth": true, "defaultContent": "" },
                 { "data": "cp", "name": "cp", "autoWidth": true, "defaultContent": "" },
-                { "data": "pickeada", "name": "pickeada", "autoWidth": true, "defaultContent": "" },
-                { "data": "etiquetada", "name": "etiquetada", "autoWidth": true, "defaultContent": "" },
-                { "data": "preinspeccion", "name": "preinspeccion", "autoWidth": true, "defaultContent": "" },
-                { "data": "cargada", "name": "cargada", "autoWidth": true, "defaultContent": "" },
-                { "data": "m3", "name": "m3", "autoWidth": true, "defaultContent": "" },
-                { "data": "peso", "name": "peso", "autoWidth": true, "defaultContent": "" }
+                {
+                    //data: "pedidoBarcode",
+                    name: "peso",
+                    render: function (data, type, row) {
+                        if (type === 'display') {
+                            if (row.peso > 1)
+                                return '<button type="button" class="btn btn-primary" onclick="verDetalle(' + row.barcode + ')">Ver detalle</span>';
+                            else return '';
+                        }
+                        return '';
+                    },
+                    className: "dt-body-center"
+                }
             ]
         });
     }
+    function verDetalle(barcode) {
+        location.href = '@Url.Action("CargaProdPrioriDet")?barcode=' + barcode;
+    }
     $(document).ready(function () {
-        fillTblReportes();
-        $('#btnNewUpload').on('click', function () {
-            $('#modalPopNewProdUpload').modal();
+        $('#dtpPeriodoBuscar').datepicker();
+        $('.imgHeaderHelp').tooltip();        
+        $('#btnFiltrar').on("click", function (Event) {            
+            if ($('#dtpPeriodoBuscar').val() == '') {
+                menErrorEdi('El periodo es necesario para una búsqueda', 'Error');
+                return;
+            }
+            $('#divSpinFiltrar').show();
+            $("#tblReportes").show();
+            fillTblReportes();
         });
+        $('#btnLimpiar').on("click", function (Event) {
+            $('#divSpinFiltrar').hide();
+            $('#dtpPeriodoBuscar').val('');
+            fillTblReportes();
+        });        
+        if (window.mobileAndTabletcheck()) {
+            $('.div856Search').css({ "max-width": "unset" });
+            $('#dtpPeriodoBuscar').css({ "width": "100%" });
+            $('.btn').css({ "margin-bottom": "10px" });
+            $('.btn').addClass('btn-block');
+            $("#tblReportes").hide();
+        }
     });
 </script>
