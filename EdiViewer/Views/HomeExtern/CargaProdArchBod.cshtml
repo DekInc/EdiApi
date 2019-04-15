@@ -136,7 +136,7 @@
                 "type": "POST",
                 "datatype": "json",
                 "dataSrc": function (json) {
-                    $('#divSpinFiltrar').hide();                    
+                    $('#divSpinFiltrar').hide();
                     if (json.errorMessage != '') {
                         menErrorEdi(json.errorMessage, 'Error');
                         return '';
@@ -173,7 +173,7 @@
                         if (type === 'display') {
                             if (row.peso > 1)
                                 return '<span>Varios</span>';
-                            else 
+                            else
                                 return '<span>' + row.estilo + '</span>';
                         }
                         return '';
@@ -208,8 +208,8 @@
     }
     $(document).ready(function () {
         $('#dtpPeriodoBuscar').datepicker();
-        $('.imgHeaderHelp').tooltip();        
-        $('#btnFiltrar').on("click", function (Event) {            
+        $('.imgHeaderHelp').tooltip();
+        $('#btnFiltrar').on("click", function (Event) {
             if ($('#dtpPeriodoBuscar').val() == '') {
                 menErrorEdi('El periodo es necesario para una búsqueda', 'Error');
                 return;
@@ -222,7 +222,7 @@
             $('#divSpinFiltrar').hide();
             $('#dtpPeriodoBuscar').val('');
             fillTblReportes();
-        });        
+        });
         if (window.mobileAndTabletcheck()) {
             $('.div856Search').css({ "max-width": "unset" });
             $('#dtpPeriodoBuscar').css({ "width": "100%" });

@@ -39,7 +39,7 @@ namespace EdiViewer
                 });
             services.AddMemoryCache();            
             services.AddSession(options => {
-                options.IdleTimeout = TimeSpan.FromHours(1);
+                options.IdleTimeout = TimeSpan.FromMinutes(5);
                 options.Cookie.IsEssential = true;
             });
             services.AddDistributedMemoryCache();
@@ -47,8 +47,8 @@ namespace EdiViewer
                 options.InputFormatters.Insert(0, new RawJsonBodyInputFormatter());
             }).SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
             ApplicationSettings.ApiUri = (string)Configuration.GetSection("EdiWebApi").GetValue(typeof(string), "ApiUri");
-            services.AddSingleton<Utility.Scheduling.Interfaces.IScheduledTask, Utility.Scheduling.GetEdi830Task>();
-            services.AddSingleton<Utility.Scheduling.Interfaces.IScheduledTask, Utility.Scheduling.AutoSendInventary830Task>();
+            //services.AddSingleton<Utility.Scheduling.Interfaces.IScheduledTask, Utility.Scheduling.GetEdi830Task>();
+            //services.AddSingleton<Utility.Scheduling.Interfaces.IScheduledTask, Utility.Scheduling.AutoSendInventary830Task>();
             services.AddScheduler();
         }
 
@@ -62,7 +62,8 @@ namespace EdiViewer
             }
             else
             {
-                app.UseExceptionHandler("/Home/Error");
+                //app.UseExceptionHandler("/Home/Error");
+                app.UseDeveloperExceptionPage();
                 app.UseHsts();
             }            
             app.UseHttpsRedirection();
