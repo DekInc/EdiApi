@@ -19,7 +19,7 @@
                                     <input class="form-control datepicker" data-date-format="dd/mm/yyyy" id="dtpPeriodoBuscar" placeholder="dd/mm/yyyy" maxlength="10" />
                                 </div>
                                 <div class="col-sm">
-                                    <label for="TxtBarcode">Barcode</label>
+                                    <label for="TxtBarcode">Cod. caja</label>
                                     <input class="form-control" id="TxtBarcode" placeholder="" maxlength="16" />
                                 </div>
                                 <div class="col-sm">
@@ -31,16 +31,16 @@
                                     <input class="form-control" id="TxtPoolP" placeholder="" maxlength="8" />
                                 </div>
                                 <div class="col-sm">
-                                    <label for="TxtEstilo">Estilo</label>
-                                    <input class="form-control" id="TxtEstilo" placeholder="" maxlength="8" />
+                                    <label for="TxtProducto">Lote</label>
+                                    <input class="form-control" id="TxtProducto" placeholder="" maxlength="8" />
                                 </div>
                                 <div class="col-sm">
                                     <label for="TxtTalla">Talla</label>
                                     <input class="form-control" id="TxtTalla" placeholder="" maxlength="8" />
                                 </div>
                                 <div class="col-sm">
-                                    <label for="TxtPo">PO</label>
-                                    <input class="form-control" id="TxtPo" placeholder="" maxlength="8" />
+                                    <label for="TxtLote">Estilo</label>
+                                    <input class="form-control" id="TxtLote" placeholder="" maxlength="8" />
                                 </div>
                             </div>
                             <div class="row margin5">
@@ -71,14 +71,14 @@
                                 <tr>
                                     <th>Id</th>
                                     <th>OID</th>
-                                    <th>Barcode</th>
+                                    <th>Cod. caja</th>
                                     <th>Estado</th>
                                     <th>Prioridad</th>
                                     <th>Pool P</th>
-                                    <th>Estilo</th>
+                                    <th>Lote</th>
                                     <th>Talla</th>
-                                    <th>PO</th>
-                                    <th>Categoria</th>
+                                    <th>Estilo</th>
+                                    <th>Genero</th>
                                     <th>Departamento</th>
                                     <th>CP</th>
                                     <th>Pickeada</th>
@@ -140,8 +140,8 @@
             "ajax": {
                 "url": "@this.Url.Action("GetPaylessProdPrioriAdmin")?dtpPeriodoBuscar="
                     + $('#dtpPeriodoBuscar').val() + '&TxtBarcode=' + $('#TxtBarcode').val() + '&TxtPrioridad=' + $('#TxtPrioridad').val()
-                    + '&TxtPoolP=' + $('#TxtPoolP').val() + '&TxtEstilo=' + $('#TxtEstilo').val()
-                    + '&TxtTalla=' + $('#TxtTalla').val() + '&TxtPo=' + $('#TxtPo').val(),
+                    + '&TxtPoolP=' + $('#TxtPoolP').val() + '&TxtProducto=' + $('#TxtProducto').val()
+                    + '&TxtTalla=' + $('#TxtTalla').val() + '&TxtLote=' + $('#TxtLote').val(),
                 "type": "POST",
                 "datatype": "json",
                 "dataSrc": function (json) {
@@ -166,9 +166,9 @@
                 { "data": "estado", "name": "estado", "autoWidth": true, "defaultContent": "" },
                 { "data": "pri", "name": "pri", "autoWidth": true, "defaultContent": "" },
                 { "data": "poolP", "name": "poolP", "autoWidth": true, "defaultContent": "" },
-                { "data": "estilo", "name": "Estilo", "autoWidth": true, "defaultContent": "" },
+                { "data": "producto", "name": "producto", "autoWidth": true, "defaultContent": "" },
                 { "data": "talla", "name": "talla", "autoWidth": true, "defaultContent": "" },
-                { "data": "po", "name": "Po", "autoWidth": true, "defaultContent": "" },
+                { "data": "lote", "name": "lote", "autoWidth": true, "defaultContent": "" },
                 { "data": "categoria", "name": "categoria", "autoWidth": true, "defaultContent": "" },
                 { "data": "departamento", "name": "departamento", "autoWidth": true, "defaultContent": "" },
                 { "data": "cp", "name": "cp", "autoWidth": true, "defaultContent": "" },

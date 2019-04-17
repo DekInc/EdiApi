@@ -624,4 +624,18 @@ table.dataTable.dtr-inline.collapsed > tbody > tr[role="row"] > td:first-child:b
     padding-right: 10px;
     padding-left: 10px;
 }
-
+.inputUpload, .divUpload {
+    max-width: 240px;
+}
+.divUpload {
+    margin-top: 10px;
+    margin-left: 10px;
+}
+#cboPeriod {
+    /*width: 200px;*/
+    max-width: 84vw;
+}
+#cboClient {
+    /*width: 200px;*/
+    max-width: 84vw;
+}

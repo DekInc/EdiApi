@@ -61,6 +61,8 @@ namespace EdiApi.Models.EdiDB
         public virtual DbSet<LearTd5856> LearTd5856 { get; set; }
         public virtual DbSet<LearUit830> LearUit830 { get; set; }
         public virtual DbSet<PaylessProdPriori> PaylessProdPriori { get; set; }
+        public virtual DbSet<PaylessProdPrioriArchDet> PaylessProdPrioriArchDet { get; set; }
+        public virtual DbSet<PaylessProdPrioriArchM> PaylessProdPrioriArchM { get; set; }
         public virtual DbSet<PaylessProdPrioriDet> PaylessProdPrioriDet { get; set; }
         public virtual DbSet<PaylessProdPrioriM> PaylessProdPrioriM { get; set; }
         public virtual DbSet<PedidosDetExternos> PedidosDetExternos { get; set; }
@@ -1257,6 +1259,28 @@ namespace EdiApi.Models.EdiDB
                 entity.Property(e => e.Preinspeccion).HasMaxLength(255);
             });
 
+            modelBuilder.Entity<PaylessProdPrioriArchDet>(entity =>
+            {
+                entity.ToTable("PAYLESS_ProdPrioriArchDet");
+
+                entity.Property(e => e.Barcode)
+                    .HasColumnName("barcode")
+                    .HasMaxLength(16);
+            });
+
+            modelBuilder.Entity<PaylessProdPrioriArchM>(entity =>
+            {
+                entity.ToTable("PAYLESS_ProdPrioriArchM");
+
+                entity.Property(e => e.CodUsr).HasMaxLength(128);
+
+                entity.Property(e => e.InsertDate).HasMaxLength(16);
+
+                entity.Property(e => e.Periodo).HasMaxLength(10);
+
+                entity.Property(e => e.UpdateDate).HasMaxLength(16);
+            });
+
             modelBuilder.Entity<PaylessProdPrioriDet>(entity =>
             {
                 entity.ToTable("PAYLESS_ProdPrioriDet");
@@ -1275,11 +1299,11 @@ namespace EdiApi.Models.EdiDB
 
                 entity.Property(e => e.Estado).HasMaxLength(4);
 
-                entity.Property(e => e.Estilo).HasMaxLength(16);
-
                 entity.Property(e => e.Etiquetada).HasMaxLength(24);
 
                 entity.Property(e => e.IdPaylessProdPrioriM).HasColumnName("IdPAYLESS_ProdPrioriM");
+
+                entity.Property(e => e.Lote).HasMaxLength(8);
 
                 entity.Property(e => e.Oid)
                     .HasColumnName("OID")
@@ -1287,13 +1311,13 @@ namespace EdiApi.Models.EdiDB
 
                 entity.Property(e => e.Pickeada).HasMaxLength(24);
 
-                entity.Property(e => e.Po).HasMaxLength(8);
-
                 entity.Property(e => e.PoolP).HasMaxLength(4);
 
                 entity.Property(e => e.Preinspeccion).HasMaxLength(32);
 
                 entity.Property(e => e.Pri).HasMaxLength(4);
+
+                entity.Property(e => e.Producto).HasMaxLength(16);
 
                 entity.Property(e => e.Talla).HasMaxLength(8);
             });

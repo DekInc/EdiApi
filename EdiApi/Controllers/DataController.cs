@@ -1257,7 +1257,7 @@ namespace EdiApi.Controllers
             try
             {
 
-                IEnumerable<PaylessProdPrioriM> ListPaylessProdPrioriM = DbO.PaylessProdPrioriM.Where(Pp => Pp.Periodo == Periodo);
+                IEnumerable<PaylessProdPrioriM> ListPaylessProdPrioriM = DbO.PaylessProdPrioriM.Where(Pp => Pp.Periodo == Periodo && Pp.ClienteId == ClienteId);
                 if (ListPaylessProdPrioriM.Count() > 0)
                 {
                     IEnumerable<PaylessProdPrioriDet> ListPaylessProdPrioriDet = DbO.PaylessProdPrioriDet.Where(Pd => Pd.IdPaylessProdPrioriM == ListPaylessProdPrioriM.Fod().Id);
@@ -1278,24 +1278,24 @@ namespace EdiApi.Controllers
                 {
                     DbO.PaylessProdPrioriDet.Add(new PaylessProdPrioriDet()
                     {
-                        Barcode = Uf.Barcode,
-                        Cargada = Uf.Cargada,
-                        Categoria = Uf.Categoria,
-                        Cp = Uf.Cp,
-                        Departamento = Uf.Departamento,
-                        Estado = Uf.Estado,
-                        Etiquetada = Uf.Etiquetada,
-                        IdPaylessProdPrioriM = NewMas.Id,
-                        Estilo = Uf.Estilo,
-                        M3 = Uf.M3,
-                        Po = Uf.Po,
                         Oid = Uf.Oid,
-                        Peso = Uf.Peso,
-                        Pickeada = Uf.Pickeada,
-                        PoolP = Uf.Poolp,
-                        Preinspeccion = Uf.Preinspeccion,
+                        Barcode = Uf.Barcode,
+                        Estado = Uf.Estado,
                         Pri = Uf.Pri,
-                        Talla = Uf.Talla
+                        PoolP = Uf.Poolp,
+                        Producto = Uf.Producto,
+                        Talla = Uf.Talla,
+                        Lote = Uf.Lote,
+                        Categoria = Uf.Categoria,
+                        Departamento = Uf.Departamento,
+                        Cp = Uf.Cp,
+                        Pickeada = Uf.Pickeada,
+                        Etiquetada = Uf.Etiquetada,
+                        Preinspeccion = Uf.Preinspeccion,
+                        Cargada = Uf.Cargada,
+                        M3 = Uf.M3,
+                        Peso = Uf.Peso,
+                        IdPaylessProdPrioriM = NewMas.Id
                     });
                 }
                 DbO.SaveChanges();
@@ -1313,6 +1313,302 @@ namespace EdiApi.Controllers
             catch (Exception e1)
             {
                 return new RetData<string>
+                {
+                    Info = new RetInfo()
+                    {
+                        CodError = -1,
+                        Mensaje = e1.ToString(),
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            }
+        }
+        [HttpGet]
+        public RetData<IEnumerable<string>> GetPaylessPeriodPriori(int ClienteId)
+        {
+            DateTime StartTime = DateTime.Now;
+            try
+            {
+                List<string> ListProdPriori = DbO.PaylessProdPrioriM.Where(O2 => O2.ClienteId == ClienteId).Select(O => O.Periodo).ToList();
+                if (ListProdPriori.Count > 0)
+                    ListProdPriori = ListProdPriori.Distinct().ToList();
+                return new RetData<IEnumerable<string>>
+                {
+                    Data = ListProdPriori,
+                    Info = new RetInfo()
+                    {
+                        CodError = 0,
+                        Mensaje = "ok",
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            }
+            catch (Exception e1)
+            {
+                return new RetData<IEnumerable<string>>
+                {
+                    Info = new RetInfo()
+                    {
+                        CodError = -1,
+                        Mensaje = e1.ToString(),
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            }
+        }
+        [HttpPost]
+        public RetData<PaylessProdPrioriArchM> SetPaylessProdPrioriFile(IEnumerable<PaylessProdPrioriArchDet> ListUpload, int ClienteId, string Periodo, string codUsr)
+        {
+            DateTime StartTime = DateTime.Now;
+            try
+            {
+
+                IEnumerable<PaylessProdPrioriArchM> ListPaylessProdPrioriArchM = DbO.PaylessProdPrioriArchM.Where(Pp => Pp.Periodo == Periodo && Pp.ClienteId == ClienteId);
+                if (ListPaylessProdPrioriArchM.Count() > 0)
+                {
+                    IEnumerable<PaylessProdPrioriArchDet> ListPaylessProdPrioriArchDet = DbO.PaylessProdPrioriArchDet.Where(Pd => Pd.IdM == ListPaylessProdPrioriArchM.Fod().Id);
+                    DbO.PaylessProdPrioriArchDet.RemoveRange(ListPaylessProdPrioriArchDet);
+                }
+                PaylessProdPrioriArchM NewMas = new PaylessProdPrioriArchM();
+                if (ListPaylessProdPrioriArchM.Count() > 0)
+                {
+                    NewMas = ListPaylessProdPrioriArchM.Fod();
+                    NewMas.UpdateDate = DateTime.Now.ToString(ApplicationSettings.DateTimeFormat);
+                    DbO.PaylessProdPrioriArchM.Update(NewMas);
+                }
+                else
+                {
+                    NewMas = new PaylessProdPrioriArchM()
+                    {
+                        ClienteId = ClienteId,
+                        Periodo = Periodo,
+                        InsertDate = DateTime.Now.ToString(ApplicationSettings.DateTimeFormat),
+                        CodUsr = codUsr
+                    };
+                    DbO.PaylessProdPrioriArchM.Add(NewMas);
+                }                
+                DbO.SaveChanges();
+                foreach (PaylessProdPrioriArchDet Uf in ListUpload)
+                {
+                    DbO.PaylessProdPrioriArchDet.Add(new PaylessProdPrioriArchDet()
+                    {
+                        IdM = NewMas.Id,
+                        Barcode = Uf.Barcode
+                    });
+                }
+                DbO.SaveChanges();
+                return new RetData<PaylessProdPrioriArchM>
+                {
+                    Data = NewMas,
+                    Info = new RetInfo()
+                    {
+                        CodError = 0,
+                        Mensaje = "ok",
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            }
+            catch (Exception e1)
+            {
+                return new RetData<PaylessProdPrioriArchM>
+                {
+                    Info = new RetInfo()
+                    {
+                        CodError = -1,
+                        Mensaje = e1.ToString(),
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            }
+        }
+        [HttpPost]
+        public RetData<Tuple<IEnumerable<PaylessProdPrioriArchMModel>, IEnumerable<PaylessProdPrioriArchDet>>> GetPaylessPeriodPrioriFile()
+        {
+            DateTime StartTime = DateTime.Now;
+            try
+            {
+                List<PaylessProdPrioriArchMModel> ListPe = (
+                    from Pe in DbO.PaylessProdPrioriArchM
+                    orderby Pe.Id descending
+                    select new PaylessProdPrioriArchMModel {
+                        ClienteId = Pe.ClienteId,
+                        Id = Pe.Id,
+                        InsertDate = Pe.InsertDate,
+                        UpdateDate = Pe.UpdateDate,
+                        Periodo = Pe.Periodo
+                    }).ToList();
+                IEnumerable<PaylessProdPrioriArchDet> ListDePe = (
+                    from Dp in DbO.PaylessProdPrioriArchDet
+                    from Pe in DbO.PaylessProdPrioriArchM
+                    where Dp.IdM == Pe.Id
+                    orderby Dp.Id descending
+                    select Dp
+                    );
+                IEnumerable<PaylessProdPrioriArchDet> ListCount = (
+                    from Dp in DbO.PaylessProdPrioriArchDet
+                    from Pe in DbO.PaylessProdPrioriArchM
+                    from Fu in DbO.PaylessProdPrioriM
+                    from FuD in DbO.PaylessProdPrioriDet
+                    where Dp.IdM == Pe.Id
+                    && Fu.Periodo == Pe.Periodo
+                    && Fu.ClienteId == Pe.ClienteId
+                    && FuD.IdPaylessProdPrioriM == Fu.Id
+                    && FuD.Barcode == Dp.Barcode
+                    orderby Dp.Id descending
+                    select Dp
+                    );
+                for(int Ci = 0; Ci < ListPe.Count(); Ci++)
+                {
+                    IEnumerable<Clientes> ListClients = from C in WmsDbO.Clientes where C.ClienteId == ListPe[Ci].ClienteId select C;
+                    if (ListClients.Count() > 0)
+                    {
+                        ListPe[Ci].ClientName = ListClients.Fod().Nombre;
+                        IEnumerable<PaylessProdPrioriArchDet> ListCountTemp = ListCount.Where(O => O.IdM == ListPe[Ci].Id).Distinct();
+                        if (ListCountTemp.Count() == 0)
+                        {
+                            ListPe[Ci].PorValid = 0.0;
+                        }
+                        else {
+                            int t1 = ListDePe.Where(O => O.IdM == ListPe[Ci].Id).Count();
+                            int t2 = ListCountTemp.Count();
+                            ListPe[Ci].PorValid = Math.Round(((double)t2 / (double)t1) * 100, 3);
+                        }
+                    }
+                }
+                return new RetData<Tuple<IEnumerable<PaylessProdPrioriArchMModel>, IEnumerable<PaylessProdPrioriArchDet>>>
+                {
+                    Data = new Tuple<IEnumerable<PaylessProdPrioriArchMModel>, IEnumerable<PaylessProdPrioriArchDet>>(ListPe, ListDePe),
+                    Info = new RetInfo()
+                    {
+                        CodError = 0,
+                        Mensaje = "ok",
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            }
+            catch (Exception e1)
+            {
+                return new RetData<Tuple<IEnumerable<PaylessProdPrioriArchMModel>, IEnumerable<PaylessProdPrioriArchDet>>>
+                {
+                    Info = new RetInfo()
+                    {
+                        CodError = -1,
+                        Mensaje = e1.ToString(),
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            }
+        }
+        [HttpGet]
+        public RetData<Tuple<IEnumerable<PaylessProdPrioriDet>, IEnumerable<PaylessProdPrioriDet>, IEnumerable<PaylessProdPrioriDet>>> GetPaylessFileDif(int idProdArch)
+        {
+            DateTime StartTime = DateTime.Now;
+            try
+            {                
+                List<PaylessProdPrioriDet> ListExist = ( 
+                    from Dp in DbO.PaylessProdPrioriArchDet
+                    from Pe in DbO.PaylessProdPrioriArchM
+                    from Fu in DbO.PaylessProdPrioriM
+                    from FuD in DbO.PaylessProdPrioriDet
+                    where Dp.IdM == Pe.Id
+                    && Fu.Periodo == Pe.Periodo
+                    && Fu.ClienteId == Pe.ClienteId
+                    && FuD.IdPaylessProdPrioriM == Fu.Id
+                    && FuD.Barcode == Dp.Barcode
+                    && Pe.Id == idProdArch
+                    orderby FuD.Barcode
+                    select FuD
+                    ).Distinct().ToList();
+                //List<PaylessProdPrioriDet> ListNotExist = DbO.PaylessProdPrioriDet.ToList(); //Cargado en Excel y no escaneado
+                List<PaylessProdPrioriDet> ListNotExist = (
+                    from Pe in DbO.PaylessProdPrioriArchM
+                    from Fu in DbO.PaylessProdPrioriM
+                    from FuD in DbO.PaylessProdPrioriDet
+                    where Pe.Id == idProdArch
+                    && Fu.ClienteId == Pe.ClienteId
+                    && Fu.Periodo == Pe.Periodo
+                    && FuD.IdPaylessProdPrioriM == Fu.Id
+                    select FuD
+                    ).ToList();
+                List<PaylessProdPrioriDet> ListNotExistSobrante = new List<PaylessProdPrioriDet>(); //Escaneado y sobro
+                List<PaylessProdPrioriArchDet> ListDet = (
+                    from Dp in DbO.PaylessProdPrioriArchDet
+                    where Dp.IdM == idProdArch
+                    select Dp
+                    ).ToList();
+                foreach (PaylessProdPrioriDet Ex in ListExist)
+                {
+                    Ex.Estado = "En Excel, Escaneado";
+                    ListNotExist.Remove(Ex);
+                    List<PaylessProdPrioriArchDet> ListTemp = ListDet.Where(O => O.Barcode == Ex.Barcode).ToList();
+                    foreach (PaylessProdPrioriArchDet O1 in ListTemp)
+                    {
+                        ListDet.Remove(O1);
+                    }
+                    //ListDet.Remove(ListDet.Where(O => O.Barcode == Ex.Barcode).Fod());
+                }                
+                ListNotExist.ForEach(Ne => Ne.Estado = "En Excel, no escaneado" );
+                ListDet.ForEach(Sobra => {
+                    ListNotExistSobrante.Add(new PaylessProdPrioriDet() {
+                        Barcode = Sobra.Barcode,
+                        Estado = "Escaneado, no en Excel"
+                    });
+                });                
+                return new RetData<Tuple<IEnumerable<PaylessProdPrioriDet>, IEnumerable<PaylessProdPrioriDet>, IEnumerable<PaylessProdPrioriDet>>>
+                {
+                    Data = new Tuple<IEnumerable<PaylessProdPrioriDet>, IEnumerable<PaylessProdPrioriDet>, IEnumerable<PaylessProdPrioriDet>>(ListExist, ListNotExist, ListNotExistSobrante),
+                    Info = new RetInfo()
+                    {
+                        CodError = 0,
+                        Mensaje = "ok",
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            }
+            catch (Exception e1)
+            {
+                return new RetData<Tuple<IEnumerable<PaylessProdPrioriDet>, IEnumerable<PaylessProdPrioriDet>, IEnumerable<PaylessProdPrioriDet>>>
+                {
+                    Info = new RetInfo()
+                    {
+                        CodError = -1,
+                        Mensaje = e1.ToString(),
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            }
+        }
+        [HttpGet]
+        public RetData<IEnumerable<UsuariosExternos>> GetClients()
+        {
+            DateTime StartTime = DateTime.Now;
+            try
+            {
+                List<UsuariosExternos> ListUsers = DbO.UsuariosExternos.ToList();
+                if (ListUsers.Count() > 0)
+                {
+                    foreach (UsuariosExternos Ue in ListUsers)
+                    {
+                        Ue.UsrPassword = string.Empty;
+                        IEnumerable<Clientes> ListClients = from C in WmsDbO.Clientes where C.ClienteId == Ue.ClienteId select C;
+                        if (ListClients.Count() > 0)
+                            Ue.NomUsr = ListClients.Fod().Nombre;
+                    }
+                }                
+                return new RetData<IEnumerable<UsuariosExternos>>
+                {
+                    Data = ListUsers,
+                    Info = new RetInfo()
+                    {
+                        CodError = 0,
+                        Mensaje = "ok",
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            }
+            catch (Exception e1)
+            {
+                return new RetData<IEnumerable<UsuariosExternos>>
                 {
                     Info = new RetInfo()
                     {

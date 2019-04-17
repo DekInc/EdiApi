@@ -19,7 +19,7 @@
                                     <input class="form-control datepicker" data-date-format="dd/mm/yyyy" id="dtpPeriodoBuscar" placeholder="dd/mm/yyyy" maxlength="10" />
                                 </div>
                                 <div class="col-sm">
-                                    <label for="TxtBarcode">Barcode</label>
+                                    <label for="TxtBarcode">Cod. caja</label>
                                     <input class="form-control" id="TxtBarcode" placeholder="" maxlength="16" />
                                 </div>
                                 <div class="col-sm">
@@ -27,8 +27,8 @@
                                     <input class="form-control" id="TxtTienda" placeholder="" maxlength="8" />
                                 </div>
                                 <div class="col-sm">
-                                    <label for="TxtEstilo">Estilo</label>
-                                    <input class="form-control" id="TxtEstilo" placeholder="" maxlength="8" />
+                                    <label for="TxtProducto">Lote</label>
+                                    <input class="form-control" id="TxtProducto" placeholder="" maxlength="8" />
                                 </div>
                                 <div class="col-sm">
                                     <label for="TxtTalla">Talla</label>
@@ -37,6 +37,10 @@
                                 <div class="col-sm">
                                     <label for="TxtCategoria">Categoria</label>
                                     <input class="form-control" id="TxtCategoria" placeholder="" maxlength="8" />
+                                </div>
+                                <div class="col-sm">
+                                    <label for="TxtDepartamento">Departamento</label>
+                                    <input class="form-control" id="TxtDepartamento" placeholder="" maxlength="8" />
                                 </div>
                                 <div class="col-sm">
                                     <label for="TxtCp">Cp</label>
@@ -68,12 +72,12 @@
                             <thead>
                                 <tr>
                                     <th>Id</th>
-                                    <th>Barcode</th>
+                                    <th>Cod. caja</th>
                                     <th>Tienda</th>
-                                    <th>Departamento</th>
-                                    <th>Estilo</th>
+                                    <th>Lote</th>
                                     <th>Talla</th>
                                     <th>Categoria</th>
+                                    <th>Departamento</th>
                                     <th>CP</th>
                                     <th></th>
                                 </tr>
@@ -103,7 +107,7 @@
             return null;
         }
         return decodeURI(results[1]) || 0;
-    }
+    }    
     function fillTblReportes() {
         domtblReportes = $("#tblReportes").DataTable({
             select: true,
@@ -131,8 +135,8 @@
             "ajax": {
                 "url": "@this.Url.Action("GetPaylessProdPriori")?dtpPeriodoBuscar="
                     + $('#dtpPeriodoBuscar').val() + '&TxtBarcode=' + $('#TxtBarcode').val() + '&TxtTienda=' + $('#TxtTienda').val()
-                    + '&TxtEstilo=' + $('#TxtEstilo').val() + '&TxtTalla=' + $('#TxtTalla').val()
-                    + '&TxtCategoria=' + $('#TxtCategoria').val() + '&TxtCp=' + $('#TxtCp').val(),
+                    + '&TxtProducto=' + $('#TxtProducto').val() + '&TxtTalla=' + $('#TxtTalla').val()
+                    + '&TxtCategoria=' + $('#TxtCategoria').val() + '&TxtDepartamento=' + $('#TxtDepartamento').val() + '&TxtCp=' + $('#TxtCp').val(),
                 "type": "POST",
                 "datatype": "json",
                 "dataSrc": function (json) {
@@ -165,33 +169,32 @@
                     },
                     className: "dt-body-center"
                 },
-                { "data": "departamento", "name": "Departamento", "autoWidth": true, "defaultContent": "" },
                 {
-                    data: "estilo",
-                    name: "Estilo",
+                    data: "producto",
+                    name: "producto",
                     render: function (data, type, row) {
                         if (type === 'display') {
                             if (row.peso > 1)
                                 return '<span>Varios</span>';
-                            else 
-                                return '<span>' + row.estilo + '</span>';
+                            else
+                                return '<span>' + row.producto + '</span>';
                         }
                         return '';
                     },
                     className: "dt-body-center"
                 },
-                //{ "data": "estilo", "name": "Estilo", "autoWidth": true, "defaultContent": "" },
                 { "data": "talla", "name": "talla", "autoWidth": true, "defaultContent": "" },
                 { "data": "categoria", "name": "categoria", "autoWidth": true, "defaultContent": "" },
+                { "data": "departamento", "name": "Departamento", "autoWidth": true, "defaultContent": "" },
                 { "data": "cp", "name": "cp", "autoWidth": true, "defaultContent": "" },
                 {
                     //data: "pedidoBarcode",
                     name: "peso",
                     render: function (data, type, row) {
                         if (type === 'display') {
-                            if (row.peso > 1)
-                                return '<button type="button" class="btn btn-primary" onclick="verDetalle(' + row.barcode + ', ' + row.estilo + ')">Ver detalle</span>';
-                            else return '';
+                            //if (row.peso > 1)
+                            return '<button type="button" class="btn btn-primary" onclick="verDetalle(' + row.barcode + ', ' + row.producto + ')">Ver detalle</span>';
+                            //else return '';
                         }
                         return '';
                     },
@@ -200,16 +203,17 @@
             ]
         });
     }
-    function verDetalle(barcode2, estilo2) {
+    function verDetalle(barcode2, producto2) {
         barcode = barcode2;
-        estilo = estilo2;
+        producto = producto2;
         $('#modalPopCargaProdPrioriDet').modal();
         fillDet();
     }
     $(document).ready(function () {
         $('#dtpPeriodoBuscar').datepicker();
         $('.imgHeaderHelp').tooltip();        
-        $('#btnFiltrar').on("click", function (Event) {            
+        $('#btnFiltrar').on("click", function (Event) {
+            miAlive();
             if ($('#dtpPeriodoBuscar').val() == '') {
                 menErrorEdi('El periodo es necesario para una búsqueda', 'Error');
                 return;

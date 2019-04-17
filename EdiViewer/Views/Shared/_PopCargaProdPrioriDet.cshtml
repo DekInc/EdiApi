@@ -16,10 +16,10 @@
                                     <th>Estado</th>
                                     <th>Prioridad</th>
                                     <th>Pool P</th>
-                                    <th>Estilo</th>
+                                    <th>Lote</th>
                                     <th>Talla</th>
-                                    <th>PO</th>
-                                    <th>Categoria</th>
+                                    <th>Estilo</th>
+                                    <th>Genero</th>
                                     <th>Departamento</th>
                                     <th>CP</th>
                                     <th>Pickeada</th>
@@ -46,7 +46,7 @@
     var domtblDet = null;
     var HashId = '';
     var barcode = '';
-    var estilo = '';
+    var producto = '';
     var foo = function () {
     };
     $.urlParam = function (name) {
@@ -81,7 +81,7 @@
                 "emptyTable": "No hay información"
             },
             "ajax": {
-                "url": "@this.Url.Action("GetPaylessProdPrioriDet")?barcode=" + barcode + '&estilo=' + estilo,
+                "url": "@this.Url.Action("GetPaylessProdPrioriDet")?barcode=" + barcode + '&estilo=' + producto,
                 "type": "POST",
                 "datatype": "json",
                 "dataSrc": function (json) {
@@ -106,9 +106,9 @@
                 { "data": "estado", "name": "estado", "autoWidth": true, "defaultContent": "" },
                 { "data": "pri", "name": "pri", "autoWidth": true, "defaultContent": "" },
                 { "data": "poolP", "name": "poolP", "autoWidth": true, "defaultContent": "" },
-                { "data": "estilo", "name": "Estilo", "autoWidth": true, "defaultContent": "" },
+                { "data": "producto", "name": "producto", "autoWidth": true, "defaultContent": "" },
                 { "data": "talla", "name": "talla", "autoWidth": true, "defaultContent": "" },
-                { "data": "po", "name": "Po", "autoWidth": true, "defaultContent": "" },
+                { "data": "lote", "name": "lote", "autoWidth": true, "defaultContent": "" },
                 { "data": "categoria", "name": "categoria", "autoWidth": true, "defaultContent": "" },
                 { "data": "departamento", "name": "departamento", "autoWidth": true, "defaultContent": "" },
                 { "data": "cp", "name": "cp", "autoWidth": true, "defaultContent": "" },

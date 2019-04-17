@@ -16,6 +16,13 @@ namespace EdiViewer.Controllers
         {
             return View(new Models.ErrorModel());
         }
+        [HttpGet]
+        public bool MiAlive()
+        {
+            string CodUsr = HttpContext.Session.GetObjSession<string>("Session.CodUsr");
+            if (string.IsNullOrEmpty(CodUsr)) return false;
+            return true;
+        }
         [HttpPost]
         public async Task<IActionResult> Login(string TxtUser, string TxtPassword) {
             try

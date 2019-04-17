@@ -36,4 +36,18 @@ function throwPush(message) {
         }
     });
 }
-function funcbtnOkMessageBox() { };
+function funcbtnOkMessageBox() { }
+function miAlive() {
+    $.ajax({
+        url: '/Account/MiAlive',
+        type: 'GET',
+        dataType: 'JSON',
+        success: function (json) {
+            if (json === false) {
+                menErrorEdi("La sesión ha vencido. Vuelva a ingresar.", "Error de sesión");
+                location.href = location.href;
+            }
+            else console.log('i am alive !!!');
+        }
+    });
+}

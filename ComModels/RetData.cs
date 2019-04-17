@@ -9,5 +9,10 @@ namespace ComModels
     {
         public T Data { get; set; }
         public RetInfo Info { get; set; } = new RetInfo();
+
+        public static implicit operator RetData<T>(RetData<Tuple<IEnumerable<PaylessProdPrioriM>, IEnumerable<PaylessProdPrioriDet>>> v)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

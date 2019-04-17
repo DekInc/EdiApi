@@ -9,12 +9,13 @@ namespace ComModels
         public int IdPaylessProdPrioriM { get; set; }
         public string Oid { get; set; }
         public string Barcode { get; set; }
+        public string Tienda { get { return Barcode.Substring(0, 4); } }
         public string Estado { get; set; }
         public string Pri { get; set; }
         public string PoolP { get; set; }
-        public string Estilo { get; set; }
+        public string Producto { get; set; }
         public string Talla { get; set; }
-        public string Po { get; set; }
+        public string Lote { get; set; }
         public string Categoria { get; set; }
         public string Departamento { get; set; }
         public string Cp { get; set; }
@@ -24,6 +25,5 @@ namespace ComModels
         public string Cargada { get; set; }
         public double? M3 { get; set; }
         public double? Peso { get; set; }
-        public string Tienda { get { return Barcode.Substring(0, 4); } }
     }
 }
