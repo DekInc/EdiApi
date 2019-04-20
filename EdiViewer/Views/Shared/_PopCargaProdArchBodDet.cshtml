@@ -71,17 +71,7 @@
                                             <table id="tblRepDet3" class="table table-striped table-bordered nowrap table-hover display tblReportes" cellspacing="0" style="width: 100%;">
                                                 <thead>
                                                     <tr>
-                                                        <th>Id</th>
-                                                        <th>OID</th>
                                                         <th>Barcode</th>
-                                                        <th>Prioridad</th>
-                                                        <th>Pool P</th>
-                                                        <th>Lote</th>
-                                                        <th>Talla</th>
-                                                        <th>Estilo</th>
-                                                        <th>Genero</th>
-                                                        <th>Departamento</th>
-                                                        <th>CP</th>
                                                         <th>Estado</th>
                                                     </tr>
                                                 </thead>
@@ -258,24 +248,9 @@
                     }
                     return json.data;
                 }
-            },
-            "columnDefs": [
-            {
-                "targets": [0],
-                "visible": false
-            }],
+            },            
             "columns": [
-                { "data": "id", "name": "id", "autoWidth": true, "defaultContent": "" },
-                { "data": "oid", "name": "oid", "autoWidth": true, "defaultContent": "" },
                 { "data": "barcode", "name": "barcode", "autoWidth": true, "defaultContent": "" },
-                { "data": "pri", "name": "pri", "autoWidth": true, "defaultContent": "" },
-                { "data": "poolP", "name": "poolP", "autoWidth": true, "defaultContent": "" },
-                { "data": "producto", "name": "producto", "autoWidth": true, "defaultContent": "" },
-                { "data": "talla", "name": "talla", "autoWidth": true, "defaultContent": "" },
-                { "data": "lote", "name": "lote", "autoWidth": true, "defaultContent": "" },
-                { "data": "categoria", "name": "categoria", "autoWidth": true, "defaultContent": "" },
-                { "data": "departamento", "name": "departamento", "autoWidth": true, "defaultContent": "" },
-                { "data": "cp", "name": "cp", "autoWidth": true, "defaultContent": "" },
                 { "data": "estado", "name": "estado", "autoWidth": true, "defaultContent": "" }
             ]
         });
