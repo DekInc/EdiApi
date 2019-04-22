@@ -1,0 +1,79 @@
+﻿@using ComModels
+@{
+    ViewData["Title"] = "Crud usuarios";
+    Layout = "_Layout";
+}
+<div id="mainDiv">
+    <div class="container">
+        <div class="card-deck cardMain">
+            <div class="card box-shadow">
+                <div class="card-header">
+                    <h4 class="my-0 font-weight-normal">Crud usuarios</h4>
+                </div>
+                <div class="card-body">
+                    <div id="gridUsuarios" style="min-height: 460px; width: 100%;">
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    var mainGrid = null;
+    var foo = function () {
+    };
+    $.urlParam = function (name) {
+        var results = new RegExp('[\?&]' + name + '=([^&#]*)').exec(window.location.href);
+        if (results == null) {
+            return null;
+        }
+        return decodeURI(results[1]) || 0;
+    }
+    function refreshGrid(auto) {
+        w2ui.grid.autoLoad = auto;
+        w2ui.grid.skip(0);
+    }
+    function crearGrid() {
+        var config = {
+            grid: {
+                name: 'gridUsuarios',
+                selectType: 'cell',
+                bResponsive: true,
+                bMobile: window.mobileAndTabletcheck(),
+                url: "@this.Url.Action("GetUsers", "Account")",
+                show: {
+                    footer: true,
+                    toolbar: true,
+                    expandColumn: window.mobileAndTabletcheck()
+                },
+                searches: [
+                    { field: 'oid', caption: 'oid', type: 'text' },
+                    { field: 'barcode', caption: 'barcode', type: 'text' },
+                    { field: 'producto', caption: 'producto', type: 'text' },
+                    { field: 'talla', caption: 'talla', type: 'text' },
+                    { field: 'lote', caption: 'lote', type: 'text' }
+                ],
+                colShowResponsive: [
+                    { field: 'codUsr' },
+                    { field: 'ienetGroup' }
+                ],
+                columns: [
+                    { field: "id", caption: "Id", sortable: true, hidden: true},
+                    { field: "idIenetGroup", caption: "IdIenetGroup", sortable: true},
+                    { field: "ienetGroup", caption: "Grupo", sortable: true},
+                    { field: "codUsr", caption: "Cod. usuario", sortable: true},
+                    { field: "nomUsr", caption: "Nombre usuario", sortable: true},
+                    { field: "clienteId", caption: "ClienteId", sortable: true},
+                    { field: "cliente", caption: "Cliente", sortable: true}
+                ]
+            }
+        };
+        mainGrid = $('#gridUsuarios').w2grid(config.grid);
+    }
+    $(document).ready(function () {
+        crearGrid();
+    });
+</script>
+
+

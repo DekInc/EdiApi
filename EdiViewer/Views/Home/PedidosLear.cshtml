@@ -1,0 +1,241 @@
+﻿@model EdiViewer.Models.EdiViewerModel
+@{
+    ViewData["Title"] = "Pedidos Lear";
+}
+<div id="mainDiv">
+
+    <section id="tabs" class="project-tab">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12">
+                    <nav>
+                        <div class="nav nav-tabs nav-fill" id="nav-tab" role="tablist">
+                            <a class="nav-item nav-link active btn btn-primary" id="nav-home-tab" data-toggle="tab" href="#nav-home" role="tab" aria-controls="nav-home" aria-selected="true">Pedidos</a>
+                            <a class="nav-item nav-link btn btn-info" id="nav-profile-tab" data-toggle="tab" href="#nav-profile" role="tab" aria-controls="nav-profile" aria-selected="false">Reporte de inventario</a>
+                        </div>
+                    </nav>
+                    <div class="tab-content" id="nav-tabContent">
+                        <div class="tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab">
+                            <div class="card-deck cardMain">
+                                <div class="card box-shadow">
+                                    <div class="card-header">
+                                        <h4 class="my-0 font-weight-normal">Pedidos Lear</h4>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="cardContent">
+                                            <form id="formReportes">
+                                                <table id="tblReportes" class="table nowrap table-hover display tblReportes" cellspacing="0" style="width: 100%;">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>HashId</th>
+                                                            <th>Tipo</th>
+                                                            <th>NombreArchivo</th>
+                                                            <th>Reporte</th>
+                                                            <th>Origen</th>
+                                                            <th>Destino</th>
+                                                            <th>Fecha Ingreso</th>
+                                                            <th>Fecha de Procesado</th>
+                                                            <th>Estado</th>
+                                                        </tr>
+                                                    </thead>
+                                                </table>
+                                                <br />
+                                                <br />
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab">
+                            <div class="card-deck cardMain">
+                                <div class="card box-shadow">
+                                    <div class="card-header">
+                                        <h4 class="my-0 font-weight-normal">Reportes 830 de inventario enviado</h4>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="cardContent">
+                                            <form id="formReportes2">
+                                                <table id="tblReportes2" class="table nowrap table-hover display tblReportes" cellspacing="0" style="width: 100%;">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>HashId</th>
+                                                            <th>Tipo</th>
+                                                            <th>NombreArchivo</th>
+                                                            <th>Reporte</th>
+                                                            <th>Origen</th>
+                                                            <th>Destino</th>
+                                                            <th>Fecha Ingreso</th>
+                                                            <th>Fecha de Procesado</th>
+                                                            <th>Estado</th>
+                                                        </tr>
+                                                    </thead>
+                                                </table>
+                                                <br />
+                                                <br />
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="container" style="display: none;">
+
+    </div>
+</div>
+<script>
+    var domtblReportes = null, domtblReportes2 = null;
+    var HashId = '';
+    $.urlParam = function (name) {
+        var results = new RegExp('[\?&]' + name + '=([^&#]*)').exec(window.location.href);
+        if (results == null) {
+            return null;
+        }
+        return decodeURI(results[1]) || 0;
+    }
+    $(document).ready(function () {
+        domtblReportes = $("#tblReportes").DataTable({
+            select: true,
+            responsive: false,
+            dom: 'Bfrtip',
+            buttons: [
+                'excelHtml5'
+            ],
+            destroy: true,
+            info: false,
+            "scrollX": true,
+            "processing": true, // for show progress bar
+            "serverSide": true, // for process server side
+            "filter": false, // this is for disable filter (search box)
+            "orderMulti": false, // for disable multiple column at once
+            "lengthMenu": [[15, 25, 35, 50], [15, 25, 35, 50]],
+            "language":
+            {
+                "processing": "<div class='divAjax'>Obteniendo datos<br /><img style='width:50px; height:50px;' src='images/ajax.gif' /></div>",
+                "emptyTable": "No hay información"
+            },
+            "ajax": {
+                "url": "@this.Url.Action("GetPureEdi")" + '?Tipo=0',
+                "type": "POST",
+                "datatype": "json",
+                "dataSrc": function (json) {
+                    if (json.recordsTotal == 0) {
+                        console.log(json);
+                        menErrorEdi(json.errorMessage);
+                        return json.data;
+                    }
+                    return json.data;
+                }
+            },
+            "order": [[3, "desc"]],
+            "columnDefs": [
+                { className: "hideCol", "targets": [0] }
+            ],
+            "columns": [
+                { "data": "hashId", "name": "HashId", "autoWidth": true, "defaultContent": "" },
+                { "data": "inOut", "name": "InOut", "autoWidth": true, "defaultContent": "" },
+                { "data": "nombreArchivo", "name": "NombreArchivo", "autoWidth": true, "defaultContent": "" },
+                { "data": "numReporte", "name": "NumReporte", "autoWidth": true, "defaultContent": "" },
+                { "data": "from", "name": "From", "autoWidth": true, "defaultContent": "" },
+                { "data": "to", "name": "To", "autoWidth": true, "defaultContent": "" },
+                { "data": "fingreso", "name": "FIngreso", "autoWidth": true, "defaultContent": "" },
+                { "data": "fprocesado", "name": "FProcesado", "autoWidth": true, "defaultContent": "" },
+                { "data": "estado", "name": "Estado", "autoWidth": true, "defaultContent": "" }
+            ]
+        });
+        $('#tblReportes tbody').on('click', 'tr', function () {
+            if ($(this).hasClass('selected')) {
+                $(this).removeClass('selected');
+            }
+            else {
+                domtblReportes.$('tr.selected').removeClass('selected');
+                $(this).addClass('selected');
+                //trigger update
+                //if ($(this).closest("tr").find('td:eq(5)').text().toLowerCase().includes('error')) {
+                //    menErrorEdi("El reporte contiene errores y no puede visualizarse");
+                //} else
+                window.location.href = '@this.Url.Action("Details")?HashId=' + $(this).closest("tr").find('td:eq(0)').text();
+            }
+        });
+        domtblReportes2 = $("#tblReportes2").DataTable({
+            select: true,
+            responsive: true,
+            dom: 'Bfrtip',
+            buttons: [
+                'excelHtml5'
+            ],
+            destroy: true,
+            info: false,
+            "scrollX": true,
+            "processing": true, // for show progress bar
+            "serverSide": true, // for process server side
+            "filter": false, // this is for disable filter (search box)
+            "orderMulti": false, // for disable multiple column at once
+            "lengthMenu": [[15, 25, 35, 50], [15, 25, 35, 50]],
+            "language":
+            {
+                "processing": "<div class='divAjax'>Obteniendo datos<br /><img style='width:50px; height:50px;' src='images/ajax.gif' /></div>",
+                "emptyTable": "No hay información"
+            },
+            "ajax": {
+                "url": "@this.Url.Action("GetPureEdi")" + '?Tipo=1',
+                "type": "POST",
+                "datatype": "json",
+                "dataSrc": function (json) {
+                    if (json.recordsTotal == 0) {
+                        console.log(json);
+                        menErrorEdi(json.errorMessage);
+                        return json.data;
+                    }
+                    return json.data;
+                }
+            },
+            "order": [[3, "desc"]],
+            "columnDefs": [
+                { className: "hideCol", "targets": [0] }
+            ],
+            "columns": [
+                { "data": "hashId", "name": "HashId", "autoWidth": true, "defaultContent": "" },
+                { "data": "inOut", "name": "InOut", "autoWidth": true, "defaultContent": "" },
+                { "data": "nombreArchivo", "name": "NombreArchivo", "autoWidth": true, "defaultContent": "" },
+                { "data": "numReporte", "name": "NumReporte", "autoWidth": true, "defaultContent": "" },
+                { "data": "from", "name": "From", "autoWidth": true, "defaultContent": "" },
+                { "data": "to", "name": "To", "autoWidth": true, "defaultContent": "" },
+                { "data": "fingreso", "name": "FIngreso", "autoWidth": true, "defaultContent": "" },
+                { "data": "fprocesado", "name": "FProcesado", "autoWidth": true, "defaultContent": "" },
+                { "data": "estado", "name": "Estado", "autoWidth": true, "defaultContent": "" }
+            ]
+        });
+        $('#tblReportes2 tbody').on('click', 'tr', function () {
+            if ($(this).hasClass('selected')) {
+                $(this).removeClass('selected');
+            }
+            else {
+                domtblReportes.$('tr.selected').removeClass('selected');
+                $(this).addClass('selected');
+                //trigger update
+                //if ($(this).closest("tr").find('td:eq(5)').text().toLowerCase().includes('error')) {
+                //    menErrorEdi("El reporte contiene errores y no puede visualizarse");
+                //} else
+                window.location.href = '@this.Url.Action("Details")?HashId=' + $(this).closest("tr").find('td:eq(0)').text();
+            }
+        });
+        HashId = $.urlParam('HashId');
+        if (HashId == null) {
+            @*$.ajax({
+                method: "GET",
+                url: "@this.Url.Action("TranslateForms830")"
+            });
+            $.ajax({
+                method: "GET",
+                url: "@this.Url.Action("AutoSendInventary830")"
+            });*@
+        }
+    });
+</script>

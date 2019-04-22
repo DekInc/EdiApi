@@ -309,6 +309,13 @@ table.dataTable thead th, table.dataTable thead td {
     height: 90vh;
     /*background: #b7baa5 !important;*/
 }
+.indexJumbo {
+    height: 80vh;
+    width: 90%;
+    margin: 0 auto;
+    box-sizing: border-box;
+    background: rgb(241, 224, 203);
+}
 
 .cardLogin {
     max-width: 520px;

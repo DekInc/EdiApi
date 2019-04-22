@@ -16,7 +16,7 @@ namespace EdiApi.Controllers
 {
     [Route("[controller]/[action]")]
     [ApiController]
-    public class DataController : Controller
+    public class DataController : ControllerBase
     {
         public EdiDBContext DbO;
         public WmsContext WmsDbO;
@@ -1609,6 +1609,55 @@ namespace EdiApi.Controllers
             catch (Exception e1)
             {
                 return new RetData<IEnumerable<UsuariosExternos>>
+                {
+                    Info = new RetInfo()
+                    {
+                        CodError = -1,
+                        Mensaje = e1.ToString(),
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            }
+        }
+        [HttpPost]
+        public RetData<IEnumerable<Clientes>> GetAllClients(object HashId)
+        {
+            string HashIdDescrypted = Encoding.UTF8.GetString(CryptoHelper.DecryptData(Convert.FromBase64String(Convert.ToString(HashId))));
+            HashIdDescrypted = HashIdDescrypted.Split('|')[1];
+            DateTime StartTime = DateTime.Now;
+            try
+            {
+                string CUser = (from U in DbO.IenetUsers where U.HashId == HashIdDescrypted select U.CodUsr).Fod();
+                if (!string.IsNullOrEmpty(CUser))
+                {
+                    List<Clientes> ListClients = WmsDbO.Clientes.ToList();
+                    return new RetData<IEnumerable<Clientes>>
+                    {
+                        Data = ListClients,
+                        Info = new RetInfo()
+                        {
+                            CodError = 0,
+                            Mensaje = "ok",
+                            ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                        }
+                    };
+                }
+                else
+                {
+                    return new RetData<IEnumerable<Clientes>>
+                    {
+                        Info = new RetInfo()
+                        {
+                            CodError = -1,
+                            Mensaje = "Error de seguridad en la obtención de los datos.",
+                            ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                        }
+                    };
+                }
+            }
+            catch (Exception e1)
+            {
+                return new RetData<IEnumerable<Clientes>>
                 {
                     Info = new RetInfo()
                     {

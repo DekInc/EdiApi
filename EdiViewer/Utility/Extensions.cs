@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using ComModels;
+using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -17,6 +18,21 @@ namespace EdiViewer
         {
             string Val = Session.GetString(_Key);
             return Val == null ? default(T) : JsonConvert.DeserializeObject<T>(Val);
+        }
+        public static bool HavePermits(this ISession Session, string PermitId)
+        {
+            if (string.IsNullOrEmpty(PermitId)) return false;
+            IEnumerable<IenetGroupsAccesses> ListGroupsAccesses = Session.GetObjSession<IEnumerable<IenetGroupsAccesses>>("ListGroupsAccesses");
+            IEnumerable<IenetAccesses> ListAccesses = Session.GetObjSession<IEnumerable<IenetAccesses>>("ListAccesses");
+            IEnumerable<IenetGroupsAccesses> TPermit = (
+                from Ga in ListGroupsAccesses
+                from A in ListAccesses
+                where A.Id == Ga.IdIenetAccess
+                && Ga.IdIenetGroup == Session.GetObjSession<int>("Session.IdGroup")
+                && A.Descr.Equals(PermitId, StringComparison.OrdinalIgnoreCase)
+                select Ga
+                );
+            return TPermit.Count() > 0;
         }
         public static bool ExistsObjSession<T>(this ISession Session, string _Key)
         {

@@ -165,6 +165,43 @@ namespace CoreApiClient
         {
             return await GetAsync<RetData<Tuple<IEnumerable<PaylessProdPrioriDet>, IEnumerable<PaylessProdPrioriDet>, IEnumerable<PaylessProdPrioriDet>>>>(CreateRequestUri(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Data/GetPaylessFileDif"), $"?idProdArch={idProdArch}"));
         }
+        /////////////////////////////////////////Account
+        public async Task<string> LoginIe(string _User, string _Password)
+        {
+            UserModel UserO = new UserModel()
+            {
+                User = _User,
+                Password = _Password
+            };
+            string JsonParams = JsonConvert.SerializeObject(UserO);
+            return await PostAsyncJson<string>(CreateRequestUri(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Account/LoginIe")), JsonParams);
+        }
+        public async Task<RetData<IEnumerable<IenetUsers>>> GetUsers(string HashId)
+        {
+            string JsonParams = JsonConvert.SerializeObject(HashId);
+            return await PostGetAsyncJson<RetData<IEnumerable<IenetUsers>>>(CreateRequestUri(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Account/GetUsers")), JsonParams);
+        }
+        public async Task<RetData<IEnumerable<IenetGroups>>> GetGroups(string HashId)
+        {
+            string JsonParams = JsonConvert.SerializeObject(HashId);
+            return await PostGetAsyncJson<RetData<IEnumerable<IenetGroups>>>(CreateRequestUri(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Account/GetGroups")), JsonParams);
+        }
+        public async Task<RetData<IEnumerable<IenetAccesses>>> GetIenetAccesses(string HashId)
+        {
+            string JsonParams = JsonConvert.SerializeObject(HashId);
+            return await PostGetAsyncJson<RetData<IEnumerable<IenetAccesses>>>(CreateRequestUri(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Account/GetIenetAccesses")), JsonParams);
+        }
+        public async Task<RetData<IEnumerable<IenetGroupsAccesses>>> GetIEnetGroupsAccesses(string HashId)
+        {
+            string JsonParams = JsonConvert.SerializeObject(HashId);
+            return await PostGetAsyncJson<RetData<IEnumerable<IenetGroupsAccesses>>>(CreateRequestUri(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Account/GetIEnetGroupsAccesses")), JsonParams);
+        }
+        public async Task<RetData<IEnumerable<Clientes>>> GetAllClients(string HashId)
+        {
+            string JsonParams = JsonConvert.SerializeObject(HashId);
+            return await PostGetAsyncJson<RetData<IEnumerable<Clientes>>>(CreateRequestUri(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Data/GetAllClients")), JsonParams);
+        }
+        /////////////////////////////////////////
         //public async Task<List<UsersModel>> GetUsers()
         //{
         //    var requestUrl = CreateRequestUri(string.Format(System.Globalization.CultureInfo.InvariantCulture,

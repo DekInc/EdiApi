@@ -22,9 +22,13 @@ namespace EdiViewer.Controllers
             ApplicationSettings.ApiUri = (string)EdiWebApiConfig.GetValue(typeof(string), "ApiUri");
         }
         public IActionResult Index()
-        {
+        {            
             return View();
         }
+        public IActionResult PedidosLear()
+        {
+            return View();
+        }        
         public IActionResult PeticionesAdmin()
         {
             return View();
@@ -33,41 +37,7 @@ namespace EdiViewer.Controllers
         {
             HttpContext.Session.SetObjSession("Session.HashId", string.Empty);
             return new RedirectResult("/Account/");
-        }
-        [HttpGet]
-        public string ShowApiEnd(string HashId)
-        {
-            if (HashId == "P1234567890")
-                return ApplicationSettings.ApiUri;
-            return "";
-        }
-        public async Task<ActionResult> ShowEdiComs(string HashId)
-        {            
-            if (HashId == "P1234567890")
-            {
-                IEnumerable<EdiComs> ListEdiComs = await ApiClientFactory.Instance.GetEdiComs();
-                return View(ListEdiComs);
-            }
-            return View(null);
-        }
-        public async Task<ActionResult> ShowEdiRepSent(string HashId)
-        {
-            if (HashId == "P1234567890")
-            {
-                IEnumerable<EdiRepSent> ListEdiRepSent = await ApiClientFactory.Instance.GetEdiRepSent();
-                return View(ListEdiRepSent);
-            }
-            return View(null);
-        }
-        public async Task<ActionResult> ShowLearPureEdi(string HashId)
-        {
-            if (HashId == "P1234567890")
-            {
-                IEnumerable<LearPureEdi> ListPe = await ApiClientFactory.Instance.GetLearPureEdi();
-                return View(ListPe);
-            }
-            return View(null);
-        }
+        }        
         [HttpGet]
         public async Task<string> TranslateForms830()
         {
@@ -145,6 +115,42 @@ namespace EdiViewer.Controllers
             }
             return View(EdiDetailModelO);
         }
+        #region spLogs
+        [HttpGet]
+        public string ShowApiEnd(string HashId)
+        {
+            if (HashId == "P1234567890")
+                return ApplicationSettings.ApiUri;
+            return "";
+        }
+        public async Task<ActionResult> ShowEdiComs(string HashId)
+        {
+            if (HashId == "P1234567890")
+            {
+                IEnumerable<EdiComs> ListEdiComs = await ApiClientFactory.Instance.GetEdiComs();
+                return View(ListEdiComs);
+            }
+            return View(null);
+        }
+        public async Task<ActionResult> ShowEdiRepSent(string HashId)
+        {
+            if (HashId == "P1234567890")
+            {
+                IEnumerable<EdiRepSent> ListEdiRepSent = await ApiClientFactory.Instance.GetEdiRepSent();
+                return View(ListEdiRepSent);
+            }
+            return View(null);
+        }
+        public async Task<ActionResult> ShowLearPureEdi(string HashId)
+        {
+            if (HashId == "P1234567890")
+            {
+                IEnumerable<LearPureEdi> ListPe = await ApiClientFactory.Instance.GetLearPureEdi();
+                return View(ListPe);
+            }
+            return View(null);
+        }
+        #endregion
         public async Task<IActionResult> GetPeticionesAdmin(int ClienteId, string dtp1 = "", string chkPending = "")
         {
             try

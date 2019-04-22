@@ -3856,7 +3856,9 @@ w2utils.event = {
         onAdd              : null,
         onEdit             : null,
         onRequest          : null,        // called on any server event
-        onLoad             : null,
+        onLoad: function (event) {
+            //console.log(event);
+        },
         onDelete           : null,
         onSave             : null,
         onSelect           : null,

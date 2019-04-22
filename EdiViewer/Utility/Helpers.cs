@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc.Rendering;
+﻿using ComModels;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -156,6 +157,6 @@ namespace EdiViewer.Utility.Helper
         public static string ShowVersion(this IHtmlHelper htmlHelper)
         {
             return "versión 1.0.1.2";
-        }
+        }        
     }
 }
