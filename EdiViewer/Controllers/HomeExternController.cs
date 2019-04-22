@@ -574,25 +574,7 @@ namespace EdiViewer.Controllers
                     ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
                 };
             }
-        }
-        public async Task<IActionResult> GetPaylessProdPriori2()
-        {
-            try
-            {
-                RetData<Tuple<IEnumerable<PaylessProdPrioriM>, IEnumerable<PaylessProdPrioriDet>>> ListProdPriori = await ApiClientFactory.Instance.GetPaylessProdPriori("08/04/2019");
-                if (ListProdPriori.Info.CodError != 0)
-                    return Json(new { errorMessage = ListProdPriori.Info.Mensaje, data = "", });
-                if (ListProdPriori.Data.Item2.Count() == 0)
-                {
-                    return Json(new { total = ListProdPriori.Data.Item2.Count(), errorMessage = (ListProdPriori.Info.CodError != 0 ? ListProdPriori.Info.Mensaje : string.Empty), records = "" });
-                }                                
-                return Json(new { total = ListProdPriori.Data.Item2.Count(), records = ListProdPriori.Data, errorMessage = "" });
-            }
-            catch (Exception e1)
-            {
-                return Json(new { total = "", errorMessage = e1.ToString(), records = "", listAllProd = "" });
-            }
-        }
+        }        
         //
         public async Task<IActionResult> GetPaylessProdPrioriAdmin(string dtpPeriodoBuscar, string TxtBarcode, string TxtPrioridad, string TxtPoolP, string TxtProducto, string TxtTalla, string TxtLote)
         {
@@ -1027,6 +1009,58 @@ namespace EdiViewer.Controllers
             catch (Exception e1)
             {
                 return Json(new { draw = 0, recordsFiltered = 0, recordsTotal = 0, errorMessage = e1.ToString(), data = "" });
+            }
+        }
+        public async Task<IActionResult> GetPaylessProdPriori2()
+        {
+            try
+            {//field, type, operator, value, searchLogic, search[0][field],  is, begins, contains, ends
+                IFormCollection GridForm = Request.Form;
+                int GridLimit = Convert.ToInt32(GridForm["limit"].Fod());
+                int GridOffset = Convert.ToInt32(GridForm["offset"].Fod());
+                List<Utility.ExpressionBuilderHelper.ExpressionFilter> ListGridSearch = new List<Utility.ExpressionBuilderHelper.ExpressionFilter>();
+                Utility.ExpressionBuilderHelper.ConstructList(ref ListGridSearch, GridForm);                
+                RetData<Tuple<IEnumerable<PaylessProdPrioriM>, IEnumerable<PaylessProdPrioriDet>>> ListProdPriori = await ApiClientFactory.Instance.GetPaylessProdPriori("08/04/2019");
+                if (ListProdPriori.Info.CodError != 0)
+                    return Json(new { errorMessage = ListProdPriori.Info.Mensaje, data = "", });
+                if (ListProdPriori.Data.Item2.Count() == 0)
+                {
+                    return Json(new { total = 0, errorMessage = (ListProdPriori.Info.CodError != 0 ? ListProdPriori.Info.Mensaje : string.Empty), records = "" });
+                }
+                int Total = ListProdPriori.Data.Item2.Count();
+                List<PaylessProdPrioriDetModel> Records = ListProdPriori.Data.Item2.Skip(GridOffset).Take(100).Select(O => new PaylessProdPrioriDetModel()
+                {
+                    Barcode = O.Barcode,
+                    Cargada = O.Cargada,
+                    Categoria = O.Categoria,
+                    Cp = O.Cp,
+                    Departamento = O.Departamento,
+                    Estado = O.Estado,
+                    Etiquetada = O.Etiquetada,
+                    Id = O.Id,
+                    IdPaylessProdPrioriM = O.IdPaylessProdPrioriM,
+                    Lote = O.Lote,
+                    M3 = O.M3,
+                    Oid = O.Oid,
+                    Peso = O.Peso,
+                    Pickeada = O.Pickeada,
+                    PoolP = O.PoolP,
+                    Preinspeccion = O.Preinspeccion,
+                    Pri = O.Pri,
+                    Producto = O.Producto,
+                    Talla = O.Talla
+                }).ToList();
+                if (ListGridSearch.Count > 0) {
+                    var ExpressionTree = Utility.ExpressionBuilderHelper.ConstructAndExpressionTree<PaylessProdPrioriDetModel>(ListGridSearch);
+                    var AnonFunc = ExpressionTree.Compile();
+                    Records = Records.Where(AnonFunc).ToList();
+                    Total = Records.Count;
+                }
+                return Json(new { Total, Records, errorMessage = "" });
+            }
+            catch (Exception e1)
+            {
+                return Json(new { total = "", errorMessage = e1.ToString(), records = "", listAllProd = "" });
             }
         }
     }

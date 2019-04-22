@@ -26,4 +26,10 @@ namespace ComModels
         public double? M3 { get; set; }
         public double? Peso { get; set; }
     }
+
+    public partial class PaylessProdPrioriDetModel: PaylessProdPrioriDet
+    {
+        public int recid { get { return Id; } }
+        public List<PaylessProdPrioriDet> Childrens { get; set; }
+    }
 }
