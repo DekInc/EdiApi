@@ -40,11 +40,11 @@ namespace EdiViewer.Utility
             if (ListGridSearch.Count > 0)
             {
                 var AnonFunc = ExpressionTree.Compile();
-                Records = Records.Where(AnonFunc).Skip(GridOffset).Take(GridLimit).ToList();
-                if (ListGridSort.Count > 0)
-                    Records = Records.AsQueryable().OrderBy(ListGridSort.Fod().PropertyName + " " + ListGridSort.Fod().Value.ToString()).ToList();
+                Records = Records.Where(AnonFunc).Skip(GridOffset).Take(GridLimit).ToList();                
             } else
                 Records = Records.Skip(GridOffset).Take(GridLimit).ToList();
+            if (ListGridSort.Count > 0)
+                Records = Records.AsQueryable().OrderBy(ListGridSort.Fod().PropertyName + " " + ListGridSort.Fod().Value.ToString()).ToList();
             return Records;
         }
         public static Expression<Func<T, bool>> ConstructAndExpressionTree<T>(List<ExpressionFilter> filters)

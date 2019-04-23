@@ -4,6 +4,7 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 
 namespace EdiViewer
@@ -70,6 +71,6 @@ namespace EdiViewer
                         Convert.ToInt32(_Str.Substring(3, 2)),
                         Convert.ToInt32(_Str.Substring(0, 2))
                         );
-        }
+        }        
     }
 }

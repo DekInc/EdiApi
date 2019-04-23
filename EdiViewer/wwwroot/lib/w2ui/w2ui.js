@@ -3860,7 +3860,9 @@ w2utils.event = {
         onEdit             : null,
         onRequest          : null,        // called on any server event
         onLoad: function (event) {
-            //console.log(event);
+        },
+        onReloadComplete: function (event) {
+            $('.spinner-border').hide();
         },
         onDelete           : null,
         onSave             : null,
@@ -3881,18 +3883,19 @@ w2utils.event = {
         onRestore          : null,        // called when editable record is restored
         //onExpand: null,
         onExpand: function (event) {
-            
             var idR = event.box_id.replace('grid_' + this.name + '_rec_', '').replace('_expanded', '');
-            console.log(idR);
             var r1 = this.records.filter(O => O.recid == idR)[0];
             var mV1 = '<div class="container" style="overflow: scroll; max-width: 90vw; margin-right: 0; margin-left: 0;">';
             for (var i = 0; i < this.columns.length; i++) {
-                mV1 += '<div class="row" style="margin-top: 10px; margin-bottom: 10px; border-bottom: 1px solid #eee;"><div class="col" style="padding-left: 0; padding-right: 0;"><b>' + this.columns[i].field + '</b></div>';
+                mV1 += '<div class="row" style="margin-top: 10px; margin-bottom: 10px; border-bottom: 1px solid #eee;"><div class="col" style="padding-left: 0; padding-right: 0;"><b>' + this.columns[i].field + '</b></div>';                
                 mV1 += '<div style="padding-left: 0; padding-right: 0;" class="col w2ui-grid-dataResponsive"' +
-                ' id="gridResponsive_' + idR + '" style="' + (this.columns[i].style != null ? this.columns[i].style : '') + '" ' +
-                    (this.columns[i].attr != null ? this.columns[i].attr : '') + '>'
-                    + (r1[this.columns[i].field] === undefined ? '' : r1[this.columns[i].field]) + '</div>';
-                mV1 += '</div>';
+                    ' id="gridResponsive_' + idR + '" style="' + (this.columns[i].style != null ? this.columns[i].style : '') + '" ' +
+                    (this.columns[i].attr != null ? this.columns[i].attr : '') + '>';
+                if (this.columns[i].render == null)
+                    mV1 += (r1[this.columns[i].field] === undefined ? '' : r1[this.columns[i].field]);
+                else
+                    mV1 += this.columns[i].render(r1);                
+                mV1 += '</div></div>';
             }
             mV1 += '</div>';
             $('#' + event.box_id).html(mV1).animate({ height: (this.columns.length * 26) }, 333);
@@ -3919,7 +3922,7 @@ w2utils.event = {
                             this.columns[i].hidden = true;
                     }
                     $.each($('.w2ui-grid-records'), function (key, value) {
-                        console.log(this);
+                        //console.log(this);
                         $(this).attr('style', $(this).attr('style').replace('hidden', 'auto'));
                     });
                 }
@@ -5807,6 +5810,82 @@ w2utils.event = {
             // default action
             this.clear(true);
             this.request('get', {}, url, callBack);
+            //this.onReloadComplete();
+        },
+
+        reload2: function (url2) {
+            if (url2 == null) {
+                console.log('ERROR: You need to provide url argument when calling .load() method of "' + this.name + '" object.');
+                return;
+            }
+            this.url = url2;
+            this.reload();
+            //this.onReloadComplete();
+        },
+
+        exportData: function (Data, type, showFields) {
+            // Data       : {}. Can be any data you want to export (records, columns, custom, etc...).
+            // type       : string. Extension of file name 'xls' or 'csv' are possible. By default 'excel' format is done on array
+            // showFields : boolean (optional). Insert field names on top of the file data. By default 'false'
+
+            var arrData = typeof Data != 'object' ? JSON.parse(Data) : Data;
+            fileName = 'ExportData.' + type;
+            var Data = '';
+            // show fields on first row ?
+            if (showFields) {
+                var row = "";
+                for (var index in arrData[0]) {
+                    if (row != "" && type == 'csv') row += ',';
+                    row += index + '\t';
+                }
+                row = row.slice(0, -1);
+                Data += row + '\r\n';
+            }
+            // Prepare array data format
+            for (var i = 0; i < arrData.length; i++) {
+                var row = "";
+                for (var index in arrData[i]) {
+                    if (row != "" && type == 'csv') row += ',';
+                    row += (type == 'xls') ? '"' + arrData[i][index] + '"\t' : arrData[i][index] + '\t'
+                }
+                row.slice(0, row.length - 1);
+                Data += row + '\r\n';
+            }
+            // No data?
+            if (Data == '') {
+                w2alert('No Data Found');
+                return;
+            }
+            var link = document.createElement("a");
+            // browser with HTML5 support download attribute
+            if (link.download !== undefined) {
+                var uri = 'data:application/vnd.ms-excel,' + escape(Data);
+                link.setAttribute('href', uri);
+                link.setAttribute('style', "visibility:hidden");
+                link.setAttribute('download', fileName);
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            }
+            // IE 10,11+
+            else if (navigator.msSaveBlob) {
+                var blob = new Blob([Data], {
+                    "type": "text/csv;charset=utf8;"
+                });
+                navigator.msSaveBlob(blob, fileName);
+            }
+            // old IE 9-  remove this part ?? deprecated browsers ??
+            var ua = window.navigator.userAgent;
+            var ie = ua.indexOf('MSIE ');
+            if ((ie > -1)) {
+                if (document.execCommand) {
+                    var oWin = window.open("about:blank", "_blank");
+                    oWin.document.write(Data);
+                    oWin.document.close();
+                    var success = oWin.document.execCommand('SaveAs', true, fileName)
+                    oWin.close();
+                }
+            }
         },
 
         reload: function (callBack) {
@@ -6035,10 +6114,11 @@ w2utils.event = {
                                 if (w2utils.isInt(data.total)) this.total = parseInt(data.total);
                             } else {
                                 if (data.total != -1 && parseInt(data.total) != parseInt(this.total)) {
-                                    this.message(w2utils.lang(this.msgNeedReload), function () {
-                                        delete this.last.xhr_offset;
-                                        this.reload();
-                                    }.bind(this));
+                                    //hilmer desactivado por mal refresh / count
+                                    //this.message(w2utils.lang(this.msgNeedReload), function () {
+                                    //    delete this.last.xhr_offset;
+                                    //    this.reload();
+                                    //}.bind(this));
                                     return;
                                 }
                             }
@@ -6089,6 +6169,7 @@ w2utils.event = {
             if (typeof callBack == 'function') callBack(data); // need to be befor event:after
             // after event
             this.trigger($.extend(edata, { phase: 'after' }));
+            this.onReloadComplete();
         },
 
         error: function (msg) {
@@ -6779,7 +6860,7 @@ w2utils.event = {
         },
 
         columnClick: function (field, event) {
-            // event before
+            // event before            
             var edata = this.trigger({ phase: 'before', type: 'columnClick', target: this.name, field: field, originalEvent: event });
             if (edata.isCancelled === true) return;
             // default behaviour
@@ -6793,47 +6874,49 @@ w2utils.event = {
                         this.selectAll();
                     }
                 }
+                console.log(1);
             } else {
-                if (event.altKey){
-                    var column = this.getColumn(field);
-                    if (column && column.sortable) this.sort(field, null, (event && (event.ctrlKey || event.metaKey) ? true : false) );
-                }
+                //Hilmer desactivo y solo dejo el sort :D
+                //if (event.altKey){
+                var column = this.getColumn(field);
+                if (column && column.sortable) this.sort(field, null, (event && (event.ctrlKey || event.metaKey) ? true : false) );
+                //}
                 // select entire column
-                if (edata.field == 'line-number') {
-                    if (this.getSelection().length >= this.records.length) {
-                        this.selectNone();
-                    } else {
-                        this.selectAll();
-                    }
-                } else {
-                    if (!event.shiftKey && !event.metaKey && !event.ctrlKey) {
-                        this.selectNone();
-                    }
-                    var tmp     = this.getSelection();
-                    var column  = this.getColumn(edata.field, true);
-                    var sel     = [];
-                    var cols    = [];
-                    // check if there was a selection before
-                    if (tmp.length != 0 && event.shiftKey) {
-                        var start = column;
-                        var end = tmp[0].column;
-                        if (start > end) {
-                            start = tmp[0].column;
-                            end = column;
-                        }
-                        for (var i=start; i<=end; i++) cols.push(i);
-                    } else {
-                        cols.push(column);
-                    }
-                    var edata = this.trigger({ phase: 'before', type: 'columnSelect', target: this.name, columns: cols });
-                    if (edata.isCancelled !== true) {
-                        for (var i = 0; i < this.records.length; i++) {
-                            sel.push({ recid: this.records[i].recid, column: cols });
-                        }
-                        this.select.apply(this, sel);
-                    }
-                    this.trigger($.extend(edata, { phase: 'after' }));
-                }
+                //if (edata.field == 'line-number') {
+                //    if (this.getSelection().length >= this.records.length) {
+                //        this.selectNone();
+                //    } else {
+                //        this.selectAll();
+                //    }
+                //} else {
+                //    if (!event.shiftKey && !event.metaKey && !event.ctrlKey) {
+                //        this.selectNone();
+                //    }
+                //    var tmp     = this.getSelection();
+                //    var column  = this.getColumn(edata.field, true);
+                //    var sel     = [];
+                //    var cols    = [];
+                //    // check if there was a selection before
+                //    if (tmp.length != 0 && event.shiftKey) {
+                //        var start = column;
+                //        var end = tmp[0].column;
+                //        if (start > end) {
+                //            start = tmp[0].column;
+                //            end = column;
+                //        }
+                //        for (var i=start; i<=end; i++) cols.push(i);
+                //    } else {
+                //        cols.push(column);
+                //    }
+                //    var edata = this.trigger({ phase: 'before', type: 'columnSelect', target: this.name, columns: cols });
+                //    if (edata.isCancelled !== true) {
+                //        for (var i = 0; i < this.records.length; i++) {
+                //            sel.push({ recid: this.records[i].recid, column: cols });
+                //        }
+                //        this.select.apply(this, sel);
+                //    }
+                //    this.trigger($.extend(edata, { phase: 'after' }));
+                //}
             }
             // event after
             this.trigger($.extend(edata, { phase: 'after' }));
