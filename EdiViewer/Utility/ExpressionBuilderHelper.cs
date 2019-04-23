@@ -28,6 +28,22 @@ namespace EdiViewer.Utility
             public object Value { get; set; }
             public Comparison Comparison { get; set; }
         }
+        public static List<T> W2uiSearch<T>(List<T> Records, IFormCollection GridForm)
+        {
+            int GridLimit = Convert.ToInt32(GridForm["limit"].Fod());
+            int GridOffset = Convert.ToInt32(GridForm["offset"].Fod());
+            List<ExpressionFilter> ListGridSearch = new List<ExpressionFilter>();
+            Utility.ExpressionBuilderHelper.ConstructList(ref ListGridSearch, GridForm);
+            var ExpressionTree = Utility.ExpressionBuilderHelper.ConstructAndExpressionTree<T>(ListGridSearch);
+            if (ListGridSearch.Count > 0)
+            {
+                var AnonFunc = ExpressionTree.Compile();
+                return Records.Where(AnonFunc).Skip(GridOffset).Take(GridLimit).ToList();
+            } else
+            {
+                return Records.Skip(GridOffset).Take(GridLimit).ToList();
+            }
+        }
         public static Expression<Func<T, bool>> ConstructAndExpressionTree<T>(List<ExpressionFilter> filters)
         {
             if (filters.Count == 0)
@@ -48,7 +64,7 @@ namespace EdiViewer.Utility
         }
         public static class ExpressionRetriever
         {
-            private static MethodInfo containsMethod = typeof(string).GetMethod("Contains");
+            private static MethodInfo containsMethod = typeof(string).GetMethod("Contains", new Type[] { typeof(string) });
             private static MethodInfo startsWithMethod = typeof(string).GetMethod("StartsWith", new Type[] { typeof(string) });
             private static MethodInfo endsWithMethod = typeof(string).GetMethod("EndsWith", new Type[] { typeof(string) });
 

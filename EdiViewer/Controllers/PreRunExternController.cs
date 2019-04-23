@@ -15,11 +15,11 @@ namespace EdiViewer.Controllers
             {
                 filterContext.Result = new RedirectResult("/Account/?error=NO_AUTH");
             }
-            else
-            {
-                if (!HttpContext.Session.GetObjSession<bool>("Session.IsExtern"))
-                    filterContext.Result = new RedirectResult("/Home/");
-            }
+            //else
+            //{
+            //    if (!HttpContext.Session.GetObjSession<bool>("Session.IsExtern"))
+            //        filterContext.Result = new RedirectResult("/Home/");
+            //}
             base.OnActionExecuting(filterContext);
         }
     }

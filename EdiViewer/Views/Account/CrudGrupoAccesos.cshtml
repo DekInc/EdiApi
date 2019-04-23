@@ -1,6 +1,6 @@
 ﻿@using ComModels
 @{
-    ViewData["Title"] = "Crud usuarios";
+    ViewData["Title"] = "Crud grupos y accesos";
     Layout = "_Layout";
 }
 <div id="mainDiv">
@@ -8,10 +8,10 @@
         <div class="card-deck cardMain">
             <div class="card box-shadow">
                 <div class="card-header">
-                    <h4 class="my-0 font-weight-normal">Crud usuarios</h4>
+                    <h4 class="my-0 font-weight-normal">Crud grupos y accesos</h4>
                 </div>
                 <div class="card-body">
-                    <div id="gridUsuarios" style="min-height: 460px; width: 100%;">
+                    <div id="gridGroupsAccesss" style="min-height: 460px; width: 100%;">
 
                     </div>
                 </div>
@@ -37,41 +37,40 @@
     function crearGrid() {
         var config = {
             grid: {
-                name: 'gridUsuarios',
+                name: 'gridGroupsAccesss',
                 selectType: 'cell',
                 bResponsive: true,
                 bMobile: window.mobileAndTabletcheck(),
-                url: "@this.Url.Action("GetUsers", "Account")",
+                url: "@this.Url.Action("GetGroupsAccesss", "Account")",
                 show: {
                     footer: true,
                     toolbar: true,
                     expandColumn: window.mobileAndTabletcheck()
                 },
                 searches: [
-                    { field: 'codUsr', caption: 'Cod. usuario', type: 'text' },
-                    { field: 'nomUsr', caption: 'Nombre usuario', type: 'text' },
-                    { field: 'cliente', caption: 'Cliente', type: 'text' }
+                    { field: 'access', caption: 'Acceso', type: 'text' },
+                    { field: 'group', caption: 'Grupo', type: 'text' },
                 ],
                 colShowResponsive: [
-                    { field: 'ienetGroup' },
-                    { field: 'codUsr' }                    
+                    { field: 'descr' }
                 ],
                 columns: [
-                    { field: "id", caption: "Id", sortable: true, hidden: false},
-                    { field: "idIenetGroup", caption: "IdIenetGroup", sortable: true},
-                    { field: "ienetGroup", caption: "Grupo", sortable: true},
-                    { field: "codUsr", caption: "Cod. usuario", sortable: true},
-                    { field: "nomUsr", caption: "Nombre usuario", sortable: true},
-                    { field: "clienteId", caption: "ClienteId", sortable: true},
-                    { field: "cliente", caption: "Cliente", sortable: true}
+                    { field: "id", caption: "Id", sortable: true, hidden: false },
+                    { field: "idIenetAccess", caption: "IdIenetAccess", sortable: true, hidden: false},
+                    { field: "idIenetGroup", caption: "IdIenetGroup", sortable: true },
+                    { field: "access", caption: "Acceso", sortable: true },
+                    { field: "group", caption: "Grupo", sortable: true },
+                    //Id = Ga.Id,
+                    //IdIenetAccess = A.Id,
+                    //IdIenetGroup = G.Id,
+                    //Access = A.Descr,
+                    //Group = G.Descr
                 ]
             }
         };
-        mainGrid = $('#gridUsuarios').w2grid(config.grid);
+        mainGrid = $('#gridGroupsAccesss').w2grid(config.grid);
     }
     $(document).ready(function () {
         crearGrid();
     });
 </script>
-
-

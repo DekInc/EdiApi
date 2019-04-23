@@ -3559,7 +3559,7 @@ w2utils.event = {
         this.bMobile = false;
         this.started = false;
         this.columnGroups = [];       // { span: int, caption: 'string', master: true/false }
-        this.records      = [];       // { recid: int(requied), field1: 'value1', ... fieldN: 'valueN', style: 'string',  changes: object }
+        this.records      = [];       // { recid: int(required), field1: 'value1', ... fieldN: 'valueN', style: 'string',  changes: object }
         this.summary      = [];       // arry of summary records, same structure as records array
         this.searches     = [];       // { type, caption, field, inTag, outTag, hidden }
         this.searchData   = [];
@@ -3815,7 +3815,9 @@ w2utils.event = {
         },
 
         operators: { // for search fields
-            "text"    : ['is', 'begins', 'contains', 'ends'],
+            //hilmer operators
+            //"text"    : ['is', 'begins', 'contains', 'ends'],
+            "text": ['is', 'contains'],
             "number"  : ['is', 'between', { oper: 'less', text: 'less than'}, { oper: 'more', text: 'more than' }],
             "date"    : ['is', 'between', { oper: 'less', text: 'before'}, { oper: 'more', text: 'after' }],
             "list"    : ['is'],
@@ -3878,7 +3880,9 @@ w2utils.event = {
         onRestore          : null,        // called when editable record is restored
         //onExpand: null,
         onExpand: function (event) {
-            var idR = event.box_id.replace('grid_gridProd_rec_', '').replace('_expanded', '');
+            
+            var idR = event.box_id.replace('grid_' + this.name + '_rec_', '').replace('_expanded', '');
+            console.log(idR);
             var r1 = this.records.filter(O => O.recid == idR)[0];
             var mV1 = '<div class="container" style="overflow: scroll; max-width: 90vw; margin-right: 0; margin-left: 0;">';
             for (var i = 0; i < this.columns.length; i++) {
@@ -3913,6 +3917,10 @@ w2utils.event = {
                         else
                             this.columns[i].hidden = true;
                     }
+                    $.each($('.w2ui-grid-records'), function (key, value) {
+                        console.log(this);
+                        $(this).attr('style', $(this).attr('style').replace('hidden', 'auto'));
+                    });
                 }
                 //this.started = true;
             }

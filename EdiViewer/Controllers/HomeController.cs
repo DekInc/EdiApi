@@ -36,6 +36,7 @@ namespace EdiViewer.Controllers
         public IActionResult Exit()
         {
             HttpContext.Session.SetObjSession("Session.HashId", string.Empty);
+            HttpContext.Session.Clear();
             return new RedirectResult("/Account/");
         }        
         [HttpGet]

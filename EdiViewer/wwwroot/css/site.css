@@ -307,7 +307,8 @@ table.dataTable thead th, table.dataTable thead td {
 .mainJumbo {
     /*width: 98vw;*/
     height: 90vh;
-    /*background: #b7baa5 !important;*/
+    background-color: unset !important;
+    background: rgba(124, 143, 170, 0.60) !important;
 }
 .indexJumbo {
     height: 80vh;

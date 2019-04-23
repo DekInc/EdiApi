@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Dynamic;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using CoreApiClient;
@@ -9,6 +11,7 @@ using System.Text;
 using System.Net;
 using ComModels;
 using EdiViewer.Models;
+using Microsoft.AspNetCore.Http;
 
 namespace EdiViewer.Controllers
 {
@@ -30,6 +33,10 @@ namespace EdiViewer.Controllers
         {
             return View();
         }
+        public IActionResult CrudGrupoAccesos()
+        {
+            return View();
+        }        
         [HttpGet]
         public bool MiAlive()
         {
@@ -37,30 +44,17 @@ namespace EdiViewer.Controllers
             if (string.IsNullOrEmpty(CodUsr)) return false;
             return true;
         }
-        public async Task<IEnumerable<IenetUsersModel>> GetUsers()
+        public async Task<IActionResult> GetUsers()
         {
             try
-            {
-                RetData<IEnumerable<IenetUsers>> ListUsers = await ApiClientFactory.Instance.GetUsers(ApiClientFactory.Instance.Encrypt($"Fun|{HttpContext.Session.GetObjSession<string>("Session.HashId")}"));
-                //if (ListUsers.Info.CodError != 0) {
-                //    return new RetData<IEnumerable<IenetUsersModel>>
-                //    {
-                //        Info = ListUsers.Info
-                //    };
-                //}
+            {                
+                RetData<IEnumerable<IenetUsers>> ListUsers = await ApiClientFactory.Instance.GetUsers(ApiClientFactory.Instance.Encrypt($"Fun|{HttpContext.Session.GetObjSession<string>("Session.HashId")}"));                
                 IEnumerable<IenetGroups> ListGroups = HttpContext.Session.GetObjSession<IEnumerable<IenetGroups>>("ListGroups");
-                RetData<IEnumerable<Clientes>> ListClients = await ApiClientFactory.Instance.GetAllClients(ApiClientFactory.Instance.Encrypt($"Fun|{HttpContext.Session.GetObjSession<string>("Session.HashId")}"));
-                //if (ListClients.Info.CodError != 0)
-                //{
-                //    return new RetData<IEnumerable<IenetUsersModel>>
-                //    {
-                //        Info = ListUsers.Info
-                //    };
-                //}
-                List<IenetUsersModel> ListUserM = new List<IenetUsersModel>();
+                RetData<IEnumerable<Clientes>> ListClients = await ApiClientFactory.Instance.GetAllClients(ApiClientFactory.Instance.Encrypt($"Fun|{HttpContext.Session.GetObjSession<string>("Session.HashId")}"));                
+                List<IenetUsersModel> Records = new List<IenetUsersModel>();
                 foreach (IenetUsers UserO in ListUsers.Data)
                 {
-                    ListUserM.Add(new IenetUsersModel() {
+                    Records.Add(new IenetUsersModel() {
                         Id = UserO.Id,
                         CodUsr = UserO.CodUsr,
                         IdIenetGroup = UserO.IdIenetGroup,
@@ -70,30 +64,87 @@ namespace EdiViewer.Controllers
                         IenetGroup = ListGroups.Where(G => G.Id == UserO.IdIenetGroup).Fod().Descr
                     });
                 }
-                return ListUserM;
-                //return new RetData<IEnumerable<IenetUsersModel>>
-                //{
-                //    Data = ListUserM,
-                //    Info = new RetInfo()
-                //    {
-                //        CodError = 0,
-                //        Mensaje = "ok",
-                //        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
-                //    }
-                //};
+                int Total = 0;
+                if (Records.Count > 0) {
+                    Records = Utility.ExpressionBuilderHelper.W2uiSearch<IenetUsersModel>(Records, Request.Form);
+                    Total = Records.Count;
+                }
+                return Json(new { Total, Records, errorMessage = "" });
             }
-            catch // (Exception e1)
+            catch (Exception e1)
             {
-                return new List<IenetUsersModel>();
-                //return new RetData<IEnumerable<IenetUsersModel>>
-                //{
-                //    Info = new RetInfo()
-                //    {
-                //        CodError = -1,
-                //        Mensaje = e1.ToString(),
-                //        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
-                //    }
-                //};
+                return Json(new { total = 0, records = "", errorMessage = e1.ToString() });
+            }
+        }
+        public async Task<IActionResult> GetGroups()
+        {
+            try
+            {                
+                RetData<IEnumerable<IenetGroups>> ListGroups = await ApiClientFactory.Instance.GetGroups(ApiClientFactory.Instance.Encrypt($"Fun|{HttpContext.Session.GetObjSession<string>("Session.HashId")}"));
+                List<IenetGroupsModel> Records = ListGroups.Data.Select(O => new IenetGroupsModel() { Id = O.Id, Descr = O.Descr }).ToList();
+                int Total = 0;
+                if (ListGroups.Data.Count() > 0)
+                {   
+                    Records = Utility.ExpressionBuilderHelper.W2uiSearch<IenetGroupsModel>(Records, Request.Form);
+                    Total = Records.Count;
+                }
+                return Json(new { Total, Records, errorMessage = "" });
+            }
+            catch (Exception e1)
+            {
+                return Json(new { total = 0, records = "", errorMessage = e1.ToString() });
+            }
+        }
+        public async Task<IActionResult> GetAccesss()
+        {
+            try
+            {
+                RetData<IEnumerable<IenetAccesses>> ListData = await ApiClientFactory.Instance.GetIenetAccesses(ApiClientFactory.Instance.Encrypt($"Fun|{HttpContext.Session.GetObjSession<string>("Session.HashId")}"));
+                List<IenetAccessesModel> Records = ListData.Data.Select(O => new IenetAccessesModel() { Id = O.Id, Descr = O.Descr }).ToList();
+                int Total = 0;
+                if (Records.Count() > 0)
+                {
+                    Records = Utility.ExpressionBuilderHelper.W2uiSearch<IenetAccessesModel>(Records, Request.Form);
+                    Total = Records.Count;
+                }
+                return Json(new { Total, Records, errorMessage = "" });
+            }
+            catch (Exception e1)
+            {
+                return Json(new { total = 0, records = "", errorMessage = e1.ToString() });
+            }
+        }
+        public async Task<IActionResult> GetGroupsAccesss()
+        {
+            try
+            {
+                RetData<IEnumerable<IenetGroups>> ListGroups = await ApiClientFactory.Instance.GetGroups(ApiClientFactory.Instance.Encrypt($"Fun|{HttpContext.Session.GetObjSession<string>("Session.HashId")}"));
+                RetData<IEnumerable<IenetAccesses>> ListAccess = await ApiClientFactory.Instance.GetIenetAccesses(ApiClientFactory.Instance.Encrypt($"Fun|{HttpContext.Session.GetObjSession<string>("Session.HashId")}"));
+                RetData<IEnumerable<IenetGroupsAccesses>> ListGroupsAccesses = await ApiClientFactory.Instance.GetIEnetGroupsAccesses(ApiClientFactory.Instance.Encrypt($"Fun|{HttpContext.Session.GetObjSession<string>("Session.HashId")}"));
+                List<IenetGroupsAccessesModel> Records = (
+                    from Ga in ListGroupsAccesses.Data
+                    from G in ListGroups.Data
+                    from A in ListAccess.Data
+                    where Ga.IdIenetAccess == A.Id
+                    && Ga.IdIenetGroup == G.Id
+                    select new IenetGroupsAccessesModel() {
+                        Id = Ga.Id,
+                        IdIenetAccess = A.Id,
+                        IdIenetGroup = G.Id,
+                        Access = A.Descr,
+                        Group = G.Descr
+                    }).ToList();
+                int Total = 0;
+                if (Records.Count() > 0)
+                {
+                    Records = Utility.ExpressionBuilderHelper.W2uiSearch<IenetGroupsAccessesModel>(Records, Request.Form);
+                    Total = Records.Count;
+                }
+                return Json(new { Total, Records, errorMessage = "" });
+            }
+            catch (Exception e1)
+            {
+                return Json(new { total = 0, records = "", errorMessage = e1.ToString() });
             }
         }
         [HttpPost]
@@ -140,7 +191,7 @@ namespace EdiViewer.Controllers
         public async Task<IActionResult> LoginIe(string TxtUser, string TxtPassword)
         {
             try
-            {
+            {                
                 string UserEncrypted = ApiClientFactory.Instance.Encrypt(TxtUser);
                 string PasswordEncrypted = ApiClientFactory.Instance.Encrypt(TxtPassword);
                 string HashId = await ApiClientFactory.Instance.LoginIe(UserEncrypted, PasswordEncrypted);

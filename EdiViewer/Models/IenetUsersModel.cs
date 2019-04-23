@@ -8,7 +8,7 @@ namespace EdiViewer.Models
     public class IenetUsersModel
     {
         public int Id { get; set; }
-        public int RecId { get { return Id; } }
+        public int recid { get { return Id; } }
         public int IdIenetGroup { get; set; }
         public string IenetGroup { get; set; }
         public string CodUsr { get; set; }

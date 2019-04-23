@@ -1,8 +1,67 @@
-﻿
+﻿@using ComModels
 @{
-    ViewData["Title"] = "CrudGrupos";
-    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "Crud grupos";
+    Layout = "_Layout";
 }
+<div id="mainDiv">
+    <div class="container">
+        <div class="card-deck cardMain">
+            <div class="card box-shadow">
+                <div class="card-header">
+                    <h4 class="my-0 font-weight-normal">Crud grupos</h4>
+                </div>
+                <div class="card-body">
+                    <div id="gridGrupos" style="min-height: 460px; width: 100%;">
 
-<h2>CrudGrupos</h2>
-
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    var mainGrid = null;
+    var foo = function () {
+    };
+    $.urlParam = function (name) {
+        var results = new RegExp('[\?&]' + name + '=([^&#]*)').exec(window.location.href);
+        if (results == null) {
+            return null;
+        }
+        return decodeURI(results[1]) || 0;
+    }
+    function refreshGrid(auto) {
+        w2ui.grid.autoLoad = auto;
+        w2ui.grid.skip(0);
+    }
+    function crearGrid() {
+        var config = {
+            grid: {
+                name: 'gridGrupos',
+                selectType: 'cell',
+                bResponsive: true,
+                bMobile: window.mobileAndTabletcheck(),
+                url: "@this.Url.Action("GetGroups", "Account")",
+                show: {
+                    footer: true,
+                    toolbar: true,
+                    expandColumn: window.mobileAndTabletcheck()
+                },
+                searches: [
+                    { field: 'descr', caption: 'Descripción', type: 'text' }
+                ],
+                colShowResponsive: [
+                    { field: 'descr' }
+                ],
+                columns: [
+                    { field: "id", caption: "Id", sortable: true, hidden: false},
+                    { field: "descr", caption: "Descripción", sortable: true}
+                ]
+            }
+        };
+        mainGrid = $('#gridGrupos').w2grid(config.grid);
+    }
+    $(document).ready(function () {
+        crearGrid();
+    });
+</script>
