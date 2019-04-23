@@ -1014,12 +1014,7 @@ namespace EdiViewer.Controllers
         public async Task<IActionResult> GetPaylessProdPriori2()
         {
             try
-            {//field, type, operator, value, searchLogic, search[0][field],  is, begins, contains, ends
-                IFormCollection GridForm = Request.Form;
-                int GridLimit = Convert.ToInt32(GridForm["limit"].Fod());
-                int GridOffset = Convert.ToInt32(GridForm["offset"].Fod());
-                List<Utility.ExpressionBuilderHelper.ExpressionFilter> ListGridSearch = new List<Utility.ExpressionBuilderHelper.ExpressionFilter>();
-                Utility.ExpressionBuilderHelper.ConstructList(ref ListGridSearch, GridForm);                
+            {//field, type, operator, value, searchLogic, search[0][field],  is, begins, contains, ends                
                 RetData<Tuple<IEnumerable<PaylessProdPrioriM>, IEnumerable<PaylessProdPrioriDet>>> ListProdPriori = await ApiClientFactory.Instance.GetPaylessProdPriori("08/04/2019");
                 if (ListProdPriori.Info.CodError != 0)
                     return Json(new { errorMessage = ListProdPriori.Info.Mensaje, data = "", });
@@ -1028,7 +1023,7 @@ namespace EdiViewer.Controllers
                     return Json(new { total = 0, errorMessage = (ListProdPriori.Info.CodError != 0 ? ListProdPriori.Info.Mensaje : string.Empty), records = "" });
                 }
                 int Total = ListProdPriori.Data.Item2.Count();
-                List<PaylessProdPrioriDetModel> Records = ListProdPriori.Data.Item2.Skip(GridOffset).Take(100).Select(O => new PaylessProdPrioriDetModel()
+                List<PaylessProdPrioriDetModel> Records = ListProdPriori.Data.Item2.Select(O => new PaylessProdPrioriDetModel()
                 {
                     Barcode = O.Barcode,
                     Cargada = O.Cargada,
@@ -1050,10 +1045,8 @@ namespace EdiViewer.Controllers
                     Producto = O.Producto,
                     Talla = O.Talla
                 }).ToList();
-                if (ListGridSearch.Count > 0) {
-                    var ExpressionTree = Utility.ExpressionBuilderHelper.ConstructAndExpressionTree<PaylessProdPrioriDetModel>(ListGridSearch);
-                    var AnonFunc = ExpressionTree.Compile();
-                    Records = Records.Where(AnonFunc).ToList();
+                if (Records.Count > 0) {
+                    Records = Utility.ExpressionBuilderHelper.W2uiSearch<PaylessProdPrioriDetModel>(Records, Request.Form);
                     Total = Records.Count;
                 }
                 return Json(new { Total, Records, errorMessage = "" });

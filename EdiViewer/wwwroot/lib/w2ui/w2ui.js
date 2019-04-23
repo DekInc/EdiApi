@@ -3687,6 +3687,7 @@ w2utils.event = {
         };
 
         // these are the stateSave() fallback values if the property to save is not a property of the column object
+        //Hilmer campos
         this.stateSaveColumnFallbackValues = {
             caption         : '',     // column caption
             field           : '',     // field name to map column to a record

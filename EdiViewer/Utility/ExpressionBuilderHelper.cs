@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Linq.Dynamic.Core;
 using System.Reflection;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
@@ -33,16 +34,18 @@ namespace EdiViewer.Utility
             int GridLimit = Convert.ToInt32(GridForm["limit"].Fod());
             int GridOffset = Convert.ToInt32(GridForm["offset"].Fod());
             List<ExpressionFilter> ListGridSearch = new List<ExpressionFilter>();
-            Utility.ExpressionBuilderHelper.ConstructList(ref ListGridSearch, GridForm);
-            var ExpressionTree = Utility.ExpressionBuilderHelper.ConstructAndExpressionTree<T>(ListGridSearch);
+            List<ExpressionFilter> ListGridSort = new List<ExpressionFilter>();
+            ConstructList(ref ListGridSearch, ref ListGridSort, GridForm);
+            var ExpressionTree = ConstructAndExpressionTree<T>(ListGridSearch);
             if (ListGridSearch.Count > 0)
             {
                 var AnonFunc = ExpressionTree.Compile();
-                return Records.Where(AnonFunc).Skip(GridOffset).Take(GridLimit).ToList();
+                Records = Records.Where(AnonFunc).Skip(GridOffset).Take(GridLimit).ToList();
+                if (ListGridSort.Count > 0)
+                    Records = Records.AsQueryable().OrderBy(ListGridSort.Fod().PropertyName + " " + ListGridSort.Fod().Value.ToString()).ToList();
             } else
-            {
-                return Records.Skip(GridOffset).Take(GridLimit).ToList();
-            }
+                Records = Records.Skip(GridOffset).Take(GridLimit).ToList();
+            return Records;
         }
         public static Expression<Func<T, bool>> ConstructAndExpressionTree<T>(List<ExpressionFilter> filters)
         {
@@ -97,11 +100,17 @@ namespace EdiViewer.Utility
                 }
             }
         }
-        public static void ConstructList(ref List<ExpressionFilter> ListGridSearch, IFormCollection GridForm)
+        public static void ConstructList(ref List<ExpressionFilter> ListGridSearch, ref List<ExpressionFilter> ListGridSort, IFormCollection GridForm)
         {
             for (UInt16 i = 0; i < 100; i++)
             {
-                if (GridForm[$"search[{i}][field]"].Fod() == null) break;
+                if (GridForm[$"sort[0][field]"].Fod() != null) {
+                    ListGridSort.Add(new ExpressionFilter() {
+                        PropertyName = GridForm[$"sort[0][field]"].Fod(),
+                        Value = GridForm[$"sort[0][direction]"].Fod()
+                    });
+                }
+                if (GridForm[$"search[{i}][field]"].Fod() == null) break;                
                 ListGridSearch.Add(new Utility.ExpressionBuilderHelper.ExpressionFilter()
                 {
                     PropertyName = GridForm[$"search[{i}][field]"].Fod(),
@@ -110,7 +119,7 @@ namespace EdiViewer.Utility
                     //Type = GridForm[$"search[{i}][type]"].Fod(),
                     //Operator = GridForm[$"search[{i}][operator]"].Fod(),
                     //Value = GridForm[$"search[{i}][value]"].Fod()
-                });
+                });                
                 string SearchType = GridForm[$"search[{i}][operator]"].Fod();
                 switch (SearchType)
                 {
