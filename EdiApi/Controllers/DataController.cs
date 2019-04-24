@@ -1324,12 +1324,12 @@ namespace EdiApi.Controllers
             }
         }
         [HttpGet]
-        public RetData<IEnumerable<string>> GetPaylessPeriodPriori(int ClienteId)
+        public RetData<IEnumerable<string>> GetPaylessPeriodPriori()
         {
             DateTime StartTime = DateTime.Now;
             try
             {
-                List<string> ListProdPriori = DbO.PaylessProdPrioriM.Where(O2 => O2.ClienteId == ClienteId).Select(O => O.Periodo).ToList();
+                List<string> ListProdPriori = DbO.PaylessProdPrioriM.Select(O => O.Periodo).ToList();
                 if (ListProdPriori.Count > 0)
                     ListProdPriori = ListProdPriori.Distinct().ToList();
                 return new RetData<IEnumerable<string>>
@@ -1538,7 +1538,7 @@ namespace EdiApi.Controllers
                     ).ToList();
                 foreach (PaylessProdPrioriDet Ex in ListExist)
                 {
-                    Ex.Estado = "En Excel, Escaneado";
+                    Ex.Estado = "En Excel y escaneado";
                     ListNotExist.Remove(Ex);
                     List<PaylessProdPrioriArchDet> ListTemp = ListDet.Where(O => O.Barcode == Ex.Barcode).ToList();
                     foreach (PaylessProdPrioriArchDet O1 in ListTemp)
@@ -1547,11 +1547,11 @@ namespace EdiApi.Controllers
                     }
                     //ListDet.Remove(ListDet.Where(O => O.Barcode == Ex.Barcode).Fod());
                 }                
-                ListNotExist.ForEach(Ne => Ne.Estado = "En Excel, no escaneado" );
+                ListNotExist.ForEach(Ne => Ne.Estado = "En Excel y no escaneado" );
                 ListDet.ForEach(Sobra => {
                     ListNotExistSobrante.Add(new PaylessProdPrioriDet() {
                         Barcode = Sobra.Barcode,
-                        Estado = "Escaneado, no en Excel"
+                        Estado = "Escaneado y no encontrado en Excel"
                     });
                 });                
                 return new RetData<Tuple<IEnumerable<PaylessProdPrioriDet>, IEnumerable<PaylessProdPrioriDet>, IEnumerable<PaylessProdPrioriDet>>>

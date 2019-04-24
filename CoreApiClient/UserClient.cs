@@ -144,9 +144,9 @@ namespace CoreApiClient
             string JsonParams = JsonConvert.SerializeObject(ListUpload);
             return await PostGetAsyncJson<RetData<string>>(CreateRequestUri(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Data/SetPaylessProdPriori"), $"?ClienteId={ClienteId}&Periodo={Periodo}&codUsr={codUsr}&transporte={transporte}"), JsonParams);
         }
-        public async Task<RetData<IEnumerable<string>>> GetPaylessPeriodPriori(int ClienteId)
+        public async Task<RetData<IEnumerable<string>>> GetPaylessPeriodPriori()
         {
-            return await GetAsync<RetData<IEnumerable<string>>>(CreateRequestUri(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Data/GetPaylessPeriodPriori"), $"?ClienteId={ClienteId}"));
+            return await GetAsync<RetData<IEnumerable<string>>>(CreateRequestUri(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Data/GetPaylessPeriodPriori")));
         }
         public async Task<RetData<PaylessProdPrioriArchM>> SetPaylessProdPrioriFile(IEnumerable<PaylessProdPrioriArchDet> ListUpload, int ClienteId, string Periodo, string codUsr)
         {

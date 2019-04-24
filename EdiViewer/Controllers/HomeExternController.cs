@@ -69,7 +69,7 @@ namespace EdiViewer.Controllers
         {
             return View();
         }
-        public IActionResult CargaProdArchBod(int IdM = 0)
+        public IActionResult CargaProdArchBod(string idM = "0")
         {
             //IdM para exportar a Excel :)
             return View();
@@ -789,7 +789,7 @@ namespace EdiViewer.Controllers
             DateTime StartTime = DateTime.Now;
             try
             {
-                RetData<IEnumerable<string>> ListProdPriori = await ApiClientFactory.Instance.GetPaylessPeriodPriori(HttpContext.Session.GetObjSession<int>("Session.ClientId"));
+                RetData<IEnumerable<string>> ListProdPriori = await ApiClientFactory.Instance.GetPaylessPeriodPriori();
                 return ListProdPriori;
             }
             catch (Exception e1)
@@ -903,55 +903,7 @@ namespace EdiViewer.Controllers
                     }
                 };
             }
-        }
-        public async Task<IActionResult> GetPaylessPeriodPrioriFile()
-        {
-            try
-            {
-                //var dict = Request.Form.ToDictionary(x => x.Key, x => x.Value.ToString());
-                var draw = HttpContext.Request.Form["draw"].Fod();
-                // Skiping number of Rows count  
-                var start = Request.Form["start"].Fod();
-                // Paging Length 10,20  
-                var length = Request.Form["length"].Fod();
-                // Sort Column Name  
-                var sortColumn = Request.Form["columns[" + Request.Form["order[0][column]"].Fod() + "][name]"].Fod();
-                // Sort Column Direction ( asc ,desc)  
-                var sortColumnDirection = Request.Form["order[0][dir]"].Fod();
-                // Search Value from (Search box)   
-                var searchValue = Request.Form["search[value]"].Fod();
-                //Paging Size (10,20,50,100)  
-                int pageSize = length != null ? Convert.ToInt32(length) : 0;
-                int skip = start != null ? Convert.ToInt32(start) : 0;
-                int recordsTotal = 0;
-                RetData<Tuple<IEnumerable<PaylessProdPrioriArchMModel>, IEnumerable<PaylessProdPrioriArchDet>>> ListProdPrioriArch = await ApiClientFactory.Instance.GetPaylessPeriodPrioriFile();
-                if (ListProdPrioriArch.Info.CodError != 0)
-                    return Json(new { draw = 0, recordsFiltered = 0, recordsTotal = 0, errorMessage = ListProdPrioriArch.Info.Mensaje, data = "" });
-                if (ListProdPrioriArch.Data == null)
-                {
-                    return Json(new { draw = 0, recordsFiltered = 0, recordsTotal = 0, errorMessage = (ListProdPrioriArch.Info.CodError != 0 ? ListProdPrioriArch.Info.Mensaje : string.Empty), data = "" });
-                }
-                if (ListProdPrioriArch.Data.Item2.Count() == 0)
-                {
-                    return Json(new { draw = 0, recordsFiltered = 0, recordsTotal = 0, errorMessage = (ListProdPrioriArch.Info.CodError != 0 ? ListProdPrioriArch.Info.Mensaje : string.Empty), data = "" });
-                }
-                IEnumerable<PaylessProdPrioriArchMModel> ListProdPrioriArchM = ListProdPrioriArch.Data.Item1;                
-                if (!(string.IsNullOrEmpty(sortColumn) && string.IsNullOrEmpty(sortColumnDirection)))
-                {
-                    ListProdPrioriArchM = ListProdPrioriArchM.AsQueryable().OrderBy(sortColumn + " " + sortColumnDirection);
-                }
-                //total number of rows count
-                recordsTotal = ListProdPrioriArchM.Count();
-                //Paging
-                ListProdPrioriArchM = ListProdPrioriArchM.Skip(skip).Take(pageSize);
-                //Returning Json Data
-                return Json(new { draw, recordsFiltered = recordsTotal, recordsTotal, data = ListProdPrioriArchM, errorMessage = "" });
-            }
-            catch (Exception e1)
-            {
-                return Json(new { draw = 0, recordsFiltered = 0, recordsTotal = 0, errorMessage = e1.ToString(), data = "" });
-            }
-        }
+        }        
         public async Task<IActionResult> GetPaylessFileDif(string idProdArch, int idData = 1)
         {
             try

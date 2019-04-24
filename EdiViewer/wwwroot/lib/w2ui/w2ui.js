@@ -6128,6 +6128,13 @@ w2utils.event = {
                                     this.records.push(data.records[r]);
                                 }
                             }
+                            //hilmer agrego custom Exceptions
+                            //console.log(data);
+                            if (data.errorMessage != null) {
+                                if (data.errorMessage != '') {
+                                    menErrorEdi(data.errorMessage, 'Error Ajax Request');
+                                }
+                            }
                             // summary records (if any)
                             if (data.summary) {
                                 this.summary = [];

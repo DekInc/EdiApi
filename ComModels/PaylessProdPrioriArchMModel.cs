@@ -7,6 +7,7 @@ namespace ComModels
     public class PaylessProdPrioriArchMModel
     {
         public int Id { get; set; }
+        public int Recid { get { return Id; } }
         public string Periodo { get; set; }
         public int? ClienteId { get; set; }
         public string ClientName { get; set; }

@@ -6,84 +6,71 @@
             </div>
             <div class="modal-body">
                 <div id="divmodalCargaProdArchBodDetContent">
-                    <section id="tabs" class="project-tab">
-                        <div class="container">
-                            <div class="row">
-                                <div class="col-md-12">
-                                    <nav>
-                                        <div class="nav nav-tabs nav-fill" id="nav-tab" role="tablist">
-                                            <a class="nav-item nav-link active btn btn-primary" id="nav-home-tab" data-toggle="tab" href="#tab1" role="tab" aria-controls="tab1" aria-selected="true">En Excel, Escaneado</a>
-                                            <a class="nav-item nav-link btn btn-info" id="nav-profile-tab" data-toggle="tab" href="#tab2" role="tab" aria-controls="tab2" aria-selected="false">En Excel, no escaneado</a>
-                                            <a class="nav-item nav-link btn btn-info" id="nav-profile-tab" data-toggle="tab" href="#tab3" role="tab" aria-controls="tab3" aria-selected="false">Escaneado, no en Excel</a>                                            
-                                        </div>
-                                    </nav>
-                                    <div class="tab-content" id="nav-tabContent">
-                                        <div class="tab-pane fade show active" id="tab1" role="tabpanel" aria-labelledby="tab1">
-                                            <br />
-                                            <form id="formRepDet" accept-charset="UTF-8" method="post">
-                                                <table id="tblRepDet1" class="table table-striped table-bordered nowrap table-hover display tblReportes" cellspacing="0" style="width: 100%;">
-                                                    <thead>
-                                                        <tr>
-                                                            <th>Id</th>
-                                                            <th>OID</th>
-                                                            <th>Barcode</th>
-                                                            <th>Prioridad</th>
-                                                            <th>Pool P</th>
-                                                            <th>Lote</th>
-                                                            <th>Talla</th>
-                                                            <th>Estilo</th>
-                                                            <th>Genero</th>
-                                                            <th>Departamento</th>
-                                                            <th>CP</th>
-                                                            <th>Estado</th>
-                                                        </tr>
-                                                    </thead>
-                                                </table>
-                                                <br />
-                                                <br />
-                                            </form>
-                                        </div>
-                                        <div class="tab-pane fade" id="tab2" role="tabpanel" aria-labelledby="tab2">
-                                            <br />
-                                            <table id="tblRepDet2" class="table table-striped table-bordered nowrap table-hover display tblReportes" cellspacing="0" style="width: 100%;">
-                                                <thead>
-                                                    <tr>
-                                                        <th>Id</th>
-                                                        <th>OID</th>
-                                                        <th>Barcode</th>
-                                                        <th>Prioridad</th>
-                                                        <th>Pool P</th>
-                                                        <th>Lote</th>
-                                                        <th>Talla</th>
-                                                        <th>Estilo</th>
-                                                        <th>Genero</th>
-                                                        <th>Departamento</th>
-                                                        <th>CP</th>
-                                                        <th>Estado</th>
-                                                    </tr>
-                                                </thead>
-                                            </table>
-                                            <br />
-                                            <br />
-                                        </div>
-                                        <div class="tab-pane fade" id="tab3" role="tabpanel" aria-labelledby="tab3">
-                                            <br />
-                                            <table id="tblRepDet3" class="table table-striped table-bordered nowrap table-hover display tblReportes" cellspacing="0" style="width: 100%;">
-                                                <thead>
-                                                    <tr>
-                                                        <th>Barcode</th>
-                                                        <th>Estado</th>
-                                                    </tr>
-                                                </thead>
-                                            </table>
-                                            <br />
-                                            <br />
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+                    <ul class="nav nav-tabs" id="TabsDet" role="tablist">
+                        <li class="nav-item">
+                            <a class="nav-link active" id="tab1" data-toggle="tab" href="#tabContent1" role="tab" aria-controls="tabContent1" aria-selected="true">En Excel y escaneado</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="tab2" data-toggle="tab" href="#tabContent2" role="tab" aria-controls="tabContent2" aria-selected="false">En Excel y no escaneado</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="tab3" data-toggle="tab" href="#tabContent3" role="tab" aria-controls="tabContent3" aria-selected="false">Escaneado y no encontrado en Excel</a>
+                        </li>
+                    </ul>
+                    <div class="tab-content" id="TabsDetContent">
+                        <div class="tab-pane fade show active" id="tabContent1" role="tabpanel" aria-labelledby="home-tab">
+                            <br />
+                            <form id="formRepDet" accept-charset="UTF-8" method="post">
+                                <table id="tblRepDet1" class="table table-striped table-bordered nowrap table-hover display tblReportes" cellspacing="0" style="width: 100%;">
+                                    <thead>
+                                        <tr>
+                                            <th>Id</th>
+                                            <th>OID</th>
+                                            <th>Barcode</th>
+                                            <th>Prioridad</th>
+                                            <th>Pool P</th>
+                                            <th>Lote</th>
+                                            <th>Talla</th>
+                                            <th>Estilo</th>
+                                            <th>Genero</th>
+                                            <th>Departamento</th>
+                                            <th>CP</th>
+                                            <th>Estado</th>
+                                        </tr>
+                                    </thead>
+                                </table>
+                                <br />
+                                <br />
+                            </form>
                         </div>
-                    </section>
+                        <div class="tab-pane fade" id="tabContent2" role="tabpanel" aria-labelledby="profile-tab">
+                            <br />
+                            <table id="tblRepDet2" class="table table-striped table-bordered nowrap table-hover display tblReportes" cellspacing="0" style="width: 100%;">
+                                <thead>
+                                    <tr>
+                                        <th>Id</th>
+                                        <th>OID</th>
+                                        <th>Barcode</th>
+                                        <th>Prioridad</th>
+                                        <th>Pool P</th>
+                                        <th>Lote</th>
+                                        <th>Talla</th>
+                                        <th>Estilo</th>
+                                        <th>Genero</th>
+                                        <th>Departamento</th>
+                                        <th>CP</th>
+                                        <th>Estado</th>
+                                    </tr>
+                                </thead>
+                            </table>
+                            <br />
+                            <br />
+                        </div>
+                        <div class="tab-pane fade" id="tabContent3" role="tabpanel" aria-labelledby="contact-tab">
+                            <div id="gridRepDet3" style="min-height: 460px; width: 100%;"></div>                            
+                        </div>
+                    </div>
+                    <br />                    
                 </div>
             </div>
             <div class="modal-footer text-center">
@@ -94,6 +81,7 @@
 </div>
 <script>
     var idProdArch = 0;
+    var gridRepDet3 = null;
     function fillDet1() {
         tblReportes = $("#tblRepDet1").DataTable({
             select: true,
@@ -255,68 +243,52 @@
             ]
         });
     }
-    @*$(document).ready(function () {
-        $('#dtpPeriodUpload').datepicker();
-        $('#btnUpload').on('click', function () {
-            if ($('#dtpPeriodUpload').val() == '') {
-                menErrorEdi('El valor del periodo no puede estar vacio', 'Error');
-                return;
-            }
-            var fileExtension = ['xls', 'xlsx'];
-            var filename = $('#fUpload').val();
-            if (filename.length == 0) {
-                menErrorEdi('Por favor seleccione un archivo', 'Error');
-                return false;
-            }
-            else {
-                var extension = filename.replace(/^.*\./, '');
-                if ($.inArray(extension, fileExtension) == -1) {
-                    menErrorEdi('Solo se permiten archivos de Excel con extensiones: .xls y .xlsx', 'Error');
-                    return false;
-                }
-            }
-            $('#divSpinUploadFile').show();
-            var fdata = new FormData();
-            var fileUpload = $("#fUpload").get(0);
-            var files = fileUpload.files;
-            fdata.append(files[0].name, files[0]);
-            $.ajax({
-                type: "POST",
-                url: "@this.Url.Action("SetPaylessProdPriori")?dtpPeriodUpload=" + $('#dtpPeriodUpload').val() + '&txtTransporte=' + $('#txtTransporte').val(),
-                beforeSend: function (xhr) {
-                    xhr.setRequestHeader("XSRF-TOKEN",
-                        $('input:hidden[name="__RequestVerificationToken"]').val());
+    function refreshGrid(auto) {
+        w2ui.grid.autoLoad = auto;
+        w2ui.grid.skip(0);
+    }
+    function crearGrid3() {
+        var config = {
+            grid: {
+                name: 'gridRepDet3',
+                selectType: 'cell',
+                bResponsive: true,
+                bMobile: window.mobileAndTabletcheck(),
+                url: '@this.Url.Action("GetPaylessFileDif", "Grids")?idProdArch=' + idProdArch + '&idData=3',
+                show: {
+                    footer: true,
+                    toolbar: true,
+                    expandColumn: window.mobileAndTabletcheck()                    
                 },
-                data: fdata,
-                contentType: false,
-                processData: false,
-                success: function (response) {
-                    $('#divSpinUploadFile').hide();
-                    if (response.info.codError != null) {
-                        if (response.info.codError != 0) {
-                            menErrorEdi(response.info.mensaje, 'Error en el proceso');
-                            return;
-                        }
-                    }
-                    if (response.length == 0)
-                        menErrorEdi('Error al subir el archivo', 'Error');
-                    else {
-                        if (response.info.mensaje == 'ok')
-                            menErrorEdi('Archivo cargado', 'Información');
-                        $('#dvData').html(response);
-                    }
-                },
-                error: function (resp) {
-                    $('#divSpinUploadFile').hide();
-                    menErrorEdi(resp.info.mensaje);
-                }
-            });
-        })
+                searches: [
+                    { field: "barcode", caption: "Cod. caja", type: 'text' },
+                    { field: "estado", caption: "Estado", type: 'text' }
+                ],
+                colShowResponsive: [
+                    { field: 'barcode' },
+                    { field: 'estado' }
+                ],
+                columns: [                    
+                    { field: "barcode", caption: "Cod. caja", sortable: true },
+                    { field: "estado", caption: "Estado", sortable: true }
+                ]
+            }
+        };
+        gridRepDet3 = $('#gridRepDet3').w2grid(config.grid);
+    }
+    $(document).ready(function () {
+        crearGrid3();
+        $('.nav-tabs a').on('shown.bs.tab', function (event) {
+            switch ($(event.target).attr('id')) {
+                case 'tab1':
+                    break;
+                case 'tab2':
+                    break;
+                case 'tab3':
+                    gridRepDet3.reload2('@this.Url.Action("GetPaylessFileDif", "Grids")?idProdArch=' + idProdArch + '&idData=3');
+                    break;
+                default:
+            }
+        });
     });
-    $('#modalPopNewProdUpload').on("shown.bs.modal", function () {
-        $('#btnPopNewProdUploadLabelOk').focus();
-    });
-    $('#btnPopNewProdUploadLabelOk').on('click', function () {
-
-    });*@
 </script>

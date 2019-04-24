@@ -103,5 +103,68 @@ namespace EdiViewer.Controllers
                 return Json(new { total = 0, records = "", errorMessage = e1.ToString() });
             }
         }
+        public async Task<IActionResult> GetPaylessPeriodPrioriFile() {
+            try {
+                RetData<Tuple<IEnumerable<PaylessProdPrioriArchMModel>, IEnumerable<PaylessProdPrioriArchDet>>> ListProdPrioriArch = await ApiClientFactory.Instance.GetPaylessPeriodPrioriFile();
+                if (ListProdPrioriArch.Info.CodError != 0)
+                    return Json(new { total = 0, records = "", errorMessage = ListProdPrioriArch.Info.Mensaje });
+                if (ListProdPrioriArch.Data == null)
+                    return Json(new { total = 0, records = "", errorMessage = (ListProdPrioriArch.Info.CodError != 0 ? ListProdPrioriArch.Info.Mensaje : string.Empty) });
+                if (ListProdPrioriArch.Data.Item2.Count() == 0)
+                    return Json(new { total = 0, records = "", errorMessage = (ListProdPrioriArch.Info.CodError != 0 ? ListProdPrioriArch.Info.Mensaje : string.Empty) });
+                List<PaylessProdPrioriArchMModel> Records = ListProdPrioriArch.Data.Item1.OrderByDescending(O => O.Periodo.ToDateFromEspDate()).ToList();
+                int Total = Records.Count;
+                if (Records.Count() > 0)
+                    Records = Utility.ExpressionBuilderHelper.W2uiSearch(Records, Request.Form);
+                return Json(new { Total, Records, errorMessage = "" });
+            } catch (Exception e1) {
+                return Json(new { total = 0, records = "", errorMessage = e1.ToString() });
+            }
+        }
+        public async Task<IActionResult> GetPaylessFileDif(string idProdArch, int idData = 1) {
+            try {
+                //if (idProdArch == "0") return null;
+                RetData<Tuple<IEnumerable<PaylessProdPrioriDet>, IEnumerable<PaylessProdPrioriDet>, IEnumerable<PaylessProdPrioriDet>>> ListProdPrioriArch = await ApiClientFactory.Instance.GetPaylessFileDif(Convert.ToInt32(idProdArch));
+                if (ListProdPrioriArch.Info.CodError != 0)
+                    return Json(new { total = 0, records = "", errorMessage = ListProdPrioriArch.Info.Mensaje });
+                if (ListProdPrioriArch.Data == null)
+                    return Json(new { total = 0, records = "", errorMessage = (ListProdPrioriArch.Info.CodError != 0 ? ListProdPrioriArch.Info.Mensaje : string.Empty) });
+                if (ListProdPrioriArch.Data.Item1.Count() == 0 && idData == 1)
+                    return Json(new { total = 0, records = "", errorMessage = (ListProdPrioriArch.Info.CodError != 0 ? ListProdPrioriArch.Info.Mensaje : string.Empty) });
+                if (ListProdPrioriArch.Data.Item2.Count() == 0 && idData == 2)
+                    return Json(new { total = 0, records = "", errorMessage = (ListProdPrioriArch.Info.CodError != 0 ? ListProdPrioriArch.Info.Mensaje : string.Empty) });
+                if (ListProdPrioriArch.Data.Item3.Count() == 0 && idData == 3)
+                    return Json(new { total = 0, records = "", errorMessage = (ListProdPrioriArch.Info.CodError != 0 ? ListProdPrioriArch.Info.Mensaje : string.Empty) });
+                List<PaylessProdPrioriDet> Item1 = ListProdPrioriArch.Data.Item1.ToList();
+                List<PaylessProdPrioriDet> Item2 = ListProdPrioriArch.Data.Item2.ToList();
+                List<PaylessProdPrioriDet> Item3 = ListProdPrioriArch.Data.Item3.ToList();
+                int Total = 0;
+                switch (idData) {
+                    case 1:
+                        Total = Item1.Count;
+                        if (Total > 0)
+                            Item1 = Utility.ExpressionBuilderHelper.W2uiSearch(Item1, Request.Form);
+                        break;
+                    case 2:
+                        Total = Item2.Count;
+                        if (Total > 0)
+                            Item2 = Utility.ExpressionBuilderHelper.W2uiSearch(Item2, Request.Form);
+                        break;
+                    case 3:
+                        Total = Item3.Count;
+                        if (Total > 0)
+                            Item3 = Utility.ExpressionBuilderHelper.W2uiSearch(Item3, Request.Form);
+                        break;
+                    default:
+                        break;
+                }
+                if (idData == 1) return Json(new { Total, Records = Item1, errorMessage = "" });
+                if (idData == 2) return Json(new { Total, Records = Item2, errorMessage = "" });
+                if (idData == 3) return Json(new { Total, Records = Item3, errorMessage = "" });
+                return Json(new { total = 0, records = "", errorMessage = (ListProdPrioriArch.Info.CodError != 0 ? ListProdPrioriArch.Info.Mensaje : string.Empty) });
+            } catch (Exception e1) {
+                return Json(new { total = 0, records = "", errorMessage = e1.ToString() });
+            }
+        }
     }
 }
