@@ -385,9 +385,10 @@ namespace EdiViewer.Controllers
             try
             {
                 RetData<Clientes> ClienteO = await ApiClientFactory.Instance.GetClient(HttpContext.Session.GetObjSession<int>("Session.ClientId"));
+                RetData<IEnumerable<PaylessTiendas>> ListClients = await ApiClientFactory.Instance.GetAllPaylessStores(ApiClientFactory.Instance.Encrypt($"Fun|{HttpContext.Session.GetObjSession<string>("Session.HashId")}"));
                 string ClientName = string.Empty;
-                if (ClienteO.Info.CodError == 0)
-                    ClientName = ClienteO.Data.Nombre;
+                if (ClienteO.Info.CodError == 0 && ListClients.Info.CodError == 0)
+                    ClientName = ListClients.Data.Where(C => C.ClienteId == ClienteO.Data.ClienteId).Fod().Descr;
                 return new RetData<string>()
                 {
                     Data = ClientName,
@@ -406,6 +407,27 @@ namespace EdiViewer.Controllers
                     }
                 };
             }
+        }
+        public async Task<IActionResult> PedidosPayless() {
+            try {
+                ViewBag.ListOldDis = null;
+                ViewBag.DateLastDis = DateTime.Now.ToString(ApplicationSettings.DateTimeFormatT);
+                ViewBag.PedidoId = null;
+                HttpContext.Session.SetObjSession("PedidoId", null);
+                RetData<Tuple<IEnumerable<PedidosExternos>, IEnumerable<PedidosDetExternos>>> ListDis = await ApiClientFactory.Instance.GetPedidosExternos(HttpContext.Session.GetObjSession<int>("Session.ClientId"));
+                if (ListDis.Data.Item1.Count() > 0) {
+                    if (ListDis.Data.Item1.Fod().IdEstado == 1) {
+                        ViewBag.DateLastDis = ListDis.Data.Item1.Fod().FechaPedido;
+                        HttpContext.Session.SetObjSession("PedidoId", ListDis.Data.Item1.Fod().Id);
+                        if (ListDis.Data.Item2.Count() > 0) {
+                            ViewBag.ListOldDis = JsonConvert.SerializeObject(ListDis.Data.Item2.Where(Pde => Pde.PedidoId == ListDis.Data.Item1.Fod().Id).Select(Pd => new { codProducto = Pd.CodProducto.Replace(" ", "^"), cantPedir = Pd.CantPedir, producto = Pd.Producto }));
+                        }
+                    }
+                }                
+            } catch (Exception e1) {
+                ViewBag.ClientName = e1.ToString();
+            }
+            return View();
         }
         public async Task<IActionResult> Inventario()
         {
@@ -804,6 +826,21 @@ namespace EdiViewer.Controllers
                 };
             }
         }
+        public async Task<RetData<IEnumerable<string>>> GetPaylessPeriodPrioriByClient() {
+            DateTime StartTime = DateTime.Now;
+            try {
+                RetData<IEnumerable<string>> ListProdPriori = await ApiClientFactory.Instance.GetPaylessPeriodPrioriByClient(HttpContext.Session.GetObjSession<int>("Session.ClientId"));                
+                return ListProdPriori;
+            } catch (Exception e1) {
+                return new RetData<IEnumerable<string>>() {
+                    Info = new RetInfo() {
+                        CodError = -1,
+                        Mensaje = e1.ToString(),
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            }
+        }
         public async Task<RetData<IEnumerable<UsuariosExternos>>> GetClients()
         {
             DateTime StartTime = DateTime.Now;
@@ -1006,6 +1043,21 @@ namespace EdiViewer.Controllers
             catch (Exception e1)
             {
                 return Json(new { total = "", errorMessage = e1.ToString(), records = "", listAllProd = "" });
+            }
+        }
+        public async Task<RetData<IEnumerable<PaylessTiendas>>> GetAllPaylessStores() {
+            DateTime StartTime = DateTime.Now;
+            try {
+                RetData<IEnumerable<PaylessTiendas>> ListClients = await ApiClientFactory.Instance.GetAllPaylessStores(ApiClientFactory.Instance.Encrypt($"Fun|{HttpContext.Session.GetObjSession<string>("Session.HashId")}"));
+                return ListClients;
+            } catch (Exception e1) {
+                return new RetData<IEnumerable<PaylessTiendas>> {
+                    Info = new RetInfo() {
+                        CodError = -1,
+                        Mensaje = e1.ToString(),
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
             }
         }
     }

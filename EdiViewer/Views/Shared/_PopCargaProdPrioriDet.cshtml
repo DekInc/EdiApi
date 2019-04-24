@@ -22,7 +22,7 @@
     var producto = 2;
     var detGrid = null;
     var foo = function () {
-    };
+    }
     $.urlParam = function (name) {
         var results = new RegExp('[\?&]' + name + '=([^&#]*)').exec(window.location.href);
         if (results == null) {
@@ -92,12 +92,12 @@
             }
         };
         detGrid = $('#gridExcelDet').w2grid(config.grid);
-    }    
+    }
     $(document).ready(function () {
         crearDetGrid();
         if (window.mobileAndTabletcheck()) {            
             $('.btn').css({ "margin-bottom": "10px" });
             $('.btn').addClass('btn-block');            
         }        
-    });
+    })
 </script>

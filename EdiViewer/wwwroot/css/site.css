@@ -497,8 +497,16 @@ table.dataTable thead th, table.dataTable thead td {
     margin-top: 10px;
     margin-bottom: 10px;
 }
-.txtCantPedir{
+.txtCantPedir {
     width: 100px;
+    border: unset !important;
+    margin-top: -3px !important;
+    padding: unset !important;
+    outline-color: unset !important;
+    border-radius: unset !important;
+    border-color: unset !important;
+    box-shadow: unset !important;
+    font-size: 10pt !important;
 }
 table.dataTable.dtr-inline.collapsed > tbody > tr.parent > td:first-child:before, table.dataTable.dtr-inline.collapsed > tbody > tr.parent > th:first-child:before {
     font-size: 18pt;
@@ -643,7 +651,17 @@ table.dataTable.dtr-inline.collapsed > tbody > tr[role="row"] > td:first-child:b
     /*width: 200px;*/
     max-width: 84vw;
 }
+.cboPeriod {
+    /*width: 200px;*/
+    max-width: 310px !important;
+}
 #cboClient {
     /*width: 200px;*/
     max-width: 84vw;
+}
+.custom-file-label {
+    overflow: hidden;
+}
+#formSearch{
+    padding-left: 6px;
 }

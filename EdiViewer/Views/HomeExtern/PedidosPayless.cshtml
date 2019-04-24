@@ -1,0 +1,251 @@
+﻿@{
+    ViewData["Title"] = "Pedidos Payless";
+    Layout = "_Layout";
+}
+<script>
+    var arrayProductosOld = [];
+    @if(ViewBag.ListOldDis != null)
+    {
+        <text>arrayProductosOld = </text> @Html.Raw(ViewBag.ListOldDis);
+    }
+</script>
+<div id="mainDiv">
+    <div class="container">
+        <div class="card-deck cardMain">
+            <div class="card box-shadow">
+                <div class="card-header">
+                    <h4 class="my-0 font-weight-normal">Pedidos Payless&nbsp;<img class="imgHeaderHelp" src="~/images/help.png" title="Pantalla utilizada para hacer pedidos a partir del consolidado" alt="Pantalla utilizada para hacer pedidos a partir del consolidado"></h4>
+                </div>
+                <div class="card-body">
+                    <div>
+                        <span id="spanClientName"></span>
+                    </div>
+                    <form id="formSearch">
+                        <div class="container div856Search">
+                            <div class="row">
+                                <div class="col-sm">
+                                    <label for="cboPeriod">Periodo</label>
+                                    <select class="form-control cboPeriod" id="cboPeriod"></select>
+                                </div>
+                            </div>
+                            <div class="row margin5">
+                                <div class="col-sm">
+                                    <button id="btnFiltrar" class="btn btn-primary" type="button">
+                                        &nbsp;&nbsp;&nbsp;Buscar&nbsp;&nbsp;&nbsp;
+                                        <div id="divSpinFiltrar" class="spinner-border spinner-border-sm text-danger" style="display: none" role="status">
+                                            <span class="sr-only">Loading...</span>
+                                        </div>
+                                    </button>
+                                    <button id="btnLimpiar" class="btn btn-primary" type="button">
+                                        &nbsp;&nbsp;&nbsp;Limpiar&nbsp;&nbsp;&nbsp;
+                                        <div id="divSpinLimpiar" class="spinner-border spinner-border-sm text-danger" style="display: none" role="status">
+                                            <span class="sr-only">Loading...</span>
+                                        </div>
+                                    </button>
+                                    <button type="button" class="btn btn-primary" id="btnNewDis" data-togle="tooltip" data-html="true" title="Seleccione los productos a pedir y acá click acá para solicitarlos">Crear pedido</button>
+                                    <button type="button" class="btn btn-primary" id="btnAddFiltered" data-togle="tooltip" data-html="true" title="Agregar todos los productos filtrados con disponibilidad al pedido">Agregar filtrado a pedido</button>
+                                    <button type="button" class="btn btn-primary" id="btnExportDis" data-togle="tooltip" data-html="true" title="Exportar pedido en Excel">
+                                        Exportar pedido a Excel <img src="/images/excel.png" class="imgButton">
+                                        <div id="divSpinPrintAll" class="spinner-border spinner-border-sm text-danger" style="display: none" role="status">
+                                            <span class="sr-only">Loading...</span>
+                                        </div>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                    <div class="clearfix"></div>
+                    <br />
+                    <div id="gridExcelConsolidado" style="min-height: 460px; width: 100%;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@await Html.PartialAsync("_PopNewDis")
+
+<script>
+    var ModalPopPeticionDet = null;
+    var domtblReportes = null;
+    var domtblPeticionDet = null;
+    var mainGrid = null;
+    var HashId = '';
+    var foo = function () {
+    }
+    $.urlParam = function (name) {
+        var results = new RegExp('[\?&]' + name + '=([^&#]*)').exec(window.location.href);
+        if (results == null) {
+            return null;
+        }
+        return decodeURI(results[1]) || 0;
+    }
+    function reDrawObjects() {
+        $('#spanClientName').css('display', 'block');
+        if (window.mobileAndTabletcheck()) {
+            $('#btnNewDis').addClass('btn-block');
+            $('#btnNewDis').css('margin-bottom', '16px');
+            $('#btnNewDis').css('margin-top', '16px');
+            $('#spanClientName').css('text-align', 'center');
+            $('#btnExportDis').addClass('btn-block');
+            $('#btnExportDis').css('margin-bottom', '16px');
+        } else {
+            $('#spanClientName').css('margin-bottom', '10px');
+        }
+    }
+    function changeProdPedido(isValid, codProd, txtCant) {
+        if (!isValid) return isValid;
+        setTimeout(function () {
+            for (var j = 0; j < mainGrid.allRecords.length; j++) {
+                if (mainGrid.allRecords[j].id == codProd) {
+                    mainGrid.allRecords[j].cantPedir = $(txtCant).val();
+                }
+            }
+        }, 466);
+        return isValid;
+    }
+    function getClientName() {
+        $.ajax({
+            method: "GET",
+            url: "@this.Url.Action("GetClientName", "HomeExtern")",
+            success: function (data) {
+                if (data.info.codError != 0) {
+                    menErrorEdi(data.info.mensaje, 'Error');
+                    return;
+                }
+                $('#spanClientName').html(data.data);
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                menErrorEdi(xhr.status, 'Error throw in js');
+                menErrorEdi(thrownError, 'Error throw in js');
+            }
+        });
+    }
+    function getPeriods() {
+        $.ajax({
+            url: '@this.Url.Action("GetPaylessPeriodPrioriByClient", "HomeExtern")',
+            type: 'GET',
+            dataType: 'JSON',
+            success: function (json) {
+                if (json.info.codError != 0) {
+                    menErrorEdi(json.info.mensaje);
+                    return json.data;
+                }
+                $.each(json.data, function (indexI, itemO) {
+                    $('#cboPeriod').append($('<option>', {
+                        value: this,
+                        text: this,
+                        selected: false
+                    }));
+                });
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                menErrorEdi(xhr.status, '');
+                menErrorEdi(thrownError, '');
+            }
+        });
+    }
+    function refreshGrid(auto) {
+        w2ui.grid.autoLoad = auto;
+        w2ui.grid.skip(0);
+    }
+    function crearGrid() {
+        var config = {
+            grid: {
+                name: 'gridExcelConsolidado',
+                selectType: 'cell',
+                bResponsive: true,
+                bMobile: window.mobileAndTabletcheck(),
+                url: "@this.Url.Action("GetPaylessProdPrioriInventario", "Grids")?dtpPeriodoBuscar=" + $('#cboPeriod').val(),
+                show: {
+                    footer: true,
+                    toolbar: true,
+                    expandColumn: window.mobileAndTabletcheck()
+                },
+                searches: [
+                    { field: "barcode", caption: "Cod. caja", type: 'text' },
+                    { field: "producto", caption: "Lote", type: 'text' },
+                    { field: "talla", caption: "Talla", type: 'text' },
+                    { field: "categoria", caption: "Genero", type: 'text' },
+                    { field: "departamento", caption: "departamento", type: 'text' },
+                    { field: "existencia", caption: "Existencia", type: 'int' },
+                    { field: "reservado", caption: "Reservado", type: 'int' },
+                    { field: "disponible", caption: "Disponible", type: 'int' },
+                    { field: "cp", caption: "cp", type: 'text' }
+                ],
+                colShowResponsive: [
+                    { field: 'barcode' }
+                ],
+                columns: [
+                    { field: "id", caption: "id", sortable: true, hidden: true },
+                    { field: "barcode", caption: "Cod. caja", sortable: true },
+                    {
+                        field: "producto", caption: "Lote", sortable: false, render: function (record) {
+                            if (record.peso > 1)
+                                return '<span>Varios</span>';
+                            else
+                                return '<span>' + record.producto + '</span>';
+                        }
+                    },
+                    { field: "talla", caption: "Talla", sortable: true },
+                    { field: "categoria", caption: "Genero", sortable: true },
+                    { field: "existencia", caption: "Existencia", sortable: true},
+                    { field: "reservado", caption: "Reservado", sortable: true },
+                    { field: "disponible", caption: "Disponible", sortable: true },
+                    {
+                        field: "cantPedir", caption: "Cantidad a pedir", sortable: true, render: function (record) {
+                            return '<input id="TxtProducto' + record.id + '" name="TxtProducto' + record.id + '" type="textbox" maxlength="7" class="editor-active form-control txtCantPedir w2ui-input" tabIndex="' + record.id + '" value="' + record.cantPedir + '" onkeypress="return changeProdPedido(isNumberKey(event), ' + "'" + record.id + "'" + ', this)">';
+                        }
+                    },
+                    { field: "tienda", caption: "Tienda", sortable: true },
+                    { field: "departamento", caption: "Departamento", sortable: true },
+                    { field: "cp", caption: "cp", sortable: true },
+                    {
+                        field: "peso", caption: "", sortable: true, render: function (record) {
+                            return '<div class="w2ui-buttons"><a href="javascript:verDetalle(' + record.barcode + ', ' + record.producto + ')">Ver detalle</a></div>';
+                        }
+                    }
+                ]
+            }
+        };
+        mainGrid = $('#gridExcelConsolidado').w2grid(config.grid);
+    }
+    function verDetalle(barcode2, producto2) {
+        barcode = barcode2;
+        producto = producto2;
+        $('#modalPopCargaProdPrioriDet').modal();
+        detGrid.reload2("@this.Url.Action("GetPaylessProdPrioriDet", "Grids")?barcode=" + barcode + '&estilo=' + producto);
+    }
+    $(document).ready(function () {
+        $('.imgHeaderHelp').tooltip();
+        crearGrid();
+        getPeriods();
+        getClientName();
+        reDrawObjects();
+        $('#btnNewDis').on('click', function (e) {
+            $('#exampleModalLabel2').html('Crear pedido');
+            ModalPopNewDis = $('#modalPopNewDis').modal();
+            onInit();
+        });
+        $('#btnFiltrar').on("click", function (Event) {
+            miAlive();
+            if ($('#cboPeriod').val() == '') {
+                menErrorEdi('El periodo es necesario para una búsqueda', 'Error');
+                return;
+            }
+            $('#divSpinFiltrar').show();
+            mainGrid.reload2("@this.Url.Action("GetPaylessProdPrioriInventario", "Grids")?dtpPeriodoBuscar=" + $('#cboPeriod').val());
+        });
+        $('#btnLimpiar').on("click", function (Event) {
+            $('#divSpinFiltrar').hide();
+            mainGrid.reload2("@this.Url.Action("GetPaylessProdPrioriInventario", "Grids")?dtpPeriodoBuscar=" + $('#cboPeriod').val());
+        });
+        if (window.mobileAndTabletcheck()) {
+            $('.div856Search').css({ "max-width": "unset" });
+            $('#cboPeriod').css({ "width": "100%" });
+            $('.btn').css({ "margin-bottom": "10px" });
+            $('.btn').addClass('btn-block');
+            $("#tblReportes").hide();
+        }
+    });
+</script>

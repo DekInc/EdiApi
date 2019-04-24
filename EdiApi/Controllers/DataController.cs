@@ -1356,6 +1356,31 @@ namespace EdiApi.Controllers
                 };
             }
         }
+        [HttpGet]
+        public RetData<IEnumerable<string>> GetPaylessPeriodPrioriByClient(int ClienteId) {
+            DateTime StartTime = DateTime.Now;
+            try {
+                List<string> ListProdPriori = DbO.PaylessProdPrioriM.Where(O2 => O2.ClienteId == ClienteId) .Select(O => O.Periodo).ToList();
+                if (ListProdPriori.Count > 0)
+                    ListProdPriori = ListProdPriori.Distinct().ToList();
+                return new RetData<IEnumerable<string>> {
+                    Data = ListProdPriori,
+                    Info = new RetInfo() {
+                        CodError = 0,
+                        Mensaje = "ok",
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            } catch (Exception e1) {
+                return new RetData<IEnumerable<string>> {
+                    Info = new RetInfo() {
+                        CodError = -1,
+                        Mensaje = e1.ToString(),
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            }
+        }
         [HttpPost]
         public RetData<PaylessProdPrioriArchM> SetPaylessProdPrioriFile(IEnumerable<PaylessProdPrioriArchDet> ListUpload, int ClienteId, string Periodo, string codUsr)
         {
@@ -1661,6 +1686,42 @@ namespace EdiApi.Controllers
                 {
                     Info = new RetInfo()
                     {
+                        CodError = -1,
+                        Mensaje = e1.ToString(),
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            }
+        }
+        [HttpPost]
+        public RetData<IEnumerable<PaylessTiendas>> GetAllPaylessStores(object HashId) {
+            string HashIdDescrypted = Encoding.UTF8.GetString(CryptoHelper.DecryptData(Convert.FromBase64String(Convert.ToString(HashId))));
+            HashIdDescrypted = HashIdDescrypted.Split('|')[1];
+            DateTime StartTime = DateTime.Now;
+            try {
+                string CUser = (from U in DbO.IenetUsers where U.HashId == HashIdDescrypted select U.CodUsr).Fod();
+                if (!string.IsNullOrEmpty(CUser)) {
+                    List<PaylessTiendas> ListTiendas = DbO.PaylessTiendas.ToList();
+                    return new RetData<IEnumerable<PaylessTiendas>> {
+                        Data = ListTiendas,
+                        Info = new RetInfo() {
+                            CodError = 0,
+                            Mensaje = "ok",
+                            ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                        }
+                    };
+                } else {
+                    return new RetData<IEnumerable<PaylessTiendas>> {
+                        Info = new RetInfo() {
+                            CodError = -1,
+                            Mensaje = "Error de seguridad en la obtención de los datos.",
+                            ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                        }
+                    };
+                }
+            } catch (Exception e1) {
+                return new RetData<IEnumerable<PaylessTiendas>> {
+                    Info = new RetInfo() {
                         CodError = -1,
                         Mensaje = e1.ToString(),
                         ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds

@@ -3560,6 +3560,7 @@ w2utils.event = {
         this.started = false;
         this.columnGroups = [];       // { span: int, caption: 'string', master: true/false }
         this.records      = [];       // { recid: int(required), field1: 'value1', ... fieldN: 'valueN', style: 'string',  changes: object }
+        this.allRecords   = [];      // To manage JS async updates to all data
         this.summary      = [];       // arry of summary records, same structure as records array
         this.searches     = [];       // { type, caption, field, inTag, outTag, hidden }
         this.searchData   = [];
@@ -3819,6 +3820,7 @@ w2utils.event = {
             //hilmer operators
             //"text"    : ['is', 'begins', 'contains', 'ends'],
             "text": ['is', 'contains'],
+            //"number": ['is'],
             "number"  : ['is', 'between', { oper: 'less', text: 'less than'}, { oper: 'more', text: 'more than' }],
             "date"    : ['is', 'between', { oper: 'less', text: 'before'}, { oper: 'more', text: 'after' }],
             "list"    : ['is'],
@@ -6128,6 +6130,8 @@ w2utils.event = {
                                     this.records.push(data.records[r]);
                                 }
                             }
+                            if (data.allRecords)
+                                this.allRecords = data.allRecords;                            
                             //hilmer agrego custom Exceptions
                             //console.log(data);
                             if (data.errorMessage != null) {
@@ -9834,7 +9838,7 @@ w2utils.event = {
             return html;
 
             function getOperators(type, fieldOperators) {
-                var html = '';
+                var html = '';                
                 var operators = obj.operators[obj.operatorsMap[type]];
                 if (fieldOperators != null) operators = fieldOperators;
                 for (var i = 0; i < operators.length; i++) {

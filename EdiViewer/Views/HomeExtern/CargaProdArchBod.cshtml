@@ -27,7 +27,7 @@
                             <div class="row">
                                 <div class="col-sm custom-file divUpload">
                                     <input type="file" class="custom-file-input inputUpload" id="fUpload" name="fUpload">
-                                    <label class="custom-file-label" for="fUpload">Archivo a cargar</label>
+                                    <label id="lblFile" class="custom-file-label" for="fUpload">Archivo a cargar</label>
                                 </div>
                             </div>
                             <div class="row margin5">
@@ -143,7 +143,7 @@
                     { field: "porValid", caption: "Porc. validez", sortable: true },                    
                     {
                         field: "updateDate", caption: "", sortable: true, render: function (record) {
-                            return '<a href="javascript:downloadWmsFile(' + "'" + record.id + "'" + ')">Carga WMS</a>&nbsp;|&nbsp;<a href="javascript:verDetalle(' + record.id + ')">Ver detalle</a>';
+                            return '<a href="javascript:downloadWmsFile(' + "'" + record.id + "'" + ')">Archivo WMS</a>&nbsp;|&nbsp;<a href="javascript:verDetalle(' + record.id + ')">Ver detalle</a>';
                         }
                     }
                 ]
@@ -156,14 +156,25 @@
     }
     function verDetalle(idM) {
         idProdArch = idM;
-        fillDet1();        
+        gridRepDet1.reload2('@this.Url.Action("GetPaylessFileDif", "Grids")?idProdArch=' + idProdArch + '&idData=1');
         $('#modalCargaProdArchBodDet').modal();        
     }
-    $(document).ready(function () {        
+    $(document).ready(function () {
         $('.imgHeaderHelp').tooltip();
         getPeriods();
         getClients();
         crearGrid();
+        $('#fUpload').on('change', function (event) {
+            var fullPath = $('#fUpload').val();
+            if (fullPath) {
+                var startIndex = (fullPath.indexOf('\\') >= 0 ? fullPath.lastIndexOf('\\') : fullPath.lastIndexOf('/'));
+                var filename = fullPath.substring(startIndex);
+                if (filename.indexOf('\\') === 0 || filename.indexOf('/') === 0) {
+                    filename = filename.substring(1);
+                }
+                $('#lblFile').text(filename);
+            }
+        });
         $('#btnUpload').on('click', function () {
             if ($('#cboPeriod').val() == '') {
                 menErrorEdi('El valor del periodo no puede estar vacio', 'Error');

@@ -26,6 +26,7 @@ namespace EdiViewer.Utility
         public class ExpressionFilter
         {
             public string PropertyName { get; set; }
+            public string TypeO { get; set; }
             public object Value { get; set; }
             public Comparison Comparison { get; set; }
         }
@@ -75,6 +76,10 @@ namespace EdiViewer.Utility
             {
                 MemberExpression member = Expression.Property(param, filter.PropertyName);
                 ConstantExpression constant = Expression.Constant(filter.Value);
+                if (filter.TypeO == "text")
+                    constant = Expression.Constant(Convert.ToString(filter.Value), typeof(string));
+                if (filter.TypeO == "int")
+                    constant = Expression.Constant(Convert.ToInt32(filter.Value), typeof(int));
                 switch (filter.Comparison)
                 {
                     case Comparison.Equal:
@@ -114,7 +119,8 @@ namespace EdiViewer.Utility
                 ListGridSearch.Add(new Utility.ExpressionBuilderHelper.ExpressionFilter()
                 {
                     PropertyName = GridForm[$"search[{i}][field]"].Fod(),
-                    Value = GridForm[$"search[{i}][value]"].Fod()
+                    Value = GridForm[$"search[{i}][value]"].Fod(),
+                    TypeO = GridForm[$"search[{i}][type]"].Fod()
                     //Field = GridForm[$"search[{i}][field]"].Fod(),
                     //Type = GridForm[$"search[{i}][type]"].Fod(),
                     //Operator = GridForm[$"search[{i}][operator]"].Fod(),

@@ -24,7 +24,7 @@
                                 <br />
                                 <div class="custom-file">
                                     <input type="file" class="custom-file-input" id="fUpload" name="fUpload">
-                                    <label class="custom-file-label" for="fUpload"></label>
+                                    <label id="lblFile" class="custom-file-label" for="fUpload">Archivo a cargar</label>
                                 </div>
                             </div>
                         </div>
@@ -55,6 +55,17 @@
 <script>
     $(document).ready(function () {
         $('#dtpPeriodUpload').datepicker();
+        $('#fUpload').on('change', function (event) {
+            var fullPath = $('#fUpload').val();
+            if (fullPath) {
+                var startIndex = (fullPath.indexOf('\\') >= 0 ? fullPath.lastIndexOf('\\') : fullPath.lastIndexOf('/'));
+                var filename = fullPath.substring(startIndex);
+                if (filename.indexOf('\\') === 0 || filename.indexOf('/') === 0) {
+                    filename = filename.substring(1);
+                }
+                $('#lblFile').text(filename);
+            }            
+        });
         $('#btnUpload').on('click', function () {
             if ($('#dtpPeriodUpload').val() == '') {
                 menErrorEdi('El valor del periodo no puede estar vacio', 'Error');
