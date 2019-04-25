@@ -389,6 +389,11 @@ namespace EdiViewer.Controllers
                 string ClientName = string.Empty;
                 if (ClienteO.Info.CodError == 0 && ListClients.Info.CodError == 0)
                     ClientName = ListClients.Data.Where(C => C.ClienteId == ClienteO.Data.ClienteId).Fod().Descr;
+                if (ListClients.Info.CodError != 0) {
+                    return new RetData<string>() {
+                        Info = ListClients.Info
+                    };
+                }
                 return new RetData<string>()
                 {
                     Data = ClientName,
@@ -1025,7 +1030,7 @@ namespace EdiViewer.Controllers
                     IdPaylessProdPrioriM = O.IdPaylessProdPrioriM,
                     Lote = O.Lote,
                     M3 = O.M3,
-                    Oid = O.Oid,
+                    //Oid = O.Oid,
                     Peso = O.Peso,
                     Pickeada = O.Pickeada,
                     PoolP = O.PoolP,

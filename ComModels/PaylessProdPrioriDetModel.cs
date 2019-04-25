@@ -11,5 +11,6 @@ namespace ComModels
         public int Reservado { get; set; }
         public int Disponible { get { return Existencia - Reservado; } }
         public int CantPedir { get; set; }
+        public new string Oid { get { return string.Empty; } }
     }
 }

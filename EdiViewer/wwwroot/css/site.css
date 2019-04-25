@@ -665,3 +665,6 @@ table.dataTable.dtr-inline.collapsed > tbody > tr[role="row"] > td:first-child:b
 #formSearch{
     padding-left: 6px;
 }
+.actions button {
+    margin-bottom: 8px;
+}

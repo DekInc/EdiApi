@@ -61,7 +61,7 @@ namespace EdiViewer.Utility
                 exp = ExpressionRetriever.GetExpression<T>(param, filters[0]);
                 for (int i = 1; i < filters.Count; i++)
                 {
-                    exp = Expression.And(exp, ExpressionRetriever.GetExpression<T>(param, filters[i]));
+                    exp = Expression.Or(exp, ExpressionRetriever.GetExpression<T>(param, filters[i]));
                 }
             }
             return Expression.Lambda<Func<T, bool>>(exp, param);
@@ -133,7 +133,7 @@ namespace EdiViewer.Utility
                         ListGridSearch.Last().Comparison = Utility.ExpressionBuilderHelper.Comparison.Equal;
                         break;
                     case "begins":
-                        ListGridSearch.Last().Comparison = Utility.ExpressionBuilderHelper.Comparison.StartsWith;
+                        ListGridSearch.Last().Comparison = Utility.ExpressionBuilderHelper.Comparison.Contains;
                         break;
                     case "contains":
                         ListGridSearch.Last().Comparison = Utility.ExpressionBuilderHelper.Comparison.Contains;

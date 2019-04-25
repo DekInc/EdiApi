@@ -74,8 +74,6 @@
 
 @await Html.PartialAsync("_PopNewDis")
 
-@await Html.PartialAsync("_PopCargaProdPrioriDet")
-
 <script>
     var ModalPopPeticionDet = null;
     var domtblReportes = null;
@@ -106,26 +104,21 @@
     }
     function changeProdPedido(isValid, codProd, txtCant) {
         if (!isValid) return isValid;
-        setTimeout(function () {
-            for (var j = 0; j < mainGrid.allRecords.length; j++) {
-                if (mainGrid.allRecords[j].id == codProd) {
-                    if ($(txtCant).val() < 0) {
-                        menErrorEdi('Error, el valor es inválido', 'Error');
-                        $(txtCant).val('0')
-                        return;
-                    } else {
-                        console.log('j ' + j);
-                        console.log('txtcant ' + $(txtCant).val());
-                        console.log('disponible ' + mainGrid.allRecords[j].disponible);
-                        if ($(txtCant).val() > mainGrid.allRecords[j].disponible) {
-                            menErrorEdi('Error, el valor es mayor al disponible', 'Error');
-                            $(txtCant).val('0')
-                            return;
-                        }
-                    }
-                    mainGrid.allRecords[j].cantPedir = $(txtCant).val();
+        setTimeout(function () {            
+            if ($(txtCant).val() < 0) {
+                menErrorEdi('Error, el valor es inválido', 'Error');
+                $(txtCant).val('0')
+                return;
+            } else {                
+                if ($(txtCant).val() > mainGrid.records.filter(O => O.id == codProd)[0].disponible) {
+                    menErrorEdi('Error, el valor es mayor al disponible', 'Error');
+                    $(txtCant).val('0')
+                    return;
                 }
-            }
+            }       
+            for (var j = 0; j < mainGrid.allRecords.length; j++)
+                if (mainGrid.allRecords[j].id == codProd)
+                    mainGrid.allRecords[j].cantPedir = $(txtCant).val();
         }, 466);
         return isValid;
     }
@@ -195,6 +188,7 @@
                     { field: "barcode", caption: "Cod. caja", type: 'text' },
                     { field: "producto", caption: "Lote", type: 'text' },
                     { field: "talla", caption: "Talla", type: 'text' },
+                    { field: "lote", caption: "Estilo", type: 'text' },
                     { field: "categoria", caption: "Genero", type: 'text' },
                     { field: "departamento", caption: "departamento", type: 'text' },
                     { field: "existencia", caption: "Existencia", type: 'int' },
@@ -207,33 +201,27 @@
                 ],
                 columns: [
                     { field: "id", caption: "id", sortable: true, hidden: true },
-                    { field: "barcode", caption: "Cod. caja", sortable: true },
-                    {
-                        field: "producto", caption: "Lote", sortable: false, render: function (record) {
-                            if (record.peso > 1)
-                                return '<span>Varios - ' + record.peso + '</span>';
-                            else
-                                return '<span>' + record.producto + '</span>';
-                        }
-                    },
-                    { field: "talla", caption: "Talla", sortable: true },
-                    { field: "categoria", caption: "Genero", sortable: true },
-                    { field: "existencia", caption: "Existencia", sortable: true},
+                    { field: "barcode", caption: "Cod. caja", type: 'text' },
+                    { field: "producto", caption: "Lote", type: 'text' },
+                    { field: "talla", caption: "talla", type: 'text' },
+                    { field: "categoria", caption: "Genero", type: 'text' },
+                    { field: "lote", caption: "estilo", type: 'text' },
+                    { field: "existencia", caption: "Existencia", sortable: true },
                     { field: "reservado", caption: "Reservado", sortable: true },
                     { field: "disponible", caption: "Disponible", sortable: true },
                     {
                         field: "cantPedir", caption: "Cantidad a pedir", sortable: true, render: function (record) {
-                            return '<input id="TxtProducto' + record.id + '" name="TxtProducto' + record.id + '" type="textbox" maxlength="7" class="editor-active form-control txtCantPedir w2ui-input" tabIndex="' + record.id + '" value="' + record.cantPedir + '" onkeypress="return changeProdPedido(isNumberKey(event), ' + "'" + record.id + "'" + ', this)">';
+                            var cantPedir2 = 0;
+                            if (record.cp != '')
+                                cantPedir2 = record.disponible;
+                            return '<input id="TxtProducto' + record.id + '" name="TxtProducto' + record.id + '" type="textbox" maxlength="7" class="editor-active form-control txtCantPedir w2ui-input" tabIndex="' + record.id + '" value="' + cantPedir2 + '" onkeypress="return changeProdPedido(isNumberKey(event), ' + "'" + record.id + "'" + ', this)">';
                         }
                     },
-                    { field: "tienda", caption: "Tienda", sortable: true },
-                    { field: "departamento", caption: "Departamento", sortable: true },
-                    { field: "cp", caption: "cp", sortable: true },
-                    {
-                        field: "peso", caption: "", sortable: true, render: function (record) {
-                            return '<div class="w2ui-buttons"><a href="javascript:verDetalle(' + record.barcode + ', ' + record.talla + ')" title="barcode: ' + record.barcode + ' - talla: ' + record.talla + '">Ver detalle</a></div>';
-                        }
-                    }
+                    { field: "estado", caption: "estado", type: 'text' },
+                    { field: "pri", caption: "pri", type: 'text' },
+                    { field: "poolP", caption: "poolP", type: 'text' },
+                    { field: "departamento", caption: "departamento", type: 'text' },
+                    { field: "cp", caption: "cp", type: 'text' }
                 ]
             }
         };
@@ -258,6 +246,7 @@
         });
         $('#btnFiltrar').on("click", function (Event) {
             miAlive();
+            mainGrid.allRecords = [];
             if ($('#cboPeriod').val() == '') {
                 menErrorEdi('El periodo es necesario para una búsqueda', 'Error');
                 return;
@@ -267,6 +256,8 @@
         });
         $('#btnLimpiar').on("click", function (Event) {
             $('#divSpinFiltrar').hide();
+            mainGrid.allRecords = [];
+            mainGrid.searchReset();
             mainGrid.reload2("@this.Url.Action("GetPaylessProdPrioriInventario", "Grids")?dtpPeriodoBuscar=" + $('#cboPeriod').val());
         });
         if (window.mobileAndTabletcheck()) {

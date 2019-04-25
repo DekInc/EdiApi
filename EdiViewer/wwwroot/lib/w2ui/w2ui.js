@@ -2480,7 +2480,8 @@ w2utils.event = {
             onShow      : null,              // event on show
             onHide      : null,              // event on hide
             openAbove   : false,             // show above control
-            tmp         : {}
+            tmp: {},
+            bResponsive: false
         };
         if (arguments.length === 1) {
             if (typeof html === 'object') {
@@ -2652,7 +2653,7 @@ w2utils.event = {
                         boxLeft = 17;
                         break;
                     case 'right':
-                        boxLeft = w2utils.getSize($(obj), 'width') - w + 10;
+                        boxLeft = w2utils.getSize($(obj), 'width') - w + 10;                        
                         tipLeft = w - 40;
                         break;
                 }
@@ -2674,6 +2675,14 @@ w2utils.event = {
                     X = ((offset.left > 25 ? offset.left : 25) + boxLeft);
                     Y = (offset.top + w2utils.getSize(obj, 'height') + options.top + 7);
                     offsetTop = offset.top;
+                }
+                //hilmer
+                //console.log(bResponsive);
+                if (bResponsive == 3) {
+                    if (name.indexOf('searchOverlay') > 0) {
+                        X = 15;
+                        Y = Y - 60;
+                    }
                 }
                 div1.css({
                     left        :  X + 'px',
@@ -5623,7 +5632,8 @@ w2utils.event = {
             $('#tb_'+ this.name +'_toolbar_item_w2ui-search-advanced').w2overlay({
                 html    : this.getSearchesHTML(),
                 name    : this.name + '-searchOverlay',
-                left    : -10,
+                left: -10,
+                bResponsive: this.bResponsive,
                 'class' : 'w2ui-grid-searches',
                 onShow  : function () {
                     obj.initSearches();
@@ -5635,6 +5645,14 @@ w2utils.event = {
                         $(btn).addClass('checked');
                     }
                     // event after
+                    //console.log(screen.width);
+                    if (screen.width < 400) {
+                        setTimeout(function () {
+                            console.log('done');
+                            $('#w2ui-overlay-' + this.name + '-searchOverlay').css('width', '95vw');
+                            $('#w2ui-overlay-' + this.name + '-searchOverlay').css('left', '15px');
+                        }, 666);
+                    }
                     obj.trigger($.extend(edata, { phase: 'after' }));
                 },
                 onHide: function () {
@@ -6130,8 +6148,10 @@ w2utils.event = {
                                     this.records.push(data.records[r]);
                                 }
                             }
-                            if (data.allRecords)
-                                this.allRecords = data.allRecords;                            
+                            if (data.allRecords) {
+                                if (mainGrid.allRecords.length == 0)
+                                    this.allRecords = data.allRecords;
+                            }
                             //hilmer agrego custom Exceptions
                             //console.log(data);
                             if (data.errorMessage != null) {
@@ -9781,7 +9801,7 @@ w2utils.event = {
                     '</select>';
 
                 html += '<tr>'+
-                        '    <td class="close-btn">'+ btn +'</td>' +
+                        //'    <td class="close-btn">'+ btn +'</td>' +
                         '    <td class="caption">'+ (s.caption || '') +'</td>' +
                         '    <td class="operator">'+ operator +'</td>'+
                         '    <td class="value">';
@@ -9794,7 +9814,7 @@ w2utils.event = {
                     case 'list':
                     case 'combo':
                     case 'enum':
-                        var tmpStyle = 'width: 250px;';
+                        var tmpStyle = 'width: 100%; max-width: 50vw;';
                         if (['hex', 'color'].indexOf(s.type) != -1) tmpStyle = 'width: 90px;';
                         html += '<input rel="search" type="text" id="grid_'+ this.name +'_field_'+ i +'" name="'+ s.field +'" '+
                                 '   class="w2ui-input" style="'+ tmpStyle + s.style +'" '+ s.inTag +'/>';
@@ -14996,6 +15016,7 @@ var w2prompt = function (label, title, callBack) {
                 case 'check':
                 case 'radio':
                 case 'drop':
+                    //Hilmer boton de buscar
                     html += '<table cellpadding="0" cellspacing="0" '+
                             '       class="w2ui-button '+ (item.checked ? 'checked' : '') +'" '+
                             '       onclick     = "var el=w2ui[\''+ this.name + '\']; if (el) el.click(\''+ item.id +'\', event);" '+
@@ -15019,7 +15040,7 @@ var w2prompt = function (label, title, callBack) {
                                     (((['menu', 'menu-radio', 'menu-check', 'drop', 'color', 'text-color'].indexOf(item.type) != -1) && item.arrow !== false) ?
                                         '<td class="w2ui-tb-down" nowrap="nowrap"><div></div></td>' : '') +
                             '  </tr></tbody></table>'+
-                            '</td></tr></tbody></table>';
+                        '</td></tr></tbody></table>';                    
                     break;
 
                 case 'break':
@@ -19202,8 +19223,7 @@ var w2prompt = function (label, title, callBack) {
                 // this.refresh(); // no need to refresh
                 if (typeof callBack === 'function') callBack();
             }
-        },
-
+        },        
         clear: function () {
             if (arguments.length != 0) {
                 Array.from(arguments).forEach(function(field) {
