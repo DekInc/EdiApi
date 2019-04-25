@@ -33,7 +33,9 @@ namespace EdiViewer.Controllers
                 List<PaylessProdPrioriDetModel> Records = ListProd.Data.Item2.Select(O => Utility.Funcs.Reflect(O, new PaylessProdPrioriDetModel())) .ToList();
                 int Total = Records.Count;
                 if (Records.Count() > 0)
+                {                    
                     Records = Utility.ExpressionBuilderHelper.W2uiSearch<PaylessProdPrioriDetModel>(Records, Request.Form);
+                }
                 return Json(new { Total, Records, errorMessage = "" });
             } catch (Exception e1) {
                 return Json(new { total = 0, records = "", errorMessage = e1.ToString() });
@@ -55,7 +57,7 @@ namespace EdiViewer.Controllers
                 List<PaylessProdPrioriDetModel> Records = ListProd.Data.Item2.Select(O => Utility.Funcs.Reflect(O, new PaylessProdPrioriDetModel())).ToList();
                 Records = (
                     from Pp in Records
-                    group Pp by new { Pp.Barcode, Pp.Tienda, Pp.Producto, Pp.Talla, Pp.Categoria, Pp.Departamento, Pp.Cp }
+                    group Pp by new { Pp.Barcode, Pp.Tienda, Pp.Talla, Pp.Categoria, Pp.Departamento, Pp.Cp }
                     into Grp
                     select new PaylessProdPrioriDetModel {
                         Barcode = Grp.Fod().Barcode,
@@ -98,7 +100,7 @@ namespace EdiViewer.Controllers
                 List<PaylessProdPrioriDetModel> Records = ListProd.Data.Item2.Where(R => R.Tienda == IdTienda).Select(O => Utility.Funcs.Reflect(O, new PaylessProdPrioriDetModel())).ToList();
                 Records = (
                     from Pp in Records
-                    group Pp by new { Pp.Barcode, Pp.Tienda, Pp.Producto, Pp.Talla, Pp.Categoria, Pp.Departamento, Pp.Cp }
+                    group Pp by new { Pp.Barcode, Pp.Tienda, Pp.Talla, Pp.Categoria, Pp.Departamento, Pp.Cp }
                     into Grp
                     select new PaylessProdPrioriDetModel {
                         Barcode = Grp.Fod().Barcode,
@@ -109,25 +111,37 @@ namespace EdiViewer.Controllers
                         Departamento = Grp.Fod().Departamento,
                         Cp = Grp.Fod().Cp,
                         Id = Grp.Fod().Id,
-                        Peso = Grp.Count(),
-                        Existencia = 1
+                        Peso = Grp.Count()
                     }
                     ).ToList();
                 int Total = Records.Count;
                 if (Records.Count() > 0)
+                {
+                    RetData<IEnumerable<ExistenciasExternModel>> StockData = await ApiClientFactory.Instance.GetStock(HttpContext.Session.GetObjSession<int>("Session.ClientId"));
+                    foreach (ExistenciasExternModel Stock in StockData.Data)
+                    {
+                        foreach (PaylessProdPrioriDetModel Product in Records.Where(P => P.Barcode == Stock.CodProducto))
+                        {
+                            Product.Existencia = Convert.ToInt32(Stock.Existencia);
+                            Product.Reservado = Convert.ToInt32(Stock.Reservado);
+                        }                        
+                    }
+                    if (StockData.Info.CodError != 0)
+                        return Json(new { total = 0, records = "", errorMessage = StockData.Info.Mensaje });
                     Records = Utility.ExpressionBuilderHelper.W2uiSearch<PaylessProdPrioriDetModel>(Records, Request.Form);
+                }
                 return Json(new { Total, Records, errorMessage = "", AllRecords });
             } catch (Exception e1) {
                 return Json(new { draw = 0, recordsFiltered = 0, recordsTotal = 0, errorMessage = e1.ToString(), data = "" });
             }
         }
-        public async Task<IActionResult> GetPaylessProdPrioriDet(string barcode, string estilo) {
+        public async Task<IActionResult> GetPaylessProdPrioriDet(string barcode, string talla) {
             try {
                 string dtpPeriodoBuscar = HttpContext.Session.GetObjSession<string>("dtpPeriodoBuscar");
                 if (string.IsNullOrEmpty(dtpPeriodoBuscar)) dtpPeriodoBuscar = "";                
                 if (string.IsNullOrEmpty(barcode))
                     return Json(new { total = 0, records = "", errorMessage = "" });
-                if (string.IsNullOrEmpty(estilo))
+                if (string.IsNullOrEmpty(talla))
                     return Json(new { total = 0, records = "", errorMessage = "" });
                 RetData<Tuple<IEnumerable<PaylessProdPrioriM>, IEnumerable<PaylessProdPrioriDet>>> ListProd = await ApiClientFactory.Instance.GetPaylessProdPriori(dtpPeriodoBuscar);
                 if (ListProd.Info.CodError != 0)
@@ -138,7 +152,7 @@ namespace EdiViewer.Controllers
                     return Json(new { total = 0, records = "", errorMessage = (ListProd.Info.CodError != 0 ? ListProd.Info.Mensaje : string.Empty) });
                 List<PaylessProdPrioriDetModel> Records = ListProd.Data.Item2.Select(O => Utility.Funcs.Reflect(O, new PaylessProdPrioriDetModel())).ToList();
                 Records = Records.Where(Pp => Pp.Barcode == barcode).ToList();
-                Records = Records.Where(Pp => Pp.Producto == estilo).ToList();
+                Records = Records.Where(Pp => Pp.Talla == talla).ToList();
                 int Total = Records.Count;
                 if (Records.Count() > 0)
                     Records = Utility.ExpressionBuilderHelper.W2uiSearch<PaylessProdPrioriDetModel>(Records, Request.Form);

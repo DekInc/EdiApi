@@ -46,7 +46,7 @@
     </div>
 </div>
 
-@await Html.PartialAsync("_PopCargaProdPrioriDet");
+@await Html.PartialAsync("_PopCargaProdPrioriDet")
 
 <script>
     var ModalPopPeticionDet = null;
@@ -98,7 +98,7 @@
                     {
                         field: "producto", caption: "Lote", sortable: false, render: function (record) {
                             if (record.peso > 1)
-                                return '<span>Varios</span>';
+                                return '<span>Varios - ' + record.peso + '</span>';
                             else
                                 return '<span>' + record.producto + '</span>';
                         }
@@ -109,7 +109,7 @@
                     { field: "cp", caption: "cp", sortable: true },
                     {
                         field: "peso", caption: "", sortable: true, render: function (record) {
-                            return '<div class="w2ui-buttons"><a href="javascript:verDetalle(' + record.barcode + ', ' + record.producto + ')">Ver detalle</a></div>';
+                            return '<div class="w2ui-buttons"><a href="javascript:verDetalle(' + record.barcode + ', ' + record.talla + ')" title="barcode: ' + record.barcode + ' - talla: ' + record.talla + '">Ver detalle</a></div>';
                         }
                     }
                 ]
@@ -117,11 +117,11 @@
         };
         mainGrid = $('#gridExcelConsolidado').w2grid(config.grid);
     }    
-    function verDetalle(barcode2, producto2) {
+    function verDetalle(barcode2, talla2) {
         barcode = barcode2;
-        producto = producto2;
+        talla = talla2;
         $('#modalPopCargaProdPrioriDet').modal();
-        detGrid.reload2("@this.Url.Action("GetPaylessProdPrioriDet", "Grids")?barcode=" + barcode + '&estilo=' + producto);
+        detGrid.reload2("@this.Url.Action("GetPaylessProdPrioriDet", "Grids")?barcode=" + barcode + '&talla=' + talla);
     }
     $(document).ready(function () {
         $('#dtpPeriodoBuscar').datepicker();

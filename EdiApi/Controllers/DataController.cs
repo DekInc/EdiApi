@@ -859,27 +859,7 @@ namespace EdiApi.Controllers
                     orderby Pe.Id descending
                     select Pe
                     );
-                IEnumerable<PedidosDetExternos> ListDePe = (
-                    from Dp in DbO.PedidosDetExternos
-                    from Pe in DbO.PedidosExternos
-                    where Dp.PedidoId == Pe.Id
-                    && Pe.ClienteId == Convert.ToInt32(ClienteId)
-                    orderby Dp.Id descending
-                    select Dp
-                    );
-                foreach (PedidosExternos Pe in ListPe.Where(Lp => Lp.IdEstado == 1))
-                {
-                    foreach (PedidosDetExternos Pde in ListDePe)
-                    {
-                        IEnumerable<Producto> ListProdTemp = (
-                            from Prod in WmsDbO.Producto
-                            where Prod.CodProducto == Pde.CodProducto
-                            select Prod
-                            );
-                        if (ListProdTemp.Count() > 0)
-                            Pde.Producto = ListProdTemp.Fod().Descripcion;
-                    }
-                }
+                IEnumerable<PedidosDetExternos> ListDePe = ManualDB.SP_GetPedidosDetExternos(ref DbO, Convert.ToInt32(ClienteId));                
                 return new RetData<Tuple<IEnumerable<PedidosExternos>, IEnumerable<PedidosDetExternos>>>
                 {
                     Data = new Tuple<IEnumerable<PedidosExternos>, IEnumerable<PedidosDetExternos>>(ListPe, ListDePe),
@@ -1209,7 +1189,7 @@ namespace EdiApi.Controllers
         {
             DateTime StartTime = DateTime.Now;
             try
-            {
+            { // Para no olvidar, hago Fod del master porque no permito ingresar más de 1 archivo por periodo.
                 IEnumerable<PaylessProdPrioriM> PpM = DbO.PaylessProdPrioriM.Where(Pp => Pp.Periodo == Period.ToString());
                 if (PpM.Count() > 0)
                 {

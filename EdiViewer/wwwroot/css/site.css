@@ -307,15 +307,15 @@ table.dataTable thead th, table.dataTable thead td {
 .mainJumbo {
     /*width: 98vw;*/
     height: 90vh;
-    background-color: unset !important;
-    background: rgba(124, 143, 170, 0.60) !important;
+    /*background-color: unset !important;*/
+    /*background: rgba(124, 143, 170, 0.60) !important;*/
 }
 .indexJumbo {
     height: 80vh;
     width: 90%;
     margin: 0 auto;
     box-sizing: border-box;
-    background: rgb(241, 224, 203);
+    /*background: rgb(241, 224, 203);*/
 }
 
 .cardLogin {

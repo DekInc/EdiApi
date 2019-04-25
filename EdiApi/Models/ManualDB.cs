@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data.Common;
 using System.Linq;
 using System.Threading.Tasks;
+using EdiApi.Models.EdiDB;
 using Microsoft.EntityFrameworkCore;
 
 namespace EdiApi.Models
@@ -181,6 +182,34 @@ namespace EdiApi.Models
                             Cantidad = Convert.ToDouble(Dr.GetValue(7)),
                             Observacion = Convert.ToString(Dr.GetValue(8)),
                             PedidoId = Convert.ToInt32(Dr.GetValue(9))
+                        });
+                    }
+                }
+                _DbO.Database.CloseConnection();
+                if (!Dr.IsClosed)
+                    Dr.Close();
+            }
+            return ListExists;
+        }
+        public static IEnumerable<PedidosDetExternos> SP_GetPedidosDetExternos(ref Models.EdiDB.EdiDBContext _DbO, int _IdClient)
+        {
+            List<PedidosDetExternos> ListExists = new List<PedidosDetExternos>();
+            using (DbCommand Cmd = _DbO.Database.GetDbConnection().CreateCommand())
+            {
+                Cmd.CommandText = $"[dbo].[SP_GetPedidosDetExternos] {_IdClient}";
+                _DbO.Database.OpenConnection();
+                DbDataReader Dr = Cmd.ExecuteReader();
+                if (Dr.HasRows)
+                {
+                    while (Dr.Read())
+                    {
+                        ListExists.Add(new PedidosDetExternos()
+                        {
+                            Id = Convert.ToInt32(Dr.GetValue(0)),
+                            PedidoId = Convert.ToInt32(Dr.GetValue(1)),
+                            CodProducto = Convert.ToString(Dr.GetValue(2)),
+                            CantPedir = Convert.ToDouble(Dr.GetValue(3)),
+                            Producto = Convert.ToString(Dr.GetValue(4))
                         });
                     }
                 }

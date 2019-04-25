@@ -19,7 +19,7 @@
     var domtblDet = null;
     var HashId = '';
     var barcode = 1;
-    var producto = 2;
+    var talla = 2;
     var detGrid = null;
     var foo = function () {
     }
@@ -41,7 +41,7 @@
                 selectType: 'cell',
                 bResponsive: true,
                 bMobile: window.mobileAndTabletcheck(),
-                url: "@this.Url.Action("GetPaylessProdPrioriDet", "Grids")?barcode=" + barcode + '&estilo=' + producto,
+                url: "@this.Url.Action("GetPaylessProdPrioriDet", "Grids")?barcode=" + barcode + '&talla=' + talla,
                 show: {
                     footer: true,
                     toolbar: true,
