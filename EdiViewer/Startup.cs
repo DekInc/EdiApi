@@ -39,7 +39,7 @@ namespace EdiViewer
                 });
             services.AddMemoryCache();            
             services.AddSession(options => {
-                options.IdleTimeout = TimeSpan.FromMinutes(60);
+                options.IdleTimeout = TimeSpan.FromMinutes(25);
                 options.Cookie.IsEssential = true;
             });
             services.AddDistributedMemoryCache();

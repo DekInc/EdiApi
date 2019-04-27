@@ -386,6 +386,12 @@ namespace EdiViewer.Controllers
             {
                 RetData<Clientes> ClienteO = await ApiClientFactory.Instance.GetClient(HttpContext.Session.GetObjSession<int>("Session.ClientId"));
                 RetData<IEnumerable<PaylessTiendas>> ListClients = await ApiClientFactory.Instance.GetAllPaylessStores(ApiClientFactory.Instance.Encrypt($"Fun|{HttpContext.Session.GetObjSession<string>("Session.HashId")}"));
+                if (ListClients.Info.CodError != 0) {
+                    return new RetData<string>() {
+                        Data = ClienteO.Info.Mensaje,
+                        Info = ClienteO.Info
+                    };
+                }
                 string ClientName = string.Empty;
                 if (ClienteO.Info.CodError == 0 && ListClients.Info.CodError == 0)
                     ClientName = ListClients.Data.Where(C => C.ClienteId == ClienteO.Data.ClienteId).Fod().Descr;

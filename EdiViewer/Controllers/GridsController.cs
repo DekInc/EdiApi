@@ -95,7 +95,9 @@ namespace EdiViewer.Controllers
                 RetData<IEnumerable<PaylessTiendas>> ListClients = await ApiClientFactory.Instance.GetAllPaylessStores(ApiClientFactory.Instance.Encrypt($"Fun|{HttpContext.Session.GetObjSession<string>("Session.HashId")}"));
                 if (ListClients.Data.Count() == 0)
                     return Json(new { total = 0, records = "", errorMessage = (ListClients.Info.CodError != 0 ? ListClients.Info.Mensaje : string.Empty) });
-                IEnumerable<PaylessProdPrioriDetModel> AllRecords = ListProd.Data.Item2.Distinct().Select(O => Utility.Funcs.Reflect(O, new PaylessProdPrioriDetModel())).ToList();
+                if (ListClients.Info.CodError != 0)
+                    return Json(new { total = 0, records = "", errorMessage = ListClients.Info.Mensaje });
+                //IEnumerable<PaylessProdPrioriDetModel> AllRecords = ListProd.Data.Item2.Distinct().Select(O => Utility.Funcs.Reflect(O, new PaylessProdPrioriDetModel())).ToList();
                 string IdTienda = ListClients.Data.Where(C => C.ClienteId == HttpContext.Session.GetObjSession<int>("Session.ClientId")).Fod().TiendaId.ToString();
                 List<PaylessProdPrioriDetModel> Records = ListProd.Data.Item2.Where(R => R.Tienda == IdTienda).Select(O => Utility.Funcs.Reflect(O, new PaylessProdPrioriDetModel())).ToList();
                 Records = (
@@ -116,7 +118,8 @@ namespace EdiViewer.Controllers
                         Id = Grp.Fod().Id,
                         Peso = Grp.Count()
                     }
-                    ).ToList();
+                    ).ToList();                
+                List<PaylessProdPrioriDetModel> AllRecords = Records;
                 int Total = Records.Count;
                 if (Records.Count() > 0) {
                     RetData<IEnumerable<ExistenciasExternModel>> StockData = await ApiClientFactory.Instance.GetStock(HttpContext.Session.GetObjSession<int>("Session.ClientId"));
@@ -124,13 +127,27 @@ namespace EdiViewer.Controllers
                         foreach (PaylessProdPrioriDetModel Product in Records.Where(P => P.Barcode == Stock.CodProducto)) {
                             Product.Existencia = Convert.ToInt32(Stock.Existencia);
                             Product.Reservado = Convert.ToInt32(Stock.Reservado);
+                            foreach (PaylessProdPrioriDetModel Are in AllRecords.Where(Ar => Ar.Barcode == Product.Barcode)) {
+                                Are.Existencia = Product.Existencia;
+                                Are.Reservado = Product.Reservado;
+                            }
                         }
                     }
                     if (StockData.Info.CodError != 0)
                         return Json(new { total = 0, records = "", errorMessage = StockData.Info.Mensaje });
+                    Records.ForEach(R => {
+                        if (!string.IsNullOrEmpty(R.Cp) && R.Disponible > 0) {
+                            R.CantPedir = R.Disponible;
+                        }
+                    });
+                    AllRecords.ForEach(R => {
+                        if (!string.IsNullOrEmpty(R.Cp) && R.Disponible > 0) {
+                            R.CantPedir = R.Disponible;
+                        }
+                    });
                     Records = Utility.ExpressionBuilderHelper.W2uiSearch<PaylessProdPrioriDetModel>(Records, Request.Form);
                 }
-                return Json(new { Total, Records, errorMessage = "" });
+                return Json(new { Total, Records, errorMessage = "", AllRecords });
             } catch (Exception e1) {
                 return Json(new { draw = 0, recordsFiltered = 0, recordsTotal = 0, errorMessage = e1.ToString(), data = "" });
             }

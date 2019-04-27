@@ -141,6 +141,12 @@ namespace EdiViewer.Utility
                     case "ends":
                         ListGridSearch.Last().Comparison = Utility.ExpressionBuilderHelper.Comparison.EndsWith;
                         break;
+                    case "more":
+                        ListGridSearch.Last().Comparison = Utility.ExpressionBuilderHelper.Comparison.GreaterThan;
+                        break;
+                    case "less":
+                        ListGridSearch.Last().Comparison = Utility.ExpressionBuilderHelper.Comparison.LessThan;
+                        break;
                     default:
                         break;
                 }

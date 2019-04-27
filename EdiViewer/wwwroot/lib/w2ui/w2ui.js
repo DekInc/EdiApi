@@ -2676,9 +2676,8 @@ w2utils.event = {
                     Y = (offset.top + w2utils.getSize(obj, 'height') + options.top + 7);
                     offsetTop = offset.top;
                 }
-                //hilmer
-                //console.log(bResponsive);
-                if (bResponsive == 3) {
+                //hilmer                
+                if (options.bResponsive) {
                     if (name.indexOf('searchOverlay') > 0) {
                         X = 15;
                         Y = Y - 60;
@@ -3830,7 +3829,7 @@ w2utils.event = {
             //"text"    : ['is', 'begins', 'contains', 'ends'],
             "text": ['is', 'contains'],
             //"number": ['is'],
-            "number"  : ['is', 'between', { oper: 'less', text: 'less than'}, { oper: 'more', text: 'more than' }],
+            "number"  : ['is', 'between', { oper: 'less', text: 'Menor a'}, { oper: 'more', text: 'Mayor a' }],
             "date"    : ['is', 'between', { oper: 'less', text: 'before'}, { oper: 'more', text: 'after' }],
             "list"    : ['is'],
             "hex"     : ['is', 'between'],
@@ -3893,24 +3892,26 @@ w2utils.event = {
         onChange           : null,        // called when editable record is changed
         onRestore          : null,        // called when editable record is restored
         //onExpand: null,
-        onExpand: function (event) {
+        onExpand: function (event) { //hilmer            
             var idR = event.box_id.replace('grid_' + this.name + '_rec_', '').replace('_expanded', '');
             var r1 = this.records.filter(O => O.recid == idR)[0];
-            var mV1 = '<div class="container" style="overflow: scroll; max-width: 90vw; margin-right: 0; margin-left: 0;">';
-            for (var i = 0; i < this.columns.length; i++) {
-                mV1 += '<div class="row" style="margin-top: 10px; margin-bottom: 10px; border-bottom: 1px solid #eee;"><div class="col" style="padding-left: 0; padding-right: 0;"><b>' + this.columns[i].field + '</b></div>';                
-                mV1 += '<div style="padding-left: 0; padding-right: 0;" class="col w2ui-grid-dataResponsive"' +
-                    ' id="gridResponsive_' + idR + '" style="' + (this.columns[i].style != null ? this.columns[i].style : '') + '" ' +
-                    (this.columns[i].attr != null ? this.columns[i].attr : '') + '>';
-                if (this.columns[i].render == null)
-                    mV1 += (r1[this.columns[i].field] === undefined ? '' : r1[this.columns[i].field]);
-                else
-                    mV1 += this.columns[i].render(r1);                
-                mV1 += '</div></div>';
+            if (!$('#TxtProducto' + idR).is(':focus')) {
+                var mV1 = '<div class="container" style="overflow: scroll; max-width: 90vw; margin-right: 0; margin-left: 0;">';
+                for (var i = 0; i < this.columns.length; i++) {
+                    mV1 += '<div class="row" style="margin-top: 10px; margin-bottom: 10px; border-bottom: 1px solid #eee;"><div class="col" style="padding-left: 0; padding-right: 0;"><b>' + this.columns[i].field + '</b></div>';
+                    mV1 += '<div style="padding-left: 0; padding-right: 0;" class="col w2ui-grid-dataResponsive"' +
+                        ' id="gridResponsive_' + idR + '" style="' + (this.columns[i].style != null ? this.columns[i].style : '') + '" ' +
+                        (this.columns[i].attr != null ? this.columns[i].attr : '') + '>';
+                    if (this.columns[i].render == null)
+                        mV1 += (r1[this.columns[i].field] === undefined ? '' : r1[this.columns[i].field]);
+                    else
+                        mV1 += this.columns[i].render(r1);
+                    mV1 += '</div></div>';
+                }
+                mV1 += '</div>';
+                $('#' + event.box_id).html(mV1).animate({ height: (this.columns.length * 26) }, 333);
+                $('#' + event.box_id.replace('rec_', 'frec_')).animate({ height: (this.columns.length * 26) }, 333);
             }
-            mV1 += '</div>';
-            $('#' + event.box_id).html(mV1).animate({ height: (this.columns.length * 26) }, 333);
-            $('#' + event.box_id.replace('rec_', 'frec_')).animate({ height: (this.columns.length * 26) }, 333);            
         },
         onCollapse         : null,
         onError            : null,
@@ -3933,7 +3934,6 @@ w2utils.event = {
                             this.columns[i].hidden = true;
                     }
                     $.each($('.w2ui-grid-records'), function (key, value) {
-                        //console.log(this);
                         $(this).attr('style', $(this).attr('style').replace('hidden', 'auto'));
                     });
                 }
@@ -5633,7 +5633,7 @@ w2utils.event = {
                 html    : this.getSearchesHTML(),
                 name    : this.name + '-searchOverlay',
                 left: -10,
-                bResponsive: this.bResponsive,
+                bResponsive: this.bMobile,
                 'class' : 'w2ui-grid-searches',
                 onShow  : function () {
                     obj.initSearches();
@@ -5648,7 +5648,7 @@ w2utils.event = {
                     //console.log(screen.width);
                     if (screen.width < 400) {
                         setTimeout(function () {
-                            console.log('done');
+                            //console.log('done');
                             $('#w2ui-overlay-' + this.name + '-searchOverlay').css('width', '95vw');
                             $('#w2ui-overlay-' + this.name + '-searchOverlay').css('left', '15px');
                         }, 666);
@@ -6605,7 +6605,7 @@ w2utils.event = {
             return;
 
             function expand(event) {
-                try {
+                try {                    
                     var val   = (this.tagName.toUpperCase() == 'DIV' ? $(this).text() : this.value);
                     var $sel  = $('#grid_'+ obj.name + '_editable');
                     var style = 'font-family: '+ $(this).css('font-family') + '; font-size: '+ $(this).css('font-size') + '; white-space: pre;';
@@ -6826,7 +6826,8 @@ w2utils.event = {
             obj.last.sel_ind   = ind;
             obj.last.sel_col   = column;
             obj.last.sel_recid = recid;
-            obj.last.sel_type  = 'click';
+            obj.last.sel_type = 'click';
+            //console.log(obj);
             // multi select with shif key
             if (event.shiftKey && sel.length > 0 && obj.multiSelect) {
                 if (sel[0].recid) {
@@ -7617,7 +7618,7 @@ w2utils.event = {
                 // expand column
                 var row1 = $(this.box).find('#grid_'+ this.name +'_rec_'+ recid +'_expanded');
                 var row2 = $(this.box).find('#grid_'+ this.name +'_frec_'+ recid +'_expanded');
-                var innerHeight = row1.find('> div:first-child').height();
+                var innerHeight = row1.find('> div:first-child').height();                
                 if (row1.height() < innerHeight) {
                     row1.css({ height: innerHeight + 'px' });
                 }
@@ -9795,7 +9796,7 @@ w2utils.event = {
                 if (s.type    == null) s.type   = 'text';
 
                 var operator =
-                    '<select id="grid_'+ this.name +'_operator_'+ i +'" class="w2ui-input" ' +
+                    '<select id="grid_'+ this.name +'_operator_'+ i +'" class="" ' +
                     '   onchange="w2ui[\''+ this.name + '\'].initOperator(this, '+ i +')">' +
                         getOperators(s.type, s.operators) +
                     '</select>';

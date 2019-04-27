@@ -102,7 +102,7 @@
             $('#spanClientName').css('margin-bottom', '10px');
         }
     }
-    function changeProdPedido(isValid, codProd, txtCant) {
+    function changeProdPedido(isValid, idR, txtCant) {
         if (!isValid) return isValid;
         setTimeout(function () {            
             if ($(txtCant).val() < 0) {
@@ -110,15 +110,23 @@
                 $(txtCant).val('0')
                 return;
             } else {                
-                if ($(txtCant).val() > mainGrid.records.filter(O => O.id == codProd)[0].disponible) {
+                if ($(txtCant).val() > mainGrid.records.filter(O => O.id == idR)[0].disponible) {
                     menErrorEdi('Error, el valor es mayor al disponible', 'Error');
                     $(txtCant).val('0')
                     return;
                 }
             }       
-            for (var j = 0; j < mainGrid.allRecords.length; j++)
-                if (mainGrid.allRecords[j].id == codProd)
+            for (var j = 0; j < mainGrid.allRecords.length; j++) {
+                if (mainGrid.allRecords[j].barcode == mainGrid.records.filter(O => O.id == idR)[0].barcode) {
                     mainGrid.allRecords[j].cantPedir = $(txtCant).val();
+                }
+            }
+            for (var j = 0; j < mainGrid.records.length; j++) {
+                if (mainGrid.records[j].barcode == mainGrid.records.filter(O => O.id == idR)[0].barcode) {
+                    mainGrid.records[j].cantPedir = $(txtCant).val();
+                }
+            }
+            mainGrid.refresh();
         }, 466);
         return isValid;
     }
@@ -197,7 +205,8 @@
                     { field: "cp", caption: "cp", type: 'text' }
                 ],
                 colShowResponsive: [
-                    { field: 'barcode' }
+                    { field: 'barcode' },
+                    { field: 'cantPedir' }
                 ],
                 columns: [
                     { field: "id", caption: "id", sortable: true, hidden: true },
@@ -211,7 +220,7 @@
                     { field: "disponible", caption: "Disponible", sortable: true },
                     {
                         field: "cantPedir", caption: "Cantidad a pedir", sortable: true, render: function (record) {
-                            var cantPedir2 = 0;
+                            var cantPedir2 = record.cantPedir;
                             if (record.cp != '')
                                 cantPedir2 = record.disponible;
                             return '<input id="TxtProducto' + record.id + '" name="TxtProducto' + record.id + '" type="textbox" maxlength="7" class="editor-active form-control txtCantPedir w2ui-input" tabIndex="' + record.id + '" value="' + cantPedir2 + '" onkeypress="return changeProdPedido(isNumberKey(event), ' + "'" + record.id + "'" + ', this)">';
@@ -242,7 +251,14 @@
         $('#btnNewDis').on('click', function (e) {
             $('#exampleModalLabel2').html('Crear pedido');
             ModalPopNewDis = $('#modalPopNewDis').modal();
-            onInit();
+            if (gridPedidoDet == null) {
+                crearGridDet();
+            }
+            else {
+                gridPedidoDet.clear();
+                gridPedidoDet.records = mainGrid.allRecords.filter(O => O.cantPedir != 0);
+                gridPedidoDet.refresh();
+            }
         });
         $('#btnFiltrar').on("click", function (Event) {
             miAlive();
