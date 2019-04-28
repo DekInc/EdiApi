@@ -141,7 +141,7 @@ namespace EdiViewer.Controllers
                         }
                     });
                     AllRecords.ForEach(R => {
-                        if (!string.IsNullOrEmpty(R.Cp) && R.Disponible > 0) {
+                        if (!string.IsNullOrEmpty(R.Cp) && R.Disponible > 0) {                            
                             R.CantPedir = R.Disponible;
                         }
                     });
