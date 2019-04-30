@@ -668,3 +668,6 @@ table.dataTable.dtr-inline.collapsed > tbody > tr[role="row"] > td:first-child:b
 .actions button {
     margin-bottom: 8px;
 }
+.datetimepicker-hours, .datetimepicker-minutes, .datetimepicker-days {
+    color: #000 !important;
+}

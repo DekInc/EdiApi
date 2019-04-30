@@ -391,12 +391,56 @@ namespace EdiViewer.Controllers
                     return Json(new { total = 0, records = "", errorMessage = (ListPe.Info.CodError != 0 ? ListPe.Info.Mensaje : string.Empty) });
                 if (ListPe.Data.Item2.Count() == 0)
                     return Json(new { total = 0, records = "", errorMessage = (ListPe.Info.CodError != 0 ? ListPe.Info.Mensaje : string.Empty) });
-                List<PedidosExternos> Records = ListPe.Data.Item1.ToList();
-                List<PedidosExternos> AllRecords = new List<PedidosExternos>();
+                List<PedidosExternosGModel> Records = ListPe.Data.Item1.Select(O => Utility.Funcs.Reflect(O, new PedidosExternosGModel())).ToList();
+                List<PedidosExternosGModel> AllRecords = new List<PedidosExternosGModel>();
                 int Total = Records.Count;
                 if (Records.Count() > 0) {
                     AllRecords = Utility.ExpressionBuilderHelper.W2uiSearchNoSkip(Records, Request.Form);
                     Records = Utility.ExpressionBuilderHelper.W2uiSearch(Records, Request.Form);
+                }
+                return Json(new { Total, Records, errorMessage = "", AllRecords });
+            } catch (Exception e1) {
+                return Json(new { total = 0, records = "", errorMessage = e1.ToString() });
+            }
+        }
+        public async Task<IActionResult> GetPeticionDet(int PedidoId) {
+            try {
+                if (PedidoId == 0)
+                    return Json(new { total = 0, records = "", errorMessage = "" });                
+
+                RetData<Tuple<IEnumerable<PedidosExternos>, IEnumerable<PedidosDetExternos>>> ListPe = await ApiClientFactory.Instance.GetPedidosExternos(HttpContext.Session.GetObjSession<int>("Session.ClientId"));
+                if (ListPe.Info.CodError != 0)
+                    return Json(new { total = 0, records = "", errorMessage = ListPe.Info.Mensaje });
+                if (ListPe.Data == null)
+                    return Json(new { total = 0, records = "", errorMessage = (ListPe.Info.CodError != 0 ? ListPe.Info.Mensaje : string.Empty) });
+                if (ListPe.Data.Item2.Count() == 0)
+                    return Json(new { total = 0, records = "", errorMessage = (ListPe.Info.CodError != 0 ? ListPe.Info.Mensaje : string.Empty) });
+                PedidosExternos Pe = ListPe.Data.Item1.Where(I1 => I1.Id == PedidoId).Fod();
+                RetData<Tuple<IEnumerable<PaylessProdPrioriM>, IEnumerable<PaylessProdPrioriDet>>> ListProd = await ApiClientFactory.Instance.GetPaylessProdPriori(Pe.Periodo);
+                if (ListProd.Info.CodError != 0)
+                    return Json(new { total = 0, records = "", errorMessage = ListProd.Info.Mensaje });
+                if (ListProd.Data == null)
+                    return Json(new { total = 0, records = "", errorMessage = (ListProd.Info.CodError != 0 ? ListProd.Info.Mensaje : string.Empty) });
+                if (ListProd.Data.Item1.Count() == 0)
+                    return Json(new { total = 0, records = "", errorMessage = (ListProd.Info.CodError != 0 ? ListProd.Info.Mensaje : string.Empty) });
+                if (ListProd.Data.Item2.Count() == 0)
+                    return Json(new { total = 0, records = "", errorMessage = (ListProd.Info.CodError != 0 ? ListProd.Info.Mensaje : string.Empty) });
+                List<PaylessProdPrioriDetModel> Records = (
+                    from D in ListProd.Data.Item2
+                    from De in ListPe.Data.Item2
+                    where D.Barcode == De.CodProducto
+                    && De.PedidoId == Pe.Id
+                    && D.IdPaylessProdPrioriM == ListProd.Data.Item1.Fod().Id
+                    select D
+                    ).Select(O => Utility.Funcs.Reflect(O, new PaylessProdPrioriDetModel())).ToList();
+                foreach (PaylessProdPrioriDetModel Pr in Records) {
+                    Pr.CantPedir = Convert.ToInt32(ListPe.Data.Item2.Where(O => O.CodProducto == Pr.Barcode).Fod().CantPedir);
+                }
+                List<PaylessProdPrioriDetModel> AllRecords = new List<PaylessProdPrioriDetModel>();
+                int Total = Records.Count;
+                if (Records.Count() > 0) {
+                    AllRecords = Utility.ExpressionBuilderHelper.W2uiSearchNoSkip<PaylessProdPrioriDetModel>(Records, Request.Form);
+                    Records = Utility.ExpressionBuilderHelper.W2uiSearch<PaylessProdPrioriDetModel>(Records, Request.Form);
                 }
                 return Json(new { Total, Records, errorMessage = "", AllRecords });
             } catch (Exception e1) {

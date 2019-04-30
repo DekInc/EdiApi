@@ -48,23 +48,18 @@
                     expandColumn: window.mobileAndTabletcheck()
                 },
                 searches: [
-                    { field: 'access', caption: 'Acceso', type: 'text' },
                     { field: 'group', caption: 'Grupo', type: 'text' },
+                    { field: 'access', caption: 'Acceso', type: 'text' }                    
                 ],
                 colShowResponsive: [
                     { field: 'descr' }
                 ],
                 columns: [
-                    { field: "id", caption: "Id", sortable: true, hidden: false },
-                    { field: "idIenetAccess", caption: "IdIenetAccess", sortable: true, hidden: false},
-                    { field: "idIenetGroup", caption: "IdIenetGroup", sortable: true },
-                    { field: "access", caption: "Acceso", sortable: true },
+                    { field: "id", caption: "Id", sortable: true, hidden: true },
+                    { field: "idIenetAccess", caption: "IdIenetAccess", sortable: true, hidden: true},
+                    { field: "idIenetGroup", caption: "IdIenetGroup", sortable: true, hidden: true },
                     { field: "group", caption: "Grupo", sortable: true },
-                    //Id = Ga.Id,
-                    //IdIenetAccess = A.Id,
-                    //IdIenetGroup = G.Id,
-                    //Access = A.Descr,
-                    //Group = G.Descr
+                    { field: "access", caption: "Acceso", sortable: true }
                 ]
             }
         };

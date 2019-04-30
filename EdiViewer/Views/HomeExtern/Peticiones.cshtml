@@ -8,10 +8,17 @@
         <div class="card-deck cardMain">
             <div class="card box-shadow">
                 <div class="card-header">
-                    <h4 class="my-0 font-weight-normal">Ordenes pendientes</h4>
+                    <h4 class="my-0 font-weight-normal">Ordenes pendientes&nbsp;<img class="imgHeaderHelp" src="~/images/help.png" title="Pantalla que muestra las ordenes pendientes de despachar de Payless" alt="Pantalla que muestra las ordenes pendientes de despachar de Payless"></h4>
                 </div>
                 <div class="card-body">
-                    <div id="gridOrdenes" style="min-height: 460px; width: 100%;"></div>                    
+                    <div>
+                        <span id="spanClientName">
+                            <span id="divSpinClientName" class="spinner-border spinner-border-sm text-danger" style="display: none" role="status">
+                                <span class="sr-only">Loading...</span>
+                            </span>
+                        </span>
+                    </div>
+                    <div id="gridOrdenes" style="min-height: 460px; width: 100%;"></div>
                 </div>
             </div>
         </div>
@@ -24,6 +31,7 @@
     var domtblPeticionDet = null;
     var HashId = '';
     var gridOrdenes = null;
+    var gridOrdenesDet = null;
     var foo = function () {
     };
     $.urlParam = function (name) {
@@ -32,6 +40,33 @@
             return null;
         }
         return decodeURI(results[1]) || 0;
+    }
+    function reDrawObjects() {
+        $('#spanClientName').css('display', 'block');
+        if (window.mobileAndTabletcheck()) {            
+            $('#spanClientName').css('text-align', 'center');            
+        } else {
+            $('#spanClientName').css('margin-bottom', '10px');
+        }
+    }
+    function getClientName() {
+        $('#divSpinClientName').show();
+        $.ajax({
+            method: "GET",
+            url: "@this.Url.Action("GetClientName", "HomeExtern")",
+            success: function (data) {
+                if (data.info.codError != 0) {
+                    menErrorEdi(data.info.mensaje, 'Error');
+                    return;
+                }
+                $('#spanClientName').html(data.data);
+                $('#divSpinClientName').hide();
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                menErrorEdi(xhr.status, 'Error throw in js');
+                menErrorEdi(thrownError, 'Error throw in js');
+            }
+        });
     }
     function refreshGrid(auto) {
         w2ui.grid.autoLoad = auto;
@@ -52,6 +87,7 @@
                 },
                 searches: [
                     { field: "id", caption: "Id orden", type: 'text' },
+                    { field: "periodo", caption: "Periodo", type: 'text' },
                     { field: "fechaCreacion", caption: "Fecha de creación", type: 'text' },
                     { field: "fechaPedido", caption: "Fecha y hora esperada", type: 'text' }
                 ],
@@ -61,6 +97,7 @@
                 ],
                 columns: [
                     { field: "id", caption: "Id orden", sortable: true },
+                    { field: "periodo", caption: "Periodo", sortable: true },
                     { field: "fechaCreacion", caption: "Fecha de creación", sortable: true },
                     { field: "fechaPedido", caption: "Fecha y hora esperada", sortable: true },                    
                     {
@@ -81,61 +118,57 @@
         gridOrdenes = $('#gridOrdenes').w2grid(config.grid);
         arrayGrids['gridOrdenes'] = gridOrdenes;
     }
+    function crearGridDet(pedidoId) {
+        var config = {
+            grid: {
+                name: 'gridOrdenesDet',
+                selectType: 'cell',
+                bResponsive: true,
+                bMobile: window.mobileAndTabletcheck(),
+                url: '@this.Url.Action("GetPeticionDet", "Grids")?PedidoId=' + pedidoId,
+                show: {
+                    footer: true,
+                    toolbar: true,
+                    expandColumn: window.mobileAndTabletcheck(),
+                    toolbarInput: false
+                },
+                searches: [
+                    { field: "barcode", caption: "Cod. caja", type: 'text' },
+                    { field: "producto", caption: "Lote", type: 'text' },
+                    { field: "talla", caption: "Talla", type: 'text' },
+                    { field: "lote", caption: "Estilo", type: 'text' },
+                    { field: "categoria", caption: "Genero", type: 'text' },
+                    { field: "departamento", caption: "departamento", type: 'text' },
+                    { field: "cp", caption: "cp", type: 'text' }
+                ],
+                colShowResponsive: [
+                    { field: 'barcode' },
+                    { field: 'cantPedir' }
+                ],
+                columns: [
+                    { field: "id", caption: "id", sortable: true, hidden: true },
+                    { field: "barcode", caption: "Cod. caja", type: 'text' },
+                    { field: "producto", caption: "Lote", type: 'text' },
+                    { field: "talla", caption: "talla", type: 'text' },
+                    { field: "categoria", caption: "Genero", type: 'text' },
+                    { field: "lote", caption: "estilo", type: 'text' },
+                    { field: "cantPedir", caption: "Cantidad a pedir", sortable: true },
+                    { field: "departamento", caption: "departamento", type: 'text' },
+                    { field: "cp", caption: "cp", type: 'text' }
+                ]
+            }
+        };
+        gridOrdenesDet = $('#gridOrdenesDet').w2grid(config.grid);
+        arrayGrids['gridOrdenesDet'] = gridOrdenesDet;
+    }
     function verDetalle(pedidoId) {
-        domtblPeticionDet = $("#tblPeticionDet").DataTable({
-            select: true,
-            responsive: window.mobileAndTabletcheck(),
-            dom: 'Bfrtip',
-            buttons: [
-                'excelHtml5'
-            ],
-            destroy: true,
-            info: false,
-            "scrollX": false,
-            "scrollY": true,
-            "processing": true, // for show progress bar
-            "serverSide": true, // for process server side
-            "filter": false, // this is for disable filter (search box)
-            "orderMulti": false, // for disable multiple column at once
-            "lengthMenu": [[10, 25, 35, 50, 65], [10, 25, 35, 50, 65]],
-            "language":
-            {
-                "processing": "<div class='divAjax'>Obteniendo datos<br /><img style='width:50px; height:50px;' src='/images/ajax.gif' /></div>",
-                "decimal": ".",
-                "thousands": ",",
-                "emptyTable": "No hay información"
-            },
-            "ajax": {
-                "url": "@this.Url.Action("GetPeticionDet")?PedidoId=" + pedidoId,
-                "type": "POST",
-                "datatype": "json",
-                "dataSrc": function (json) {
-                    return json.data;
-                }
-            },
-            "order": [[0, "asc"]],
-            "columns": [
-                { "data": "codProducto", "name": "codProducto", "autoWidth": true, "defaultContent": "" },
-                { "data": "cantPedir", "name": "cantPedir", "autoWidth": true, "defaultContent": "" },                
-            ]
-        });
+        $('#exampleModalLabel3').html('Detalle de orden');        
+        ModalPopPeticionDet = $('#modalPopPeticionDet').modal();
+        crearGridDet(pedidoId);
     }
     $(document).ready(function () {
-        crearGrid();        
-        $('#tblReportes tbody').on('click', 'tr', function (Event) {            
-            var idFrom = $($(this).closest("tr").find('.thisSpan')[0]).attr('alt');
-            if ($(Event.currentTarget).prop('class').indexOf('parent') !== -1)
-                return;            
-            if ($(this).hasClass('selected')) {
-                $(this).removeClass('selected');
-            }
-            else {
-                domtblReportes.$('tr.selected').removeClass('selected');
-                $(this).addClass('selected');
-            }
-            $('#exampleModalLabel3').html('Detalle de orden');
-            fillPeticionDet(idFrom);
-            ModalPopPeticionDet = $('#modalPopPeticionDet').modal();
-        });
+        getClientName();        
+        crearGrid();
+        reDrawObjects();
     });
 </script>
