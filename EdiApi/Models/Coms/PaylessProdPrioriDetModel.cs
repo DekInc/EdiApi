@@ -1,8 +1,9 @@
-﻿using System;
+﻿using EdiApi.Models.EdiDB;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace ComModels
+namespace EdiApi.Models
 {
     public partial class PaylessProdPrioriDetModel : PaylessProdPrioriDet
     {
@@ -12,5 +13,6 @@ namespace ComModels
         public int Disponible { get { return Existencia - Reservado; } }
         public int CantPedir { get; set; }
         public string dateProm { set; get; }
+        public new string Oid { get { return string.Empty; } }
     }
 }

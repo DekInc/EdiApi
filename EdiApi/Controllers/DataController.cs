@@ -821,8 +821,13 @@ namespace EdiApi.Controllers
                     orderby Pe.Id descending
                     select Pe.Id                    
                     ).Fod();
-                Clientes ClienteO = WmsDbO.Clientes.Where(C => C.ClienteId == Convert.ToInt32(ClientId)).Fod();
-                ClienteO.EstatusId = IdPedidoExterno;
+                IEnumerable<Clientes> ListClients = WmsDbO.Clientes.Where(C => C.ClienteId == Convert.ToInt32(ClientId));
+
+                Clientes ClienteO = new Clientes();
+                if (ListClients.Count() > 0) {
+                    ClienteO = WmsDbO.Clientes.Where(C => C.ClienteId == Convert.ToInt32(ClientId)).Fod();
+                    ClienteO.EstatusId = IdPedidoExterno;
+                }
                 return new RetData<Clientes>
                 {
                     Data = ClienteO,
@@ -884,8 +889,80 @@ namespace EdiApi.Controllers
                 };
             }
         }
+        [HttpPost]
+        public RetData<Tuple<IEnumerable<PedidosExternos>, IEnumerable<PedidosDetExternos>>> GetPedidosExternosGuardados(object ClienteId) {
+            DateTime StartTime = DateTime.Now;
+            try {
+                IEnumerable<PedidosExternos> ListPe = (
+                    from Pe in DbO.PedidosExternos
+                    where Pe.ClienteId == Convert.ToInt32(ClienteId)
+                    && Pe.IdEstado == 1
+                    orderby Pe.Id descending
+                    select Pe
+                    );
+                IEnumerable<PedidosDetExternos> ListDePe = ManualDB.SP_GetPedidosDetExternosGuardados(ref DbO, Convert.ToInt32(ClienteId));
+                ListDePe = (
+                    from Dp in ListDePe
+                    from Pe in ListPe
+                    where Dp.PedidoId == Pe.Id
+                    select Dp
+                    );
+                return new RetData<Tuple<IEnumerable<PedidosExternos>, IEnumerable<PedidosDetExternos>>> {
+                    Data = new Tuple<IEnumerable<PedidosExternos>, IEnumerable<PedidosDetExternos>>(ListPe, ListDePe),
+                    Info = new RetInfo() {
+                        CodError = 0,
+                        Mensaje = "ok",
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            } catch (Exception e1) {
+                return new RetData<Tuple<IEnumerable<PedidosExternos>, IEnumerable<PedidosDetExternos>>> {
+                    Info = new RetInfo() {
+                        CodError = -1,
+                        Mensaje = e1.ToString(),
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            }
+        }
+        [HttpPost]
+        public RetData<Tuple<IEnumerable<PedidosExternos>, IEnumerable<PedidosDetExternos>>> GetPedidosExternosPendientes(object ClienteId) {
+            DateTime StartTime = DateTime.Now;
+            try {
+                IEnumerable<PedidosExternos> ListPe = (
+                    from Pe in DbO.PedidosExternos
+                    where Pe.ClienteId == Convert.ToInt32(ClienteId)
+                    && Pe.IdEstado == 2
+                    orderby Pe.Id descending
+                    select Pe
+                    );
+                IEnumerable<PedidosDetExternos> ListDePe = ManualDB.SP_GetPedidosDetExternos(ref DbO, Convert.ToInt32(ClienteId)).ToList();                
+                ListDePe = (
+                    from Dp in ListDePe
+                    from Pe in ListPe
+                    where Dp.PedidoId == Pe.Id
+                    select Dp
+                    );
+                return new RetData<Tuple<IEnumerable<PedidosExternos>, IEnumerable<PedidosDetExternos>>> {
+                    Data = new Tuple<IEnumerable<PedidosExternos>, IEnumerable<PedidosDetExternos>>(ListPe, ListDePe),
+                    Info = new RetInfo() {
+                        CodError = 0,
+                        Mensaje = "ok",
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            } catch (Exception e1) {
+                return new RetData<Tuple<IEnumerable<PedidosExternos>, IEnumerable<PedidosDetExternos>>> {
+                    Info = new RetInfo() {
+                        CodError = -1,
+                        Mensaje = e1.ToString(),
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            }
+        }
         [HttpGet]
-        public RetData<Tuple<IEnumerable<PedidosExternos>, IEnumerable<PedidosDetExternos>, IEnumerable<Clientes>>> GetPedidosExternosPendientes()
+        public RetData<Tuple<IEnumerable<PedidosExternos>, IEnumerable<PedidosDetExternos>, IEnumerable<Clientes>>> GetPedidosExternosPendientesAdmin()
         {
             DateTime StartTime = DateTime.Now;
             try
@@ -899,7 +976,6 @@ namespace EdiApi.Controllers
                     );
                 foreach (PedidosExternos PedC in ListPe)
                 {
-
                     ListClients.Add(
                         (from C in WmsDbO.Clientes
                         where C.ClienteId == PedC.ClienteId
@@ -1013,7 +1089,7 @@ namespace EdiApi.Controllers
             }
         }
         [HttpPost]
-        public RetData<PedidosExternos> SetPedidoExterno(IEnumerable<PedidoExternoModel> ListDis, int ClienteId, int IdEstado)
+        public RetData<PedidosExternos> SetPedidoExterno(IEnumerable<PaylessProdPrioriDetModel> ListDis, int ClienteId, int IdEstado, string cboPeriod)
         {
             DateTime StartTime = DateTime.Now;
             try
@@ -1021,14 +1097,15 @@ namespace EdiApi.Controllers
                 if (ListDis.Count() == 0)
                     throw new Exception("No hay productos en la lista. WebAPI.");
                 string DateProm = "";
-                foreach (PedidoExternoModel Pem in ListDis)
+                foreach (PaylessProdPrioriDetModel Pem in ListDis)
                     if (!string.IsNullOrEmpty(Pem.dateProm)) DateProm = Pem.dateProm;
                 PedidosExternos PedidoExterno = new PedidosExternos() {
                     ClienteId = ClienteId,
                     FechaCreacion = DateTime.Now.ToString(ApplicationSettings.DateTimeFormat),
                     IdEstado = IdEstado,
                     FechaPedido = DateProm,
-                    Id = ListDis.Fod().id ?? 0
+                    Id = ListDis.Fod().IdPaylessProdPrioriM,
+                    Periodo = cboPeriod
                 };
                 if (PedidoExterno.Id == 0)
                     DbO.PedidosExternos.Add(PedidoExterno);
@@ -1038,15 +1115,19 @@ namespace EdiApi.Controllers
                     foreach (PedidosDetExternos Pde in DbO.PedidosDetExternos.Where(Pd => Pd.PedidoId == PedidoExterno.Id))
                         DbO.PedidosDetExternos.Remove(Pde);
                 }
-                DbO.SaveChanges();                
-                foreach (PedidoExternoModel PedidoDet in ListDis)
+                DbO.SaveChanges();
+                List<string> ListPedidosHechos = new List<string>();
+                foreach (PaylessProdPrioriDetModel PedidoDet in ListDis)
                 {
-                    PedidosDetExternos PedidoExtDet = new PedidosDetExternos() {
-                        CodProducto = PedidoDet.codProducto,
-                        PedidoId = PedidoExterno.Id,
-                        CantPedir = Convert.ToDouble(PedidoDet.cantPedir)
-                    };
-                    DbO.PedidosDetExternos.Add(PedidoExtDet);
+                    if (ListPedidosHechos.Where(P1 => P1 == PedidoDet.Barcode).Count() == 0) {
+                        PedidosDetExternos PedidoExtDet = new PedidosDetExternos() {
+                            CodProducto = PedidoDet.Barcode,
+                            PedidoId = PedidoExterno.Id,
+                            CantPedir = Convert.ToDouble(PedidoDet.CantPedir)
+                        };
+                        DbO.PedidosDetExternos.Add(PedidoExtDet);
+                        ListPedidosHechos.Add(PedidoDet.Barcode);
+                    }
                 }
                 DbO.SaveChanges();
                 return new RetData<PedidosExternos>
@@ -1497,6 +1578,40 @@ namespace EdiApi.Controllers
                 {
                     Info = new RetInfo()
                     {
+                        CodError = -1,
+                        Mensaje = e1.ToString(),
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            }
+        }
+        [HttpPost]
+        public RetData<Tuple<IEnumerable<PaylessProdPrioriArchM>, IEnumerable<PaylessProdPrioriArchDet>>> GetPaylessPeriodPrioriFileExists(string Period, int ClienteId) {
+            DateTime StartTime = DateTime.Now;
+            try {
+                IEnumerable<PaylessProdPrioriArchM> ListM = (
+                    from M in DbO.PaylessProdPrioriArchM
+                    where M.Periodo == Period
+                    && M.ClienteId == ClienteId
+                    select M
+                    );
+                IEnumerable<PaylessProdPrioriArchDet> ListD = (
+                    from M in DbO.PaylessProdPrioriArchM
+                    from D in DbO.PaylessProdPrioriArchDet
+                    where D.IdM == M.Id
+                    select D
+                    );
+                return new RetData<Tuple<IEnumerable<PaylessProdPrioriArchM>, IEnumerable<PaylessProdPrioriArchDet>>> {
+                    Data = new Tuple<IEnumerable<PaylessProdPrioriArchM>, IEnumerable<PaylessProdPrioriArchDet>>(ListM, ListD),
+                    Info = new RetInfo() {
+                        CodError = 0,
+                        Mensaje = "ok",
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            } catch (Exception e1) {
+                return new RetData<Tuple<IEnumerable<PaylessProdPrioriArchM>, IEnumerable<PaylessProdPrioriArchDet>>> {
+                    Info = new RetInfo() {
                         CodError = -1,
                         Mensaje = e1.ToString(),
                         ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds

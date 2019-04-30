@@ -249,7 +249,7 @@
             var arrayPedidosNorep = [];
             $.ajax({
                 method: "GET",
-                url: "@this.Url.Action("GetPedidosExternosPendientes")",
+                url: "@this.Url.Action("GetPedidosExternosPendientesAdmin")",
                 success: function (data) {
                     if (data.codError != 0) {
                         menErrorEdi(data.errorMessage, 'Error');

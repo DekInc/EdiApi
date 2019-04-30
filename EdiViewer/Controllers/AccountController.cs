@@ -17,24 +17,34 @@ namespace EdiViewer.Controllers
 {
     public class AccountController : Controller
     {
+        private void CheckSession() {
+            if (string.IsNullOrEmpty(HttpContext.Session.GetObjSession<string>("Session.HashId"))) {
+                Response.Redirect("/Account/?error=NO_AUTH");
+            }
+        }
+
         public IActionResult Index()
         {
             return View(new Models.ErrorModel());
         }
         public IActionResult CrudUsuarios()
         {
+            CheckSession();
             return View();
         }
         public IActionResult CrudGrupos()
         {
+            CheckSession();
             return View();
         }
         public IActionResult CrudAccesos()
         {
+            CheckSession();
             return View();
         }
         public IActionResult CrudGrupoAccesos()
         {
+            CheckSession();
             return View();
         }        
         [HttpGet]
@@ -52,6 +62,7 @@ namespace EdiViewer.Controllers
                 IEnumerable<IenetGroups> ListGroups = HttpContext.Session.GetObjSession<IEnumerable<IenetGroups>>("ListGroups");
                 RetData<IEnumerable<Clientes>> ListClients = await ApiClientFactory.Instance.GetAllClients(ApiClientFactory.Instance.Encrypt($"Fun|{HttpContext.Session.GetObjSession<string>("Session.HashId")}"));                
                 List<IenetUsersModel> Records = new List<IenetUsersModel>();
+                List<IenetUsersModel> AllRecords = new List<IenetUsersModel>();
                 foreach (IenetUsers UserO in ListUsers.Data)
                 {
                     Records.Add(new IenetUsersModel() {
@@ -66,10 +77,11 @@ namespace EdiViewer.Controllers
                 }
                 int Total = 0;
                 if (Records.Count > 0) {
+                    AllRecords = Utility.ExpressionBuilderHelper.W2uiSearchNoSkip<IenetUsersModel>(Records, Request.Form);
                     Records = Utility.ExpressionBuilderHelper.W2uiSearch<IenetUsersModel>(Records, Request.Form);
                     Total = Records.Count;
                 }
-                return Json(new { Total, Records, errorMessage = "" });
+                return Json(new { Total, Records, errorMessage = "", AllRecords });
             }
             catch (Exception e1)
             {
@@ -82,13 +94,15 @@ namespace EdiViewer.Controllers
             {                
                 RetData<IEnumerable<IenetGroups>> ListGroups = await ApiClientFactory.Instance.GetGroups(ApiClientFactory.Instance.Encrypt($"Fun|{HttpContext.Session.GetObjSession<string>("Session.HashId")}"));
                 List<IenetGroupsModel> Records = ListGroups.Data.Select(O => new IenetGroupsModel() { Id = O.Id, Descr = O.Descr }).ToList();
+                List<IenetGroupsModel> AllRecords = new List<IenetGroupsModel>();
                 int Total = 0;
                 if (ListGroups.Data.Count() > 0)
                 {   
+                    AllRecords = Utility.ExpressionBuilderHelper.W2uiSearchNoSkip<IenetGroupsModel>(Records, Request.Form);
                     Records = Utility.ExpressionBuilderHelper.W2uiSearch<IenetGroupsModel>(Records, Request.Form);
                     Total = Records.Count;
                 }
-                return Json(new { Total, Records, errorMessage = "" });
+                return Json(new { Total, Records, errorMessage = "", AllRecords });
             }
             catch (Exception e1)
             {
@@ -101,13 +115,15 @@ namespace EdiViewer.Controllers
             {
                 RetData<IEnumerable<IenetAccesses>> ListData = await ApiClientFactory.Instance.GetIenetAccesses(ApiClientFactory.Instance.Encrypt($"Fun|{HttpContext.Session.GetObjSession<string>("Session.HashId")}"));
                 List<IenetAccessesModel> Records = ListData.Data.Select(O => new IenetAccessesModel() { Id = O.Id, Descr = O.Descr }).ToList();
+                List<IenetAccessesModel> AllRecords = new List<IenetAccessesModel>();
                 int Total = 0;
                 if (Records.Count() > 0)
                 {
+                    AllRecords = Utility.ExpressionBuilderHelper.W2uiSearchNoSkip<IenetAccessesModel>(Records, Request.Form);
                     Records = Utility.ExpressionBuilderHelper.W2uiSearch<IenetAccessesModel>(Records, Request.Form);
                     Total = Records.Count;
                 }
-                return Json(new { Total, Records, errorMessage = "" });
+                return Json(new { Total, Records, errorMessage = "", AllRecords });
             }
             catch (Exception e1)
             {
@@ -121,6 +137,7 @@ namespace EdiViewer.Controllers
                 RetData<IEnumerable<IenetGroups>> ListGroups = await ApiClientFactory.Instance.GetGroups(ApiClientFactory.Instance.Encrypt($"Fun|{HttpContext.Session.GetObjSession<string>("Session.HashId")}"));
                 RetData<IEnumerable<IenetAccesses>> ListAccess = await ApiClientFactory.Instance.GetIenetAccesses(ApiClientFactory.Instance.Encrypt($"Fun|{HttpContext.Session.GetObjSession<string>("Session.HashId")}"));
                 RetData<IEnumerable<IenetGroupsAccesses>> ListGroupsAccesses = await ApiClientFactory.Instance.GetIEnetGroupsAccesses(ApiClientFactory.Instance.Encrypt($"Fun|{HttpContext.Session.GetObjSession<string>("Session.HashId")}"));
+                List<IenetGroupsAccessesModel> AllRecords = new List<IenetGroupsAccessesModel>();
                 List<IenetGroupsAccessesModel> Records = (
                     from Ga in ListGroupsAccesses.Data
                     from G in ListGroups.Data
@@ -137,10 +154,11 @@ namespace EdiViewer.Controllers
                 int Total = 0;
                 if (Records.Count() > 0)
                 {
+                    AllRecords = Utility.ExpressionBuilderHelper.W2uiSearchNoSkip<IenetGroupsAccessesModel>(Records, Request.Form);
                     Records = Utility.ExpressionBuilderHelper.W2uiSearch<IenetGroupsAccessesModel>(Records, Request.Form);
                     Total = Records.Count;
                 }
-                return Json(new { Total, Records, errorMessage = "" });
+                return Json(new { Total, Records, errorMessage = "", AllRecords });
             }
             catch (Exception e1)
             {

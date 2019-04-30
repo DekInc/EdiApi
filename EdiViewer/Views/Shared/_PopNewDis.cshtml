@@ -44,7 +44,8 @@
                 show: {
                     footer: true,
                     toolbar: true,
-                    expandColumn: window.mobileAndTabletcheck()
+                    expandColumn: window.mobileAndTabletcheck(),
+                    toolbarInput: false
                 },
                 searches: [
                     { field: "barcode", caption: "Cod. caja", type: 'text' },
@@ -73,18 +74,36 @@
             }
         };
         gridPedidoDet = $('#gridPedidoDet').w2grid(config.grid);
+        arrayGrids['gridPedidoDet'] = gridPedidoDet;
     }
     function SaveSendDis(actionUrl, op1) {
-        if (arrayProductos.length == 0)
+        if (mainGrid == null)
             return;
+        if (mainGrid.allRecords == null)
+            return;
+        if (mainGrid.allRecords.length == 0)
+            return;
+        if (mainGrid.allRecords.filter(Pr => Pr.cantPedir != 0).length == 0)
+            return;        
         if ($('#dtp2').val() == '') {
             //ModalPopNewDis.hide();
             menErrorEdi('La fecha está vacia', 'Error');
             return;
+        } else {
+            if (mainGrid.pedidosPendientes != null) {
+                if (mainGrid.pedidosPendientes.length != 0) {
+                    var checkDate = mainGrid.pedidosPendientes.filter(O => O.fechaPedido.substr(0, 10) == $('#dtp2').val());
+                    if (checkDate) {
+                        menErrorEdi('Ya existe un pedido para esa fecha de entrega, se continuara igualmente.', 'Advertencia');
+                        sleepMs(2000);
+                    }
+                }
+            }
         }
-        console.log($('#dtp2').val());
+        var regSend = mainGrid.allRecords.filter(Pr => Pr.cantPedir != 0);
+        //console.log($('#dtp2').val());
         //arrayProductos[0].dateProm = $('#dtp2').val();
-        $.each(arrayProductos, function (i, Pr) {
+        $.each(regSend, function (i, Pr) {
             Pr.dateProm = $('#dtp2').val();
         });
         $.ajax({
@@ -92,16 +111,22 @@
             contentType: "application/json; charset=utf-8",
             dataType: "JSON",
             url: actionUrl,
-            data: JSON.stringify(mainGrid.allRecords.filter(Pr => Pr.cantPedir != 0)),
+            data: JSON.stringify(regSend),
             success: function (json) {
                 if (json.codError != 0)
                     menErrorEdi(json.mensaje, 'Error');
                 else {
-                    if (op1 == 0)
-                        menErrorEdi('Se ha guardado el pedido para ser modificado después, el pedido no ha sido enviado a GLC.', 'Mensaje de aplicativo');
                     if (op1 == 1) {
+                        miAlive();
+                        mainGrid.allRecords = [];                        
+                        $('#divSpinFiltrar').show();
+                        mainGrid.searchReset(true);
+                        mainGrid.reload2("@this.Url.Action("GetPaylessProdPrioriInventario", "Grids")?dtpPeriodoBuscar=" + $('#cboPeriod').val());
+                        menErrorEdi('Se ha guardado el pedido para ser modificado después, el pedido no ha sido enviado a GLC.', 'Mensaje de aplicativo');
+                    }
+                    if (op1 == 2) {
                         //Redirect a lista de pedidos
-                        location.href = '@this.Url.Action("Peticiones")';
+                        location.href = '@this.Url.Action("Peticiones", "HomeExtern")';
                     }
                 }
             },
@@ -111,12 +136,12 @@
         });
     }
     $('#btnSaveDis').on('click', function () {
-        SaveSendDis("@this.Url.Action("SetPedidoExterno")", 0);
+        SaveSendDis('@this.Url.Action("SetPedidoExterno", "HomeExtern")?cboPeriod=' + $('#cboPeriod').val(), 1);
     });
     $('#btnSendDis').on('click', function () {
-        SaveSendDis("@this.Url.Action("SendPedidoExterno")", 1);
+        SaveSendDis('@this.Url.Action("SendPedidoExterno", "HomeExtern")?cboPeriod=' + $('#cboPeriod').val(), 2);
     });
     $(document).ready(function () {
-        $('#dtp2').datetimepicker({ format: 'dd/mm/yyyy hh:ii' });        
+        $('#dtp2').datetimepicker({ format: 'dd/mm/yyyy hh:ii' });
     });
 </script>

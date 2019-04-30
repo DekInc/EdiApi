@@ -276,62 +276,7 @@ namespace EdiViewer.Controllers
             {
                 return Json(new { draw = 0, recordsFiltered = 0, recordsTotal = 0, errorMessage = e1.ToString(), data = "" });
             }
-        }        
-        public async Task<IActionResult> GetPeticiones()
-        {
-            try
-            {
-                //var dict = Request.Form.ToDictionary(x => x.Key, x => x.Value.ToString());
-                var draw = HttpContext.Request.Form["draw"].Fod();
-                // Skiping number of Rows count  
-                var start = Request.Form["start"].Fod();
-                // Paging Length 10,20  
-                var length = Request.Form["length"].Fod();
-                // Sort Column Name  
-                var sortColumn = Request.Form["columns[" + Request.Form["order[0][column]"].Fod() + "][name]"].Fod();
-                // Sort Column Direction ( asc ,desc)  
-                var sortColumnDirection = Request.Form["order[0][dir]"].Fod();
-                // Search Value from (Search box)  
-                var searchValue = Request.Form["search[value]"].Fod();
-
-                //Paging Size (10,20,50,100)  
-                int pageSize = length != null ? Convert.ToInt32(length) : 0;
-                int skip = start != null ? Convert.ToInt32(start) : 0;
-                int recordsTotal = 0;
-
-                // Getting all Customer data  
-                RetData<Tuple<IEnumerable<PedidosExternos>, IEnumerable<PedidosDetExternos>>> ListPe = await ApiClientFactory.Instance.GetPedidosExternos(HttpContext.Session.GetObjSession<int>("Session.ClientId"));
-                if (ListPe.Info.CodError != 0)
-                    return Json(new { draw = 0, recordsFiltered = 0, recordsTotal = 0, errorMessage = ListPe.Info.Mensaje, data = "" });
-                if (ListPe.Data.Item1.Count() == 0)
-                {
-                    return Json(new { draw = 0, recordsFiltered = 0, recordsTotal = 0, errorMessage = (ListPe.Info.CodError != 0 ? ListPe.Info.Mensaje : string.Empty), data = "" });
-                }
-                IEnumerable<PedidosExternos> ListPed = ListPe.Data.Item1;
-                if (!(string.IsNullOrEmpty(sortColumn) && string.IsNullOrEmpty(sortColumnDirection)))
-                {
-                    if (sortColumn == "fechaPedido")
-                    {
-                        if (sortColumnDirection == "desc")
-                            ListPed = ListPed.OrderByDescending(O => O.FechaPedido.ToDateFromEspDate());
-                        else
-                            ListPed = ListPed.OrderBy(O => O.FechaPedido.ToDateFromEspDate());
-                    }
-                    else
-                        ListPed = ListPed.AsQueryable().OrderBy(sortColumn + " " + sortColumnDirection);
-                }
-                //total number of rows count
-                recordsTotal = ListPed.Count();
-                //Paging
-                ListPed = ListPed.Skip(skip).Take(pageSize);
-                //Returning Json Data
-                return Json(new { draw, recordsFiltered = recordsTotal, recordsTotal, data = ListPed, errorMessage = "" });
-            }
-            catch (Exception e1)
-            {
-                return Json(new { draw = 0, recordsFiltered = 0, recordsTotal = 0, errorMessage = e1.ToString(), data = "" });
-            }
-        }        
+        }
         public async Task<IActionResult> GetPeticionDet(int PedidoId)
         {
             try
@@ -388,8 +333,8 @@ namespace EdiViewer.Controllers
                 RetData<IEnumerable<PaylessTiendas>> ListClients = await ApiClientFactory.Instance.GetAllPaylessStores(ApiClientFactory.Instance.Encrypt($"Fun|{HttpContext.Session.GetObjSession<string>("Session.HashId")}"));
                 if (ListClients.Info.CodError != 0) {
                     return new RetData<string>() {
-                        Data = ClienteO.Info.Mensaje,
-                        Info = ClienteO.Info
+                        Data = ListClients.Info.Mensaje,
+                        Info = ListClients.Info
                     };
                 }
                 string ClientName = string.Empty;
@@ -421,20 +366,22 @@ namespace EdiViewer.Controllers
         }
         public async Task<IActionResult> PedidosPayless() {
             try {
-                ViewBag.ListOldDis = null;
+                //ViewBag.ListOldDis = null;
                 ViewBag.DateLastDis = DateTime.Now.ToString(ApplicationSettings.DateTimeFormatT);
-                ViewBag.PedidoId = null;
-                HttpContext.Session.SetObjSession("PedidoId", null);
+                //ViewBag.PedidoId = null;
+                //HttpContext.Session.SetObjSession("PedidoId", null);
                 RetData<Tuple<IEnumerable<PedidosExternos>, IEnumerable<PedidosDetExternos>>> ListDis = await ApiClientFactory.Instance.GetPedidosExternos(HttpContext.Session.GetObjSession<int>("Session.ClientId"));
-                if (ListDis.Data.Item1.Count() > 0) {
-                    if (ListDis.Data.Item1.Fod().IdEstado == 1) {
-                        ViewBag.DateLastDis = ListDis.Data.Item1.Fod().FechaPedido;
-                        HttpContext.Session.SetObjSession("PedidoId", ListDis.Data.Item1.Fod().Id);
-                        if (ListDis.Data.Item2.Count() > 0) {
-                            ViewBag.ListOldDis = JsonConvert.SerializeObject(ListDis.Data.Item2.Where(Pde => Pde.PedidoId == ListDis.Data.Item1.Fod().Id).Select(Pd => new { codProducto = Pd.CodProducto.Replace(" ", "^"), cantPedir = Pd.CantPedir, producto = Pd.Producto }));
+                if (ListDis.Info.CodError == 0) {
+                    if (ListDis.Data.Item1.Count() > 0) {
+                        if (ListDis.Data.Item1.Fod().IdEstado == 1) {
+                            HttpContext.Session.SetObjSession("PedidoId", ListDis.Data.Item1.Fod().Id);
+                            //ViewBag.DateLastDis = ListDis.Data.Item1.Fod().FechaPedido;                        
+                            //if (ListDis.Data.Item2.Count() > 0) {
+                            //    ViewBag.ListOldDis = JsonConvert.SerializeObject(ListDis.Data.Item2.Where(Pde => Pde.PedidoId == ListDis.Data.Item1.Fod().Id).Select(Pd => new { codProducto = Pd.CodProducto.Replace(" ", "^"), cantPedir = Pd.CantPedir, producto = Pd.Producto }));
+                            //}
                         }
                     }
-                }                
+                }
             } catch (Exception e1) {
                 ViewBag.ClientName = e1.ToString();
             }
@@ -566,19 +513,19 @@ namespace EdiViewer.Controllers
             }
         }        
         [HttpPost]
-        public async Task<RetInfo> SetPedidoExterno([FromBody]string Json)
+        public async Task<RetInfo> SetPedidoExterno([FromBody]string Json, string cboPeriod)
         {
-            return await SetPedidoExterno2(Json, 1);
+            return await SetPedidoExterno2(Json, 1, cboPeriod);
         }
         [HttpPost]
-        public async Task<RetInfo> SendPedidoExterno([FromBody]string Json)
+        public async Task<RetInfo> SendPedidoExterno([FromBody]string Json, string cboPeriod)
         {
-            return await SetPedidoExterno2(Json, 2);            
+            return await SetPedidoExterno2(Json, 2, cboPeriod);            
         }
-        private async Task<RetInfo> SetPedidoExterno2(string Json, int IdEstado)
+        private async Task<RetInfo> SetPedidoExterno2(string Json, int IdEstado, string cboPeriod)
         {
             DateTime StartTime = DateTime.Now;
-            IEnumerable<PedidoExternoModel> ListDis = JsonConvert.DeserializeObject<IEnumerable<PedidoExternoModel>>(Json.ToString());
+            IEnumerable<PaylessProdPrioriDetModel> ListDis = JsonConvert.DeserializeObject<IEnumerable<PaylessProdPrioriDetModel>>(Json.ToString());
             if (ListDis.Count() == 0)
             {
                 return new RetInfo()
@@ -588,14 +535,14 @@ namespace EdiViewer.Controllers
                     ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
                 };
             }
-            foreach (PedidoExternoModel Pe in ListDis)
+            foreach (PaylessProdPrioriDetModel Pe in ListDis)
             {
-                Pe.id = HttpContext.Session.GetObjSession<int?>("PedidoId");
-                Pe.codProducto = Pe.codProducto.Replace("^", " ");
+                Pe.IdPaylessProdPrioriM = HttpContext.Session.GetObjSession<int>("PedidoId");
+                Pe.Barcode = Pe.Barcode;
             }
             try
             {
-                RetData<PedidosExternos> RetDataO = await ApiClientFactory.Instance.SetPedidoExterno(ListDis, HttpContext.Session.GetObjSession<int>("Session.ClientId"), IdEstado);
+                RetData<PedidosExternos> RetDataO = await ApiClientFactory.Instance.SetPedidoExterno(ListDis, HttpContext.Session.GetObjSession<int>("Session.ClientId"), IdEstado, cboPeriod);
                 return RetDataO.Info;
             }
             catch (Exception e2)
@@ -908,7 +855,8 @@ namespace EdiViewer.Controllers
                             {
                                 foreach (System.Data.DataRow FileCod in FileUploadDs.Tables[3].Rows)
                                 {
-                                    ListBarcodes.Add(new PaylessProdPrioriArchDet() { Barcode = FileCod["CaseNumber"].ToString() });
+                                    if (ListBarcodes.Where(Bc => Bc.Barcode == FileCod["CaseNumber"].ToString()).Count() == 0)
+                                        ListBarcodes.Add(new PaylessProdPrioriArchDet() { Barcode = FileCod["CaseNumber"].ToString() });
                                 }
                             }
                             else {

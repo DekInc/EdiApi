@@ -3568,14 +3568,19 @@ w2utils.event = {
         this.started = false;
         this.columnGroups = [];       // { span: int, caption: 'string', master: true/false }
         this.records      = [];       // { recid: int(required), field1: 'value1', ... fieldN: 'valueN', style: 'string',  changes: object }
-        this.allRecords   = [];      // To manage JS async updates to all data
+        this.allRecords = [];      // To manage JS async updates to all data
+        this.filteredRecords = [];
+        this.pedidosPendientes = [];
         this.summary      = [];       // arry of summary records, same structure as records array
         this.searches     = [];       // { type, caption, field, inTag, outTag, hidden }
         this.searchData   = [];
         this.sortData     = [];
         this.postData     = {};
         this.httpHeaders  = {};
-        this.toolbar      = {};       // if not empty object; then it is toolbar object
+        this.toolbar = {};       // if not empty object; then it is toolbar object        
+        //toolbar: {
+        //    items: [{ id: 'btnExportarExcelw2ui', type: 'html', html: '<button type="button" alt="Exportar todos los datos de la grilla" title="Exportar todos los datos de la grilla" onclick="mainGrid.exportData(mainGrid.allRecords, ' + "'csv'" + ', true)"><img src="/images/excel.png" class="imgButton"></button>' }]
+        //},
         this.stateId      = null;     // Custom state name for stateSave, stateRestore and stateReset
 
         this.show = {
@@ -3808,8 +3813,7 @@ w2utils.event = {
         msgAJAXerror    : 'AJAX error. See console for more details.',
         msgRefresh      : 'Cargando...',
         msgNeedReload   : 'Your remote data source record count has changed, reloading from the first record.',
-        msgEmpty        : 'No hay datos', // if not blank, then it is message when server returns no records
-
+        msgEmpty        : 'No hay datos', // if not blank, then it is message when server returns no records        
         buttons: {
             'reload'   : { type: 'button', id: 'w2ui-reload', icon: 'w2ui-icon-reload', tooltip: 'Reload data in the list' },
             'columns'  : { type: 'drop', id: 'w2ui-column-on-off', icon: 'w2ui-icon-columns', tooltip: 'Show/hide columns', arrow: false, html: '' },
@@ -3821,9 +3825,10 @@ w2utils.event = {
             'add'      : { type: 'button', id: 'w2ui-add', text: 'Add New', tooltip: 'Add new record', icon: 'w2ui-icon-plus' },
             'edit'     : { type: 'button', id: 'w2ui-edit', text: 'Edit', tooltip: 'Edit selected record', icon: 'w2ui-icon-pencil', disabled: true },
             'delete'   : { type: 'button', id: 'w2ui-delete', text: 'Delete', tooltip: 'Delete selected records', icon: 'w2ui-icon-cross', disabled: true },
-            'save'     : { type: 'button', id: 'w2ui-save', text: 'Save', tooltip: 'Save changed records', icon: 'w2ui-icon-check' }
+            'save': { type: 'button', id: 'w2ui-save', text: 'Save', tooltip: 'Save changed records', icon: 'w2ui-icon-check' },
+            'btnExportarExcelw2ui': { id: 'btnExportarExcelw2ui', type: 'html', html: '<button type="button" alt="Exportar todos los datos de la grilla" title="Exportar todos los datos de la grilla" onclick="mainGrid.exportData(mainGrid.allRecords, ' + "'xls'" + ', true)"><img src="/images/excel.png" class="imgButton"></button>' }
         },
-
+        //hilmer
         operators: { // for search fields
             //hilmer operators
             //"text"    : ['is', 'begins', 'contains', 'ends'],
@@ -3938,7 +3943,7 @@ w2utils.event = {
                     });
                 }
                 //this.started = true;
-            }
+            }            
         },
         onReload           : null,
         onResize           : null,
@@ -5843,6 +5848,30 @@ w2utils.event = {
             //this.onReloadComplete();
         },
 
+        refresh2: function () {
+            if (this.records != null) {
+                if (this.records.length > 0) {
+                    var filteredArray = this.allRecords.filter(O => O.cantPedir != 0);
+                    for (var i = 0; i < filteredArray.length; i++) {
+                        for (var r = 0; r < this.records.length; r++) {
+                            if (this.records[r].barcode == filteredArray[i].barcode) {
+                                this.records[r].cantPedir = filteredArray[i].cantPedir;
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        refreshCantPedir: function () {
+            if (this.records != null) {
+                if (this.records.length > 0) {
+                    var filteredArray = this.allRecords.filter(O => O.cantPedir != 0);
+                    for (var i = 0; i < filteredArray.length; i++) {
+                        $('#TxtProducto' + filteredArray[i].id).val(filteredArray[i].cantPedir);
+                    }
+                }
+            }
+        },
         exportData: function (Data, type, showFields) {
             // Data       : {}. Can be any data you want to export (records, columns, custom, etc...).
             // type       : string. Extension of file name 'xls' or 'csv' are possible. By default 'excel' format is done on array
@@ -6147,11 +6176,23 @@ w2utils.event = {
                                 for (var r = 0; r < data.records.length; r++) {
                                     this.records.push(data.records[r]);
                                 }
-                            }
+                            }                            
                             if (data.allRecords) {
-                                if (mainGrid.allRecords.length == 0)
+                                if (this.allRecords.length == 0)
                                     this.allRecords = data.allRecords;
+                                else {
+                                    this.refresh2();
+                                }
+                            } else {
+                                if (data.records)
+                                    console.log('Dev, tarea: poner allRecords');
                             }
+                            if (data.filteredRecords) {
+                                this.filteredRecords = data.filteredRecords;
+                            }
+                            if (data.pedidosPendientes) {
+                                this.pedidosPendientes = data.pedidosPendientes;
+                            }                            
                             //hilmer agrego custom Exceptions
                             //console.log(data);
                             if (data.errorMessage != null) {
@@ -8076,7 +8117,7 @@ w2utils.event = {
             if (this.total <= 0 && !url && this.searchData.length === 0) {
                 this.total = this.records.length;
             }
-            this.toolbar.disable('w2ui-edit', 'w2ui-delete');
+            this.toolbar.disable('w2ui-edit', 'w2ui-delete');            
             if (!this.box) return;
             // event before
             var edata = this.trigger({ phase: 'before', target: this.name, type: 'refresh' });
@@ -9193,7 +9234,10 @@ w2utils.event = {
                 }
                 if ((this.show.toolbarSearch || this.show.toolbarInput) && (this.show.toolbarAdd || this.show.toolbarEdit || this.show.toolbarDelete || this.show.toolbarSave)) {
                     this.toolbar.items.push({ type: 'break', id: 'w2ui-break1' });
-                }
+                }                
+                //hilmer toolbar Excel
+                this.buttons['btnExportarExcelw2ui'].html = '<button type="button" alt="Exportar todos los datos de la grilla" title="Exportar todos los datos de la grilla" onclick="arrayGrids[' + "'" + this.name + "']" + '.exportData((arrayGrids[' + "'" + this.name + "']" + '.allRecords.length == 0 ? arrayGrids[' + "'" + this.name + "']" + '.records : arrayGrids[' + "'" + this.name + "']" + '.allRecords), ' + "'xls'" + ', true)"><img src="/images/excel.png" class="imgButton"></button>';
+                this.toolbar.items.push($.extend(true, {}, this.buttons['btnExportarExcelw2ui']));
                 if (this.show.toolbarAdd) {
                     this.toolbar.items.push($.extend(true, {}, this.buttons['add']));
                 }

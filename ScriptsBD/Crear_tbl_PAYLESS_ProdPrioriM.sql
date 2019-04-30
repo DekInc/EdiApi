@@ -1,3 +1,5 @@
+use edidb
+go
 IF OBJECT_ID('PAYLESS_ProdPrioriM', 'U') IS NOT NULL 
 	DROP TABLE PAYLESS_ProdPrioriM
 GO
@@ -57,4 +59,5 @@ CREATE TABLE PAYLESS_ProdPrioriArchDet(
 	[barcode] nvarchar(16)
 )
 GO
-
+--select * from edidb.dbo.PAYLESS_ProdPrioriArchM
+--select * from edidb.dbo.PAYLESS_ProdPrioriArchDet order by barcode

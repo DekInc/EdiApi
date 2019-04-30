@@ -1,4 +1,5 @@
 ﻿var modalPop1 = null;
+var arrayGrids = [];
 //function afterModalTransition(e) {
 //    e.setAttribute("style", "display: none !important;");
 //}
@@ -51,3 +52,4 @@ function miAlive() {
         }
     });
 }
+function sleepMs(ms) { const start = performance.now(); while (performance.now() - start < ms); }

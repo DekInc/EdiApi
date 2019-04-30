@@ -2,13 +2,13 @@
     ViewData["Title"] = "Pedidos Payless";
     Layout = "_Layout";
 }
-<script>
+@*<script>
     var arrayProductosOld = [];
     @if(ViewBag.ListOldDis != null)
     {
         <text>arrayProductosOld = </text> @Html.Raw(ViewBag.ListOldDis);
     }
-</script>
+</script>*@
 <div id="mainDiv">
     <div class="container">
         <div class="card-deck cardMain">
@@ -53,12 +53,12 @@
                                     </button>
                                     <button type="button" class="btn btn-primary" id="btnNewDis" data-togle="tooltip" data-html="true" title="Seleccione los productos a pedir y acá click acá para solicitarlos">Crear pedido</button>
                                     <button type="button" class="btn btn-primary" id="btnAddFiltered" data-togle="tooltip" data-html="true" title="Agregar todos los productos filtrados con disponibilidad al pedido">Agregar filtrado a pedido</button>
-                                    <button type="button" class="btn btn-primary" id="btnExportDis" data-togle="tooltip" data-html="true" title="Exportar pedido en Excel">
+                                    @*<button type="button" class="btn btn-primary" id="btnExportDis" data-togle="tooltip" data-html="true" title="Exportar pedido en Excel">
                                         Exportar pedido a Excel <img src="/images/excel.png" class="imgButton">
                                         <div id="divSpinPrintAll" class="spinner-border spinner-border-sm text-danger" style="display: none" role="status">
                                             <span class="sr-only">Loading...</span>
                                         </div>
-                                    </button>
+                                    </button>*@
                                 </div>
                             </div>
                         </div>
@@ -115,11 +115,16 @@
                     $(txtCant).val('0')
                     return;
                 }
-            }       
+            }
+            var contProd = 0;
             for (var j = 0; j < mainGrid.allRecords.length; j++) {
                 if (mainGrid.allRecords[j].barcode == mainGrid.records.filter(O => O.id == idR)[0].barcode) {
                     mainGrid.allRecords[j].cantPedir = $(txtCant).val();
+                    contProd++;
                 }
+            }
+            if (contProd > 1) {
+                menErrorEdi('Se han establecido ' + contProd + ' productos para el pedido con barcode = ' + mainGrid.records.filter(O => O.id == idR)[0].barcode, 'Información');
             }
             for (var j = 0; j < mainGrid.records.length; j++) {
                 if (mainGrid.records[j].barcode == mainGrid.records.filter(O => O.id == idR)[0].barcode) {
@@ -221,7 +226,7 @@
                     {
                         field: "cantPedir", caption: "Cantidad a pedir", sortable: true, render: function (record) {
                             var cantPedir2 = record.cantPedir;
-                            if (record.cp != '')
+                            if (record.cp != '' && record.disponible != 0)
                                 cantPedir2 = record.disponible;
                             return '<input id="TxtProducto' + record.id + '" name="TxtProducto' + record.id + '" type="textbox" maxlength="7" class="editor-active form-control txtCantPedir w2ui-input" tabIndex="' + record.id + '" value="' + cantPedir2 + '" onkeypress="return changeProdPedido(isNumberKey(event), ' + "'" + record.id + "'" + ', this)">';
                         }
@@ -235,6 +240,7 @@
             }
         };
         mainGrid = $('#gridExcelConsolidado').w2grid(config.grid);
+        arrayGrids['gridExcelConsolidado'] = mainGrid;
     }
     function verDetalle(barcode2, talla2) {
         barcode = barcode2;
@@ -260,6 +266,22 @@
                 gridPedidoDet.refresh();
             }
         });
+        $('#btnAddFiltered').on('click', function (e) {
+            var arrayFut = mainGrid.filteredRecords.filter(O => O.disponible > 0);
+            if (arrayFut != null) {
+                if (arrayFut.length != 0) {
+                    for (var i = 0; i < arrayFut.length; i++) {
+                        for (var j = 0; j < mainGrid.allRecords.length; j++) {
+                            if (mainGrid.allRecords[j].barcode == arrayFut[i].barcode) {
+                                mainGrid.allRecords[j].cantPedir = 1;
+                            }
+                        }
+                    }
+                }
+                mainGrid.refresh2();
+                mainGrid.refresh();
+            }
+        });        
         $('#btnFiltrar').on("click", function (Event) {
             miAlive();
             mainGrid.allRecords = [];
@@ -268,6 +290,7 @@
                 return;
             }
             $('#divSpinFiltrar').show();
+            mainGrid.searchReset(true);
             mainGrid.reload2("@this.Url.Action("GetPaylessProdPrioriInventario", "Grids")?dtpPeriodoBuscar=" + $('#cboPeriod').val());
         });
         $('#btnLimpiar').on("click", function (Event) {

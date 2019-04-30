@@ -17,8 +17,8 @@ namespace EdiViewer
         }
         public static T GetObjSession<T>(this ISession Session, string _Key)
         {
-            string Val = Session.GetString(_Key);
-            return Val == null ? default(T) : JsonConvert.DeserializeObject<T>(Val);
+            string Val = Session.GetString(_Key);            
+            return Val == null ? default(T) : (Val == "null" ? default(T) : JsonConvert.DeserializeObject<T>(Val));
         }
         public static bool HavePermits(this ISession Session, string PermitId)
         {

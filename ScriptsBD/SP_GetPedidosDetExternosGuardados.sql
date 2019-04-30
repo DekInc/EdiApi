@@ -1,10 +1,10 @@
 USE EdiDB
 GO
-IF OBJECT_ID('SP_GetPedidosDetExternos', 'P') IS NOT NULL
-	DROP PROC SP_GetPedidosDetExternos
+IF OBJECT_ID('SP_GetPedidosDetExternosGuardados', 'P') IS NOT NULL
+	DROP PROC SP_GetPedidosDetExternosGuardados
 GO
 
-CREATE PROCEDURE [dbo].SP_GetPedidosDetExternos @IdClient INT
+CREATE PROCEDURE [dbo].SP_GetPedidosDetExternosGuardados @IdClient INT
 AS
 BEGIN
 	SELECT Pde.Id,
@@ -16,8 +16,8 @@ BEGIN
 	FROM EdiDb.dbo.PedidosExternos AS Pe WITH (NOLOCK)
 	JOIN EdiDb.dbo.PedidosDetExternos AS Pde WITH (NOLOCK) ON Pde.PedidoId = Pe.Id
 	LEFT JOIN wms_test_29_01_2019.dbo.Producto AS P WITH (NOLOCK) ON P.CodProducto = Pde.CodProducto
-	WHERE Pe.ClienteID = @IdClient
+	WHERE Pe.ClienteID = @IdClient AND Pe.IdEstado = 1
 END
 GO
 
-EXEC [SP_GetPedidosDetExternos] 1345
+EXEC [SP_GetPedidosDetExternosGuardados] 1345

@@ -48,6 +48,21 @@ namespace EdiViewer.Utility
                 Records = Records.AsQueryable().OrderBy(ListGridSort.Fod().PropertyName + " " + ListGridSort.Fod().Value.ToString()).ToList();
             return Records;
         }
+        public static List<T> W2uiSearchNoSkip<T>(List<T> Records, IFormCollection GridForm) {
+            int GridLimit = Convert.ToInt32(GridForm["limit"].Fod());
+            int GridOffset = Convert.ToInt32(GridForm["offset"].Fod());
+            List<ExpressionFilter> ListGridSearch = new List<ExpressionFilter>();
+            List<ExpressionFilter> ListGridSort = new List<ExpressionFilter>();
+            ConstructList(ref ListGridSearch, ref ListGridSort, GridForm);
+            var ExpressionTree = ConstructAndExpressionTree<T>(ListGridSearch);
+            if (ListGridSearch.Count > 0) {
+                var AnonFunc = ExpressionTree.Compile();
+                Records = Records.Where(AnonFunc).ToList();
+            }
+            if (ListGridSort.Count > 0)
+                Records = Records.AsQueryable().OrderBy(ListGridSort.Fod().PropertyName + " " + ListGridSort.Fod().Value.ToString()).ToList();
+            return Records;
+        }
         public static Expression<Func<T, bool>> ConstructAndExpressionTree<T>(List<ExpressionFilter> filters)
         {
             if (filters.Count == 0)

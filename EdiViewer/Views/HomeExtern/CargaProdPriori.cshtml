@@ -93,8 +93,8 @@
                 ],
                 columns: [
                     { field: "id", caption: "id", sortable: true, hidden: true },
-                    { field: "barcode", caption: "Cod. caja", sortable: true },
                     { field: "tienda", caption: "Tienda", sortable: true },
+                    { field: "barcode", caption: "Cod. caja", sortable: true },                    
                     {
                         field: "producto", caption: "Lote", sortable: false, render: function (record) {
                             if (record.peso > 1)
@@ -109,13 +109,14 @@
                     { field: "cp", caption: "cp", sortable: true },
                     {
                         field: "peso", caption: "", sortable: true, render: function (record) {
-                            return '<div class="w2ui-buttons"><a href="javascript:verDetalle(' + record.barcode + ', ' + record.talla + ')" title="barcode: ' + record.barcode + ' - talla: ' + record.talla + '">Ver detalle</a></div>';
+                            return '<div class="w2ui-buttons"><a href="javascript:verDetalle(' + record.barcode + ', ' + "'" + record.talla + "'" + ')" title="barcode: ' + record.barcode + ' - talla: ' + record.talla + '">Ver detalle</a></div>';
                         }
                     }
                 ]
             }
         };
         mainGrid = $('#gridExcelConsolidado').w2grid(config.grid);
+        arrayGrids['gridExcelConsolidado'] = mainGrid;
     }    
     function verDetalle(barcode2, talla2) {
         barcode = barcode2;

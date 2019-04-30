@@ -275,11 +275,11 @@ namespace EdiViewer.Controllers
                 return Json(new { codError = -1, errorMessage = e1.ToString() });
             }
         }
-        public async Task<IActionResult> GetPedidosExternosPendientes()
+        public async Task<IActionResult> GetPedidosExternosPendientesAdmin()
         {
             try
             {
-                RetData<Tuple<IEnumerable<PedidosExternos>, IEnumerable<PedidosDetExternos>, IEnumerable<Clientes>>> ListDis = await ApiClientFactory.Instance.GetPedidosExternosPendientes();
+                RetData<Tuple<IEnumerable<PedidosExternos>, IEnumerable<PedidosDetExternos>, IEnumerable<Clientes>>> ListDis = await ApiClientFactory.Instance.GetPedidosExternosPendientesAdmin();
                 return Json(new { codError = ListDis.Info.CodError, errorMessage = ListDis.Info.Mensaje, data = ListDis.Data });
             }
             catch (Exception e1)

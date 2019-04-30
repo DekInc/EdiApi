@@ -1378,6 +1378,8 @@ namespace EdiApi.Models.EdiDB
                 entity.Property(e => e.FechaCreacion).HasMaxLength(16);
 
                 entity.Property(e => e.FechaPedido).HasMaxLength(16);
+
+                entity.Property(e => e.Periodo).HasMaxLength(10);
             });
 
             modelBuilder.Entity<UsuariosExternos>(entity =>
