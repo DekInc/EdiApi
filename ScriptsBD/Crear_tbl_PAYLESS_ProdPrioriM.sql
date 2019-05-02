@@ -7,7 +7,7 @@ CREATE TABLE PAYLESS_ProdPrioriM(
 	[Id] int PRIMARY KEY IDENTITY(1,1),
 	[Periodo] [nvarchar](10) NULL,
 	[ClienteId] [int] NULL,
-	Transporte [nvarchar](12),
+	Transporte [nvarchar](32),
 	[CodUsr] nvarchar(128),
 	InsertDate nvarchar(16),
 	UpdateDate nvarchar(16)

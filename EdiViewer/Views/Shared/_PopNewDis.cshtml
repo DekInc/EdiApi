@@ -84,56 +84,64 @@
         if (mainGrid.allRecords.length == 0)
             return;
         if (mainGrid.allRecords.filter(Pr => Pr.cantPedir != 0).length == 0)
-            return;        
+            return;
         if ($('#dtp2').val() == '') {
             //ModalPopNewDis.hide();
             menErrorEdi('La fecha está vacia', 'Error');
             return;
         } else {
+            var checkDate = null;
+            funcbtnOkMessageBox = function () {
+                var regSend = mainGrid.allRecords.filter(Pr => Pr.cantPedir != 0);
+                $.each(regSend, function (i, Pr) {
+                    Pr.dateProm = $('#dtp2').val();
+                });
+                $.ajax({
+                    method: "POST",
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "JSON",
+                    url: actionUrl,
+                    data: JSON.stringify(regSend),
+                    success: function (json) {
+                        funcbtnOkMessageBox = function () { }
+                        if (json.codError != 0)
+                            menErrorEdi(json.mensaje, 'Error');
+                        else {
+                            if (op1 == 1) {
+                                miAlive();
+                                mainGrid.allRecords = [];
+                                $('#divSpinFiltrar').show();
+                                mainGrid.searchReset(true);
+                                mainGrid.reload2("@this.Url.Action("GetPaylessProdPrioriInventario", "Grids")?dtpPeriodoBuscar=" + $('#cboPeriod').val());
+                                menErrorEdi('Se ha guardado el pedido para ser modificado después, el pedido no ha sido enviado a GLC.', 'Mensaje de aplicativo');
+                            }
+                            if (op1 == 2) {
+                                //Redirect a lista de pedidos
+                                location.href = '@this.Url.Action("Peticiones", "HomeExtern")';
+                            }
+                        }
+                    },
+                    error: function (json) {
+                        menErrorEdi(json.mensaje, 'Error interno de la petición de JS');
+                    }
+                });
+            }
             if (mainGrid.pedidosPendientes != null) {
                 if (mainGrid.pedidosPendientes.length != 0) {
-                    var checkDate = mainGrid.pedidosPendientes.filter(O => O.fechaPedido.substr(0, 10) == $('#dtp2').val());
+                    checkDate = mainGrid.pedidosPendientes.filter(O => O.fechaPedido.substr(0, 10) == $('#dtp2').val());
                     if (checkDate) {
-                        menErrorEdi('Ya existe un pedido para esa fecha de entrega, se continuara igualmente.', 'Advertencia');
-                        sleepMs(2000);
+                        if (checkDate.length > 0) {
+                            menErrorEdi('Ya existe un pedido para esa fecha de entrega.', 'Error');
+                            return;
+                        } else {
+                            funcbtnOkMessageBox();
+                        }
                     }
                 }
-            }
+            }            
+            if (checkDate == null)
+                funcbtnOkMessageBox();
         }
-        var regSend = mainGrid.allRecords.filter(Pr => Pr.cantPedir != 0);
-        //console.log($('#dtp2').val());
-        //arrayProductos[0].dateProm = $('#dtp2').val();
-        $.each(regSend, function (i, Pr) {
-            Pr.dateProm = $('#dtp2').val();
-        });
-        $.ajax({
-            method: "POST",
-            contentType: "application/json; charset=utf-8",
-            dataType: "JSON",
-            url: actionUrl,
-            data: JSON.stringify(regSend),
-            success: function (json) {
-                if (json.codError != 0)
-                    menErrorEdi(json.mensaje, 'Error');
-                else {
-                    if (op1 == 1) {
-                        miAlive();
-                        mainGrid.allRecords = [];                        
-                        $('#divSpinFiltrar').show();
-                        mainGrid.searchReset(true);
-                        mainGrid.reload2("@this.Url.Action("GetPaylessProdPrioriInventario", "Grids")?dtpPeriodoBuscar=" + $('#cboPeriod').val());
-                        menErrorEdi('Se ha guardado el pedido para ser modificado después, el pedido no ha sido enviado a GLC.', 'Mensaje de aplicativo');
-                    }
-                    if (op1 == 2) {
-                        //Redirect a lista de pedidos
-                        location.href = '@this.Url.Action("Peticiones", "HomeExtern")';
-                    }
-                }
-            },
-            error: function (json) {
-                menErrorEdi(json.mensaje, 'Error interno de la petición de JS');
-            }
-        });
     }
     $('#btnSaveDis').on('click', function () {
         SaveSendDis('@this.Url.Action("SetPedidoExterno", "HomeExtern")?cboPeriod=' + $('#cboPeriod').val(), 1);

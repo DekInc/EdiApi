@@ -1099,14 +1099,24 @@ namespace EdiApi.Controllers
                 string DateProm = "";
                 foreach (PaylessProdPrioriDetModel Pem in ListDis)
                     if (!string.IsNullOrEmpty(Pem.dateProm)) DateProm = Pem.dateProm;
-                PedidosExternos PedidoExterno = new PedidosExternos() {
-                    ClienteId = ClienteId,
-                    FechaCreacion = DateTime.Now.ToString(ApplicationSettings.DateTimeFormat),
-                    IdEstado = IdEstado,
-                    FechaPedido = DateProm,
-                    Id = ListDis.Fod().IdPaylessProdPrioriM,
-                    Periodo = cboPeriod
-                };
+                IEnumerable<PedidosExternos> ListPe = DbO.PedidosExternos.Where(O => O.ClienteId == ClienteId && O.Periodo == cboPeriod && O.FechaPedido == DateProm && O.IdEstado == 1);
+                int PedidoId = 0;
+                PedidosExternos PedidoExterno = new PedidosExternos();
+                if (ListPe != null) {
+                    if (ListPe.Count() > 0) {
+                        PedidoExterno = ListPe.Fod();
+                        PedidoExterno.IdEstado = IdEstado;
+                    } else {
+                        PedidoExterno = new PedidosExternos() {
+                            ClienteId = ClienteId,
+                            FechaCreacion = DateTime.Now.ToString(ApplicationSettings.DateTimeFormat),
+                            IdEstado = IdEstado,
+                            FechaPedido = DateProm,
+                            Id = PedidoId,
+                            Periodo = cboPeriod
+                        };
+                    }
+                }                
                 if (PedidoExterno.Id == 0)
                     DbO.PedidosExternos.Add(PedidoExterno);
                 else
@@ -1824,5 +1834,57 @@ namespace EdiApi.Controllers
                 };
             }
         }
+        [HttpPost]
+        public RetData<bool> ChangePedidoState(int PedidoId, int ClienteId) {            
+            DateTime StartTime = DateTime.Now;
+            try {
+                IEnumerable<PedidosExternos> ListPe = DbO.PedidosExternos.Where(O => O.Id == Convert.ToInt32(PedidoId) && O.ClienteId == ClienteId);
+                if (ListPe.Count() > 0) {
+                    PedidosExternos Pe = ListPe.Fod();
+                    if (Pe != null) {
+                        IEnumerable<PedidosExternos> ListPeV = DbO.PedidosExternos.Where(O => O.ClienteId == ClienteId && O.IdEstado == 1);
+                        if (ListPeV.Count() > 0) {
+                            return new RetData<bool> {
+                                Data = false,
+                                Info = new RetInfo() {
+                                    CodError = -1,
+                                    Mensaje = "Error, ya existe un pedido con el estado 'guardado' en el sistema",
+                                    ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                                }
+                            };
+                        }
+                        Pe.IdEstado = 1;
+                        DbO.PedidosExternos.Update(Pe);
+                        DbO.SaveChanges();
+                        return new RetData<bool> {
+                            Data = true,
+                            Info = new RetInfo() {
+                                CodError = 0,
+                                Mensaje = "ok",
+                                ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                            }
+                        };
+                    }
+                }
+                return new RetData<bool> {
+                    Data = false,
+                    Info = new RetInfo() {
+                        CodError = -1,
+                        Mensaje = "Error desconocido y casi imposible",
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            } catch (Exception e1) {
+                return new RetData<bool> {
+                    Data = false,
+                    Info = new RetInfo() {
+                        CodError = -1,
+                        Mensaje = e1.ToString(),
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            }
+        }
+        
     }
 }

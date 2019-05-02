@@ -94,7 +94,7 @@ namespace EdiViewer.Controllers
                     }
                     for (int j = 0; j < Records.Count; j++) {
                         if (Records[j].Barcode == Ped.CodProducto)
-                            Records[j].Reservado = Convert.ToInt32(Ped.CantPedir);
+                            Records[j].Reservado += Convert.ToInt32(Ped.CantPedir);
                     }
                 }
             }
@@ -114,7 +114,7 @@ namespace EdiViewer.Controllers
                 for (int Pi = 0; Pi < List.Count(); Pi++) {
                     PedidosDetExternos Ped = List[Pi];                    
                     if (Records[i].Barcode == Ped.CodProducto)
-                        Records[i].Reservado = Convert.ToInt32(Ped.CantPedir);
+                        Records[i].Reservado += Convert.ToInt32(Ped.CantPedir);
                 }
             }
         }
@@ -224,7 +224,9 @@ namespace EdiViewer.Controllers
                                         AllRecords[i].Existencia = Convert.ToInt32(ExistenciaWms.Fod().Existencia);
                                         AllRecords[i].Reservado = Convert.ToInt32(ExistenciaWms.Fod().Reservado);
                                     } else {
-                                        SetExistenciaWirhArch(ref ListArch, ref AllRecords, i);
+                                        SetExistenciaWirhArch(ref ListArch, ref AllRecords, i);                                        
+                                    }
+                                    if (AllRecords[i].Reservado == 0) {
                                         DispatchAddReservedAr(ref ListGuardados, ref AllRecords, i);
                                         DispatchAddReservedR(ref ListPendientes, ref Records, i);
                                     }
@@ -271,8 +273,12 @@ namespace EdiViewer.Controllers
                             }
                         }
                     }
+                    Records.ForEach(R => {
+                        if (R.CantPedir < 0)
+                            R.CantPedir = 0;                        
+                    });
                     FilteredRecords = Utility.ExpressionBuilderHelper.W2uiSearchNoSkip<PaylessProdPrioriDetModel>(Records, Request.Form);
-                    Records = Utility.ExpressionBuilderHelper.W2uiSearch<PaylessProdPrioriDetModel>(Records, Request.Form);
+                    Records = Utility.ExpressionBuilderHelper.W2uiSearch<PaylessProdPrioriDetModel>(Records, Request.Form);                    
                 }
                 return Json(new { Total, Records, errorMessage = "", AllRecords, FilteredRecords, pedidosPendientes = TuplePextSent.Data.Item1 });
             } catch (Exception e1) {
@@ -392,6 +398,10 @@ namespace EdiViewer.Controllers
                 if (ListPe.Data.Item2.Count() == 0)
                     return Json(new { total = 0, records = "", errorMessage = (ListPe.Info.CodError != 0 ? ListPe.Info.Mensaje : string.Empty) });
                 List<PedidosExternosGModel> Records = ListPe.Data.Item1.Select(O => Utility.Funcs.Reflect(O, new PedidosExternosGModel())).ToList();
+                Records.ForEach(R => {
+                    if ((DateTime.Now - R.FechaPedido.ToDateFromEspDate()).TotalHours < 24)
+                        R.ChangeState = true;
+                });
                 List<PedidosExternosGModel> AllRecords = new List<PedidosExternosGModel>();
                 int Total = Records.Count;
                 if (Records.Count() > 0) {
@@ -434,7 +444,7 @@ namespace EdiViewer.Controllers
                     select D
                     ).Select(O => Utility.Funcs.Reflect(O, new PaylessProdPrioriDetModel())).ToList();
                 foreach (PaylessProdPrioriDetModel Pr in Records) {
-                    Pr.CantPedir = Convert.ToInt32(ListPe.Data.Item2.Where(O => O.CodProducto == Pr.Barcode).Fod().CantPedir);
+                    Pr.CantPedir = Convert.ToInt32(ListPe.Data.Item2.Where(O => O.CodProducto == Pr.Barcode && O.PedidoId == Pe.Id).Fod().CantPedir);
                 }
                 List<PaylessProdPrioriDetModel> AllRecords = new List<PaylessProdPrioriDetModel>();
                 int Total = Records.Count;
@@ -447,5 +457,32 @@ namespace EdiViewer.Controllers
                 return Json(new { total = 0, records = "", errorMessage = e1.ToString() });
             }
         }
+        //public async Task<IActionResult> GetPeriodos() {
+        //    DateTime StartTime = DateTime.Now;
+        //    try {
+        //        IEnumerable<DateTime> ListMondays = Utility.Funcs.AllDatesInMonth(DateTime.Now.Year, DateTime.Now.Month).Where(i => i.DayOfWeek == DayOfWeek.Monday);
+
+
+
+        //        if (Res.Info.CodError != 0)
+        //            return new RetData<bool>() {
+        //                Data = false,
+        //                Info = Res.Info
+        //            };
+        //        return new RetData<bool>() {
+        //            Data = true,
+        //            Info = Res.Info
+        //        };
+        //    } catch (Exception e1) {
+        //        return new RetData<bool>() {
+        //            Data = false,
+        //            Info = new RetInfo() {
+        //                CodError = -1,
+        //                Mensaje = e1.ToString(),
+        //                ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+        //            }
+        //        };
+        //    }
+        //}
     }
 }

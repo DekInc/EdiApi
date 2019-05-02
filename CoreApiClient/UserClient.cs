@@ -220,6 +220,9 @@ namespace CoreApiClient
         public async Task<RetData<Tuple<IEnumerable<PaylessProdPrioriArchM>, IEnumerable<PaylessProdPrioriArchDet>>>> GetPaylessPeriodPrioriFileExists(string Period, int ClienteId) {
             return await PostGetAsyncJson<RetData<Tuple<IEnumerable<PaylessProdPrioriArchM>, IEnumerable<PaylessProdPrioriArchDet>>>>(CreateRequestUri(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Data/GetPaylessPeriodPrioriFileExists"), $"?Period={Period}&ClienteId={ClienteId}"), "");
         }
+        public async Task<RetData<bool>> ChangePedidoState(int PedidoId, int ClienteId) {
+            return await PostGetAsyncJson<RetData<bool>>(CreateRequestUri(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Data/ChangePedidoState"), $"?PedidoId={PedidoId}&ClienteId={ClienteId}"), "");
+        }
         /////////////////////////////////////////
         //public async Task<List<UsersModel>> GetUsers()
         //{

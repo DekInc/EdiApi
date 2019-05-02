@@ -32,6 +32,9 @@ namespace EdiViewer.Controllers
         {
             return View();
         }
+        public IActionResult PaylessReportes() {
+            return View();
+        }        
         public async Task<IActionResult> PedidosDet(int PedidoId)
         {
             RetData<IEnumerable<TsqlDespachosWmsComplex>> ListPe = await ApiClientFactory.Instance.GetPedidosDet(PedidoId);
@@ -326,9 +329,10 @@ namespace EdiViewer.Controllers
                 RetData<Tuple<IEnumerable<PedidosExternos>, IEnumerable<PedidosDetExternos>>> ListDis = await ApiClientFactory.Instance.GetPedidosExternos(HttpContext.Session.GetObjSession<int>("Session.ClientId"));
                 if (ListDis.Info.CodError == 0) {
                     if (ListDis.Data.Item1.Count() > 0) {
-                        if (ListDis.Data.Item1.Fod().IdEstado == 1) {
-                            HttpContext.Session.SetObjSession("PedidoId", ListDis.Data.Item1.Fod().Id);
-                            //ViewBag.DateLastDis = ListDis.Data.Item1.Fod().FechaPedido;                        
+                        PedidosExternos Pe = ListDis.Data.Item1.Where(O => O.IdEstado == 1).Fod();
+                        if (Pe != null) {
+                            HttpContext.Session.SetObjSession("PedidoId", Pe.Id);
+                            ViewBag.DateLastDis = Pe.FechaPedido;
                             //if (ListDis.Data.Item2.Count() > 0) {
                             //    ViewBag.ListOldDis = JsonConvert.SerializeObject(ListDis.Data.Item2.Where(Pde => Pde.PedidoId == ListDis.Data.Item1.Fod().Id).Select(Pd => new { codProducto = Pd.CodProducto.Replace(" ", "^"), cantPedir = Pd.CantPedir, producto = Pd.Producto }));
                             //}
@@ -477,14 +481,21 @@ namespace EdiViewer.Controllers
         }
         private async Task<RetInfo> SetPedidoExterno2(string Json, int IdEstado, string cboPeriod)
         {
-            DateTime StartTime = DateTime.Now;
-            IEnumerable<PaylessProdPrioriDetModel> ListDis = JsonConvert.DeserializeObject<IEnumerable<PaylessProdPrioriDetModel>>(Json.ToString());
+            DateTime StartTime = DateTime.Now;            
+            IEnumerable<PaylessProdPrioriDetModel> ListDis = JsonConvert.DeserializeObject<IEnumerable<PaylessProdPrioriDetModel>>(Json.ToString());            
             if (ListDis.Count() == 0)
-            {
+            {                
                 return new RetInfo()
                 {
                     CodError = -1,
                     Mensaje = "No hay productos en la lista",
+                    ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                };
+            }
+            if ((ListDis.Fod().dateProm.ToDate() - StartTime).TotalHours < 24) {
+                return new RetInfo() {
+                    CodError = -1,
+                    Mensaje = "No se puede crear un pedido con menos de 24 horas de anticipación",
                     ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
                 };
             }
@@ -971,6 +982,30 @@ namespace EdiViewer.Controllers
                     }
                 };
             }
+        }
+        public async Task<RetData<bool>> ChangePedidoState(int PedidoId) {
+            DateTime StartTime = DateTime.Now;
+            try {
+                RetData<bool> Res = await ApiClientFactory.Instance.ChangePedidoState(PedidoId, HttpContext.Session.GetObjSession<int>("Session.ClientId"));
+                if (Res.Info.CodError != 0)
+                    return new RetData<bool>() {
+                        Data = false,
+                        Info = Res.Info
+                    };
+                return new RetData<bool>() {
+                    Data = true,
+                    Info = Res.Info
+                };
+            } catch (Exception e1) {
+                return new RetData<bool>() {
+                    Data = false,
+                    Info = new RetInfo() {
+                        CodError = -1,
+                        Mensaje = e1.ToString(),
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            }            
         }
     }
 }

@@ -5855,7 +5855,8 @@ w2utils.event = {
                     for (var i = 0; i < filteredArray.length; i++) {
                         for (var r = 0; r < this.records.length; r++) {
                             if (this.records[r].barcode == filteredArray[i].barcode) {
-                                this.records[r].cantPedir = filteredArray[i].cantPedir;
+                                if (filteredArray[i].cantPedir > 0)
+                                    this.records[r].cantPedir = filteredArray[i].cantPedir;
                             }
                         }
                     }
@@ -5867,7 +5868,8 @@ w2utils.event = {
                 if (this.records.length > 0) {
                     var filteredArray = this.allRecords.filter(O => O.cantPedir != 0);
                     for (var i = 0; i < filteredArray.length; i++) {
-                        $('#TxtProducto' + filteredArray[i].id).val(filteredArray[i].cantPedir);
+                        if (filteredArray[i].cantPedir > 0)
+                            $('#TxtProducto' + filteredArray[i].id).val(filteredArray[i].cantPedir);
                     }
                 }
             }

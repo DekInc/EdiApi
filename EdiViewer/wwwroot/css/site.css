@@ -671,3 +671,7 @@ table.dataTable.dtr-inline.collapsed > tbody > tr[role="row"] > td:first-child:b
 .datetimepicker-hours, .datetimepicker-minutes, .datetimepicker-days {
     color: #000 !important;
 }
+.backRed {
+    background: rgb(212, 164, 164) !important;
+    color: #000 !important;    
+}

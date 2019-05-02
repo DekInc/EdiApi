@@ -71,5 +71,5 @@ AND Sy_1.ItemInventarioID = II.ItemInventarioID
 AND Sy_1.CodProducto = II.CodProducto
 WHERE II.existencia>0.01
   AND T.IDTipoTransaccion IN ('IN')
-  AND p.CodProducto = '1967856453'
+  AND p.CodProducto = '1967856448'
 ORDER BY t.fechatransaccion

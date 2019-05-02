@@ -109,7 +109,11 @@
                     },
                     {
                         field: "periodo", caption: "", sortable: true, render: function (record) {
-                            return '<div class="w2ui-buttons"><a href="javascript:verDetalle(' + record.id + ')">Ver detalle</a></div>';
+                            var strBtn = '<div class="w2ui-buttons"><a href="javascript:verDetalle(' + record.id + ')">Ver detalle</a>';
+                            if (record.idEstado == 2 && record.changeState)
+                                strBtn += ' | <a href="javascript:regresarEstado(' + record.id + ')">Regresar estado</a>';
+                            strBtn += '</div>';
+                            return strBtn;
                         }
                     }
                 ]
@@ -147,6 +151,7 @@
                 ],
                 columns: [
                     { field: "id", caption: "id", sortable: true, hidden: true },
+                    { field: "oid", caption: "oid", type: 'text'},
                     { field: "barcode", caption: "Cod. caja", type: 'text' },
                     { field: "producto", caption: "Lote", type: 'text' },
                     { field: "talla", caption: "talla", type: 'text' },
@@ -165,6 +170,24 @@
         $('#exampleModalLabel3').html('Detalle de orden');        
         ModalPopPeticionDet = $('#modalPopPeticionDet').modal();
         crearGridDet(pedidoId);
+    }
+    function regresarEstado(pedidoId) {
+        $.ajax({
+            method: "GET",
+            url: "@this.Url.Action("ChangePedidoState", "HomeExtern")?PedidoId=" + pedidoId,
+            success: function (data) {
+                if (data.info.codError != 0) {
+                    menErrorEdi(data.info.mensaje, 'Error');
+                    return;
+                }
+                menErrorEdi('El pedido ha cambiado de estado', 'Información');
+                funcbtnOkMessageBox = function () { location.href = location.href; }                
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                menErrorEdi(xhr.status, 'Error throw in js');
+                menErrorEdi(thrownError, 'Error throw in js');
+            }
+        });
     }
     $(document).ready(function () {
         getClientName();        

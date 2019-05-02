@@ -104,6 +104,8 @@
     }
     function changeProdPedido(isValid, idR, txtCant) {
         if (!isValid) return isValid;
+        if ($('#TxtProducto' + idR).attr('readonly') != undefined)
+            return;
         setTimeout(function () {            
             if ($(txtCant).val() < 0) {
                 menErrorEdi('Error, el valor es inválido', 'Error');
@@ -226,9 +228,15 @@
                     {
                         field: "cantPedir", caption: "Cantidad a pedir", sortable: true, render: function (record) {
                             var cantPedir2 = record.cantPedir;
-                            if (record.cp != '' && record.disponible != 0)
+                            if ((record.cp != '' && parseInt(record.cantPedir) == 0) && parseInt(record.disponible) > 0)
                                 cantPedir2 = record.disponible;
-                            return '<input id="TxtProducto' + record.id + '" name="TxtProducto' + record.id + '" type="textbox" maxlength="7" class="editor-active form-control txtCantPedir w2ui-input" tabIndex="' + record.id + '" value="' + cantPedir2 + '" onkeypress="return changeProdPedido(isNumberKey(event), ' + "'" + record.id + "'" + ', this)">';
+                            var posDisable = '';
+                            var isCp = '';
+                            if (record.cp != '') {
+                                posDisable = 'readonly="readonly"';
+                                isCp = 'backRed';
+                            }
+                            return '<input id="TxtProducto' + record.id + '" name="TxtProducto' + record.id + '" type="textbox" maxlength="7" class="editor-active form-control ' + isCp + ' txtCantPedir w2ui-input" ' + posDisable + ' tabIndex="' + record.id + '" value="' + cantPedir2 + '" onkeypress="return changeProdPedido(isNumberKey(event), ' + "'" + record.id + "'" + ', this)">';                            
                         }
                     },
                     { field: "estado", caption: "estado", type: 'text' },
@@ -250,7 +258,7 @@
     }
     $(document).ready(function () {
         $('.imgHeaderHelp').tooltip();
-        crearGrid();
+        crearGrid();        
         getPeriods();
         getClientName();
         reDrawObjects();

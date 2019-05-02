@@ -124,7 +124,10 @@
                     name: "clienteID",
                     render: function (data, type, row) {
                         if (type === 'display') {
-                            return '<button class="btn btn-primary" onclick="goTo(' + row.pedidoId + ')">Detalle</button>';
+                            if (row.estatus == 'Pedido')
+                                return '<button type="button" class="btn btn-primary disabled" onclick="goTo(0)">Detalle de despacho</button>';
+                            else
+                                return '<button type="button" class="btn btn-primary" onclick="goTo(' + row.pedidoId + ')">Detalle de despacho</button>';
                         }
                         return '';
                     },
@@ -134,10 +137,14 @@
         });
     }
     function goTo(pedidoId2) {
-        console.log('voy');
-        setTimeout(function () {
-            window.location.href = '@this.Url.Action("PedidosDet")?PedidoId=' + pedidoId2;
-        }, 333);
+        if (pedidoId2 == 0) {
+            menErrorEdi('El pedido no ha sido despachado', 'Información');
+            return;
+        } else {
+            setTimeout(function () {
+                window.location.href = '@this.Url.Action("PedidosDet")?PedidoId=' + pedidoId2;
+            }, 333);
+        }
     }
     $(document).ready(function () {
         fillTblReportes();
@@ -153,7 +160,7 @@
                 $(this).addClass('selected');                
             }
             //var pedidoIdC = $($(this).closest("tr").find('td:eq(0)').find('span')[0]).attr('alt');
-            window.location.href = '@this.Url.Action("PedidosDet")?PedidoId=' + idFrom;
+            //window.location.href = '@this.Url.Action("PedidosDet")?PedidoId=' + idFrom;
         });
     });
 </script>
