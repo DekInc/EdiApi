@@ -153,7 +153,26 @@
         arrayGrids['gridScans'] = mainGrid;
     }    
     function downloadWmsFile(idM) {
-
+        window.open('@this.Url.Action("MakeExcelWms1", "HomeExtern")');
+        return;
+        $.ajax({
+            type: "GET",
+            url: '@this.Url.Action("MakeExcelWms1", "HomeExtern")',
+            beforeSend: function (xhr) {
+                xhr.setRequestHeader("XSRF-TOKEN",
+                    $('input:hidden[name="__RequestVerificationToken"]').val());
+            },
+            //data: fdata,
+            contentType: false,
+            processData: false,
+            success: function (response) {
+                document.write(response);
+            },
+            error: function (resp) {
+                menErrorEdi('Error ' + resp, 'Error');
+                //menErrorEdi(resp.info.mensaje);
+            }
+        });
     }
     function verDetalle(idM) {
         idProdArch = idM;

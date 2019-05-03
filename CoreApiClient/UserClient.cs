@@ -223,6 +223,9 @@ namespace CoreApiClient
         public async Task<RetData<bool>> ChangePedidoState(int PedidoId, int ClienteId) {
             return await PostGetAsyncJson<RetData<bool>>(CreateRequestUri(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Data/ChangePedidoState"), $"?PedidoId={PedidoId}&ClienteId={ClienteId}"), "");
         }
+        public async Task<RetData<IEnumerable<PaylessReportes>>> GetPaylessReportes() {
+            return await GetAsync<RetData<IEnumerable<PaylessReportes>>>(CreateRequestUri(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Data/GetPaylessReportes")));
+        }
         /////////////////////////////////////////
         //public async Task<List<UsersModel>> GetUsers()
         //{

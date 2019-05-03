@@ -11,5 +11,6 @@ namespace EdiApi.Models.EdiDB
         public int? IdEstado { get; set; }
         public string FechaCreacion { get; set; }
         public string Periodo { get; set; }
+        public string FechaUltActualizacion { get; set; }
     }
 }

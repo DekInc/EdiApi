@@ -1885,6 +1885,28 @@ namespace EdiApi.Controllers
                 };
             }
         }
-        
+        [HttpGet]
+        public RetData<IEnumerable<PaylessReportes>> GetPaylessReportes() {            
+            DateTime StartTime = DateTime.Now;
+            try {
+                IEnumerable<PaylessReportes> ListReps = DbO.PaylessReportes;
+                return new RetData<IEnumerable<PaylessReportes>> {
+                    Data = ListReps,
+                    Info = new RetInfo() {
+                        CodError = 0,
+                        Mensaje = "ok",
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            } catch (Exception e1) {
+                return new RetData<IEnumerable<PaylessReportes>> {
+                    Info = new RetInfo() {
+                        CodError = -1,
+                        Mensaje = e1.ToString(),
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            }
+        }
     }
 }

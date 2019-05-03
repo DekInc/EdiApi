@@ -457,32 +457,27 @@ namespace EdiViewer.Controllers
                 return Json(new { total = 0, records = "", errorMessage = e1.ToString() });
             }
         }
-        //public async Task<IActionResult> GetPeriodos() {
-        //    DateTime StartTime = DateTime.Now;
-        //    try {
-        //        IEnumerable<DateTime> ListMondays = Utility.Funcs.AllDatesInMonth(DateTime.Now.Year, DateTime.Now.Month).Where(i => i.DayOfWeek == DayOfWeek.Monday);
+        public async Task<IActionResult> GetPaylessReportes() {
+            DateTime StartTime = DateTime.Now;
+            try {
+                IEnumerable<DateTime> ListMondays = Utility.Funcs.AllDatesInMonth(DateTime.Now.Year, DateTime.Now.Month).Where(i => i.DayOfWeek == DayOfWeek.Monday);
+                RetData<IEnumerable<PaylessReportes>> ListPaylessReportes = await ApiClientFactory.Instance.GetPaylessReportes();
+                if (ListPaylessReportes.Info.CodError != 0)
+                    return Json(new { total = 0, records = "", errorMessage = ListPaylessReportes.Info.Mensaje });
+                if (ListPaylessReportes.Data == null)
+                    return Json(new { total = 0, records = "", errorMessage = (ListPaylessReportes.Info.CodError != 0 ? ListPaylessReportes.Info.Mensaje : string.Empty) });                
+                List<PaylessReportesGModel> Records = ListPaylessReportes.Data.Select(O => Utility.Funcs.Reflect(O, new PaylessReportesGModel())).ToList();                
+                List<PaylessReportesGModel> AllRecords = new List<PaylessReportesGModel>();
+                int Total = Records.Count;
+                if (Records.Count() > 0) {
+                    AllRecords = Utility.ExpressionBuilderHelper.W2uiSearchNoSkip(Records, Request.Form);
+                    Records = Utility.ExpressionBuilderHelper.W2uiSearch(Records, Request.Form);
+                }
+                return Json(new { Total, Records, errorMessage = "", AllRecords });
+            } catch (Exception e1) {
+                return Json(new { total = 0, records = "", errorMessage = e1.ToString() });
+            }
 
-
-
-        //        if (Res.Info.CodError != 0)
-        //            return new RetData<bool>() {
-        //                Data = false,
-        //                Info = Res.Info
-        //            };
-        //        return new RetData<bool>() {
-        //            Data = true,
-        //            Info = Res.Info
-        //        };
-        //    } catch (Exception e1) {
-        //        return new RetData<bool>() {
-        //            Data = false,
-        //            Info = new RetInfo() {
-        //                CodError = -1,
-        //                Mensaje = e1.ToString(),
-        //                ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
-        //            }
-        //        };
-        //    }
-        //}
+        }
     }
 }
