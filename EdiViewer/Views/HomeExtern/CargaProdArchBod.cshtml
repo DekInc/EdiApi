@@ -20,8 +20,7 @@
                                 </div>
                                 <div class="col-sm">
                                     <label for="cboPeriod">Periodo</label>
-                                    <select class="form-control" id="cboPeriod"></select>
-                                    @*<input class="form-control datepicker" data-date-format="dd/mm/yyyy" id="dtpPeriodoBuscar" placeholder="dd/mm/yyyy" maxlength="10" />*@
+                                    <select class="form-control" id="cboPeriod"></select>                                    
                                 </div>
                             </div>
                             <div class="row">
@@ -153,8 +152,8 @@
         arrayGrids['gridScans'] = mainGrid;
     }    
     function downloadWmsFile(idM) {
-        window.open('@this.Url.Action("MakeExcelWms1", "HomeExtern")');
-        return;
+        window.open('@this.Url.Action("MakeExcelWms1", "HomeExtern")?IdM=' + idM);
+        @*return;
         $.ajax({
             type: "GET",
             url: '@this.Url.Action("MakeExcelWms1", "HomeExtern")',
@@ -172,7 +171,7 @@
                 menErrorEdi('Error ' + resp, 'Error');
                 //menErrorEdi(resp.info.mensaje);
             }
-        });
+        });*@
     }
     function verDetalle(idM) {
         idProdArch = idM;

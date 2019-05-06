@@ -1908,5 +1908,50 @@ namespace EdiApi.Controllers
                 };
             }
         }
+        [HttpGet]
+        public RetData<IEnumerable<WmsFileModel>> GetWmsFile(int IdM) { 
+            DateTime StartTime = DateTime.Now;
+            try {
+                IEnumerable<WmsFileModel> ListRep = (
+                    from Ad in DbO.PaylessProdPrioriArchDet
+                    from Ex in DbO.PaylessProdPrioriDet
+                    from T in DbO.PaylessTiendas
+                    where Ad.IdM == IdM
+                    && Ex.Barcode == Ad.Barcode
+                    && T.TiendaId == Convert.ToInt32(Ad.Barcode.Substring(0, 4))
+                    group new { Ex, T} by new { Ex.Barcode, T.TiendaId } into G
+                    select new WmsFileModel() {
+                        Barcode = G.Fod().Ex.Barcode,
+                        Descripcion = G.Fod().Ex.Categoria,
+                        Piezas = 1,
+                        Unidad = 1,
+                        Cantidad = 1,
+                        CodigoLocalizacion = "STAGE-01",
+                        Peso = G.Sum(Lin => Lin.Ex.Peso),
+                        Volumen = G.Fod().Ex.M3,
+                        Cliente = G.Fod().T.Descr,
+                        UOM = 1,
+                        Exportador = 2,
+                        PaisOrigen = 166
+                    }
+                    );                
+                return new RetData<IEnumerable<WmsFileModel>> {
+                    Data = ListRep,
+                    Info = new RetInfo() {
+                        CodError = 0,
+                        Mensaje = "ok",
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            } catch (Exception e1) {
+                return new RetData<IEnumerable<WmsFileModel>> {
+                    Info = new RetInfo() {
+                        CodError = -1,
+                        Mensaje = e1.ToString(),
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            }
+        }
     }
 }

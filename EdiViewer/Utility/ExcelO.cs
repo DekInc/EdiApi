@@ -1,4 +1,5 @@
-﻿using NPOI.HSSF.Util;
+﻿using NPOI.HSSF.UserModel;
+using NPOI.HSSF.Util;
 using NPOI.SS.UserModel;
 using NPOI.SS.Util;
 using NPOI.XSSF.UserModel;
@@ -11,7 +12,7 @@ using System.Threading.Tasks;
 namespace EdiViewer.Utility {
     public class ExceL {
         public IWorkbook ExcelWorkBook;
-        private ISheet CurrentSheet;
+        public ISheet CurrentSheet;
         public int CurrentRow = 0;
         public int CurrentCol = 0;
         private IRow CurrentIRow;
@@ -19,7 +20,7 @@ namespace EdiViewer.Utility {
         private short NormalHeight = 320;
 
         public ExceL() {
-            ExcelWorkBook = new XSSFWorkbook();
+            ExcelWorkBook = new HSSFWorkbook();
             CurrentRow = 0;
         }
         public void CreateSheet(string SheetName) {
@@ -31,11 +32,13 @@ namespace EdiViewer.Utility {
         }
         public void CreateCell(CellType TypeO, FillPattern FillBackPat, short FillBackColor) {
             ICellStyle StyleO = ExcelWorkBook.CreateCellStyle();            
-            //StyleO.FillForegroundColor = FillBackColorO;
-            StyleO.FillBackgroundColor = FillBackColor;
+            StyleO.FillForegroundColor = FillBackColor;
             StyleO.FillPattern = FillBackPat;
             CurrentCell = CurrentIRow.CreateCell(CurrentCol, TypeO);
             CurrentCell.CellStyle = StyleO;
+        }
+        public void CreateCell(CellType TypeO) {
+            CurrentCell = CurrentIRow.CreateCell(CurrentCol);
         }
         public void SetCellValue(object Val) {
             switch (Val.GetType().Name) {
@@ -50,6 +53,9 @@ namespace EdiViewer.Utility {
                     break;
                 case "DateTime":
                     CurrentCell.SetCellValue(Convert.ToDateTime(Val));
+                    break;
+                case "Int32":
+                    CurrentCell.SetCellValue(Convert.ToInt32(Val));
                     break;
                 default:
                     break;

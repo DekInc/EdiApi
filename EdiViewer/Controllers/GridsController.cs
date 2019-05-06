@@ -324,7 +324,12 @@ namespace EdiViewer.Controllers
                     return Json(new { total = 0, records = "", errorMessage = (ListProdPrioriArch.Info.CodError != 0 ? ListProdPrioriArch.Info.Mensaje : string.Empty) });
                 if (ListProdPrioriArch.Data.Item2.Count() == 0)
                     return Json(new { total = 0, records = "", errorMessage = (ListProdPrioriArch.Info.CodError != 0 ? ListProdPrioriArch.Info.Mensaje : string.Empty) });
-                List<PaylessProdPrioriArchMModel> Records = ListProdPrioriArch.Data.Item1.OrderByDescending(O => O.Periodo.ToDateFromEspDate()).ToList();
+                List<PaylessProdPrioriArchMModel> Records = (
+                    from D in ListProdPrioriArch.Data.Item1
+                    orderby D.Periodo.ToDateFromEspDate()
+                    select D
+                    ).ToList();                    
+                //ListProdPrioriArch.Data.Item1.OrderByDescending(O => O.Periodo.ToDateFromEspDate()).ToList();
                 List<PaylessProdPrioriArchMModel> AllRecords = new List<PaylessProdPrioriArchMModel>();
                 int Total = Records.Count;
                 if (Records.Count() > 0) {

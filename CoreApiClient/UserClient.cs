@@ -226,6 +226,9 @@ namespace CoreApiClient
         public async Task<RetData<IEnumerable<PaylessReportes>>> GetPaylessReportes() {
             return await GetAsync<RetData<IEnumerable<PaylessReportes>>>(CreateRequestUri(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Data/GetPaylessReportes")));
         }
+        public async Task<RetData<IEnumerable<WmsFileModel>>> GetWmsFile(string IdM) {
+            return await GetAsync<RetData<IEnumerable<WmsFileModel>>>(CreateRequestUri(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Data/GetWmsFile"), $"?IdM={IdM}"));
+        }
         /////////////////////////////////////////
         //public async Task<List<UsersModel>> GetUsers()
         //{

@@ -1009,64 +1009,98 @@ namespace EdiViewer.Controllers
                 };
             }            
         }
-        public void MakeExcelWms1() {
+        public async Task<IActionResult> MakeExcelWms1(string IdM) {
             DateTime StartTime = DateTime.Now;
             try {
-                RetData<bool> Res = await ApiClientFactory.Instance.ChangePedidoState(PedidoId, HttpContext.Session.GetObjSession<int>("Session.ClientId"));
-                if (Res.Info.CodError != 0)
-                    return new RetData<bool>() {
-                        Data = false,
-                        Info = Res.Info
-                    };
-                return new RetData<bool>() {
-                    Data = true,
-                    Info = Res.Info
+                RetData<IEnumerable<WmsFileModel>> ListInfo = await ApiClientFactory.Instance.GetWmsFile(IdM);
+                if (ListInfo.Info.CodError != 0)
+                    return Json( ListInfo.Info );
+                Utility.ExceL ExcelO = new Utility.ExceL();
+                string HashId = HttpContext.Session.GetObjSession<string>("Session.HashId") + ".xls";
+                string[] ExcelColumns = new string[] {
+                    "Identificador", "Fecha", "Recibo de Almacén", "Codigo", "Modelo", "Descripción", "Piezas", "Unidad",
+                    "Cantidad", "Código de la Localización", "Peso (Kg)", "Volumen (m³)", "Valor Unitario", "Valor",
+                    "Número de Entrada", "Observaciones", "Oden de Compra", "Lote", "Número de Factura", "CLIENTE",
+                    "RACKID", "fecha_im5", "EMBALAJE", "UOM", "exportador", "destino", "estilo", "cod_equivale", "pais_orig", "COLOR"
                 };
-            } catch (Exception e1) {
-                return new RetData<bool>() {
-                    Data = false,
-                    Info = new RetInfo() {
-                        CodError = -1,
-                        Mensaje = e1.ToString(),
-                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                using (FileStream FilePlantilla = new FileStream("plantillaWms1.xls", FileMode.Open, FileAccess.Read, FileShare.ReadWrite)) {
+                    MemoryStream Ms = new MemoryStream();
+                    FilePlantilla.CopyTo(Ms);
+                    try {
+                        ExcelO.ExcelWorkBook = new HSSFWorkbook(Ms);
+                        ExcelO.CurrentSheet = ExcelO.ExcelWorkBook.GetSheetAt(0);
+                    } catch (Exception e2) {
+                        throw new Exception("El archivo no es de Excel. Utilice un formato propio de Microsoft Excel. " + e2.ToString());
                     }
-                };
-            }
-            //var newFile = @"newbook.core.xlsx";
-            Utility.ExceL ExcelO = new Utility.ExceL();
-            string newFile = @"newbook.core.xlsx";
-            using (var fs = new FileStream(newFile, FileMode.Create, FileAccess.Write)) {
-                ExcelO.CreateSheet("Persona");
-                ExcelO.CurrentRow = 1;
-                ExcelO.CurrentCol = 2;
-                ExcelO.CreateRow();
-                ExcelO.CreateCell(CellType.String, FillPattern.FineDots, HSSFColor.LightCornflowerBlue.Index);
-                ExcelO.SetCellValue("Prueba");
-                //ExcelWorkBook = new XSSFWorkbook();
-                //ISheet sheet1 = workbook.CreateSheet("Sheet1");
-                //sheet1.AddMergedRegion(new CellRangeAddress(0, 0, 0, 10));
-                //var rowIndex = 0;
-                //IRow row = sheet1.CreateRow(rowIndex);
-                //row.Height = 30 * 80;
-                //row.CreateCell(0).SetCellValue("this is content");
-                //sheet1.AutoSizeColumn(0);
-                //rowIndex++;
-                //var sheet2 = workbook.CreateSheet("Sheet2");
-                //var style1 = workbook.CreateCellStyle();
-                //style1.FillForegroundColor = HSSFColor.Blue.Index2;
-                //style1.FillPattern = FillPattern.SolidForeground;
-
-                //var style2 = workbook.CreateCellStyle();
-                //style2.FillForegroundColor = HSSFColor.Yellow.Index2;
-                //style2.FillPattern = FillPattern.SolidForeground;
-                //var cell2 = sheet2.CreateRow(0).CreateCell(0);
-                //cell2.CellStyle = style1;
-                //cell2.SetCellValue(0);
-                //cell2 = sheet2.CreateRow(1).CreateCell(0);
-                //cell2.CellStyle = style2;
-                //cell2.SetCellValue(1);
-                ExcelO.ExcelWorkBook.Write(fs);
-            }
+                    //ExcelO.CreateSheet("WmsCarga");
+                    //ExcelO.CurrentRow = 0;
+                    //ExcelO.CurrentCol = 0;
+                    //ExcelO.CreateRow();
+                    //foreach (string Col in ExcelColumns) {
+                    //    ExcelO.CreateCell(CellType.String, FillPattern.FineDots, HSSFColor.LightYellow.Index);
+                    //    ExcelO.SetCellValue(Col);
+                    //    ExcelO.CurrentCol++;
+                    //}
+                    ExcelO.CurrentRow = 1;                    
+                    foreach (WmsFileModel RowO in ListInfo.Data) {
+                        ExcelO.CreateRow();
+                        ExcelO.CurrentCol = 0;
+                        foreach (string Col in ExcelColumns) {
+                            ExcelO.CreateCell(CellType.String);
+                            switch (Col) {
+                                case "Fecha":
+                                    ExcelO.SetCellValue(DateTime.Now.ToString(ApplicationSettings.DateTimeFormat));
+                                    break;
+                                case "Codigo":
+                                    ExcelO.SetCellValue(RowO.Barcode);
+                                    break;
+                                case "Descripción":
+                                    ExcelO.SetCellValue(RowO.Descripcion);
+                                    break;
+                                case "Piezas":
+                                    ExcelO.SetCellValue(RowO.Piezas);
+                                    break;
+                                case "Unidad":
+                                    ExcelO.SetCellValue(RowO.Unidad);
+                                    break;
+                                case "Cantidad":
+                                    ExcelO.SetCellValue(RowO.Cantidad);
+                                    break;
+                                case "Código de la Localización":
+                                    ExcelO.SetCellValue(RowO.CodigoLocalizacion);
+                                    break;
+                                case "Peso (Kg)":
+                                    ExcelO.SetCellValue(Math.Round(RowO.Peso.Value, 2));
+                                    break;
+                                case "Volumen (m³)":
+                                    ExcelO.SetCellValue(RowO.Volumen);
+                                    break;
+                                case "CLIENTE":
+                                    ExcelO.SetCellValue(RowO.Cliente);
+                                    break;
+                                case "UOM":
+                                    ExcelO.SetCellValue(RowO.UOM);
+                                    break;
+                                case "exportador":
+                                    ExcelO.SetCellValue(RowO.Exportador);
+                                    break;
+                                case "pais_orig":
+                                    ExcelO.SetCellValue(RowO.PaisOrigen);
+                                    break;                                
+                                default:
+                                    break;
+                            }
+                            ExcelO.CurrentCol++;
+                        }
+                        ExcelO.CurrentRow++;
+                    }
+                    MemoryStream Ms2 = new MemoryStream();
+                    ExcelO.ExcelWorkBook.Write(Ms2);
+                    return File(Ms2.ToArray(), "application/octet-stream", "Archivo_WMS_" + DateTime.Now.ToString("ddMMyyyy") + ".xls");
+                }
+            } catch (Exception e1) {
+                return Json(JsonConvert.SerializeObject(e1));
+            }            
         }
     }
 }
