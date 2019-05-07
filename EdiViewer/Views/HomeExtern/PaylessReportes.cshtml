@@ -60,7 +60,7 @@
                     { field: "fechaGen", caption: "Fecha generación", sortable: true },
                     {
                         field: "tipo", caption: "", sortable: true, render: function (record) {                            
-                            return '<div class="w2ui-buttons"><a href="javascript:descargarRep(' + record.id + ')">Descargar</a>';
+                            return '<div class="w2ui-buttons"><a href="javascript:descargarRepThursday(' + record.id + ')">Jueves</a> | <a href="javascript:descargarRepSunday(' + record.id + ')">Domingo</a></div>';
                         }
                     }
                     //{ field: "tipo", caption: "Tipo", sortable: true }
@@ -70,8 +70,12 @@
         gridReportes = $('#gridReportes').w2grid(config.grid);
         arrayGrids['gridExcelFile'] = gridReportes;
     }
-    function descargarRep(idReporte) {
-        console.log(idReporte);
+    function descargarRepThursday(idReporte) {
+        window.open('@this.Url.Action("MakeExcelJue", "HomeExtern")?IdM=' + idReporte);
+    }
+    function descargarRepSunday(idReporte) {
+        alert('Todavía no implementado');
+        //window.open('@this.Url.Action("MakeExcel", "HomeExtern")?IdM=' + idReporte);
     }
     $(document).ready(function () {        
         $('.imgHeaderHelp').tooltip();

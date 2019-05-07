@@ -413,6 +413,24 @@ namespace EdiViewer.Controllers
                     AllRecords = Utility.ExpressionBuilderHelper.W2uiSearchNoSkip(Records, Request.Form);
                     Records = Utility.ExpressionBuilderHelper.W2uiSearch(Records, Request.Form);
                 }
+                List<PedidosDetExternos> ListCant = new List<PedidosDetExternos>();
+                foreach (PedidosExternosGModel R in Records) {
+                    List<PedidosDetExternos> ListDet = ListPe.Data.Item2.Where(O3 => O3.PedidoId == R.Id).ToList();
+                    foreach (PedidosDetExternos Pde in ListDet) {
+                        if (ListCant.Where(Lc => Lc.PedidoId == Pde.PedidoId).Count() == 0)
+                            ListCant.Add(new PedidosDetExternos() { Id = 1, PedidoId = Pde.PedidoId });
+                        else {
+                            for (int i = 0; i < ListCant.Count; i++) {
+                                if (ListCant[i].PedidoId == Pde.PedidoId) {
+                                    ListCant[i].Id++;
+                                }
+                            }
+                        }
+                    }                   
+                }
+                for (int i = 0; i < Records.Count; i++) {
+                    Records[i].Cont = ListCant.Where(O => O.PedidoId == Records[i].Id).Fod().Id;
+                }
                 return Json(new { Total, Records, errorMessage = "", AllRecords });
             } catch (Exception e1) {
                 return Json(new { total = 0, records = "", errorMessage = e1.ToString() });

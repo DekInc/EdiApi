@@ -1086,7 +1086,19 @@ namespace EdiViewer.Controllers
                                     break;
                                 case "pais_orig":
                                     ExcelO.SetCellValue(RowO.PaisOrigen);
-                                    break;                                
+                                    break;
+                                case "Observaciones":
+                                    ExcelO.SetCellValue(RowO.Cp);
+                                    break;
+                                case "Modelo":
+                                    ExcelO.SetCellValue(RowO.Modelo);
+                                    break;
+                                case "Lote":
+                                    ExcelO.SetCellValue(RowO.Lote);
+                                    break;
+                                case "estilo":
+                                    ExcelO.SetCellValue(RowO.Estilo);
+                                    break;
                                 default:
                                     break;
                             }
@@ -1101,6 +1113,46 @@ namespace EdiViewer.Controllers
             } catch (Exception e1) {
                 return Json(JsonConvert.SerializeObject(e1));
             }            
+        }
+        public async Task<IActionResult> MakeExcelJue(string IdM) {
+            DateTime StartTime = DateTime.Now;
+            try {
+                RetData<IEnumerable<WmsFileModel>> ListInfo = await ApiClientFactory.Instance.GetWmsFile(IdM);
+                if (ListInfo.Info.CodError != 0)
+                    return Json(ListInfo.Info);
+                Utility.ExceL ExcelO = new Utility.ExceL();
+                string HashId = HttpContext.Session.GetObjSession<string>("Session.HashId") + ".xls";
+                string[] ExcelColumns = new string[] {
+                    "Identificador", "Fecha", "Recibo de Almacén", "Codigo", "Modelo", "Descripción", "Piezas", "Unidad",
+                    "Cantidad", "Código de la Localización", "Peso (Kg)", "Volumen (m³)", "Valor Unitario", "Valor",
+                    "Número de Entrada", "Observaciones", "Oden de Compra", "Lote", "Número de Factura", "CLIENTE",
+                    "RACKID", "fecha_im5", "EMBALAJE", "UOM", "exportador", "destino", "estilo", "cod_equivale", "pais_orig", "COLOR"
+                };
+                using (FileStream FilePlantilla = new FileStream("plantillaOrdenes.xls", FileMode.Open, FileAccess.Read, FileShare.ReadWrite)) {
+                    MemoryStream Ms = new MemoryStream();
+                    FilePlantilla.CopyTo(Ms);
+                    try {
+                        ExcelO.ExcelWorkBook = new HSSFWorkbook(Ms);
+                        ExcelO.CurrentSheet = ExcelO.ExcelWorkBook.GetSheetAt(0);
+                    } catch (Exception e2) {
+                        throw new Exception("El archivo no es de Excel. Utilice un formato propio de Microsoft Excel. " + e2.ToString());
+                    }
+                    //ExcelO.CreateSheet("WmsCarga");
+                    //ExcelO.CurrentRow = 0;
+                    //ExcelO.CurrentCol = 0;
+                    //ExcelO.CreateRow();
+                    //foreach (string Col in ExcelColumns) {
+                    //    ExcelO.CreateCell(CellType.String, FillPattern.FineDots, HSSFColor.LightYellow.Index);
+                    //    ExcelO.SetCellValue(Col);
+                    //    ExcelO.CurrentCol++;
+                    //}                    
+                    MemoryStream Ms2 = new MemoryStream();
+                    ExcelO.ExcelWorkBook.Write(Ms2);
+                    return File(Ms2.ToArray(), "application/octet-stream", "Archivo_RepJuevesPedidos_" + DateTime.Now.ToString("ddMMyyyy") + ".xls");
+                }
+            } catch (Exception e1) {
+                return Json(JsonConvert.SerializeObject(e1));
+            }
         }
     }
 }

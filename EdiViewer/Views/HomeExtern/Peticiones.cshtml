@@ -100,6 +100,7 @@
                     { field: "periodo", caption: "Periodo", sortable: true },
                     { field: "fechaCreacion", caption: "Fecha de creación", sortable: true },
                     { field: "fechaPedido", caption: "Fecha y hora esperada", sortable: true },                    
+                    { field: "cont", caption: "Cantidad", sortable: true },                    
                     {
                         field: "idEstado", caption: "Estado", sortable: false, render: function (record) {
                             if (record.idEstado == 1) return '<span class="thisSpan" alt="' + record.id + '">Guardado</span>';
@@ -169,7 +170,7 @@
     function verDetalle(pedidoId) {
         $('#exampleModalLabel3').html('Detalle de orden');        
         ModalPopPeticionDet = $('#modalPopPeticionDet').modal();
-        crearGridDet(pedidoId);
+        gridOrdenesDet.reload2('@this.Url.Action("GetPeticionDet", "Grids")?PedidoId=' + pedidoId);
     }
     function regresarEstado(pedidoId) {
         $.ajax({
@@ -192,6 +193,7 @@
     $(document).ready(function () {
         getClientName();        
         crearGrid();
+        crearGridDet(1);
         reDrawObjects();
     });
 </script>

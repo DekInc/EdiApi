@@ -16,5 +16,10 @@ namespace ComModels {
         public int UOM { get; set; }
         public int Exportador { get; set; }
         public int PaisOrigen { get; set; }
+        public string Cp { get; set; }
+        public int Cont { get; set; }
+        public string Modelo { get; set; }
+        public string Lote { get; set; }
+        public string Estilo { get; set; }
     }
 }

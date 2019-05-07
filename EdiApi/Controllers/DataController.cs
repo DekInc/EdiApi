@@ -1912,14 +1912,17 @@ namespace EdiApi.Controllers
         public RetData<IEnumerable<WmsFileModel>> GetWmsFile(int IdM) { 
             DateTime StartTime = DateTime.Now;
             try {
+                List<Clientes> ListClients = WmsDbO.Clientes.ToList();
                 IEnumerable<WmsFileModel> ListRep = (
                     from Ad in DbO.PaylessProdPrioriArchDet
                     from Ex in DbO.PaylessProdPrioriDet
                     from T in DbO.PaylessTiendas
+                    from C in ListClients
                     where Ad.IdM == IdM
                     && Ex.Barcode == Ad.Barcode
                     && T.TiendaId == Convert.ToInt32(Ad.Barcode.Substring(0, 4))
-                    group new { Ex, T} by new { Ex.Barcode, T.TiendaId } into G
+                    && C.ClienteId == T.ClienteId
+                    group new { Ex, C} by new { Ex.Barcode, C.ClienteId } into G
                     select new WmsFileModel() {
                         Barcode = G.Fod().Ex.Barcode,
                         Descripcion = G.Fod().Ex.Categoria,
@@ -1929,10 +1932,15 @@ namespace EdiApi.Controllers
                         CodigoLocalizacion = "STAGE-01",
                         Peso = G.Sum(Lin => Lin.Ex.Peso),
                         Volumen = G.Fod().Ex.M3,
-                        Cliente = G.Fod().T.Descr,
+                        Cliente = G.Fod().C.Nombre,
                         UOM = 1,
                         Exportador = 2,
-                        PaisOrigen = 166
+                        PaisOrigen = 166,
+                        Cp = string.Join(" ", G.Where(O1 => !string.IsNullOrEmpty(O1.Ex.Cp)).Select(O2 => O2.Ex.Cp).Distinct().ToArray()),
+                        Cont = G.Count(),
+                        Modelo = G.Where(O1 => !string.IsNullOrEmpty(O1.Ex.Talla)).Select(O2 => O2.Ex.Talla).Distinct().Count() == 1? G.Fod().Ex.Talla : "Varios",
+                        Lote = G.Where(O1 => !string.IsNullOrEmpty(O1.Ex.Producto)).Select(O2 => O2.Ex.Producto).Distinct().Count() == 1 ? G.Fod().Ex.Producto : "Varios",
+                        Estilo = G.Where(O1 => !string.IsNullOrEmpty(O1.Ex.Lote)).Select(O2 => O2.Ex.Lote).Distinct().Count() == 1 ? G.Fod().Ex.Lote : "Varios"
                     }
                     );                
                 return new RetData<IEnumerable<WmsFileModel>> {
