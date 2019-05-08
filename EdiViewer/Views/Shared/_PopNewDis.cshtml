@@ -49,12 +49,13 @@
                 },
                 searches: [
                     { field: "barcode", caption: "Cod. caja", type: 'text' },
-                    { field: "producto", caption: "Lote", type: 'text' },
+                    //{ field: "producto", caption: "Lote", type: 'text' },
                     { field: "talla", caption: "Talla", type: 'text' },
-                    { field: "lote", caption: "Estilo", type: 'text' },
+                    //{ field: "lote", caption: "Estilo", type: 'text' },
                     { field: "categoria", caption: "Genero", type: 'text' },
                     { field: "departamento", caption: "departamento", type: 'text' },
-                    { field: "cp", caption: "cp", type: 'text' }
+                    { field: "cp", caption: "cp", type: 'text' },
+                    { field: "transporte", caption: "Transporte", type: 'text' }
                 ],
                 colShowResponsive: [
                     { field: 'barcode' },
@@ -62,14 +63,15 @@
                 ],
                 columns: [
                     { field: "id", caption: "id", sortable: true, hidden: true },
-                    { field: "barcode", caption: "Cod. caja", type: 'text' },
-                    { field: "producto", caption: "Lote", type: 'text' },
+                    { field: "transporte", caption: "Transporte", type: 'text' },
+                    { field: "barcode", caption: "Cod. caja", type: 'text', sortable: true },
+                    //{ field: "producto", caption: "Lote", type: 'text' },
                     { field: "talla", caption: "talla", type: 'text' },
-                    { field: "categoria", caption: "Genero", type: 'text' },
-                    { field: "lote", caption: "estilo", type: 'text' },
+                    { field: "categoria", caption: "Genero", type: 'text', sortable: true },
+                    //{ field: "lote", caption: "estilo", type: 'text' },
                     { field: "cantPedir", caption: "Cantidad a pedir", sortable: true },
                     { field: "departamento", caption: "departamento", type: 'text' },
-                    { field: "cp", caption: "cp", type: 'text' }
+                    { field: "cp", caption: "cp", type: 'text', sortable: true }
                 ]
             }
         };

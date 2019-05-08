@@ -675,3 +675,9 @@ table.dataTable.dtr-inline.collapsed > tbody > tr[role="row"] > td:first-child:b
     background: rgb(212, 164, 164) !important;
     color: #000 !important;    
 }
+#dtpPeriodUpload {
+    margin-top: 5px;
+}
+.marginTop10{
+    margin-top: 10px;
+}

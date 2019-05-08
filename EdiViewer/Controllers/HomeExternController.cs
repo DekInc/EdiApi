@@ -79,7 +79,7 @@ namespace EdiViewer.Controllers
             //IdM para exportar a Excel :)
             return View();
         }        
-        public async Task<RetData<string>> SetPaylessProdPriori(string dtpPeriodUpload, string txtTransporte)
+        public async Task<RetData<string>> SetPaylessProdPriori(string dtpPeriodUpload, string txtTransporte, bool ChkUpDelete)
         {
             DateTime StartTime = DateTime.Now;
             List<string> ListCols = new List<string>();
@@ -211,7 +211,7 @@ namespace EdiViewer.Controllers
                     if (string.IsNullOrEmpty(ListExcelRows.LastOrDefault().Barcode))
                         ListExcelRows.RemoveAt(ListExcelRows.Count - 1);
                 }
-                RetData<string> Ret = await ApiClientFactory.Instance.SetPaylessProdPriori(ListExcelRows, HttpContext.Session.GetObjSession<int>("Session.ClientId"), dtpPeriodUpload, HttpContext.Session.GetObjSession<string>("Session.CodUsr"), txtTransporte);
+                RetData<string> Ret = await ApiClientFactory.Instance.SetPaylessProdPriori(ListExcelRows, HttpContext.Session.GetObjSession<int>("Session.ClientId"), dtpPeriodUpload, HttpContext.Session.GetObjSession<string>("Session.CodUsr"), txtTransporte, ChkUpDelete);
                 return Ret;
             }
             catch (Exception ex1)
@@ -494,7 +494,7 @@ namespace EdiViewer.Controllers
                     ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
                 };
             }
-            if ((ListDis.Fod().dateProm.ToDate() - StartTime).TotalHours < 24) {
+            if ((ListDis.Fod().DateProm.ToDate() - StartTime).TotalHours < 24) {
                 return new RetInfo() {
                     CodError = -1,
                     Mensaje = "No se puede crear un pedido con menos de 24 horas de anticipación",
@@ -547,7 +547,7 @@ namespace EdiViewer.Controllers
                 {
                     return Json(new { draw = 0, recordsFiltered = 0, recordsTotal = 0, errorMessage = "", data = "" });
                 }
-                RetData<Tuple<IEnumerable<PaylessProdPrioriM>, IEnumerable<PaylessProdPrioriDet>>> ListProd = await ApiClientFactory.Instance.GetPaylessProdPriori(dtpPeriodoBuscar);                
+                RetData<Tuple<IEnumerable<PaylessProdPrioriM>, IEnumerable<PaylessProdPrioriDet>, IEnumerable<PaylessTransporte>>> ListProd = await ApiClientFactory.Instance.GetPaylessProdPriori(dtpPeriodoBuscar);                
                 if (ListProd.Info.CodError != 0)
                     return Json(new { draw = 0, recordsFiltered = 0, recordsTotal = 0, errorMessage = ListProd.Info.Mensaje, data = "" });
                 if (ListProd.Data == null)
@@ -613,7 +613,7 @@ namespace EdiViewer.Controllers
                 {
                     return Json(new { draw = 0, recordsFiltered = 0, recordsTotal = 0, errorMessage = "", data = "" });
                 }
-                RetData<Tuple<IEnumerable<PaylessProdPrioriM>, IEnumerable<PaylessProdPrioriDet>>> ListProd = await ApiClientFactory.Instance.GetPaylessProdPriori(dtpPeriodoBuscar);
+                RetData<Tuple<IEnumerable<PaylessProdPrioriM>, IEnumerable<PaylessProdPrioriDet>, IEnumerable<PaylessTransporte>>> ListProd = await ApiClientFactory.Instance.GetPaylessProdPriori(dtpPeriodoBuscar);
                 if (ListProd.Info.CodError != 0)
                     return Json(new { draw = 0, recordsFiltered = 0, recordsTotal = 0, errorMessage = ListProd.Info.Mensaje, data = "" });
                 if (ListProd.Data == null)
@@ -671,7 +671,7 @@ namespace EdiViewer.Controllers
                     return Json(new { draw = 0, recordsFiltered = 0, recordsTotal = 0, errorMessage = "", data = "" });
                 }
                 HttpContext.Session.SetObjSession("dtpPeriodoBuscar", dtpPeriodoBuscar);
-                RetData<Tuple<IEnumerable<PaylessProdPrioriM>, IEnumerable<PaylessProdPrioriDet>>> ListProd = await ApiClientFactory.Instance.GetPaylessProdPriori(dtpPeriodoBuscar);
+                RetData<Tuple<IEnumerable<PaylessProdPrioriM>, IEnumerable<PaylessProdPrioriDet>, IEnumerable<PaylessTransporte>>> ListProd = await ApiClientFactory.Instance.GetPaylessProdPriori(dtpPeriodoBuscar);
                 if (ListProd.Info.CodError != 0)
                     return Json(new { draw = 0, recordsFiltered = 0, recordsTotal = 0, errorMessage = ListProd.Info.Mensaje, data = "" });
                 if (ListProd.Data == null)
@@ -929,7 +929,7 @@ namespace EdiViewer.Controllers
         {
             try
             {//field, type, operator, value, searchLogic, search[0][field],  is, begins, contains, ends                
-                RetData<Tuple<IEnumerable<PaylessProdPrioriM>, IEnumerable<PaylessProdPrioriDet>>> ListProdPriori = await ApiClientFactory.Instance.GetPaylessProdPriori("08/04/2019");
+                RetData<Tuple<IEnumerable<PaylessProdPrioriM>, IEnumerable<PaylessProdPrioriDet>, IEnumerable<PaylessTransporte>>> ListProdPriori = await ApiClientFactory.Instance.GetPaylessProdPriori("08/04/2019");
                 if (ListProdPriori.Info.CodError != 0)
                     return Json(new { errorMessage = ListProdPriori.Info.Mensaje, data = "", });
                 if (ListProdPriori.Data.Item2.Count() == 0)

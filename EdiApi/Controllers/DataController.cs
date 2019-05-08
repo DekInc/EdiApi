@@ -1276,7 +1276,7 @@ namespace EdiApi.Controllers
             }            
         }
         [HttpPost]
-        public RetData<Tuple<IEnumerable<PaylessProdPrioriM>, IEnumerable<PaylessProdPrioriDet>>> GetPaylessProdPriori(object Period)
+        public RetData<Tuple<IEnumerable<PaylessProdPrioriM>, IEnumerable<PaylessProdPrioriDet>, IEnumerable<PaylessTransporte>>> GetPaylessProdPriori(object Period)
         {
             DateTime StartTime = DateTime.Now;
             try
@@ -1285,9 +1285,10 @@ namespace EdiApi.Controllers
                 if (PpM.Count() > 0)
                 {
                     IEnumerable<PaylessProdPrioriDet> ListPaylessProdPrioriDet = DbO.PaylessProdPrioriDet.Where(Pp => Pp.IdPaylessProdPrioriM == PpM.Fod().Id);
-                    return new RetData<Tuple<IEnumerable<PaylessProdPrioriM>, IEnumerable<PaylessProdPrioriDet>>>
+                    IEnumerable<PaylessTransporte> ListTransporte = DbO.PaylessTransporte;
+                    return new RetData<Tuple<IEnumerable<PaylessProdPrioriM>, IEnumerable<PaylessProdPrioriDet>, IEnumerable<PaylessTransporte>>>
                     {
-                        Data = new Tuple<IEnumerable<PaylessProdPrioriM>, IEnumerable<PaylessProdPrioriDet>>(PpM, ListPaylessProdPrioriDet),
+                        Data = new Tuple<IEnumerable<PaylessProdPrioriM>, IEnumerable<PaylessProdPrioriDet>, IEnumerable<PaylessTransporte>>(PpM, ListPaylessProdPrioriDet, ListTransporte),
                         Info = new RetInfo()
                         {
                             CodError = 0,
@@ -1297,7 +1298,7 @@ namespace EdiApi.Controllers
                     };
                 } else
                 {
-                    return new RetData<Tuple<IEnumerable<PaylessProdPrioriM>, IEnumerable<PaylessProdPrioriDet>>>
+                    return new RetData<Tuple<IEnumerable<PaylessProdPrioriM>, IEnumerable<PaylessProdPrioriDet>, IEnumerable<PaylessTransporte>>>
                     {
                         Info = new RetInfo()
                         {
@@ -1310,7 +1311,7 @@ namespace EdiApi.Controllers
             }
             catch (Exception e1)
             {
-                return new RetData<Tuple<IEnumerable<PaylessProdPrioriM>, IEnumerable<PaylessProdPrioriDet>>>
+                return new RetData<Tuple<IEnumerable<PaylessProdPrioriM>, IEnumerable<PaylessProdPrioriDet>, IEnumerable<PaylessTransporte>>>
                 {
                     Info = new RetInfo()
                     {
@@ -1322,28 +1323,37 @@ namespace EdiApi.Controllers
             }
         }
         [HttpPost]
-        public RetData<string> SetPaylessProdPriori(IEnumerable<PaylessUploadFileModel> ListUpload, int ClienteId, string Periodo, string codUsr, string transporte)
+        public RetData<string> SetPaylessProdPriori(IEnumerable<PaylessUploadFileModel> ListUpload, int ClienteId, string Periodo, string codUsr, string transporte, bool ChkUpDelete)
         {
             DateTime StartTime = DateTime.Now;
             try
             {
-
                 IEnumerable<PaylessProdPrioriM> ListPaylessProdPrioriM = DbO.PaylessProdPrioriM.Where(Pp => Pp.Periodo == Periodo && Pp.ClienteId == ClienteId);
-                if (ListPaylessProdPrioriM.Count() > 0)
-                {
-                    IEnumerable<PaylessProdPrioriDet> ListPaylessProdPrioriDet = DbO.PaylessProdPrioriDet.Where(Pd => Pd.IdPaylessProdPrioriM == ListPaylessProdPrioriM.Fod().Id);
-                    DbO.PaylessProdPrioriDet.RemoveRange(ListPaylessProdPrioriDet);
-                }
-                DbO.PaylessProdPrioriM.RemoveRange(ListPaylessProdPrioriM);
-                PaylessProdPrioriM NewMas = new PaylessProdPrioriM()
-                {
+                PaylessProdPrioriM NewMas = new PaylessProdPrioriM() {
                     ClienteId = ClienteId,
                     Periodo = Periodo,
                     InsertDate = DateTime.Now.ToString(ApplicationSettings.DateTimeFormat),
-                    CodUsr = codUsr,
+                    CodUsr = codUsr
+                };
+                if (ChkUpDelete) {
+                    if (ListPaylessProdPrioriM.Count() > 0) {
+                        IEnumerable<PaylessProdPrioriDet> ListPaylessProdPrioriDet = DbO.PaylessProdPrioriDet.Where(Pd => Pd.IdPaylessProdPrioriM == ListPaylessProdPrioriM.Fod().Id);
+                        DbO.PaylessProdPrioriDet.RemoveRange(ListPaylessProdPrioriDet);
+                        DbO.PaylessProdPrioriM.RemoveRange(ListPaylessProdPrioriM);
+                    }
+                    DbO.PaylessProdPrioriM.Add(NewMas);
+                } else {
+                    NewMas = ListPaylessProdPrioriM.Fod();
+                    DbO.PaylessProdPrioriM.Update(NewMas);
+                }                
+                PaylessTransporte TransporteO = new PaylessTransporte() {
                     Transporte = transporte
                 };
-                DbO.PaylessProdPrioriM.Add(NewMas);
+                IEnumerable<PaylessTransporte> ListTrans = DbO.PaylessTransporte.Where(T => T.Transporte == transporte);
+                if (ListTrans.Count() > 0)
+                    TransporteO = ListTrans.Fod();
+                else
+                    DbO.PaylessTransporte.Add(TransporteO);
                 DbO.SaveChanges();
                 foreach (PaylessUploadFileModel Uf in ListUpload)
                 {
@@ -1366,7 +1376,8 @@ namespace EdiApi.Controllers
                         Cargada = Uf.Cargada,
                         M3 = Uf.M3,
                         Peso = Uf.Peso,
-                        IdPaylessProdPrioriM = NewMas.Id
+                        IdPaylessProdPrioriM = NewMas.Id,
+                        IdTransporte = TransporteO.Id
                     });
                 }
                 DbO.SaveChanges();
@@ -1953,6 +1964,182 @@ namespace EdiApi.Controllers
                 };
             } catch (Exception e1) {
                 return new RetData<IEnumerable<WmsFileModel>> {
+                    Info = new RetInfo() {
+                        CodError = -1,
+                        Mensaje = e1.ToString(),
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            }
+        }
+        [HttpGet]
+        public RetData<IEnumerable<PaylessReportWeekGModel>> GetReportWeek(int Tipo) {
+            DateTime StartTime = DateTime.Now;
+            try {
+                //Jueves
+                int Accesories = 0, Childrens = 0, Man = 0, Womans = 0;
+                List<PaylessReportWeekGModel> Ret = new List<PaylessReportWeekGModel>();
+                List<PaylessReportes> ListReportesExistentes = (
+                    from R in DbO.PaylessReportes
+                    orderby R.Periodo.ToDateFromEspDate() descending
+                    select R
+                    ).ToList();
+                DateTime DateInit, DateEnd, DateMid;
+                DateTime CurrentPeriod = DateTime.Now;
+                if (ListReportesExistentes != null) {
+                    if (ListReportesExistentes.Count() > 0) {
+                        CurrentPeriod = ListReportesExistentes.Fod().Periodo.ToDateFromEspDate().AddDays(7);
+                        if (CurrentPeriod.DayOfWeek == DayOfWeek.Monday) {
+                            DateInit = CurrentPeriod;
+                        } else {
+                            DateInit = (CurrentPeriod.AddDays(DayOfWeek.Monday - CurrentPeriod.DayOfWeek));
+                        }
+                    } else {
+                        DateInit = (CurrentPeriod.AddDays(DayOfWeek.Monday - CurrentPeriod.DayOfWeek));
+                    }
+                } else {
+                    DateInit = (CurrentPeriod.AddDays(DayOfWeek.Monday - CurrentPeriod.DayOfWeek));
+                }
+                DateEnd = DateInit.AddDays(DayOfWeek.Friday - DateInit.DayOfWeek);
+                DateMid = DateInit.AddDays(DayOfWeek.Wednesday - DateInit.DayOfWeek);                
+                List<PedidosExternos> ListPedidosM = (
+                    from Pe in DbO.PedidosExternos
+                    where Pe.FechaPedido.Substring(0, 10).ToDateFromEspDate() >= DateInit 
+                    && Pe.FechaPedido.Substring(0, 10).ToDateFromEspDate() <= DateEnd
+                    && Pe.IdEstado == 2
+                    orderby Pe.FechaPedido
+                    select Pe
+                    ).ToList();
+                if (ListPedidosM.Count() == 3) {
+                    DateInit = ListPedidosM[2].FechaPedido.Substring(0, 10).ToDateFromEspDate();
+                    DateMid = ListPedidosM[1].FechaPedido.Substring(0, 10).ToDateFromEspDate();
+                    DateEnd = ListPedidosM[0].FechaPedido.Substring(0, 10).ToDateFromEspDate();
+                }
+                if (ListPedidosM != null) {
+                    if (ListPedidosM.Count() > 0) {
+                        Clientes ClienteAct = (from C in WmsDbO.Clientes where C.ClienteId == ListPedidosM.Fod().ClienteId select C)?.Fod();
+                        if (ClienteAct != null) {
+                            PaylessTiendas Tienda = (from T in DbO.PaylessTiendas where T.ClienteId == ListPedidosM.Fod().ClienteId select T)?.Fod();
+                            IEnumerable<PedidosDetExternos> ListDetTotal = (
+                                from D in DbO.PedidosDetExternos
+                                from M in ListPedidosM
+                                where D.PedidoId == M.Id
+                                select D
+                                );
+                            Ret.Add(new PaylessReportWeekGModel() {
+                                TiendaId = Tienda.TiendaId ?? 0,
+                                Location = ClienteAct?.Nombre,
+                                Manager = Tienda?.Lider,
+                                Tel = Tienda?.Tel
+                            });
+                            for (int i = 0; i < 3; i++) {
+                                switch (i) {
+                                    case 0:                                            
+                                        Ret[Ret.Count - 1].TotalBox = Convert.ToInt32(Math.Round(ListDetTotal.Sum(O => O.CantPedir.Value), 0));
+                                        Ret[Ret.Count - 1].Date1 = DateInit.ToString(ApplicationSettings.DateTimeFormatShort);
+                                        Ret[Ret.Count - 1].Date2 = DateMid.ToString(ApplicationSettings.DateTimeFormatShort);
+                                        Ret[Ret.Count - 1].Date3 = DateEnd.ToString(ApplicationSettings.DateTimeFormatShort);
+                                        IEnumerable<PedidosDetExternos> ListDet1 = (
+                                            from D in DbO.PedidosDetExternos
+                                            from M in ListPedidosM
+                                            from De in DbO.PaylessProdPrioriDet
+                                            where D.PedidoId == M.Id
+                                            && M.FechaPedido.Substring(0, 10).ToDateFromEspDate() >= DateInit
+                                            && M.FechaPedido.Substring(0, 10).ToDateFromEspDate() < DateMid
+                                            && De.Barcode == D.CodProducto
+                                            orderby M.FechaPedido.ToDateFromEspDate()
+                                            group new { D, De } by new { D.CodProducto } into G
+                                            select new PedidosDetExternos() {
+                                                CantPedir = G.Fod().D.CantPedir,
+                                                CodProducto = G.Fod().D.CodProducto,
+                                                Producto = G.Fod().De.Categoria
+                                            });
+                                        if (ListDet1.Count() > 0) {
+                                            //Accesories = ListDet1.Where(O1 => O1.)
+                                            Ret[Ret.Count - 1].Total1 = Convert.ToInt32(Math.Round(ListDet1.Sum(O => O.CantPedir.Value), 0));
+                                            PedidosExternos PedidoMonday = ListPedidosM.Where(P => P.FechaPedido.Substring(0, 10).ToDateFromEspDate() == DateInit)?.Fod();
+                                            if (PedidoMonday != null)
+                                                Ret[Ret.Count - 1].Time1 = PedidoMonday.FechaPedido.ToDateEsp().ToString(ApplicationSettings.ToTimeFormatExcel);
+                                            else
+                                                Ret[Ret.Count - 1].Time1 = string.Empty;
+                                        } else {
+                                            Ret[Ret.Count - 1].Total1 = 0;
+                                            Ret[Ret.Count - 1].Time1 = string.Empty;
+                                        }
+                                        break;
+                                    case 1:
+                                        IEnumerable<PedidosDetExternos> ListDet2 = (
+                                            from D in DbO.PedidosDetExternos
+                                            from M in ListPedidosM
+                                            from De in DbO.PaylessProdPrioriDet
+                                            where D.PedidoId == M.Id
+                                            && M.FechaPedido.Substring(0, 10).ToDateFromEspDate() >= DateMid
+                                            && M.FechaPedido.Substring(0, 10).ToDateFromEspDate() < DateEnd
+                                            && De.Barcode == D.CodProducto
+                                            orderby M.FechaPedido.ToDateFromEspDate()
+                                            group new { D, De} by new { D.CodProducto } into G
+                                            select new PedidosDetExternos() {
+                                                CantPedir = G.Fod().D.CantPedir,
+                                                CodProducto = G.Fod().D.CodProducto,
+                                                Producto = G.Fod().De.Categoria
+                                            });
+                                        if (ListDet2.Count() > 0) {
+                                            Ret[Ret.Count - 1].Total2 = Convert.ToInt32(Math.Round(ListDet2.Sum(O => O.CantPedir.Value), 0));
+                                            PedidosExternos PedidoWednesday = ListPedidosM.Where(P => P.FechaPedido.Substring(0, 10).ToDateFromEspDate() == DateMid)?.Fod();
+                                            if (PedidoWednesday != null)
+                                                Ret[Ret.Count - 1].Time2 = PedidoWednesday.FechaPedido.ToDateEsp().ToString(ApplicationSettings.ToTimeFormatExcel);
+                                            else
+                                                Ret[Ret.Count - 1].Time2 = string.Empty;
+                                        } else {
+                                            Ret[Ret.Count - 1].Total2 = 0;
+                                            Ret[Ret.Count - 1].Time2 = string.Empty;
+                                        }
+                                        break;
+                                    case 2:
+                                        IEnumerable<PedidosDetExternos> ListDet3 = (
+                                            from D in DbO.PedidosDetExternos
+                                            from M in ListPedidosM
+                                            from De in DbO.PaylessProdPrioriDet
+                                            where D.PedidoId == M.Id
+                                            && M.FechaPedido.Substring(0, 10).ToDateFromEspDate() >= DateEnd
+                                            && M.FechaPedido.Substring(0, 10).ToDateFromEspDate() <= DateEnd.AddDays(2)
+                                            && De.Barcode == D.CodProducto
+                                            orderby M.FechaPedido.ToDateFromEspDate()
+                                            group new { D, De } by new { D.CodProducto } into G
+                                            select new PedidosDetExternos() {
+                                                CantPedir = G.Fod().D.CantPedir,
+                                                CodProducto = G.Fod().D.CodProducto,
+                                                Producto = G.Fod().De.Categoria
+                                            });
+                                        if (ListDet3.Count() > 0) {
+                                            Ret[Ret.Count - 1].Total3 = Convert.ToInt32(Math.Round(ListDet3.Sum(O => O.CantPedir.Value), 0));
+                                            PedidosExternos PedidoFriday = ListPedidosM.Where(P => P.FechaPedido.Substring(0, 10).ToDateFromEspDate() == DateEnd)?.Fod();
+                                            if (PedidoFriday != null)
+                                                Ret[Ret.Count - 1].Time3 = PedidoFriday.FechaPedido.ToDateEsp().ToString(ApplicationSettings.ToTimeFormatExcel);
+                                            else
+                                                Ret[Ret.Count - 1].Time3 = string.Empty;
+                                        } else {
+                                            Ret[Ret.Count - 1].Total3 = 0;
+                                            Ret[Ret.Count - 1].Time3 = string.Empty;
+                                        }
+                                        break;
+                                    default:
+                                        break;
+                                }
+                            }
+                        }
+                    }
+                }
+                return new RetData<IEnumerable<PaylessReportWeekGModel>> {
+                    Data = Ret,
+                    Info = new RetInfo() {
+                        CodError = 0,
+                        Mensaje = "ok",
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            } catch (Exception e1) {
+                return new RetData<IEnumerable<PaylessReportWeekGModel>> {
                     Info = new RetInfo() {
                         CodError = -1,
                         Mensaje = e1.ToString(),

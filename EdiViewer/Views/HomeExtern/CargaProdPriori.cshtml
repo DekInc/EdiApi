@@ -86,7 +86,8 @@
                     { field: "talla", caption: "talla", type: 'text' },
                     { field: "categoria", caption: "Genero", type: 'text' },
                     { field: "departamento", caption: "departamento", type: 'text' },
-                    { field: "cp", caption: "cp", type: 'text' }
+                    { field: "cp", caption: "cp", type: 'text' },
+                    { field: "transporte", caption: "Transporte", type: 'text' }
                 ],
                 colShowResponsive: [
                     { field: 'barcode' }
@@ -107,6 +108,7 @@
                     { field: "categoria", caption: "Genero", sortable: true },
                     { field: "departamento", caption: "Departamento", sortable: true },
                     { field: "cp", caption: "cp", sortable: true },
+                    { field: "transporte", caption: "Transporte", sortable: true },
                     {
                         field: "peso", caption: "", sortable: true, render: function (record) {
                             return '<div class="w2ui-buttons"><a href="javascript:verDetalle(' + record.barcode + ', ' + "'" + record.talla + "'" + ')" title="barcode: ' + record.barcode + ' - talla: ' + record.talla + '">Ver detalle</a></div>';

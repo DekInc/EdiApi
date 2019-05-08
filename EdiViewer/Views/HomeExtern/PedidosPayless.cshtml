@@ -201,15 +201,16 @@
                 },
                 searches: [
                     { field: "barcode", caption: "Cod. caja", type: 'text' },
-                    { field: "producto", caption: "Lote", type: 'text' },
+                    //{ field: "producto", caption: "Lote", type: 'text' },
                     { field: "talla", caption: "Talla", type: 'text' },
-                    { field: "lote", caption: "Estilo", type: 'text' },
+                    //{ field: "lote", caption: "Estilo", type: 'text' },
                     { field: "categoria", caption: "Genero", type: 'text' },
                     { field: "departamento", caption: "departamento", type: 'text' },
                     { field: "existencia", caption: "Existencia", type: 'int' },
                     { field: "reservado", caption: "Reservado", type: 'int' },
                     { field: "disponible", caption: "Disponible", type: 'int' },
-                    { field: "cp", caption: "cp", type: 'text' }
+                    { field: "cp", caption: "cp", type: 'text' },
+                    { field: "transporte", caption: "Transporte", type: 'text' }
                 ],
                 colShowResponsive: [
                     { field: 'barcode' },
@@ -217,11 +218,12 @@
                 ],
                 columns: [
                     { field: "id", caption: "id", sortable: true, hidden: true },
-                    { field: "barcode", caption: "Cod. caja", type: 'text' },
-                    { field: "producto", caption: "Lote", type: 'text' },
+                    { field: "transporte", caption: "Transporte", type: 'text' },
+                    { field: "barcode", caption: "Cod. caja", type: 'text', sortable: true },
+                    //{ field: "producto", caption: "Lote", type: 'text' },
                     { field: "talla", caption: "talla", type: 'text' },
-                    { field: "categoria", caption: "Genero", type: 'text' },
-                    { field: "lote", caption: "estilo", type: 'text' },
+                    { field: "categoria", caption: "Genero", type: 'text', sortable: true },
+                    //{ field: "lote", caption: "estilo", type: 'text' },
                     { field: "existencia", caption: "Existencia", sortable: true },
                     { field: "reservado", caption: "Reservado", sortable: true },
                     { field: "disponible", caption: "Disponible", sortable: true },
@@ -239,11 +241,11 @@
                             return '<input id="TxtProducto' + record.id + '" name="TxtProducto' + record.id + '" type="textbox" maxlength="7" class="editor-active form-control ' + isCp + ' txtCantPedir w2ui-input" ' + posDisable + ' tabIndex="' + record.id + '" value="' + cantPedir2 + '" onkeypress="return changeProdPedido(isNumberKey(event), ' + "'" + record.id + "'" + ', this)">';                            
                         }
                     },
-                    { field: "estado", caption: "estado", type: 'text' },
-                    { field: "pri", caption: "pri", type: 'text' },
-                    { field: "poolP", caption: "poolP", type: 'text' },
+                    //{ field: "estado", caption: "estado", type: 'text' },
+                    //{ field: "pri", caption: "pri", type: 'text' },
+                    //{ field: "poolP", caption: "poolP", type: 'text' },
                     { field: "departamento", caption: "departamento", type: 'text' },
-                    { field: "cp", caption: "cp", type: 'text' }
+                    { field: "cp", caption: "cp", type: 'text' }                    
                 ]
             }
         };

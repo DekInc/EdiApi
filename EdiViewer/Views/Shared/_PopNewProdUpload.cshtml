@@ -26,9 +26,13 @@
                                     <input type="file" class="custom-file-input" id="fUpload" name="fUpload">
                                     <label id="lblFile" class="custom-file-label" for="fUpload">Archivo a cargar</label>
                                 </div>
+                                <div class="marginTop10">
+                                    <input type="checkbox" class="" id="ChkUpDelete" name="ChkUpDelete">
+                                    <label id="Lbl1" class="" for="ChkUpDelete">Borrar todo el periodo al cargar</label>
+                                </div>
                             </div>
                         </div>
-                        <br />
+                        <br />                        
                         <div class="row">
                             <div class="col">
                                 <button class="btn btn-primary" type="button" id="btnUpload">
@@ -91,7 +95,7 @@
             fdata.append(files[0].name, files[0]);
             $.ajax({
                 type: "POST",
-                url: "@this.Url.Action("SetPaylessProdPriori")?dtpPeriodUpload=" + $('#dtpPeriodUpload').val() + '&txtTransporte=' + $('#txtTransporte').val(),
+                url: "@this.Url.Action("SetPaylessProdPriori", "HomeExtern")?dtpPeriodUpload=" + $('#dtpPeriodUpload').val() + '&txtTransporte=' + $('#txtTransporte').val() + '&ChkUpDelete=' + $('#ChkUpDelete').is(':checked'),
                 beforeSend: function (xhr) {
                     xhr.setRequestHeader("XSRF-TOKEN",
                         $('input:hidden[name="__RequestVerificationToken"]').val());
@@ -110,8 +114,10 @@
                     if (response.length == 0)
                         menErrorEdi('Error al subir el archivo', 'Error');
                     else {
-                        if (response.info.mensaje == 'ok')
+                        if (response.info.mensaje == 'ok') {
                             menErrorEdi('Archivo cargado', 'Información');
+                            mainGrid.clear();                            
+                        }
                         $('#dvData').html(response);
                     }
                 },

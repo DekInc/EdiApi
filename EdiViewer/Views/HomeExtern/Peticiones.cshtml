@@ -100,7 +100,7 @@
                     { field: "periodo", caption: "Periodo", sortable: true },
                     { field: "fechaCreacion", caption: "Fecha de creación", sortable: true },
                     { field: "fechaPedido", caption: "Fecha y hora esperada", sortable: true },                    
-                    { field: "cont", caption: "Cantidad", sortable: true },                    
+                    { field: "cont", caption: "Cantidad total", sortable: true },                    
                     {
                         field: "idEstado", caption: "Estado", sortable: false, render: function (record) {
                             if (record.idEstado == 1) return '<span class="thisSpan" alt="' + record.id + '">Guardado</span>';
@@ -144,7 +144,8 @@
                     { field: "lote", caption: "Estilo", type: 'text' },
                     { field: "categoria", caption: "Genero", type: 'text' },
                     { field: "departamento", caption: "departamento", type: 'text' },
-                    { field: "cp", caption: "cp", type: 'text' }
+                    { field: "cp", caption: "cp", type: 'text' },
+                    { field: "transporte", caption: "Transporte", type: 'text' }
                 ],
                 colShowResponsive: [
                     { field: 'barcode' },
@@ -152,15 +153,16 @@
                 ],
                 columns: [
                     { field: "id", caption: "id", sortable: true, hidden: true },
-                    { field: "oid", caption: "oid", type: 'text'},
-                    { field: "barcode", caption: "Cod. caja", type: 'text' },
-                    { field: "producto", caption: "Lote", type: 'text' },
-                    { field: "talla", caption: "talla", type: 'text' },
-                    { field: "categoria", caption: "Genero", type: 'text' },
-                    { field: "lote", caption: "estilo", type: 'text' },
+                    { field: "transporte", caption: "Transporte", type: 'text', sortable: true },
+                    { field: "oid", caption: "oid", type: 'text', sortable: true },
+                    { field: "barcode", caption: "Cod. caja", type: 'text', sortable: true },
+                    { field: "producto", caption: "Lote", type: 'text', sortable: true },
+                    { field: "talla", caption: "talla", type: 'text', sortable: true },
+                    { field: "categoria", caption: "Genero", type: 'text', sortable: true },
+                    { field: "lote", caption: "estilo", type: 'text', sortable: true },
                     { field: "cantPedir", caption: "Cantidad a pedir", sortable: true },
-                    { field: "departamento", caption: "departamento", type: 'text' },
-                    { field: "cp", caption: "cp", type: 'text' }
+                    { field: "departamento", caption: "departamento", type: 'text', sortable: true },
+                    { field: "cp", caption: "cp", type: 'text', sortable: true }
                 ]
             }
         };

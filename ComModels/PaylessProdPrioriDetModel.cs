@@ -6,11 +6,12 @@ namespace ComModels
 {
     public partial class PaylessProdPrioriDetModel : PaylessProdPrioriDet
     {
-        public int recid { get { return Id; } }
+        public int Recid { get { return Id; } }
         public int Existencia { get; set; }
         public int Reservado { get; set; }
         public int Disponible { get { return Existencia - Reservado; } }
         public int CantPedir { get; set; }
-        public string dateProm { set; get; }
+        public string DateProm { set; get; }
+        public string Transporte { set; get; }
     }
 }

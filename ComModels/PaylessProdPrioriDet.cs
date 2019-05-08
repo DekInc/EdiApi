@@ -25,5 +25,6 @@ namespace ComModels
         public string Cargada { get; set; }
         public double? M3 { get; set; }
         public double? Peso { get; set; }
+        public int? IdTransporte { get; set; }
     }
 }

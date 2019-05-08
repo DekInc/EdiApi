@@ -6,8 +6,7 @@ GO
 CREATE TABLE PAYLESS_ProdPrioriM(
 	[Id] int PRIMARY KEY IDENTITY(1,1),
 	[Periodo] [nvarchar](10) NULL,
-	[ClienteId] [int] NULL,
-	Transporte [nvarchar](32),
+	[ClienteId] [int] NULL,	
 	[CodUsr] nvarchar(128),
 	InsertDate nvarchar(16),
 	UpdateDate nvarchar(16)
@@ -35,9 +34,13 @@ CREATE TABLE [dbo].[PAYLESS_ProdPrioriDet](
 	[Preinspeccion] nvarchar(32) NULL,
 	[Cargada] nvarchar(24) NULL,
 	[M3] [float] NULL,
-	[Peso] [float] NULL
+	[Peso] [float] NULL,
+	IdTransporte int null
 ) ON [PRIMARY]
 GO
+CREATE INDEX PAYLESS_ProdPrioriDetIdxBarcode ON PAYLESS_ProdPrioriDet (Barcode);
+GO
+--select * from [PAYLESS_ProdPrioriDet]
 IF OBJECT_ID('PAYLESS_ProdPrioriArchM', 'U') IS NOT NULL 
 	DROP TABLE PAYLESS_ProdPrioriArchM
 GO

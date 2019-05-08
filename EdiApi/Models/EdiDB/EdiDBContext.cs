@@ -67,6 +67,7 @@ namespace EdiApi.Models.EdiDB
         public virtual DbSet<PaylessProdPrioriM> PaylessProdPrioriM { get; set; }
         public virtual DbSet<PaylessReportes> PaylessReportes { get; set; }
         public virtual DbSet<PaylessTiendas> PaylessTiendas { get; set; }
+        public virtual DbSet<PaylessTransporte> PaylessTransporte { get; set; }
         public virtual DbSet<PedidosDetExternos> PedidosDetExternos { get; set; }
         public virtual DbSet<PedidosEstadosExternos> PedidosEstadosExternos { get; set; }
         public virtual DbSet<PedidosExternos> PedidosExternos { get; set; }
@@ -1334,8 +1335,6 @@ namespace EdiApi.Models.EdiDB
 
                 entity.Property(e => e.Periodo).HasMaxLength(10);
 
-                entity.Property(e => e.Transporte).HasMaxLength(32);
-
                 entity.Property(e => e.UpdateDate).HasMaxLength(16);
             });
 
@@ -1343,7 +1342,7 @@ namespace EdiApi.Models.EdiDB
             {
                 entity.ToTable("PAYLESS_Reportes");
 
-                entity.Property(e => e.FechaGen).HasMaxLength(10);
+                entity.Property(e => e.FechaGen).HasMaxLength(20);
 
                 entity.Property(e => e.Periodo).HasMaxLength(10);
 
@@ -1367,6 +1366,13 @@ namespace EdiApi.Models.EdiDB
                 entity.Property(e => e.Lider).HasMaxLength(128);
 
                 entity.Property(e => e.Tel).HasMaxLength(32);
+            });
+
+            modelBuilder.Entity<PaylessTransporte>(entity =>
+            {
+                entity.ToTable("PAYLESS_Transporte");
+
+                entity.Property(e => e.Transporte).HasMaxLength(64);
             });
 
             modelBuilder.Entity<PedidosDetExternos>(entity =>
