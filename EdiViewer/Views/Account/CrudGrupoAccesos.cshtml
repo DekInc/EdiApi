@@ -11,6 +11,25 @@
                     <h4 class="my-0 font-weight-normal">Crud grupos y accesos</h4>
                 </div>
                 <div class="card-body">
+                    <div id="formSearch">
+                        <div class="row">
+                            <div class="col-sm">
+                                <label for="cboGrupo">Grupo</label>
+                                <select class="form-control" id="cboGroup"></select>
+                            </div>
+                            <div class="col-sm">
+                                <label for="cboAccess">Acceso</label>
+                                <select class="form-control" id="cboAccess"></select>
+                            </div>
+                        </div>
+                        <div class="row marginTop10">
+                            <div class="col-sm">
+                                <button class="btn btn-primary" type="button" id="btnAdd">Agregar</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="clearfix"></div>
+                    <br />
                     <div id="gridGroupsAccesss" style="min-height: 460px; width: 100%;">
 
                     </div>
@@ -34,6 +53,54 @@
         w2ui.grid.autoLoad = auto;
         w2ui.grid.skip(0);
     }
+    function getGroups() {
+        $.ajax({
+            url: '@this.Url.Action("GetGroups", "HomeExtern")',
+            type: 'GET',
+            dataType: 'JSON',
+            success: function (json) {
+                if (json.info.codError != 0) {
+                    menErrorEdi(json.info.mensaje);
+                    return '';
+                }
+                $.each(json.data, function (indexI, itemO) {
+                    $('#cboGroup').append($('<option>', {
+                        value: this.id,
+                        text: this.descr,
+                        selected: false
+                    }));
+                });
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                menErrorEdi(xhr.status, '');
+                menErrorEdi(thrownError, '');
+            }
+        });
+    }
+    function getAccess() {
+        $.ajax({
+            url: '@this.Url.Action("GetAccess", "HomeExtern")',
+            type: 'GET',
+            dataType: 'JSON',
+            success: function (json) {
+                if (json.info.codError != 0) {
+                    menErrorEdi(json.info.mensaje);
+                    return '';
+                }
+                $.each(json.data, function (indexI, itemO) {
+                    $('#cboAccess').append($('<option>', {
+                        value: this.id,
+                        text: this.descr,
+                        selected: false
+                    }));
+                });
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                menErrorEdi(xhr.status, '');
+                menErrorEdi(thrownError, '');
+            }
+        });
+    }    
     function crearGrid() {
         var config = {
             grid: {
@@ -59,7 +126,12 @@
                     { field: "idIenetAccess", caption: "IdIenetAccess", sortable: true, hidden: true},
                     { field: "idIenetGroup", caption: "IdIenetGroup", sortable: true, hidden: true },
                     { field: "group", caption: "Grupo", sortable: true },
-                    { field: "access", caption: "Acceso", sortable: true }
+                    { field: "access", caption: "Acceso", sortable: true },
+                    {
+                        field: "", caption: "", sortable: true, render: function (record) {
+                            return '<a href="javascript:borrar(' + "'" + record.id + "'" + ')">Borrar</a>';
+                        }
+                    }
                 ]
             }
         };
@@ -68,5 +140,26 @@
     }
     $(document).ready(function () {
         crearGrid();
+        getGroups();
+        getAccess();
+        $('#btnAdd').on('click', function (event) {
+            $.ajax({
+                url: '@this.Url.Action("SetGroupAccess", "HomeExtern")?cboGroup=' + $('#cboGroup').val() + '&cboAccess=' + $('#cboAccess').val(),
+                type: 'GET',
+                dataType: 'JSON',
+                success: function (json) {
+                    if (json.info.codError != 0) {
+                        menErrorEdi(json.info.mensaje);
+                    }
+                    menErrorEdi(json.data, 'Información');
+                    mainGrid.clear();
+                    mainGrid.reload();
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    menErrorEdi(xhr.status, '');
+                    menErrorEdi(thrownError, '');
+                }
+            });
+        });
     });
 </script>

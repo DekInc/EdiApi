@@ -15,9 +15,9 @@ BEGIN
 	Pe.Periodo
 	FROM EdiDb.dbo.PedidosExternos AS Pe WITH (NOLOCK)
 	JOIN EdiDb.dbo.PedidosDetExternos AS Pde WITH (NOLOCK) ON Pde.PedidoId = Pe.Id
-	LEFT JOIN wms_test_29_01_2019.dbo.Producto AS P WITH (NOLOCK) ON P.CodProducto = Pde.CodProducto
+	LEFT JOIN wms.dbo.Producto AS P WITH (NOLOCK) ON P.CodProducto = Pde.CodProducto
 	WHERE Pe.ClienteID = @IdClient
 END
 GO
 
-EXEC [SP_GetPedidosDetExternos] 1345
+--EXEC [SP_GetPedidosDetExternos] 1345

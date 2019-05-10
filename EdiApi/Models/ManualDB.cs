@@ -242,10 +242,10 @@ namespace EdiApi.Models
             }
             return ListExists;
         }
-        public static IEnumerable<PedidosDetExternos> SP_GetPedidosDetExternosByDate(ref Models.EdiDB.EdiDBContext _DbO, string DateInit, string DateEnd, int Typ) {
+        public static IEnumerable<PedidosDetExternos> SP_GetPedidosDetExternosByDate(ref Models.EdiDB.EdiDBContext _DbO, DateTime DateInit, DateTime DateEnd, int Typ) {
             List<PedidosDetExternos> ListExists = new List<PedidosDetExternos>();
             using (DbCommand Cmd = _DbO.Database.GetDbConnection().CreateCommand()) {
-                Cmd.CommandText = $"[dbo].[SP_GetPedidosDetExternosByDate] {DateInit}, {DateEnd}, {Typ}";
+                Cmd.CommandText = $"[dbo].[SP_GetPedidosDetExternosByDate] '{DateInit.ToString(ApplicationSettings.DateTimeFormatShort)}', '{DateEnd.ToString(ApplicationSettings.DateTimeFormatShort)}', {Typ}";
                 _DbO.Database.OpenConnection();
                 DbDataReader Dr = Cmd.ExecuteReader();
                 if (Dr.HasRows) {

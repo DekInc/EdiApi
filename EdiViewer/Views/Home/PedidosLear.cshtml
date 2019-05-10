@@ -117,7 +117,7 @@
             "lengthMenu": [[15, 25, 35, 50], [15, 25, 35, 50]],
             "language":
             {
-                "processing": "<div class='divAjax'>Obteniendo datos<br /><img style='width:50px; height:50px;' src='images/ajax.gif' /></div>",
+                "processing": "<div class='divAjax'>Obteniendo datos<br /><img style='width:50px; height:50px;' src='/images/ajax.gif' /></div>",
                 "emptyTable": "No hay información"
             },
             "ajax": {
@@ -180,7 +180,7 @@
             "lengthMenu": [[15, 25, 35, 50], [15, 25, 35, 50]],
             "language":
             {
-                "processing": "<div class='divAjax'>Obteniendo datos<br /><img style='width:50px; height:50px;' src='images/ajax.gif' /></div>",
+                "processing": "<div class='divAjax'>Obteniendo datos<br /><img style='width:50px; height:50px;' src='/images/ajax.gif' /></div>",
                 "emptyTable": "No hay información"
             },
             "ajax": {
@@ -228,14 +228,14 @@
         });
         HashId = $.urlParam('HashId');
         if (HashId == null) {
-            @*$.ajax({
+            $.ajax({
                 method: "GET",
                 url: "@this.Url.Action("TranslateForms830")"
             });
             $.ajax({
                 method: "GET",
                 url: "@this.Url.Action("AutoSendInventary830")"
-            });*@
+            });
         }
     });
 </script>

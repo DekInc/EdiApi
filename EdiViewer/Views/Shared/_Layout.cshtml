@@ -48,27 +48,39 @@
             </button>
             <div class="navbar-collapse collapse" id="navbar1">
                 <ul class="navbar-nav mr-auto">
-                    @if (Context.Session.GetObjSession<List<string>>("ListPermits").Where(O => O == "Crud_Usuarios" || O == "Crud_Grupos" || O == "Crud_Permisos" || O == "Crud_Grupos_Permisos").Count() > 0) {
+                    @if (Context.Session.GetObjSession<List<string>>("ListPermits").Where(O => O == "Admin_Usuarios" || O == "Admin_Grupos" || O == "Admin_Permisos" || O == "Admin_Grupos_Permisos").Count() > 0) {
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown1" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 Admin
                             </a>
                             <div class="dropdown-menu mr-auto" aria-labelledby="navbarDropdown1">
-                                <a class="dropdown-item" asp-area="" asp-controller="Account" asp-action="CrudUsuarios">Usuarios</a>
-                                <a class="dropdown-item" asp-area="" asp-controller="Account" asp-action="CrudGrupos">Grupos</a>
-                                <a class="dropdown-item" asp-area="" asp-controller="Account" asp-action="CrudAccesos">Accesos</a>
-                                <a class="dropdown-item" asp-area="" asp-controller="Account" asp-action="CrudGrupoAccesos">Grupos y accesos</a>
+                                @if (Context.Session.GetObjSession<List<string>>("ListPermits").Where(O => O == "Admin_Usuarios").Count() > 0) {
+                                    <a class="dropdown-item" asp-area="" asp-controller="Account" asp-action="CrudUsuarios">Usuarios</a>
+                                }
+                                @if (Context.Session.GetObjSession<List<string>>("ListPermits").Where(O => O == "Admin_Grupos").Count() > 0) {
+                                    <a class="dropdown-item" asp-area="" asp-controller="Account" asp-action="CrudGrupos">Grupos</a>
+                                }
+                                @if (Context.Session.GetObjSession<List<string>>("ListPermits").Where(O => O == "Admin_Permisos").Count() > 0) {
+                                    <a class="dropdown-item" asp-area="" asp-controller="Account" asp-action="CrudAccesos">Accesos</a>
+                                }
+                                @if (Context.Session.GetObjSession<List<string>>("ListPermits").Where(O => O == "Admin_Grupos_Permisos").Count() > 0) {
+                                    <a class="dropdown-item" asp-area="" asp-controller="Account" asp-action="CrudGrupoAccesos">Grupos y accesos</a>
+                                }
                             </div>
                         </li>
                     }
-                    @if (Context.Session.GetObjSession<List<string>>("ListPermits").Where(O => O == "Admin_Pedidos_Lear" || O == "Admin_Pedidos_Payless" || O == "Admin_Confirmacion_Lear" || O == "Admin_Confirmacion_Lear_Enviar_NotificaciónEdi").Count() > 0) {
+                    @if (Context.Session.GetObjSession<List<string>>("ListPermits").Where(O => O == "Admin_Pedidos_Lear" || O == "Admin_Pedidos_Payless" || O == "Admin_Confirmacion_Lear").Count() > 0) {
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown1" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 Pedidos
                             </a>
                             <div class="dropdown-menu mr-auto" aria-labelledby="navbarDropdown1">
-                                <a class="dropdown-item" asp-area="" asp-controller="Home" asp-action="PedidosLear">Pedidos Lear</a>
-                                <a class="dropdown-item" asp-area="" asp-controller="Home" asp-action="PeticionesAdmin">Pedidos Payless</a>
+                                @if (Context.Session.GetObjSession<List<string>>("ListPermits").Where(O => O == "Admin_Pedidos_Lear").Count() > 0) {
+                                    <a class="dropdown-item" asp-area="" asp-controller="Home" asp-action="PedidosLear">Pedidos Lear</a>
+                                }
+                                @if (Context.Session.GetObjSession<List<string>>("ListPermits").Where(O => O == "Admin_Pedidos_Payless").Count() > 0) {
+                                    <a class="dropdown-item" asp-area="" asp-controller="Home" asp-action="PeticionesAdmin">Pedidos Payless</a>
+                                }
                             </div>
                         </li>
                         <li class="nav-item dropdown">
@@ -76,37 +88,55 @@
                                 Despacho
                             </a>
                             <div class="dropdown-menu mr-auto" aria-labelledby="navbarDropdown2">
-                                <a class="dropdown-item" asp-area="" asp-controller="Rep856" asp-action="Index">Confirmación Lear</a>
+                                @if (Context.Session.GetObjSession<List<string>>("ListPermits").Where(O => O == "Admin_Confirmacion_Lear").Count() > 0) {
+                                    <a class="dropdown-item" asp-area="" asp-controller="Rep856" asp-action="Index">Confirmación Lear</a>
+                                }
                             </div>
                         </li>
                     }
-                    @if (Context.Session.GetObjSession<List<string>>("ListPermits").Where(O => O == "Usuario_Pedidos_Payless" || O == "Usuario_Pedidos_Payless_Enviar" || O == "Usuario_Planilla_Ingreso_Payless" || O == "Usuario_Planilla_Ingreso_Payless_Carga" || O == "Usuario_Ordenes_Payless" || O == "Usuario_Estado_PedidosWms").Count() > 0) {
+                    @if (Context.Session.GetObjSession<List<string>>("ListPermits").Where(O => O == "Admin_CargaExcel_Payless" || O == "Admin_ExcelConsolidado_Payless" || O == "Usuario_CargaEscaners_Payless" || O == "Usuario_HacerPedidos_Payless").Count() > 0) {
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 Operaciones
                             </a>
                             <div class="dropdown-menu mr-auto" aria-labelledby="navbarDropdown">
+                                @if (Context.Session.GetObjSession<List<string>>("ListPermits").Where(O => O == "Admin_CargaExcel_Payless").Count() > 0) {
                                 <a class="dropdown-item" asp-area="" asp-controller="HomeExtern" asp-action="CargaProdPrioriAdmin">Cargar archivo</a>
+                                }
+                                @if (Context.Session.GetObjSession<List<string>>("ListPermits").Where(O => O == "Admin_ExcelConsolidado_Payless").Count() > 0) {
                                 <a class="dropdown-item" asp-area="" asp-controller="HomeExtern" asp-action="CargaProdPriori">Excel consolidado</a>
+                                }
+                                @if (Context.Session.GetObjSession<List<string>>("ListPermits").Where(O => O == "Usuario_CargaEscaners_Payless").Count() > 0) {
                                 <a class="dropdown-item" asp-area="" asp-controller="HomeExtern" asp-action="CargaProdArchBod">Carga de archivo de escaners</a>
+                                }
+                                @if (Context.Session.GetObjSession<List<string>>("ListPermits").Where(O => O == "Usuario_HacerPedidos_Payless").Count() > 0) {
                                 <a class="dropdown-item" asp-area="" asp-controller="HomeExtern" asp-action="PedidosPayless">Realizar pedidos Payless</a>
-                                <a class="dropdown-item" asp-area="" asp-controller="HomeExtern" asp-action="Inventario">Realizar pedidos WMS</a>
+                                }
+                                @*<a class="dropdown-item" asp-area="" asp-controller="HomeExtern" asp-action="Inventario">Realizar pedidos WMS</a>*@
                             </div>
                         </li>
+                    }
+                    @if (Context.Session.GetObjSession<List<string>>("ListPermits").Where(O => O == "Usuario_Ordenes_Payless" || O == "Usuario_Pedidos_WMS" || O == "Usuario_ReportesSemanales_Payless").Count() > 0) {
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown2" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 Reportes
                             </a>
                             <div class="dropdown-menu mr-auto" aria-labelledby="navbarDropdown2">
-                                <a class="dropdown-item" asp-area="" asp-controller="HomeExtern" asp-action="Peticiones">Ordenes pendientes</a>
-                                <div class="dropdown-divider"></div>
-                                <a class="dropdown-item" asp-area="" asp-controller="HomeExtern" asp-action="Pedidos">Estado de pedidos WMS</a>
-                                <div class="dropdown-divider"></div>
-                                <a class="dropdown-item" asp-area="" asp-controller="HomeExtern" asp-action="PaylessReportes">Reportes semanales</a>
+                                @if (Context.Session.GetObjSession<List<string>>("ListPermits").Where(O => O == "Usuario_Ordenes_Payless").Count() > 0) {
+                                    <a class="dropdown-item" asp-area="" asp-controller="HomeExtern" asp-action="Peticiones">Ordenes pendientes</a>
+                                    <div class="dropdown-divider"></div>
+                                }
+                                @if (Context.Session.GetObjSession<List<string>>("ListPermits").Where(O => O == "Usuario_Pedidos_WMS").Count() > 0) {
+                                    <a class="dropdown-item" asp-area="" asp-controller="HomeExtern" asp-action="Pedidos">Estado de pedidos WMS</a>
+                                    <div class="dropdown-divider"></div>
+                                }
+                                @if (Context.Session.GetObjSession<List<string>>("ListPermits").Where(O => O == "Usuario_ReportesSemanales_Payless").Count() > 0) {
+                                    <a class="dropdown-item" asp-area="" asp-controller="HomeExtern" asp-action="PaylessReportes">Reportes semanales</a>
+                                }
                             </div>
                         </li>
                     }
-                    @if (Context.Session.GetObjSession<List<string>>("ListPermits").Where(O => O == "Admin_Pedidos_Lear" || O == "Admin_Pedidos_Payless" || O == "Admin_Confirmacion_Lear" || O == "Admin_Confirmacion_Lear_Enviar_NotificaciónEdi").Count() > 0) {
+                    @if (Context.Session.GetObjSession<List<string>>("ListPermits").Where(O => O == "Usuario_Ayuda_Lear").Count() > 0) {
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown3" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 Ayuda
@@ -117,7 +147,7 @@
                             </div>
                         </li>
                     }
-                </ul>
+                    </ul>
                 <ul class="navbar-nav ">
                     <!-- PROFILE DROPDOWN - scrolling off the page to the right -->
                     <li class="nav-item dropdown">

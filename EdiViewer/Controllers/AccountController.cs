@@ -71,7 +71,7 @@ namespace EdiViewer.Controllers
                         IdIenetGroup = UserO.IdIenetGroup,
                         NomUsr = UserO.NomUsr,
                         ClienteId = UserO.ClienteId,
-                        Cliente = (UserO.ClienteId.HasValue? ListClients.Data.Where(C => C.ClienteId == UserO.ClienteId).Fod().Nombre : ""),
+                        Cliente = (UserO.ClienteId.HasValue && ListClients.Data.Where(C => C.ClienteId == UserO.ClienteId).Count() > 0 ? ListClients.Data.Where(C => C.ClienteId == UserO.ClienteId).Fod().Nombre : ""),
                         IenetGroup = ListGroups.Where(G => G.Id == UserO.IdIenetGroup).Fod().Descr
                     });
                 }

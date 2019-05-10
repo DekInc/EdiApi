@@ -229,6 +229,9 @@ namespace CoreApiClient
         public async Task<RetData<IEnumerable<WmsFileModel>>> GetWmsFile(string IdM) {
             return await GetAsync<RetData<IEnumerable<WmsFileModel>>>(CreateRequestUri(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Data/GetWmsFile"), $"?IdM={IdM}"));
         }
+        public async Task<RetData<string>> SetGroupAccess(int IdGroup, int IdAccess) {
+            return await PostGetAsyncJson<RetData<string>>(CreateRequestUri(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Data/SetGroupAccess"), $"?IdGroup={IdGroup}&IdAccess={IdAccess}"), "");
+        }
         /////////////////////////////////////////
         //public async Task<List<UsersModel>> GetUsers()
         //{

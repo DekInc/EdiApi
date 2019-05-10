@@ -621,8 +621,8 @@ namespace EdiApi.Controllers
                         HashId = Isa.HashId,
                         CodUsr = CodUsr
                     };
-                    //string FtpRes = SendEdiFtp(EdiStrO, "856 notif envio");
-                    string FtpRes = "ok";
+                    string FtpRes = SendEdiFtp(EdiStrO, "856 notif envio");
+                    //string FtpRes = "ok";
                     if (FtpRes != "ok")
                         return FtpRes;
                     DbO.EdiRepSent.Add(Rep856N);
@@ -1977,7 +1977,6 @@ namespace EdiApi.Controllers
             DateTime StartTime = DateTime.Now;
             try {
                 //Jueves
-                int Accesories = 0, Childrens = 0, Man = 0, Womans = 0;
                 List<PaylessReportWeekGModel> Ret = new List<PaylessReportWeekGModel>();
                 List<PaylessReportes> ListReportesExistentes = (
                     from R in DbO.PaylessReportes
@@ -2035,54 +2034,32 @@ namespace EdiApi.Controllers
                             for (int i = 0; i < 3; i++) {
                                 switch (i) {
                                     case 0:                                            
-                                        Ret[Ret.Count - 1].TotalBox = Convert.ToInt32(Math.Round(ListDetTotal.Sum(O => O.CantPedir.Value), 0));
+                                        Ret[Ret.Count - 1].TotalBox = Convert.ToInt32(Math.Round(ListDetTotal.Sum(O => O.CantPedir.Value), 0));                                        
                                         Ret[Ret.Count - 1].Date1 = DateInit.ToString(ApplicationSettings.DateTimeFormatShort);
                                         Ret[Ret.Count - 1].Date2 = DateMid.ToString(ApplicationSettings.DateTimeFormatShort);
                                         Ret[Ret.Count - 1].Date3 = DateEnd.ToString(ApplicationSettings.DateTimeFormatShort);
-                                        IEnumerable<PedidosDetExternos> ListDet1 = (
-                                            from D in DbO.PedidosDetExternos
-                                            from M in ListPedidosM
-                                            from De in DbO.PaylessProdPrioriDet
-                                            where D.PedidoId == M.Id
-                                            && M.FechaPedido.Substring(0, 10).ToDateFromEspDate() >= DateInit
-                                            && M.FechaPedido.Substring(0, 10).ToDateFromEspDate() < DateMid
-                                            && De.Barcode == D.CodProducto
-                                            orderby M.FechaPedido.ToDateFromEspDate()
-                                            group new { D, De } by new { D.CodProducto } into G
-                                            select new PedidosDetExternos() {
-                                                CantPedir = G.Fod().D.CantPedir,
-                                                CodProducto = G.Fod().D.CodProducto,
-                                                Producto = G.Fod().De.Categoria
-                                            });
+                                        IEnumerable<PedidosDetExternos> ListDet1 = ManualDB.SP_GetPedidosDetExternosByDate(ref DbO, DateInit, DateMid, 0);
                                         if (ListDet1.Count() > 0) {
                                             //Accesories = ListDet1.Where(O1 => O1.)
                                             Ret[Ret.Count - 1].Total1 = Convert.ToInt32(Math.Round(ListDet1.Sum(O => O.CantPedir.Value), 0));
                                             PedidosExternos PedidoMonday = ListPedidosM.Where(P => P.FechaPedido.Substring(0, 10).ToDateFromEspDate() == DateInit)?.Fod();
                                             if (PedidoMonday != null)
                                                 Ret[Ret.Count - 1].Time1 = PedidoMonday.FechaPedido.ToDateEsp().ToString(ApplicationSettings.ToTimeFormatExcel);
-                                            else
+                                            else {
+                                                Ret[Ret.Count - 1].Date1 = "SIN PEDIDO";
                                                 Ret[Ret.Count - 1].Time1 = string.Empty;
+                                            }
+                                            Ret[Ret.Count - 1].Accessories += Convert.ToInt32(Math.Round(ListDet1.Where(O2 => O2.Producto.Contains("acce", StringComparison.InvariantCultureIgnoreCase)).Sum(O => O.CantPedir.Value), 0));
+                                            Ret[Ret.Count - 1].Kids += Convert.ToInt32(Math.Round(ListDet1.Where(O2 => O2.Producto.Contains("niñ", StringComparison.InvariantCultureIgnoreCase)).Sum(O => O.CantPedir.Value), 0));
+                                            Ret[Ret.Count - 1].Man += Convert.ToInt32(Math.Round(ListDet1.Where(O2 => O2.Producto.Contains("caball", StringComparison.InvariantCultureIgnoreCase)).Sum(O => O.CantPedir.Value), 0));
+                                            Ret[Ret.Count - 1].Ladies += Convert.ToInt32(Math.Round(ListDet1.Where(O2 => O2.Producto.Contains("dama", StringComparison.InvariantCultureIgnoreCase)).Sum(O => O.CantPedir.Value), 0));
                                         } else {
                                             Ret[Ret.Count - 1].Total1 = 0;
                                             Ret[Ret.Count - 1].Time1 = string.Empty;
                                         }
                                         break;
                                     case 1:
-                                        IEnumerable<PedidosDetExternos> ListDet2 = (
-                                            from D in DbO.PedidosDetExternos
-                                            from M in ListPedidosM
-                                            from De in DbO.PaylessProdPrioriDet
-                                            where D.PedidoId == M.Id
-                                            && M.FechaPedido.Substring(0, 10).ToDateFromEspDate() >= DateMid
-                                            && M.FechaPedido.Substring(0, 10).ToDateFromEspDate() < DateEnd
-                                            && De.Barcode == D.CodProducto
-                                            orderby M.FechaPedido.ToDateFromEspDate()
-                                            group new { D, De} by new { D.CodProducto } into G
-                                            select new PedidosDetExternos() {
-                                                CantPedir = G.Fod().D.CantPedir,
-                                                CodProducto = G.Fod().D.CodProducto,
-                                                Producto = G.Fod().De.Categoria
-                                            });
+                                        IEnumerable<PedidosDetExternos> ListDet2 = ManualDB.SP_GetPedidosDetExternosByDate(ref DbO, DateMid, DateEnd, 0);
                                         if (ListDet2.Count() > 0) {
                                             Ret[Ret.Count - 1].Total2 = Convert.ToInt32(Math.Round(ListDet2.Sum(O => O.CantPedir.Value), 0));
                                             PedidosExternos PedidoWednesday = ListPedidosM.Where(P => P.FechaPedido.Substring(0, 10).ToDateFromEspDate() == DateMid)?.Fod();
@@ -2090,27 +2067,17 @@ namespace EdiApi.Controllers
                                                 Ret[Ret.Count - 1].Time2 = PedidoWednesday.FechaPedido.ToDateEsp().ToString(ApplicationSettings.ToTimeFormatExcel);
                                             else
                                                 Ret[Ret.Count - 1].Time2 = string.Empty;
+                                            Ret[Ret.Count - 1].Accessories += Convert.ToInt32(Math.Round(ListDet2.Where(O2 => O2.Producto.Contains("acce", StringComparison.InvariantCultureIgnoreCase)).Sum(O => O.CantPedir.Value), 0));
+                                            Ret[Ret.Count - 1].Kids += Convert.ToInt32(Math.Round(ListDet2.Where(O2 => O2.Producto.Contains("niñ", StringComparison.InvariantCultureIgnoreCase)).Sum(O => O.CantPedir.Value), 0));
+                                            Ret[Ret.Count - 1].Man += Convert.ToInt32(Math.Round(ListDet2.Where(O2 => O2.Producto.Contains("caball", StringComparison.InvariantCultureIgnoreCase)).Sum(O => O.CantPedir.Value), 0));
+                                            Ret[Ret.Count - 1].Ladies += Convert.ToInt32(Math.Round(ListDet2.Where(O2 => O2.Producto.Contains("dama", StringComparison.InvariantCultureIgnoreCase)).Sum(O => O.CantPedir.Value), 0));
                                         } else {
                                             Ret[Ret.Count - 1].Total2 = 0;
                                             Ret[Ret.Count - 1].Time2 = string.Empty;
                                         }
                                         break;
                                     case 2:
-                                        IEnumerable<PedidosDetExternos> ListDet3 = (
-                                            from D in DbO.PedidosDetExternos
-                                            from M in ListPedidosM
-                                            from De in DbO.PaylessProdPrioriDet
-                                            where D.PedidoId == M.Id
-                                            && M.FechaPedido.Substring(0, 10).ToDateFromEspDate() >= DateEnd
-                                            && M.FechaPedido.Substring(0, 10).ToDateFromEspDate() <= DateEnd.AddDays(2)
-                                            && De.Barcode == D.CodProducto
-                                            orderby M.FechaPedido.ToDateFromEspDate()
-                                            group new { D, De } by new { D.CodProducto } into G
-                                            select new PedidosDetExternos() {
-                                                CantPedir = G.Fod().D.CantPedir,
-                                                CodProducto = G.Fod().D.CodProducto,
-                                                Producto = G.Fod().De.Categoria
-                                            });
+                                        IEnumerable<PedidosDetExternos> ListDet3 = ManualDB.SP_GetPedidosDetExternosByDate(ref DbO, DateEnd, DateEnd.AddDays(2), 0);                                        
                                         if (ListDet3.Count() > 0) {
                                             Ret[Ret.Count - 1].Total3 = Convert.ToInt32(Math.Round(ListDet3.Sum(O => O.CantPedir.Value), 0));
                                             PedidosExternos PedidoFriday = ListPedidosM.Where(P => P.FechaPedido.Substring(0, 10).ToDateFromEspDate() == DateEnd)?.Fod();
@@ -2118,6 +2085,10 @@ namespace EdiApi.Controllers
                                                 Ret[Ret.Count - 1].Time3 = PedidoFriday.FechaPedido.ToDateEsp().ToString(ApplicationSettings.ToTimeFormatExcel);
                                             else
                                                 Ret[Ret.Count - 1].Time3 = string.Empty;
+                                            Ret[Ret.Count - 1].Accessories += Convert.ToInt32(Math.Round(ListDet3.Where(O2 => O2.Producto.Contains("acce", StringComparison.InvariantCultureIgnoreCase)).Sum(O => O.CantPedir.Value), 0));
+                                            Ret[Ret.Count - 1].Kids += Convert.ToInt32(Math.Round(ListDet3.Where(O2 => O2.Producto.Contains("niñ", StringComparison.InvariantCultureIgnoreCase)).Sum(O => O.CantPedir.Value), 0));
+                                            Ret[Ret.Count - 1].Man += Convert.ToInt32(Math.Round(ListDet3.Where(O2 => O2.Producto.Contains("caball", StringComparison.InvariantCultureIgnoreCase)).Sum(O => O.CantPedir.Value), 0));
+                                            Ret[Ret.Count - 1].Ladies += Convert.ToInt32(Math.Round(ListDet3.Where(O2 => O2.Producto.Contains("dama", StringComparison.InvariantCultureIgnoreCase)).Sum(O => O.CantPedir.Value), 0));
                                         } else {
                                             Ret[Ret.Count - 1].Total3 = 0;
                                             Ret[Ret.Count - 1].Time3 = string.Empty;
@@ -2140,6 +2111,44 @@ namespace EdiApi.Controllers
                 };
             } catch (Exception e1) {
                 return new RetData<IEnumerable<PaylessReportWeekGModel>> {
+                    Info = new RetInfo() {
+                        CodError = -1,
+                        Mensaje = e1.ToString(),
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            }
+        }
+        [HttpPost]
+        public RetData<string> SetGroupAccess(int IdGroup, int IdAccess) {
+            DateTime StartTime = DateTime.Now;
+            try {
+                IEnumerable<IenetGroupsAccesses> ListCheck = from Ga in DbO.IenetGroupsAccesses where Ga.IdIenetGroup == IdGroup && Ga.IdIenetAccess == IdAccess select Ga;
+                if (ListCheck.Count() > 0) {
+                    return new RetData<string> {
+                        Data = "Ya existe",
+                        Info = new RetInfo() {
+                            CodError = 0,
+                            Mensaje = "ok",
+                            ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                        }
+                    };
+                }
+                DbO.IenetGroupsAccesses.Add(new IenetGroupsAccesses() {
+                    IdIenetGroup = IdGroup,
+                    IdIenetAccess = IdAccess
+                });
+                DbO.SaveChanges();
+                return new RetData<string> {
+                    Data = "El registro se guardo.",
+                    Info = new RetInfo() {
+                        CodError = 0,
+                        Mensaje = "ok",
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            } catch (Exception e1) {
+                return new RetData<string> {
                     Info = new RetInfo() {
                         CodError = -1,
                         Mensaje = e1.ToString(),

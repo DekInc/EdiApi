@@ -24,14 +24,14 @@ BEGIN
 		,Dp.Cantidad
 		,P.Observacion
 		,P.PedidoID
-	FROM wms_test_29_01_2019.dbo.Pedido AS P WITH (NOLOCK)
-	INNER JOIN wms_test_29_01_2019.dbo.Estatus AS E WITH (NOLOCK) ON E.EstatusID = P.EstatusID
-	INNER JOIN wms_test_29_01_2019.dbo.Bodegas AS B WITH (NOLOCK) ON B.BodegaID = P.BodegaID
-	INNER JOIN wms_test_29_01_2019.dbo.Regimen AS R WITH (NOLOCK) ON R.IDRegimen = P.RegimenID
-	INNER JOIN wms_test_29_01_2019.dbo.DtllPedido AS Dp WITH (NOLOCK) ON Dp.PedidoID = P.PedidoID
+	FROM wms.dbo.Pedido AS P WITH (NOLOCK)
+	INNER JOIN wms.dbo.Estatus AS E WITH (NOLOCK) ON E.EstatusID = P.EstatusID
+	INNER JOIN wms.dbo.Bodegas AS B WITH (NOLOCK) ON B.BodegaID = P.BodegaID
+	INNER JOIN wms.dbo.Regimen AS R WITH (NOLOCK) ON R.IDRegimen = P.RegimenID
+	INNER JOIN wms.dbo.DtllPedido AS Dp WITH (NOLOCK) ON Dp.PedidoID = P.PedidoID
 	WHERE ClienteID = @IdClient
 	ORDER BY P.fechapedido DESC
 END
 GO
 
---EXEC [SP_GetPedidosWms] 618
+EXEC [SP_GetPedidosWms] 618

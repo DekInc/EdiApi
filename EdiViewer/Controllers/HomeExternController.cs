@@ -287,12 +287,21 @@ namespace EdiViewer.Controllers
             DateTime StartTime = DateTime.Now;
             try
             {
-                RetData<Clientes> ClienteO = await ApiClientFactory.Instance.GetClient(HttpContext.Session.GetObjSession<int>("Session.ClientId"));
+                RetData<Clientes> ClienteO = await ApiClientFactory.Instance.GetClient(HttpContext.Session.GetObjSession<int>("Session.ClientId"));                
                 RetData<IEnumerable<PaylessTiendas>> ListClients = await ApiClientFactory.Instance.GetAllPaylessStores(ApiClientFactory.Instance.Encrypt($"Fun|{HttpContext.Session.GetObjSession<string>("Session.HashId")}"));
                 if (ListClients.Info.CodError != 0) {
                     return new RetData<string>() {
                         Data = ListClients.Info.Mensaje,
                         Info = ListClients.Info
+                    };
+                }
+                if (ClienteO.Data.ClienteId == 0) {
+                    return new RetData<string>() {
+                        Info = new RetInfo() {
+                            CodError = -1,
+                            Mensaje = "No existe el cliente",
+                            ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                        }
                     };
                 }
                 string ClientName = string.Empty;
@@ -1152,6 +1161,51 @@ namespace EdiViewer.Controllers
                 }
             } catch (Exception e1) {
                 return Json(JsonConvert.SerializeObject(e1));
+            }
+        }
+        public async Task<RetData<IEnumerable<IenetGroups>>> GetGroups() {
+            DateTime StartTime = DateTime.Now;
+            try {
+                RetData<IEnumerable<IenetGroups>> ListGroups = await ApiClientFactory.Instance.GetGroups(ApiClientFactory.Instance.Encrypt($"Fun|{HttpContext.Session.GetObjSession<string>("Session.HashId")}"));                
+                return ListGroups;
+            } catch (Exception e1) {
+                return new RetData<IEnumerable<IenetGroups>> {
+                    Info = new RetInfo() {
+                        CodError = -1,
+                        Mensaje = e1.ToString(),
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            }
+        }
+        public async Task<RetData<IEnumerable<IenetAccesses>>> GetAccess() {
+            DateTime StartTime = DateTime.Now;
+            try {
+                RetData<IEnumerable<IenetAccesses>> ListAccess = await ApiClientFactory.Instance.GetIenetAccesses(ApiClientFactory.Instance.Encrypt($"Fun|{HttpContext.Session.GetObjSession<string>("Session.HashId")}"));
+                return ListAccess;
+            } catch (Exception e1) {
+                return new RetData<IEnumerable<IenetAccesses>> {
+                    Info = new RetInfo() {
+                        CodError = -1,
+                        Mensaje = e1.ToString(),
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            }
+        }
+        public async Task<RetData<string>> SetGroupAccess(int cboGroup, int cboAccess) {
+            DateTime StartTime = DateTime.Now;            
+            try {
+                RetData<string> Ret = await ApiClientFactory.Instance.SetGroupAccess(cboGroup, cboAccess);
+                return Ret;
+            } catch (Exception e1) {
+                return new RetData<string> {
+                    Info = new RetInfo() {
+                        CodError = -1,
+                        Mensaje = e1.ToString(),
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
             }
         }
     }

@@ -63,7 +63,12 @@
                     { field: "codUsr", caption: "Cod. usuario", sortable: true},
                     { field: "nomUsr", caption: "Nombre usuario", sortable: true},
                     { field: "clienteId", caption: "ClienteId", sortable: true},
-                    { field: "cliente", caption: "Cliente", sortable: true}
+                    { field: "cliente", caption: "Cliente", sortable: true },
+                    {
+                        field: "", caption: "", render: function (record) {
+                            return '<a href="javascript:changeClient(' + "'" + record.id + "'" + ')">Cambiar cliente</a>';
+                        }
+                    }
                 ]
             }
         };

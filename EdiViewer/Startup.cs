@@ -47,8 +47,8 @@ namespace EdiViewer
                 options.InputFormatters.Insert(0, new RawJsonBodyInputFormatter());
             }).SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
             ApplicationSettings.ApiUri = (string)Configuration.GetSection("EdiWebApi").GetValue(typeof(string), "ApiUri");
-            //services.AddSingleton<Utility.Scheduling.Interfaces.IScheduledTask, Utility.Scheduling.GetEdi830Task>();
-            //services.AddSingleton<Utility.Scheduling.Interfaces.IScheduledTask, Utility.Scheduling.AutoSendInventary830Task>();
+            services.AddSingleton<Utility.Scheduling.Interfaces.IScheduledTask, Utility.Scheduling.GetEdi830Task>();
+            services.AddSingleton<Utility.Scheduling.Interfaces.IScheduledTask, Utility.Scheduling.AutoSendInventary830Task>();
             services.AddScheduler();
         }
 

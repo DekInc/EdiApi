@@ -85,21 +85,21 @@ BEGIN
 				isnull(It.CantidadInicial / nullif(I.Articulos, 0), 0) AS uxb,
 				It.lote,
 				T.contenedor
-			FROM wms_test_29_01_2019.dbo.Transacciones AS T WITH (NOLOCK)
-			INNER JOIN wms_test_29_01_2019.dbo.DetalleTransacciones AS Dt WITH (NOLOCK) ON Dt.TransaccionID = T.TransaccionID
-			INNER JOIN wms_test_29_01_2019.dbo.Inventario AS I WITH (NOLOCK) ON I.InventarioID = Dt.InventarioID
-			INNER JOIN wms_test_29_01_2019.dbo.ItemInventario AS It WITH (NOLOCK) ON It.InventarioID = Dt.InventarioID
-			LEFT JOIN wms_test_29_01_2019.dbo.Racks AS R WITH (NOLOCK) ON R.Rack = I.Rack
-			INNER JOIN wms_test_29_01_2019.dbo.Producto AS P WITH (NOLOCK) ON P.CodProducto = It.CodProducto
-			LEFT OUTER JOIN wms_test_29_01_2019.dbo.DocumentosxTransaccion AS Dtr WITH (NOLOCK) ON Dtr.TransaccionID = T.TransaccionID
+			FROM wms.dbo.Transacciones AS T WITH (NOLOCK)
+			INNER JOIN wms.dbo.DetalleTransacciones AS Dt WITH (NOLOCK) ON Dt.TransaccionID = T.TransaccionID
+			INNER JOIN wms.dbo.Inventario AS I WITH (NOLOCK) ON I.InventarioID = Dt.InventarioID
+			INNER JOIN wms.dbo.ItemInventario AS It WITH (NOLOCK) ON It.InventarioID = Dt.InventarioID
+			LEFT JOIN wms.dbo.Racks AS R WITH (NOLOCK) ON R.Rack = I.Rack
+			INNER JOIN wms.dbo.Producto AS P WITH (NOLOCK) ON P.CodProducto = It.CodProducto
+			LEFT OUTER JOIN wms.dbo.DocumentosxTransaccion AS Dtr WITH (NOLOCK) ON Dtr.TransaccionID = T.TransaccionID
 			LEFT OUTER JOIN (
 				SELECT Sy.InventarioID,
 					Sy.ItemInventarioID,
 					Sy.CodProducto,
 					sy.lote,
 					SUM(ISNULL(Sy.Cantidad, 0)) AS Reservado
-				FROM wms_test_29_01_2019.dbo.SysTempSalidas AS Sy WITH (NOLOCK)
-				INNER JOIN wms_test_29_01_2019.dbo.Pedido AS Pe WITH (NOLOCK) ON Pe.PedidoID = Sy.PedidoID
+				FROM wms.dbo.SysTempSalidas AS Sy WITH (NOLOCK)
+				INNER JOIN wms.dbo.Pedido AS Pe WITH (NOLOCK) ON Pe.PedidoID = Sy.PedidoID
 					AND Pe.clienteID = @IdClient
 				WHERE (
 						Pe.EstatusID NOT IN (
@@ -119,9 +119,9 @@ BEGIN
 				AND (ISNULL(I.IsReservado, 'False') = 'False')
 				AND T.EstatusID > 4
 			) AS Ie
-		INNER JOIN wms_test_29_01_2019.dbo.Clientes AS C WITH (NOLOCK) ON C.ClienteID = Ie.ClienteID
+		INNER JOIN wms.dbo.Clientes AS C WITH (NOLOCK) ON C.ClienteID = Ie.ClienteID
 			AND C.ClienteID = @IdClient
-		INNER JOIN wms_test_29_01_2019.dbo.Bodegas AS B WITH (NOLOCK) ON B.BodegaID = Ie.BodegaID
+		INNER JOIN wms.dbo.Bodegas AS B WITH (NOLOCK) ON B.BodegaID = Ie.BodegaID
 		GROUP BY C.Nombre,
 			B.NomBodega,
 			Ie.CodProducto,
@@ -142,12 +142,12 @@ BEGIN
 			B.BodegaID,
 			Dp.uxb,
 			Dp.lote
-		FROM wms_test_29_01_2019.dbo.Pedido AS P WITH (NOLOCK)
-		INNER JOIN wms_test_29_01_2019.dbo.DtllPedido AS Dp WITH (NOLOCK) ON Dp.PedidoID = P.PedidoID
-		INNER JOIN wms_test_29_01_2019.dbo.Bodegas AS B WITH (NOLOCK) ON B.BodegaID = P.BodegaID
-		INNER JOIN wms_test_29_01_2019.dbo.Clientes AS C WITH (NOLOCK) ON C.ClienteID = P.ClienteID
+		FROM wms.dbo.Pedido AS P WITH (NOLOCK)
+		INNER JOIN wms.dbo.DtllPedido AS Dp WITH (NOLOCK) ON Dp.PedidoID = P.PedidoID
+		INNER JOIN wms.dbo.Bodegas AS B WITH (NOLOCK) ON B.BodegaID = P.BodegaID
+		INNER JOIN wms.dbo.Clientes AS C WITH (NOLOCK) ON C.ClienteID = P.ClienteID
 			AND C.ClienteID = @IdClient
-		INNER JOIN wms_test_29_01_2019.dbo.Producto AS Pd WITH (NOLOCK) ON Pd.CodProducto = Dp.CodProducto
+		INNER JOIN wms.dbo.Producto AS Pd WITH (NOLOCK) ON Pd.CodProducto = Dp.CodProducto
 		WHERE (
 				P.EstatusID = 7
 				OR P.EstatusID = 8
@@ -155,7 +155,7 @@ BEGIN
 			AND (
 				Dp.PedidoID NOT IN (
 					SELECT DISTINCT PedidoID
-					FROM wms_test_29_01_2019.dbo.SysTempSalidas WITH (NOLOCK)
+					FROM wms.dbo.SysTempSalidas WITH (NOLOCK)
 					)
 				)
 		GROUP BY C.Nombre,
@@ -175,4 +175,4 @@ BEGIN
 END
 GO
 
---EXEC [SP_GetExistenciasExtern] 385
+EXEC [SP_GetExistenciasExtern] 385

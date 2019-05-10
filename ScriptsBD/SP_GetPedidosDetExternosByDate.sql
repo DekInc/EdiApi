@@ -12,15 +12,31 @@ BEGIN
 	SELECT DISTINCT 
 	D.CantPedir,
 	D.CodProducto,
-	De.Categoria
+	De.Categoria,
+	CONVERT(datetime, SUBSTRING(M.FechaPedido, 0, 11), 103) FechaPedido
 	FROM EdiDb.dbo.PedidosDetExternos AS D WITH (NOLOCK)
 	JOIN EdiDb.dbo.PedidosExternos AS M WITH (NOLOCK) ON M.Id = D.PedidoId AND M.IdEstado = 2 
 	AND CONVERT(datetime, SUBSTRING(M.FechaPedido, 0, 11), 103) >= CONVERT(datetime, SUBSTRING(@DateInit, 0, 11), 103)
 	AND CONVERT(datetime, SUBSTRING(M.FechaPedido, 0, 11), 103) < CONVERT(datetime, SUBSTRING(@DateEnd, 0, 11), 103)
 	JOIN EdiDb.dbo.PAYLESS_ProdPrioriDet AS De WITH (NOLOCK) ON De.Barcode = D.CodProducto
 	--WHERE Pe.ClienteID = @IdClient AND Pe.IdEstado = 1
+	ORDER BY CONVERT(datetime, SUBSTRING(M.FechaPedido, 0, 11), 103)
+END
+ELSE BEGIN
+	SELECT DISTINCT 
+	D.CantPedir,
+	D.CodProducto,
+	De.Categoria,
+	CONVERT(datetime, SUBSTRING(M.FechaPedido, 0, 11), 103) FechaPedido
+	FROM EdiDb.dbo.PedidosDetExternos AS D WITH (NOLOCK)
+	JOIN EdiDb.dbo.PedidosExternos AS M WITH (NOLOCK) ON M.Id = D.PedidoId AND M.IdEstado = 2 
+	AND CONVERT(datetime, SUBSTRING(M.FechaPedido, 0, 11), 103) >= CONVERT(datetime, SUBSTRING(@DateInit, 0, 11), 103)
+	AND CONVERT(datetime, SUBSTRING(M.FechaPedido, 0, 11), 103) <= CONVERT(datetime, SUBSTRING(@DateEnd, 0, 11), 103)
+	JOIN EdiDb.dbo.PAYLESS_ProdPrioriDet AS De WITH (NOLOCK) ON De.Barcode = D.CodProducto
+	--WHERE Pe.ClienteID = @IdClient AND Pe.IdEstado = 1
+	ORDER BY CONVERT(datetime, SUBSTRING(M.FechaPedido, 0, 11), 103)
 END
 END
 GO
 
-EXEC SP_GetPedidosDetExternosByDate '06/05/2019', '08/05/2019', 0
+--EXEC SP_GetPedidosDetExternosByDate '06/05/2019', '10/05/2019', 0
