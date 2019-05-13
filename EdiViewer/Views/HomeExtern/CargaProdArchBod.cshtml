@@ -91,7 +91,7 @@
                 $.each(json.data, function (indexI, itemO) {
                     $('#cboClient').append($('<option>', {
                         value: this.clienteId,
-                        text: this.nomUsr,
+                        text: this.clienteId + ' - ' +this.nomUsr,
                         selected: false
                     }));
                 });
