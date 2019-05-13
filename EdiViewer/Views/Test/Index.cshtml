@@ -1,0 +1,497 @@
+﻿
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<style>
+    body {
+        padding: unset;
+        line-height: unset;
+        font-size: 10pt !important;
+    }
+
+    table, td {
+        font-size: 10pt !important;
+    }
+
+    .table td {
+        padding: 0.5rem;
+    }
+</style>
+<div class="jumbotron" style="width: 98%; height: 90vh; margin: 0 auto; padding: unset; border-radius: 5px; border-collapse: collapse;">
+    <div style="margin: 20px;">
+        <div class="row">
+            <div class="col-sm">
+                <label for="dtpPeriodoBuscar">Año</label>
+                <select class="form-control" style="width: 140px">
+                    <option>2019</option>
+                </select>
+            </div>
+        </div>
+        <br />
+        <div>
+            <div style="float: left; width: 480px;">
+                <table class="table" style="background: #FFF; width: 460px; display: table;">
+                    <thead>
+                        <tr>
+                            <th>Indicadores financieros</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>
+                                Productividad de préstamos
+                            </td>
+                            <td>
+                                <div class="progress">
+                                    <div class="progress-bar bg-success" role="progressbar" style="width: 95%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                Rendimiento de activos productivos
+                            </td>
+                            <td>
+                                <div class="progress">
+                                    <div class="progress-bar bg-success" role="progressbar" style="width: 95%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                Costo financiero
+                            </td>
+                            <td>
+                                <div class="progress">
+                                    <div class="progress-bar bg-success" role="progressbar" style="width: 95%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                Costo de los depósitos
+                            </td>
+                            <td>
+                                <div class="progress">
+                                    <div class="progress-bar bg-warning" role="progressbar" style="width: 75%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                Capacidad de absorción de los saneamientos
+                            </td>
+                            <td>
+                                <div class="progress">
+                                    <div class="progress-bar bg-danger" role="progressbar" style="width: 45%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                Capacidad de absorción de los gastos administrativos
+                            </td>
+                            <td>
+                                <div class="progress">
+                                    <div class="progress-bar bg-warning" role="progressbar" style="width: 75%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                Retorno patrimonial
+                            </td>
+                            <td>
+                                <div class="progress">
+                                    <div class="progress-bar bg-warning" role="progressbar" style="width: 75%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                Componente extraordinario de las utilidades
+                            </td>
+                            <td>
+                                <div class="progress">
+                                    <div class="progress-bar bg-warning" role="progressbar" style="width: 75%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div style="float: left; width: 480px;">
+                <table class="table" style="background: #FFF; width: 460px; display: table; margin-left: 60px; border: 0px solid;">
+                    <thead>
+                        <tr>
+                            <th>Indicadores de clientes</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>
+                                NPS, Índice de promotores netos
+                            </td>
+                            <td>
+                                <div class="progress">
+                                    <div class="progress-bar bg-success" role="progressbar" style="width: 95%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                Tasa de retención de clientes
+                            </td>
+                            <td>
+                                <div class="progress">
+                                    <div class="progress-bar bg-success" role="progressbar" style="width: 95%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                Índice de satisfacción del cliente CSAT
+                            </td>
+                            <td>
+                                <div class="progress">
+                                    <div class="progress-bar bg-success" role="progressbar" style="width: 95%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                Valor del tiempo de vida del cliente (CLV)
+                            </td>
+                            <td>
+                                <div class="progress">
+                                    <div class="progress-bar bg-warning" role="progressbar" style="width: 75%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                Quejas de los clientes
+                            </td>
+                            <td>
+                                <div class="progress">
+                                    <div class="progress-bar bg-danger" role="progressbar" style="width: 45%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="clearfix"></div>
+        <div>
+            <div style="float: left; width: 480px;">
+                <table class="table" style="background: #FFF; width: 460px; display: table;">
+                    <thead>
+                        <tr>
+                            <th>Indicadores de procesos</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>
+                                Nivel seis sigma
+                            </td>
+                            <td>
+                                <div class="progress">
+                                    <div class="progress-bar bg-success" role="progressbar" style="width: 95%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                Tasa de uso de la capacidad (CUR)
+                            </td>
+                            <td>
+                                <div class="progress">
+                                    <div class="progress-bar bg-success" role="progressbar" style="width: 95%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                Tiempo del ciclo de cumplimiento de los pedidos (OFCT)
+                            </td>
+                            <td>
+                                <div class="progress">
+                                    <div class="progress-bar bg-success" role="progressbar" style="width: 95%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                Tasa de entrega completa y a tiempo (DIFOT)
+                            </td>
+                            <td>
+                                <div class="progress">
+                                    <div class="progress-bar bg-warning" role="progressbar" style="width: 75%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                Variación en el cronograma del proyecto (PSV)
+                            </td>
+                            <td>
+                                <div class="progress">
+                                    <div class="progress-bar bg-danger" role="progressbar" style="width: 45%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                Variación en el coste del proyecto (PCV)
+                            </td>
+                            <td>
+                                <div class="progress">
+                                    <div class="progress-bar bg-warning" role="progressbar" style="width: 75%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                Medida del valor ganado (EV)
+                            </td>
+                            <td>
+                                <div class="progress">
+                                    <div class="progress-bar bg-warning" role="progressbar" style="width: 75%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                Fortaleza de la cadena de innovación (IPS)
+                            </td>
+                            <td>
+                                <div class="progress">
+                                    <div class="progress-bar bg-warning" role="progressbar" style="width: 75%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                Rentabilidad de la inversión en investigación (ROI2)
+                            </td>
+                            <td>
+                                <div class="progress">
+                                    <div class="progress-bar bg-warning" role="progressbar" style="width: 75%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                Tiempo en llegar al mercado
+                            </td>
+                            <td>
+                                <div class="progress">
+                                    <div class="progress-bar bg-warning" role="progressbar" style="width: 75%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                Rendimiento de primera pasada (FPY)
+                            </td>
+                            <td>
+                                <div class="progress">
+                                    <div class="progress-bar bg-warning" role="progressbar" style="width: 75%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                Nivel de re trabajo
+                            </td>
+                            <td>
+                                <div class="progress">
+                                    <div class="progress-bar bg-warning" role="progressbar" style="width: 75%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                Índice de calidad
+                            </td>
+                            <td>
+                                <div class="progress">
+                                    <div class="progress-bar bg-warning" role="progressbar" style="width: 75%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                Eficiencia global de los equipos (OEE)
+                            </td>
+                            <td>
+                                <div class="progress">
+                                    <div class="progress-bar bg-warning" role="progressbar" style="width: 75%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                Tiempo de inactividad de la máquina o procesos
+                            </td>
+                            <td>
+                                <div class="progress">
+                                    <div class="progress-bar bg-warning" role="progressbar" style="width: 75%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                Resolución al primer contacto (FCR)
+                            </td>
+                            <td>
+                                <div class="progress">
+                                    <div class="progress-bar bg-warning" role="progressbar" style="width: 75%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div style="float: left; width: 480px;">
+                <table class="table" style="background: #FFF; width: 460px; display: table; margin-left: 60px; border: 0px solid;">
+                    <thead>
+                        <tr>
+                            <th>Indicadores de personal</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>
+                                Valor agregado del capital humano (HCVA)
+                            </td>
+                            <td>
+                                <div class="progress">
+                                    <div class="progress-bar bg-success" role="progressbar" style="width: 95%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                Ingresos por empleado
+                            </td>
+                            <td>
+                                <div class="progress">
+                                    <div class="progress-bar bg-success" role="progressbar" style="width: 95%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                Índice de satisfacción de los empleados
+                            </td>
+                            <td>
+                                <div class="progress">
+                                    <div class="progress-bar bg-success" role="progressbar" style="width: 95%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                Nivel de compromiso de los empleados
+                            </td>
+                            <td>
+                                <div class="progress">
+                                    <div class="progress-bar bg-warning" role="progressbar" style="width: 75%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                Indicador de respaldo del personal
+                            </td>
+                            <td>
+                                <div class="progress">
+                                    <div class="progress-bar bg-danger" role="progressbar" style="width: 45%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                Tasa de rotación de personal
+                            </td>
+                            <td>
+                                <div class="progress">
+                                    <div class="progress-bar bg-danger" role="progressbar" style="width: 45%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                Promedio de permanencia del personal
+                            </td>
+                            <td>
+                                <div class="progress">
+                                    <div class="progress-bar bg-danger" role="progressbar" style="width: 45%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                Factor de Bradford
+                            </td>
+                            <td>
+                                <div class="progress">
+                                    <div class="progress-bar bg-danger" role="progressbar" style="width: 45%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                Evaluación de 360 grados
+                            </td>
+                            <td>
+                                <div class="progress">
+                                    <div class="progress-bar bg-danger" role="progressbar" style="width: 45%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                Relación de competitividad salarial (SCR)
+                            </td>
+                            <td>
+                                <div class="progress">
+                                    <div class="progress-bar bg-danger" role="progressbar" style="width: 45%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                Tiempo de contratación
+                            </td>
+                            <td>
+                                <div class="progress">
+                                    <div class="progress-bar bg-danger" role="progressbar" style="width: 45%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                Rentabilidad de la inversión en formación
+                            </td>
+                            <td>
+                                <div class="progress">
+                                    <div class="progress-bar bg-danger" role="progressbar" style="width: 45%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+

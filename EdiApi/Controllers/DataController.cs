@@ -1343,8 +1343,11 @@ namespace EdiApi.Controllers
                     }
                     DbO.PaylessProdPrioriM.Add(NewMas);
                 } else {
-                    NewMas = ListPaylessProdPrioriM.Fod();
-                    DbO.PaylessProdPrioriM.Update(NewMas);
+                    if (ListPaylessProdPrioriM.Count() > 0)
+                    {
+                        NewMas = ListPaylessProdPrioriM.Fod();
+                        DbO.PaylessProdPrioriM.Update(NewMas);
+                    } else DbO.PaylessProdPrioriM.Add(NewMas);
                 }                
                 PaylessTransporte TransporteO = new PaylessTransporte() {
                     Transporte = transporte
@@ -1720,23 +1723,24 @@ namespace EdiApi.Controllers
             }
         }
         [HttpGet]
-        public RetData<IEnumerable<UsuariosExternos>> GetClients()
+        public RetData<IEnumerable<IenetUsers>> GetClients()
         {
             DateTime StartTime = DateTime.Now;
             try
             {
-                List<UsuariosExternos> ListUsers = DbO.UsuariosExternos.ToList();
+                List<IenetUsers> ListUsers = DbO.IenetUsers.ToList();
                 if (ListUsers.Count() > 0)
                 {
-                    foreach (UsuariosExternos Ue in ListUsers)
+                    foreach (IenetUsers Ue in ListUsers)
                     {
                         Ue.UsrPassword = string.Empty;
                         IEnumerable<Clientes> ListClients = from C in WmsDbO.Clientes where C.ClienteId == Ue.ClienteId select C;
                         if (ListClients.Count() > 0)
                             Ue.NomUsr = ListClients.Fod().Nombre;
                     }
-                }                
-                return new RetData<IEnumerable<UsuariosExternos>>
+                }
+                ListUsers = (from Lu in ListUsers select new IenetUsers() { ClienteId = Lu.ClienteId, NomUsr = Lu.NomUsr }).ToList();
+                return new RetData<IEnumerable<IenetUsers>>
                 {
                     Data = ListUsers,
                     Info = new RetInfo()
@@ -1749,7 +1753,7 @@ namespace EdiApi.Controllers
             }
             catch (Exception e1)
             {
-                return new RetData<IEnumerable<UsuariosExternos>>
+                return new RetData<IEnumerable<IenetUsers>>
                 {
                     Info = new RetInfo()
                     {

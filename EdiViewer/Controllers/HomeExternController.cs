@@ -774,17 +774,17 @@ namespace EdiViewer.Controllers
                 };
             }
         }
-        public async Task<RetData<IEnumerable<UsuariosExternos>>> GetClients()
+        public async Task<RetData<IEnumerable<IenetUsers>>> GetClients()
         {
             DateTime StartTime = DateTime.Now;
             try
             {
-                RetData<IEnumerable<UsuariosExternos>> ListClients = await ApiClientFactory.Instance.GetClients();
+                RetData<IEnumerable<IenetUsers>> ListClients = await ApiClientFactory.Instance.GetClients();
                 return ListClients;
             }
             catch (Exception e1)
             {
-                return new RetData<IEnumerable<UsuariosExternos>>
+                return new RetData<IEnumerable<IenetUsers>>
                 {
                     Info = new RetInfo()
                     {

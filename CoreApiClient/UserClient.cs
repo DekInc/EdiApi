@@ -169,9 +169,9 @@ namespace CoreApiClient
         {            
             return await PostGetAsyncJson<RetData<Tuple<IEnumerable<PaylessProdPrioriArchMModel>, IEnumerable<PaylessProdPrioriArchDet>>>>(CreateRequestUri(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Data/GetPaylessPeriodPrioriFile")), "");
         }
-        public async Task<RetData<IEnumerable<UsuariosExternos>>> GetClients()
+        public async Task<RetData<IEnumerable<IenetUsers>>> GetClients()
         {
-            return await GetAsync<RetData<IEnumerable<UsuariosExternos>>>(CreateRequestUri(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Data/GetClients")));
+            return await GetAsync<RetData<IEnumerable<IenetUsers>>>(CreateRequestUri(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Data/GetClients")));
         }
         public async Task<RetData<Tuple<IEnumerable<PaylessProdPrioriDet>, IEnumerable<PaylessProdPrioriDet>, IEnumerable<PaylessProdPrioriDet>>>> GetPaylessFileDif(int idProdArch)
         {
