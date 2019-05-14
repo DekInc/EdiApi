@@ -1939,16 +1939,19 @@ namespace EdiApi.Controllers
             }
         }
         [HttpGet]
-        public RetData<IEnumerable<WmsFileModel>> GetWmsFile(int IdM) { 
+        public RetData<IEnumerable<WmsFileModel>> GetWmsFile(string Periodo, int IdTransporte) { 
             DateTime StartTime = DateTime.Now;
             try {
                 List<Clientes> ListClients = WmsDbO.Clientes.ToList();
                 IEnumerable<WmsFileModel> ListRep = (
                     from Ad in DbO.PaylessProdPrioriArchDet
+                    from Am in DbO.PaylessProdPrioriArchM
                     from Ex in DbO.PaylessProdPrioriDet
                     from T in DbO.PaylessTiendas
                     from C in ListClients
-                    where Ad.IdM == IdM
+                    where Ad.IdM == Am.Id
+                    && Am.IdTransporte == IdTransporte
+                    && Am.Periodo == Periodo
                     && Ex.Barcode == Ad.Barcode
                     && T.TiendaId == Convert.ToInt32(Ad.Barcode.Substring(0, 4))
                     && C.ClienteId == T.ClienteId

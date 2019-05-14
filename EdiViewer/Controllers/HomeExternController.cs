@@ -1018,10 +1018,10 @@ namespace EdiViewer.Controllers
                 };
             }            
         }
-        public async Task<IActionResult> MakeExcelWms1(string IdM) {
+        public async Task<IActionResult> MakeExcelWms1(string Periodo, int IdTransporte) {
             DateTime StartTime = DateTime.Now;
             try {
-                RetData<IEnumerable<WmsFileModel>> ListInfo = await ApiClientFactory.Instance.GetWmsFile(IdM);
+                RetData<IEnumerable<WmsFileModel>> ListInfo = await ApiClientFactory.Instance.GetWmsFile(Periodo, IdTransporte);
                 if (ListInfo.Info.CodError != 0)
                     return Json( ListInfo.Info );
                 Utility.ExceL ExcelO = new Utility.ExceL();
@@ -1126,7 +1126,7 @@ namespace EdiViewer.Controllers
         public async Task<IActionResult> MakeExcelJue(string IdM) {
             DateTime StartTime = DateTime.Now;
             try {
-                RetData<IEnumerable<WmsFileModel>> ListInfo = await ApiClientFactory.Instance.GetWmsFile(IdM);
+                RetData<IEnumerable<WmsFileModel>> ListInfo = await ApiClientFactory.Instance.GetWmsFile("", 0);
                 if (ListInfo.Info.CodError != 0)
                     return Json(ListInfo.Info);
                 Utility.ExceL ExcelO = new Utility.ExceL();

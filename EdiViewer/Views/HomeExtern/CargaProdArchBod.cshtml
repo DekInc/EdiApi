@@ -151,7 +151,7 @@
                     { field: "porValid", caption: "Porc. validez", sortable: true },                    
                     {
                         field: "updateDate", caption: "", sortable: true, render: function (record) {
-                            return '<a href="javascript:downloadWmsFile(' + "'" + record.id + "'" + ')">Archivo WMS</a>&nbsp;|&nbsp;<a href="javascript:verDetalle(' + record.id + ')">Ver detalle</a>';
+                            return '<a href="javascript:downloadWmsFile(' + "'" + record.periodo + "'" + ', ' + "'" + record.idTransporte + "'" + ')">Archivo WMS</a>&nbsp;|&nbsp;<a href="javascript:verDetalle(' + "'" + record.periodo + "'" + ', ' + record.idTransporte + ')">Ver detalle</a>';
                         }
                     }
                 ]
@@ -160,8 +160,8 @@
         mainGrid = $('#gridScans').w2grid(config.grid);
         arrayGrids['gridScans'] = mainGrid;
     }    
-    function downloadWmsFile(idM) {
-        window.open('@this.Url.Action("MakeExcelWms1", "HomeExtern")?IdM=' + idM);
+    function downloadWmsFile(periodo, idTransporte) {
+        window.open('@this.Url.Action("MakeExcelWms1", "HomeExtern")?Periodo=' + periodo + '&IdTransporte=' + idTransporte);
         @*return;
         $.ajax({
             type: "GET",
@@ -185,6 +185,8 @@
     function verDetalle(idM) {
         idProdArch = idM;
         gridRepDet1.reload2('@this.Url.Action("GetPaylessFileDif", "Grids")?idProdArch=' + idProdArch + '&idData=1');
+
+        window.open('@this.Url.Action("MakeExcelWms1", "HomeExtern")?Periodo=' + periodo + '&IdTransporte=' + idTransporte);
         $('#modalCargaProdArchBodDet').modal();        
     }
     $(document).ready(function () {

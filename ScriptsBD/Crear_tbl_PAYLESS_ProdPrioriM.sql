@@ -64,3 +64,19 @@ CREATE TABLE PAYLESS_ProdPrioriArchDet(
 GO
 --select * from edidb.dbo.PAYLESS_ProdPrioriArchM
 --select * from edidb.dbo.PAYLESS_ProdPrioriArchDet order by barcode
+
+select top 10 * from edidb.dbo.PAYLESS_ProdPrioriArchDet
+
+--insert into edidb.dbo.PAYLESS_ProdPrioriArchDet(IdM, barcode) VALUES (2, 12345679)
+
+select * from edidb.dbo.PAYLESS_ProdPrioriArchDet order by Id dESC
+
+--delete from edidb.dbo.PAYLESS_ProdPrioriArchDet where Id in (6035, 6036)
+
+GLCHN33-05-0018
+
+select top 10 * from wms.[dbo].[DocumentosxTransaccion] where informe_almacen like'%GLCHN33-05-0018%'
+
+select top 10 * from wms.[dbo].[DocumentosxTransaccion] order by IDDocxTransaccion desc
+
+select * from wms.dbo.Clientes where nombre like'%payles%'
