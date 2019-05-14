@@ -18,25 +18,20 @@ using NPOI.XSSF.UserModel;
 namespace EdiViewer.Controllers
 {
     public class GridsController : PreRunExternController {
-        public async Task<IActionResult> GetPaylessProdPrioriAdmin(string dtpPeriodoBuscar) {
+        public async Task<IActionResult> GetPaylessProdPrioriAdmin(string dtpPeriodoBuscar, int cboTransporte) {
             try {
                 if (string.IsNullOrEmpty(dtpPeriodoBuscar)) dtpPeriodoBuscar = "";
                 if (string.IsNullOrEmpty(dtpPeriodoBuscar))
                     return Json(new { total = 0, records = "", errorMessage = "" });
-                RetData<Tuple<IEnumerable<PaylessProdPrioriM>, IEnumerable<PaylessProdPrioriDet>, IEnumerable<PaylessTransporte>>> ListProd = await ApiClientFactory.Instance.GetPaylessProdPriori(dtpPeriodoBuscar);
+                RetData<IEnumerable<PaylessProdPrioriDetModel>> ListProd = await ApiClientFactory.Instance.GetPaylessProdPriori(dtpPeriodoBuscar);
                 if (ListProd.Info.CodError != 0)
                     return Json(new { total = 0, records = "", errorMessage = ListProd.Info.Mensaje });
                 if (ListProd.Data == null)
                     return Json(new { total = 0, records = "", errorMessage = (ListProd.Info.CodError != 0 ? ListProd.Info.Mensaje : string.Empty) });
-                if (ListProd.Data.Item2.Count() == 0)
+                if (ListProd.Data.Count() == 0)
                     return Json(new { total = 0, records = "", errorMessage = (ListProd.Info.CodError != 0 ? ListProd.Info.Mensaje : string.Empty) });
-                List<PaylessProdPrioriDetModel> Records = ListProd.Data.Item2.Select(O => Utility.Funcs.Reflect(O, new PaylessProdPrioriDetModel())) .ToList();                
-                List<PaylessProdPrioriDetModel> AllRecords = new List<PaylessProdPrioriDetModel>();
-                foreach (PaylessProdPrioriDetModel R in Records) {
-                    if (R.IdTransporte.HasValue) {
-                        R.Transporte = (from Tr in ListProd.Data.Item3 where Tr.Id == R.IdTransporte select Tr.Transporte)?.Fod();
-                    }
-                }
+                List<PaylessProdPrioriDetModel> Records = ListProd.Data.Where(O2 => O2.IdTransporte == cboTransporte).Select(O => Utility.Funcs.Reflect(O, new PaylessProdPrioriDetModel())) .ToList();                
+                List<PaylessProdPrioriDetModel> AllRecords = new List<PaylessProdPrioriDetModel>();                
                 int Total = Records.Count;
                 if (Records.Count() > 0)
                 {                    
@@ -54,20 +49,15 @@ namespace EdiViewer.Controllers
                 if (string.IsNullOrEmpty(dtpPeriodoBuscar))
                     return Json(new { total = 0, records = "", errorMessage = "" });
                 HttpContext.Session.SetObjSession("dtpPeriodoBuscar", dtpPeriodoBuscar);
-                RetData<Tuple<IEnumerable<PaylessProdPrioriM>, IEnumerable<PaylessProdPrioriDet>, IEnumerable<PaylessTransporte>>> ListProd = await ApiClientFactory.Instance.GetPaylessProdPriori(dtpPeriodoBuscar);
+                RetData<IEnumerable<PaylessProdPrioriDetModel>> ListProd = await ApiClientFactory.Instance.GetPaylessProdPriori(dtpPeriodoBuscar);
                 if (ListProd.Info.CodError != 0)
                     return Json(new { total = 0, records = "", errorMessage = ListProd.Info.Mensaje });
                 if (ListProd.Data == null)
                     return Json(new { total = 0, records = "", errorMessage = (ListProd.Info.CodError != 0 ? ListProd.Info.Mensaje : string.Empty) });
-                if (ListProd.Data.Item2.Count() == 0)
+                if (ListProd.Data.Count() == 0)
                     return Json(new { total = 0, records = "", errorMessage = (ListProd.Info.CodError != 0 ? ListProd.Info.Mensaje : string.Empty) });                
-                List<PaylessProdPrioriDetModel> Records = ListProd.Data.Item2.Select(O => Utility.Funcs.Reflect(O, new PaylessProdPrioriDetModel())).ToList();
-                List<PaylessProdPrioriDetModel> AllRecords = new List<PaylessProdPrioriDetModel>();
-                foreach (PaylessProdPrioriDetModel R in Records) {
-                    if (R.IdTransporte.HasValue) {
-                        R.Transporte = (from Tr in ListProd.Data.Item3 where Tr.Id == R.IdTransporte select Tr.Transporte)?.Fod();
-                    }
-                }
+                List<PaylessProdPrioriDetModel> Records = ListProd.Data.Select(O => Utility.Funcs.Reflect(O, new PaylessProdPrioriDetModel())).ToList();
+                List<PaylessProdPrioriDetModel> AllRecords = new List<PaylessProdPrioriDetModel>();                
                 Records = (
                     from Pp in Records
                     group Pp by new { Pp.Barcode, Pp.Tienda, Pp.Talla, Pp.Categoria, Pp.Departamento, Pp.Cp, Pp.IdTransporte }
@@ -150,12 +140,12 @@ namespace EdiViewer.Controllers
                 if (string.IsNullOrEmpty(dtpPeriodoBuscar))
                     return Json(new { total = 0, records = "", errorMessage = "" });
                 HttpContext.Session.SetObjSession("dtpPeriodoBuscar", dtpPeriodoBuscar);
-                RetData<Tuple<IEnumerable<PaylessProdPrioriM>, IEnumerable<PaylessProdPrioriDet>, IEnumerable<PaylessTransporte>>> ListProd = await ApiClientFactory.Instance.GetPaylessProdPriori(dtpPeriodoBuscar);
+                RetData<IEnumerable<PaylessProdPrioriDetModel>> ListProd = await ApiClientFactory.Instance.GetPaylessProdPriori(dtpPeriodoBuscar);
                 if (ListProd.Info.CodError != 0)
                     return Json(new { total = 0, records = "", errorMessage = ListProd.Info.Mensaje });
                 if (ListProd.Data == null)
                     return Json(new { total = 0, records = "", errorMessage = (ListProd.Info.CodError != 0 ? ListProd.Info.Mensaje : string.Empty) });
-                if (ListProd.Data.Item2.Count() == 0)
+                if (ListProd.Data.Count() == 0)
                     return Json(new { total = 0, records = "", errorMessage = (ListProd.Info.CodError != 0 ? ListProd.Info.Mensaje : string.Empty) });
                 RetData<IEnumerable<PaylessTiendas>> ListClients = await ApiClientFactory.Instance.GetAllPaylessStores(ApiClientFactory.Instance.Encrypt($"Fun|{HttpContext.Session.GetObjSession<string>("Session.HashId")}"));
                 if (ListClients.Data == null)
@@ -166,15 +156,12 @@ namespace EdiViewer.Controllers
                     return Json(new { total = 0, records = "", errorMessage = ListClients.Info.Mensaje });
                 //IEnumerable<PaylessProdPrioriDetModel> AllRecords = ListProd.Data.Item2.Distinct().Select(O => Utility.Funcs.Reflect(O, new PaylessProdPrioriDetModel())).ToList();
                 string IdTienda = ListClients.Data.Where(C => C.ClienteId == HttpContext.Session.GetObjSession<int>("Session.ClientId")).Fod().TiendaId.ToString();
-                List<PaylessProdPrioriDetModel> Records = ListProd.Data.Item2.Where(R => R.Tienda == IdTienda).Select(O => Utility.Funcs.Reflect(O, new PaylessProdPrioriDetModel())).ToList();
+                List<PaylessProdPrioriDetModel> Records = ListProd.Data.Where(R => R.Tienda == IdTienda).Select(O => Utility.Funcs.Reflect(O, new PaylessProdPrioriDetModel())).ToList();
                 foreach (PaylessProdPrioriDetModel R in Records) {
                     if (R.Categoria.Contains("ACCESORIOS", StringComparison.InvariantCultureIgnoreCase)) {
                         R.Talla = string.Empty;
                         R.Departamento = string.Empty;
-                    }
-                    if (R.IdTransporte.HasValue) {
-                        R.Transporte = (from Tr in ListProd.Data.Item3 where Tr.Id == R.IdTransporte select Tr.Transporte)?.Fod();
-                    }
+                    }                    
                 }                
                 Records = (
                     from Pp in Records
@@ -318,14 +305,14 @@ namespace EdiViewer.Controllers
                     return Json(new { total = 0, records = "", errorMessage = "" });
                 if (string.IsNullOrEmpty(talla))
                     return Json(new { total = 0, records = "", errorMessage = "" });
-                RetData<Tuple<IEnumerable<PaylessProdPrioriM>, IEnumerable<PaylessProdPrioriDet>, IEnumerable<PaylessTransporte>>> ListProd = await ApiClientFactory.Instance.GetPaylessProdPriori(dtpPeriodoBuscar);
+                RetData<IEnumerable<PaylessProdPrioriDetModel>> ListProd = await ApiClientFactory.Instance.GetPaylessProdPriori(dtpPeriodoBuscar);
                 if (ListProd.Info.CodError != 0)
                     return Json(new { total = 0, records = "", errorMessage = ListProd.Info.Mensaje });
                 if (ListProd.Data == null)
                     return Json(new { total = 0, records = "", errorMessage = (ListProd.Info.CodError != 0 ? ListProd.Info.Mensaje : string.Empty) });
-                if (ListProd.Data.Item2.Count() == 0)
+                if (ListProd.Data.Count() == 0)
                     return Json(new { total = 0, records = "", errorMessage = (ListProd.Info.CodError != 0 ? ListProd.Info.Mensaje : string.Empty) });
-                List<PaylessProdPrioriDetModel> Records = ListProd.Data.Item2.Select(O => Utility.Funcs.Reflect(O, new PaylessProdPrioriDetModel())).ToList();
+                List<PaylessProdPrioriDetModel> Records = ListProd.Data.Select(O => Utility.Funcs.Reflect(O, new PaylessProdPrioriDetModel())).ToList();
                 List<PaylessProdPrioriDetModel> AllRecords = new List<PaylessProdPrioriDetModel>();
                 Records = Records.Where(Pp => Pp.Barcode == barcode).ToList();
                 Records = Records.Where(Pp => Pp.Talla == talla).ToList();
@@ -463,8 +450,7 @@ namespace EdiViewer.Controllers
         public async Task<IActionResult> GetPeticionDet(int PedidoId) {
             try {
                 if (PedidoId == 0)
-                    return Json(new { total = 0, records = "", errorMessage = "" });                
-
+                    return Json(new { total = 0, records = "", errorMessage = "" });
                 RetData<Tuple<IEnumerable<PedidosExternos>, IEnumerable<PedidosDetExternos>>> ListPe = await ApiClientFactory.Instance.GetPedidosExternos(HttpContext.Session.GetObjSession<int>("Session.ClientId"));
                 if (ListPe.Info.CodError != 0)
                     return Json(new { total = 0, records = "", errorMessage = ListPe.Info.Mensaje });
@@ -473,28 +459,16 @@ namespace EdiViewer.Controllers
                 if (ListPe.Data.Item2.Count() == 0)
                     return Json(new { total = 0, records = "", errorMessage = (ListPe.Info.CodError != 0 ? ListPe.Info.Mensaje : string.Empty) });
                 PedidosExternos Pe = ListPe.Data.Item1.Where(I1 => I1.Id == PedidoId).Fod();
-                RetData<Tuple<IEnumerable<PaylessProdPrioriM>, IEnumerable<PaylessProdPrioriDet>, IEnumerable<PaylessTransporte>>> ListProd = await ApiClientFactory.Instance.GetPaylessProdPriori(Pe.Periodo);
+                RetData<IEnumerable<PaylessProdPrioriDetModel>> ListProd = await ApiClientFactory.Instance.GetPaylessProdPriori(Pe.Periodo);
                 if (ListProd.Info.CodError != 0)
                     return Json(new { total = 0, records = "", errorMessage = ListProd.Info.Mensaje });
                 if (ListProd.Data == null)
+                    return Json(new { total = 0, records = "", errorMessage = (ListProd.Info.CodError != 0 ? ListProd.Info.Mensaje : string.Empty) });                
+                if (ListProd.Data.Count() == 0)
                     return Json(new { total = 0, records = "", errorMessage = (ListProd.Info.CodError != 0 ? ListProd.Info.Mensaje : string.Empty) });
-                if (ListProd.Data.Item1.Count() == 0)
-                    return Json(new { total = 0, records = "", errorMessage = (ListProd.Info.CodError != 0 ? ListProd.Info.Mensaje : string.Empty) });
-                if (ListProd.Data.Item2.Count() == 0)
-                    return Json(new { total = 0, records = "", errorMessage = (ListProd.Info.CodError != 0 ? ListProd.Info.Mensaje : string.Empty) });
-                List<PaylessProdPrioriDetModel> Records = (
-                    from D in ListProd.Data.Item2
-                    from De in ListPe.Data.Item2
-                    where D.Barcode == De.CodProducto
-                    && De.PedidoId == Pe.Id
-                    && D.IdPaylessProdPrioriM == ListProd.Data.Item1.Fod().Id
-                    select D
-                    ).Select(O => Utility.Funcs.Reflect(O, new PaylessProdPrioriDetModel())).ToList();                
+                List<PaylessProdPrioriDetModel> Records = ListProd.Data.Select(O => Utility.Funcs.Reflect(O, new PaylessProdPrioriDetModel())).ToList();                
                 foreach (PaylessProdPrioriDetModel R in Records) {
-                    R.CantPedir = Convert.ToInt32(ListPe.Data.Item2.Where(O => O.CodProducto == R.Barcode && O.PedidoId == Pe.Id).Fod().CantPedir);
-                    if (R.IdTransporte.HasValue) {
-                        R.Transporte = (from Tr in ListProd.Data.Item3 where Tr.Id == R.IdTransporte select Tr.Transporte)?.Fod();
-                    }
+                    R.CantPedir = Convert.ToInt32(ListPe.Data.Item2.Where(O => O.CodProducto == R.Barcode && O.PedidoId == Pe.Id).Fod().CantPedir);                    
                 }
                 List<PaylessProdPrioriDetModel> AllRecords = new List<PaylessProdPrioriDetModel>();
                 int Total = Records.Count;

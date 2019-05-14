@@ -142,10 +142,10 @@ namespace CoreApiClient
             string JsonParams = JsonConvert.SerializeObject(PedidoId);
             return await PostGetAsyncJson<RetData<IEnumerable<TsqlDespachosWmsComplex>>>(CreateRequestUri(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Data/GetPedidosDet")), JsonParams);
         }
-        public async Task<RetData<Tuple<IEnumerable<PaylessProdPrioriM>, IEnumerable<PaylessProdPrioriDet>, IEnumerable<PaylessTransporte>>>> GetPaylessProdPriori(string Period)
+        public async Task<RetData<IEnumerable<PaylessProdPrioriDetModel>>> GetPaylessProdPriori(string Period)
         {
             string JsonParams = JsonConvert.SerializeObject(Period);
-            return await PostGetAsyncJson<RetData<Tuple<IEnumerable<PaylessProdPrioriM>, IEnumerable<PaylessProdPrioriDet>, IEnumerable<PaylessTransporte>>>>(CreateRequestUri(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Data/GetPaylessProdPriori")), JsonParams);
+            return await PostGetAsyncJson<RetData<IEnumerable<PaylessProdPrioriDetModel>>>(CreateRequestUri(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Data/GetPaylessProdPriori")), JsonParams);
         }
         public async Task<RetData<string>> SetPaylessProdPriori(IEnumerable<PaylessUploadFileModel> ListUpload, int ClienteId, string Periodo, string codUsr, string transporte, bool ChkUpDelete)
         {
@@ -231,6 +231,9 @@ namespace CoreApiClient
         }
         public async Task<RetData<string>> SetGroupAccess(int IdGroup, int IdAccess) {
             return await PostGetAsyncJson<RetData<string>>(CreateRequestUri(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Data/SetGroupAccess"), $"?IdGroup={IdGroup}&IdAccess={IdAccess}"), "");
+        }
+        public async Task<RetData<IEnumerable<PaylessPeriodoTransporteModel>>> GetTransportByPeriod(string Period) {
+            return await PostGetAsyncJson<RetData<IEnumerable<PaylessPeriodoTransporteModel>>>(CreateRequestUri(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Data/GetTransportByPeriod"), $"?Period={Period}"), "");
         }
         /////////////////////////////////////////
         //public async Task<List<UsersModel>> GetUsers()

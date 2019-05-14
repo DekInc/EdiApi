@@ -51,7 +51,7 @@ namespace EdiViewer.Utility.Scheduling
                 //}
                 //catch { }
             }
-            catch (Exception e1) { }
+            catch { }
         }
     }
 }

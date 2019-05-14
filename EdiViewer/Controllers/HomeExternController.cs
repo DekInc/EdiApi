@@ -531,214 +531,214 @@ namespace EdiViewer.Controllers
             }
         }        
         //
-        public async Task<IActionResult> GetPaylessProdPrioriAdmin(string dtpPeriodoBuscar, string TxtBarcode, string TxtPrioridad, string TxtPoolP, string TxtProducto, string TxtTalla, string TxtLote)
-        {
-            try
-            {
-                if (string.IsNullOrEmpty(dtpPeriodoBuscar)) dtpPeriodoBuscar = "";
-                //var dict = Request.Form.ToDictionary(x => x.Key, x => x.Value.ToString());
-                var draw = HttpContext.Request.Form["draw"].Fod();
-                // Skiping number of Rows count  
-                var start = Request.Form["start"].Fod();
-                // Paging Length 10,20  
-                var length = Request.Form["length"].Fod();
-                // Sort Column Name  
-                var sortColumn = Request.Form["columns[" + Request.Form["order[0][column]"].Fod() + "][name]"].Fod();
-                // Sort Column Direction ( asc ,desc)  
-                var sortColumnDirection = Request.Form["order[0][dir]"].Fod();
-                // Search Value from (Search box)  
-                var searchValue = Request.Form["search[value]"].Fod();
-                //Paging Size (10,20,50,100)  
-                int pageSize = length != null ? Convert.ToInt32(length) : 0;
-                int skip = start != null ? Convert.ToInt32(start) : 0;
-                int recordsTotal = 0;
-                if (string.IsNullOrEmpty(dtpPeriodoBuscar))
-                {
-                    return Json(new { draw = 0, recordsFiltered = 0, recordsTotal = 0, errorMessage = "", data = "" });
-                }
-                RetData<Tuple<IEnumerable<PaylessProdPrioriM>, IEnumerable<PaylessProdPrioriDet>, IEnumerable<PaylessTransporte>>> ListProd = await ApiClientFactory.Instance.GetPaylessProdPriori(dtpPeriodoBuscar);                
-                if (ListProd.Info.CodError != 0)
-                    return Json(new { draw = 0, recordsFiltered = 0, recordsTotal = 0, errorMessage = ListProd.Info.Mensaje, data = "" });
-                if (ListProd.Data == null)
-                {
-                    return Json(new { draw = 0, recordsFiltered = 0, recordsTotal = 0, errorMessage = (ListProd.Info.CodError != 0 ? ListProd.Info.Mensaje : string.Empty), data = "" });
-                }
-                if (ListProd.Data.Item2.Count() == 0)
-                {
-                    return Json(new { draw = 0, recordsFiltered = 0, recordsTotal = 0, errorMessage = (ListProd.Info.CodError != 0 ? ListProd.Info.Mensaje : string.Empty), data = "" });
-                }
-                IEnumerable<PaylessProdPrioriDet> ListProdPriori = ListProd.Data.Item2;
-                if (!string.IsNullOrEmpty(TxtBarcode))
-                    ListProdPriori = ListProdPriori.Where(Pp => Pp.Barcode.Contains(TxtBarcode, StringComparison.OrdinalIgnoreCase));
-                if (!string.IsNullOrEmpty(TxtPrioridad))
-                    ListProdPriori = ListProdPriori.Where(Pp => Pp.Pri.Contains(TxtPrioridad, StringComparison.OrdinalIgnoreCase));
-                if (!string.IsNullOrEmpty(TxtPoolP))
-                    ListProdPriori = ListProdPriori.Where(Pp => Pp.PoolP.Contains(TxtPoolP, StringComparison.OrdinalIgnoreCase));
-                if (!string.IsNullOrEmpty(TxtProducto))
-                    ListProdPriori = ListProdPriori.Where(Pp => Pp.Producto.Contains(TxtProducto, StringComparison.OrdinalIgnoreCase));
-                if (!string.IsNullOrEmpty(TxtTalla))
-                    ListProdPriori = ListProdPriori.Where(Pp => Pp.Talla.Contains(TxtTalla, StringComparison.OrdinalIgnoreCase));
-                if (!string.IsNullOrEmpty(TxtLote))
-                    ListProdPriori = ListProdPriori.Where(Pp => Pp.Lote.Contains(TxtLote, StringComparison.OrdinalIgnoreCase));
-                if (!(string.IsNullOrEmpty(sortColumn) && string.IsNullOrEmpty(sortColumnDirection)))
-                {
-                    ListProdPriori = ListProdPriori.AsQueryable().OrderBy(sortColumn + " " + sortColumnDirection);
-                }
-                //total number of rows count
-                recordsTotal = ListProdPriori.Count();
-                //Paging
-                ListProdPriori = ListProdPriori.Skip(skip).Take(pageSize);
-                //Returning Json Data
-                return Json(new { draw, recordsFiltered = recordsTotal, recordsTotal, data = ListProdPriori, errorMessage = "" });
-            }
-            catch (Exception e1)
-            {
-                return Json(new { draw = 0, recordsFiltered = 0, recordsTotal = 0, errorMessage = e1.ToString(), data = "" });
-            }
-        }
-        public async Task<IActionResult> GetPaylessProdPrioriDet(string barcode, string estilo)
-        {
-            try
-            {
-                string dtpPeriodoBuscar = HttpContext.Session.GetObjSession<string>("dtpPeriodoBuscar");
-                if (string.IsNullOrEmpty(dtpPeriodoBuscar)) dtpPeriodoBuscar = "";
-                //var dict = Request.Form.ToDictionary(x => x.Key, x => x.Value.ToString());
-                var draw = HttpContext.Request.Form["draw"].Fod();
-                // Skiping number of Rows count  
-                var start = Request.Form["start"].Fod();
-                // Paging Length 10,20  
-                var length = Request.Form["length"].Fod();
-                // Sort Column Name  
-                var sortColumn = Request.Form["columns[" + Request.Form["order[0][column]"].Fod() + "][name]"].Fod();
-                // Sort Column Direction ( asc ,desc)  
-                var sortColumnDirection = Request.Form["order[0][dir]"].Fod();
-                // Search Value from (Search box)  
-                var searchValue = Request.Form["search[value]"].Fod();
-                //Paging Size (10,20,50,100)  
-                int pageSize = length != null ? Convert.ToInt32(length) : 0;
-                int skip = start != null ? Convert.ToInt32(start) : 0;
-                int recordsTotal = 0;
-                if (string.IsNullOrEmpty(barcode))
-                {
-                    return Json(new { draw = 0, recordsFiltered = 0, recordsTotal = 0, errorMessage = "", data = "" });
-                }
-                RetData<Tuple<IEnumerable<PaylessProdPrioriM>, IEnumerable<PaylessProdPrioriDet>, IEnumerable<PaylessTransporte>>> ListProd = await ApiClientFactory.Instance.GetPaylessProdPriori(dtpPeriodoBuscar);
-                if (ListProd.Info.CodError != 0)
-                    return Json(new { draw = 0, recordsFiltered = 0, recordsTotal = 0, errorMessage = ListProd.Info.Mensaje, data = "" });
-                if (ListProd.Data == null)
-                {
-                    return Json(new { draw = 0, recordsFiltered = 0, recordsTotal = 0, errorMessage = (ListProd.Info.CodError != 0 ? ListProd.Info.Mensaje : string.Empty), data = "" });
-                }
-                if (ListProd.Data.Item2.Count() == 0)
-                {
-                    return Json(new { draw = 0, recordsFiltered = 0, recordsTotal = 0, errorMessage = (ListProd.Info.CodError != 0 ? ListProd.Info.Mensaje : string.Empty), data = "" });
-                }
-                IEnumerable<PaylessProdPrioriDet> ListProdPriori = ListProd.Data.Item2;
-                if (!string.IsNullOrEmpty(barcode))
-                    ListProdPriori = ListProdPriori.Where(Pp => Pp.Barcode == barcode);
-                if (!string.IsNullOrEmpty(estilo))
-                    ListProdPriori = ListProdPriori.Where(Pp => Pp.Producto == estilo);                
-                if (!(string.IsNullOrEmpty(sortColumn) && string.IsNullOrEmpty(sortColumnDirection)))
-                {
-                    ListProdPriori = ListProdPriori.AsQueryable().OrderBy(sortColumn + " " + sortColumnDirection);
-                }
-                //total number of rows count
-                recordsTotal = ListProdPriori.Count();
-                //Paging
-                ListProdPriori = ListProdPriori.Skip(skip).Take(pageSize);
-                //Returning Json Data
-                return Json(new { draw, recordsFiltered = recordsTotal, recordsTotal, data = ListProdPriori, errorMessage = "" });
-            }
-            catch (Exception e1)
-            {
-                return Json(new { draw = 0, recordsFiltered = 0, recordsTotal = 0, errorMessage = e1.ToString(), data = "" });
-            }
-        }
-        public async Task<IActionResult> GetPaylessProdPriori(string dtpPeriodoBuscar, string TxtBarcode, string TxtTienda, string TxtProducto, string TxtTalla, string TxtCategoria, string TxtDepartamento, string TxtCp)
-        {
-            try
-            {
-                if (string.IsNullOrEmpty(dtpPeriodoBuscar)) dtpPeriodoBuscar = "";
-                //var dict = Request.Form.ToDictionary(x => x.Key, x => x.Value.ToString());
-                var draw = HttpContext.Request.Form["draw"].Fod();
-                // Skiping number of Rows count  
-                var start = Request.Form["start"].Fod();
-                // Paging Length 10,20  
-                var length = Request.Form["length"].Fod();
-                // Sort Column Name  
-                var sortColumn = Request.Form["columns[" + Request.Form["order[0][column]"].Fod() + "][name]"].Fod();
-                // Sort Column Direction ( asc ,desc)  
-                var sortColumnDirection = Request.Form["order[0][dir]"].Fod();
-                // Search Value from (Search box)  
-                var searchValue = Request.Form["search[value]"].Fod();
-                //Paging Size (10,20,50,100)  
-                int pageSize = length != null ? Convert.ToInt32(length) : 0;
-                int skip = start != null ? Convert.ToInt32(start) : 0;
-                int recordsTotal = 0;
-                if (string.IsNullOrEmpty(dtpPeriodoBuscar))
-                {
-                    return Json(new { draw = 0, recordsFiltered = 0, recordsTotal = 0, errorMessage = "", data = "" });
-                }
-                HttpContext.Session.SetObjSession("dtpPeriodoBuscar", dtpPeriodoBuscar);
-                RetData<Tuple<IEnumerable<PaylessProdPrioriM>, IEnumerable<PaylessProdPrioriDet>, IEnumerable<PaylessTransporte>>> ListProd = await ApiClientFactory.Instance.GetPaylessProdPriori(dtpPeriodoBuscar);
-                if (ListProd.Info.CodError != 0)
-                    return Json(new { draw = 0, recordsFiltered = 0, recordsTotal = 0, errorMessage = ListProd.Info.Mensaje, data = "" });
-                if (ListProd.Data == null)
-                {
-                    return Json(new { draw = 0, recordsFiltered = 0, recordsTotal = 0, errorMessage = (ListProd.Info.CodError != 0 ? ListProd.Info.Mensaje : string.Empty), data = "" });
-                }
-                if (ListProd.Data.Item2.Count() == 0)
-                {
-                    return Json(new { draw = 0, recordsFiltered = 0, recordsTotal = 0, errorMessage = (ListProd.Info.CodError != 0 ? ListProd.Info.Mensaje : string.Empty), data = "" });
-                }
-                IEnumerable<PaylessProdPrioriDet> ListProdPriori = ListProd.Data.Item2;
-                if (!string.IsNullOrEmpty(TxtBarcode))
-                    ListProdPriori = ListProdPriori.Where(Pp => Pp.Barcode.Contains(TxtBarcode, StringComparison.OrdinalIgnoreCase));
-                if (!string.IsNullOrEmpty(TxtTienda))
-                    ListProdPriori = ListProdPriori.Where(Pp => Pp.Barcode.Substring(0, 4).Contains(TxtTienda, StringComparison.OrdinalIgnoreCase));
-                if (!string.IsNullOrEmpty(TxtProducto))
-                    ListProdPriori = ListProdPriori.Where(Pp => Pp.Producto.Contains(TxtProducto, StringComparison.OrdinalIgnoreCase));
-                if (!string.IsNullOrEmpty(TxtTalla))
-                    ListProdPriori = ListProdPriori.Where(Pp => Pp.Talla.Contains(TxtTalla, StringComparison.OrdinalIgnoreCase));
-                if (!string.IsNullOrEmpty(TxtCategoria))
-                    ListProdPriori = ListProdPriori.Where(Pp => Pp.Categoria.Contains(TxtCategoria, StringComparison.OrdinalIgnoreCase));
-                if (!string.IsNullOrEmpty(TxtDepartamento))
-                    ListProdPriori = ListProdPriori.Where(Pp => Pp.Departamento.Contains(TxtDepartamento, StringComparison.OrdinalIgnoreCase));
-                if (!string.IsNullOrEmpty(TxtCp))
-                    ListProdPriori = ListProdPriori.Where(Pp => Pp.Cp.Contains(TxtCp, StringComparison.OrdinalIgnoreCase));
-                //ListProdPriori = ListProdPriori.Distinct();
-                ListProdPriori = (
-                    from Pp in ListProdPriori
-                    group Pp by new { Pp.Barcode, Pp.Tienda, Pp.Producto, Pp.Talla, Pp.Categoria, Pp.Departamento, Pp.Cp }
-                    into Grp
-                    select new PaylessProdPrioriDet {
-                        Barcode = Grp.Fod().Barcode,
-                        Pri = Grp.Fod().Tienda,
-                        Producto = Grp.Fod().Producto,
-                        Talla = Grp.Fod().Talla,
-                        Categoria = Grp.Fod().Categoria,
-                        Departamento = Grp.Fod().Departamento,
-                        Cp = Grp.Fod().Cp,
-                        Id = Grp.Fod().Id,
-                        Peso = Grp.Count()
-                    }
-                    );
-                if (!(string.IsNullOrEmpty(sortColumn) && string.IsNullOrEmpty(sortColumnDirection)))
-                {
-                    ListProdPriori = ListProdPriori.AsQueryable().OrderBy(sortColumn + " " + sortColumnDirection);
-                }
-                //total number of rows count
-                recordsTotal = ListProdPriori.Count();
-                //Paging
-                ListProdPriori = ListProdPriori.Skip(skip).Take(pageSize);
-                //Returning Json Data
-                return Json(new { draw, recordsFiltered = recordsTotal, recordsTotal, data = ListProdPriori, errorMessage = "" });
-            }
-            catch (Exception e1)
-            {
-                return Json(new { draw = 0, recordsFiltered = 0, recordsTotal = 0, errorMessage = e1.ToString(), data = "" });
-            }
-        }
+        //public async Task<IActionResult> GetPaylessProdPrioriAdmin(string dtpPeriodoBuscar, string TxtBarcode, string TxtPrioridad, string TxtPoolP, string TxtProducto, string TxtTalla, string TxtLote)
+        //{
+        //    try
+        //    {
+        //        if (string.IsNullOrEmpty(dtpPeriodoBuscar)) dtpPeriodoBuscar = "";
+        //        //var dict = Request.Form.ToDictionary(x => x.Key, x => x.Value.ToString());
+        //        var draw = HttpContext.Request.Form["draw"].Fod();
+        //        // Skiping number of Rows count  
+        //        var start = Request.Form["start"].Fod();
+        //        // Paging Length 10,20  
+        //        var length = Request.Form["length"].Fod();
+        //        // Sort Column Name  
+        //        var sortColumn = Request.Form["columns[" + Request.Form["order[0][column]"].Fod() + "][name]"].Fod();
+        //        // Sort Column Direction ( asc ,desc)  
+        //        var sortColumnDirection = Request.Form["order[0][dir]"].Fod();
+        //        // Search Value from (Search box)  
+        //        var searchValue = Request.Form["search[value]"].Fod();
+        //        //Paging Size (10,20,50,100)  
+        //        int pageSize = length != null ? Convert.ToInt32(length) : 0;
+        //        int skip = start != null ? Convert.ToInt32(start) : 0;
+        //        int recordsTotal = 0;
+        //        if (string.IsNullOrEmpty(dtpPeriodoBuscar))
+        //        {
+        //            return Json(new { draw = 0, recordsFiltered = 0, recordsTotal = 0, errorMessage = "", data = "" });
+        //        }
+        //        RetData<Tuple<IEnumerable<PaylessProdPrioriM>, IEnumerable<PaylessProdPrioriDet>, IEnumerable<PaylessTransporte>>> ListProd = await ApiClientFactory.Instance.GetPaylessProdPriori(dtpPeriodoBuscar);                
+        //        if (ListProd.Info.CodError != 0)
+        //            return Json(new { draw = 0, recordsFiltered = 0, recordsTotal = 0, errorMessage = ListProd.Info.Mensaje, data = "" });
+        //        if (ListProd.Data == null)
+        //        {
+        //            return Json(new { draw = 0, recordsFiltered = 0, recordsTotal = 0, errorMessage = (ListProd.Info.CodError != 0 ? ListProd.Info.Mensaje : string.Empty), data = "" });
+        //        }
+        //        if (ListProd.Data.Item2.Count() == 0)
+        //        {
+        //            return Json(new { draw = 0, recordsFiltered = 0, recordsTotal = 0, errorMessage = (ListProd.Info.CodError != 0 ? ListProd.Info.Mensaje : string.Empty), data = "" });
+        //        }
+        //        IEnumerable<PaylessProdPrioriDet> ListProdPriori = ListProd.Data.Item2;
+        //        if (!string.IsNullOrEmpty(TxtBarcode))
+        //            ListProdPriori = ListProdPriori.Where(Pp => Pp.Barcode.Contains(TxtBarcode, StringComparison.OrdinalIgnoreCase));
+        //        if (!string.IsNullOrEmpty(TxtPrioridad))
+        //            ListProdPriori = ListProdPriori.Where(Pp => Pp.Pri.Contains(TxtPrioridad, StringComparison.OrdinalIgnoreCase));
+        //        if (!string.IsNullOrEmpty(TxtPoolP))
+        //            ListProdPriori = ListProdPriori.Where(Pp => Pp.PoolP.Contains(TxtPoolP, StringComparison.OrdinalIgnoreCase));
+        //        if (!string.IsNullOrEmpty(TxtProducto))
+        //            ListProdPriori = ListProdPriori.Where(Pp => Pp.Producto.Contains(TxtProducto, StringComparison.OrdinalIgnoreCase));
+        //        if (!string.IsNullOrEmpty(TxtTalla))
+        //            ListProdPriori = ListProdPriori.Where(Pp => Pp.Talla.Contains(TxtTalla, StringComparison.OrdinalIgnoreCase));
+        //        if (!string.IsNullOrEmpty(TxtLote))
+        //            ListProdPriori = ListProdPriori.Where(Pp => Pp.Lote.Contains(TxtLote, StringComparison.OrdinalIgnoreCase));
+        //        if (!(string.IsNullOrEmpty(sortColumn) && string.IsNullOrEmpty(sortColumnDirection)))
+        //        {
+        //            ListProdPriori = ListProdPriori.AsQueryable().OrderBy(sortColumn + " " + sortColumnDirection);
+        //        }
+        //        //total number of rows count
+        //        recordsTotal = ListProdPriori.Count();
+        //        //Paging
+        //        ListProdPriori = ListProdPriori.Skip(skip).Take(pageSize);
+        //        //Returning Json Data
+        //        return Json(new { draw, recordsFiltered = recordsTotal, recordsTotal, data = ListProdPriori, errorMessage = "" });
+        //    }
+        //    catch (Exception e1)
+        //    {
+        //        return Json(new { draw = 0, recordsFiltered = 0, recordsTotal = 0, errorMessage = e1.ToString(), data = "" });
+        //    }
+        //}
+        //public async Task<IActionResult> GetPaylessProdPrioriDet(string barcode, string estilo)
+        //{
+        //    try
+        //    {
+        //        string dtpPeriodoBuscar = HttpContext.Session.GetObjSession<string>("dtpPeriodoBuscar");
+        //        if (string.IsNullOrEmpty(dtpPeriodoBuscar)) dtpPeriodoBuscar = "";
+        //        //var dict = Request.Form.ToDictionary(x => x.Key, x => x.Value.ToString());
+        //        var draw = HttpContext.Request.Form["draw"].Fod();
+        //        // Skiping number of Rows count  
+        //        var start = Request.Form["start"].Fod();
+        //        // Paging Length 10,20  
+        //        var length = Request.Form["length"].Fod();
+        //        // Sort Column Name  
+        //        var sortColumn = Request.Form["columns[" + Request.Form["order[0][column]"].Fod() + "][name]"].Fod();
+        //        // Sort Column Direction ( asc ,desc)  
+        //        var sortColumnDirection = Request.Form["order[0][dir]"].Fod();
+        //        // Search Value from (Search box)  
+        //        var searchValue = Request.Form["search[value]"].Fod();
+        //        //Paging Size (10,20,50,100)  
+        //        int pageSize = length != null ? Convert.ToInt32(length) : 0;
+        //        int skip = start != null ? Convert.ToInt32(start) : 0;
+        //        int recordsTotal = 0;
+        //        if (string.IsNullOrEmpty(barcode))
+        //        {
+        //            return Json(new { draw = 0, recordsFiltered = 0, recordsTotal = 0, errorMessage = "", data = "" });
+        //        }
+        //        RetData<Tuple<IEnumerable<PaylessProdPrioriM>, IEnumerable<PaylessProdPrioriDet>, IEnumerable<PaylessTransporte>>> ListProd = await ApiClientFactory.Instance.GetPaylessProdPriori(dtpPeriodoBuscar);
+        //        if (ListProd.Info.CodError != 0)
+        //            return Json(new { draw = 0, recordsFiltered = 0, recordsTotal = 0, errorMessage = ListProd.Info.Mensaje, data = "" });
+        //        if (ListProd.Data == null)
+        //        {
+        //            return Json(new { draw = 0, recordsFiltered = 0, recordsTotal = 0, errorMessage = (ListProd.Info.CodError != 0 ? ListProd.Info.Mensaje : string.Empty), data = "" });
+        //        }
+        //        if (ListProd.Data.Item2.Count() == 0)
+        //        {
+        //            return Json(new { draw = 0, recordsFiltered = 0, recordsTotal = 0, errorMessage = (ListProd.Info.CodError != 0 ? ListProd.Info.Mensaje : string.Empty), data = "" });
+        //        }
+        //        IEnumerable<PaylessProdPrioriDet> ListProdPriori = ListProd.Data.Item2;
+        //        if (!string.IsNullOrEmpty(barcode))
+        //            ListProdPriori = ListProdPriori.Where(Pp => Pp.Barcode == barcode);
+        //        if (!string.IsNullOrEmpty(estilo))
+        //            ListProdPriori = ListProdPriori.Where(Pp => Pp.Producto == estilo);                
+        //        if (!(string.IsNullOrEmpty(sortColumn) && string.IsNullOrEmpty(sortColumnDirection)))
+        //        {
+        //            ListProdPriori = ListProdPriori.AsQueryable().OrderBy(sortColumn + " " + sortColumnDirection);
+        //        }
+        //        //total number of rows count
+        //        recordsTotal = ListProdPriori.Count();
+        //        //Paging
+        //        ListProdPriori = ListProdPriori.Skip(skip).Take(pageSize);
+        //        //Returning Json Data
+        //        return Json(new { draw, recordsFiltered = recordsTotal, recordsTotal, data = ListProdPriori, errorMessage = "" });
+        //    }
+        //    catch (Exception e1)
+        //    {
+        //        return Json(new { draw = 0, recordsFiltered = 0, recordsTotal = 0, errorMessage = e1.ToString(), data = "" });
+        //    }
+        //}
+        //public async Task<IActionResult> GetPaylessProdPriori(string dtpPeriodoBuscar, string TxtBarcode, string TxtTienda, string TxtProducto, string TxtTalla, string TxtCategoria, string TxtDepartamento, string TxtCp)
+        //{
+        //    try
+        //    {
+        //        if (string.IsNullOrEmpty(dtpPeriodoBuscar)) dtpPeriodoBuscar = "";
+        //        //var dict = Request.Form.ToDictionary(x => x.Key, x => x.Value.ToString());
+        //        var draw = HttpContext.Request.Form["draw"].Fod();
+        //        // Skiping number of Rows count  
+        //        var start = Request.Form["start"].Fod();
+        //        // Paging Length 10,20  
+        //        var length = Request.Form["length"].Fod();
+        //        // Sort Column Name  
+        //        var sortColumn = Request.Form["columns[" + Request.Form["order[0][column]"].Fod() + "][name]"].Fod();
+        //        // Sort Column Direction ( asc ,desc)  
+        //        var sortColumnDirection = Request.Form["order[0][dir]"].Fod();
+        //        // Search Value from (Search box)  
+        //        var searchValue = Request.Form["search[value]"].Fod();
+        //        //Paging Size (10,20,50,100)  
+        //        int pageSize = length != null ? Convert.ToInt32(length) : 0;
+        //        int skip = start != null ? Convert.ToInt32(start) : 0;
+        //        int recordsTotal = 0;
+        //        if (string.IsNullOrEmpty(dtpPeriodoBuscar))
+        //        {
+        //            return Json(new { draw = 0, recordsFiltered = 0, recordsTotal = 0, errorMessage = "", data = "" });
+        //        }
+        //        HttpContext.Session.SetObjSession("dtpPeriodoBuscar", dtpPeriodoBuscar);
+        //        RetData<Tuple<IEnumerable<PaylessProdPrioriM>, IEnumerable<PaylessProdPrioriDet>, IEnumerable<PaylessTransporte>>> ListProd = await ApiClientFactory.Instance.GetPaylessProdPriori(dtpPeriodoBuscar);
+        //        if (ListProd.Info.CodError != 0)
+        //            return Json(new { draw = 0, recordsFiltered = 0, recordsTotal = 0, errorMessage = ListProd.Info.Mensaje, data = "" });
+        //        if (ListProd.Data == null)
+        //        {
+        //            return Json(new { draw = 0, recordsFiltered = 0, recordsTotal = 0, errorMessage = (ListProd.Info.CodError != 0 ? ListProd.Info.Mensaje : string.Empty), data = "" });
+        //        }
+        //        if (ListProd.Data.Item2.Count() == 0)
+        //        {
+        //            return Json(new { draw = 0, recordsFiltered = 0, recordsTotal = 0, errorMessage = (ListProd.Info.CodError != 0 ? ListProd.Info.Mensaje : string.Empty), data = "" });
+        //        }
+        //        IEnumerable<PaylessProdPrioriDet> ListProdPriori = ListProd.Data.Item2;
+        //        if (!string.IsNullOrEmpty(TxtBarcode))
+        //            ListProdPriori = ListProdPriori.Where(Pp => Pp.Barcode.Contains(TxtBarcode, StringComparison.OrdinalIgnoreCase));
+        //        if (!string.IsNullOrEmpty(TxtTienda))
+        //            ListProdPriori = ListProdPriori.Where(Pp => Pp.Barcode.Substring(0, 4).Contains(TxtTienda, StringComparison.OrdinalIgnoreCase));
+        //        if (!string.IsNullOrEmpty(TxtProducto))
+        //            ListProdPriori = ListProdPriori.Where(Pp => Pp.Producto.Contains(TxtProducto, StringComparison.OrdinalIgnoreCase));
+        //        if (!string.IsNullOrEmpty(TxtTalla))
+        //            ListProdPriori = ListProdPriori.Where(Pp => Pp.Talla.Contains(TxtTalla, StringComparison.OrdinalIgnoreCase));
+        //        if (!string.IsNullOrEmpty(TxtCategoria))
+        //            ListProdPriori = ListProdPriori.Where(Pp => Pp.Categoria.Contains(TxtCategoria, StringComparison.OrdinalIgnoreCase));
+        //        if (!string.IsNullOrEmpty(TxtDepartamento))
+        //            ListProdPriori = ListProdPriori.Where(Pp => Pp.Departamento.Contains(TxtDepartamento, StringComparison.OrdinalIgnoreCase));
+        //        if (!string.IsNullOrEmpty(TxtCp))
+        //            ListProdPriori = ListProdPriori.Where(Pp => Pp.Cp.Contains(TxtCp, StringComparison.OrdinalIgnoreCase));
+        //        //ListProdPriori = ListProdPriori.Distinct();
+        //        ListProdPriori = (
+        //            from Pp in ListProdPriori
+        //            group Pp by new { Pp.Barcode, Pp.Tienda, Pp.Producto, Pp.Talla, Pp.Categoria, Pp.Departamento, Pp.Cp }
+        //            into Grp
+        //            select new PaylessProdPrioriDet {
+        //                Barcode = Grp.Fod().Barcode,
+        //                Pri = Grp.Fod().Tienda,
+        //                Producto = Grp.Fod().Producto,
+        //                Talla = Grp.Fod().Talla,
+        //                Categoria = Grp.Fod().Categoria,
+        //                Departamento = Grp.Fod().Departamento,
+        //                Cp = Grp.Fod().Cp,
+        //                Id = Grp.Fod().Id,
+        //                Peso = Grp.Count()
+        //            }
+        //            );
+        //        if (!(string.IsNullOrEmpty(sortColumn) && string.IsNullOrEmpty(sortColumnDirection)))
+        //        {
+        //            ListProdPriori = ListProdPriori.AsQueryable().OrderBy(sortColumn + " " + sortColumnDirection);
+        //        }
+        //        //total number of rows count
+        //        recordsTotal = ListProdPriori.Count();
+        //        //Paging
+        //        ListProdPriori = ListProdPriori.Skip(skip).Take(pageSize);
+        //        //Returning Json Data
+        //        return Json(new { draw, recordsFiltered = recordsTotal, recordsTotal, data = ListProdPriori, errorMessage = "" });
+        //    }
+        //    catch (Exception e1)
+        //    {
+        //        return Json(new { draw = 0, recordsFiltered = 0, recordsTotal = 0, errorMessage = e1.ToString(), data = "" });
+        //    }
+        //}
         public async Task<RetData<IEnumerable<string>>> GetPaylessPeriodPriori()
         {
             DateTime StartTime = DateTime.Now;
@@ -934,51 +934,51 @@ namespace EdiViewer.Controllers
                 return Json(new { draw = 0, recordsFiltered = 0, recordsTotal = 0, errorMessage = e1.ToString(), data = "" });
             }
         }
-        public async Task<IActionResult> GetPaylessProdPriori2()
-        {
-            try
-            {//field, type, operator, value, searchLogic, search[0][field],  is, begins, contains, ends                
-                RetData<Tuple<IEnumerable<PaylessProdPrioriM>, IEnumerable<PaylessProdPrioriDet>, IEnumerable<PaylessTransporte>>> ListProdPriori = await ApiClientFactory.Instance.GetPaylessProdPriori("08/04/2019");
-                if (ListProdPriori.Info.CodError != 0)
-                    return Json(new { errorMessage = ListProdPriori.Info.Mensaje, data = "", });
-                if (ListProdPriori.Data.Item2.Count() == 0)
-                {
-                    return Json(new { total = 0, errorMessage = (ListProdPriori.Info.CodError != 0 ? ListProdPriori.Info.Mensaje : string.Empty), records = "" });
-                }
-                int Total = ListProdPriori.Data.Item2.Count();
-                List<PaylessProdPrioriDetModel> Records = ListProdPriori.Data.Item2.Select(O => new PaylessProdPrioriDetModel()
-                {
-                    Barcode = O.Barcode,
-                    Cargada = O.Cargada,
-                    Categoria = O.Categoria,
-                    Cp = O.Cp,
-                    Departamento = O.Departamento,
-                    Estado = O.Estado,
-                    Etiquetada = O.Etiquetada,
-                    Id = O.Id,
-                    IdPaylessProdPrioriM = O.IdPaylessProdPrioriM,
-                    Lote = O.Lote,
-                    M3 = O.M3,
-                    //Oid = O.Oid,
-                    Peso = O.Peso,
-                    Pickeada = O.Pickeada,
-                    PoolP = O.PoolP,
-                    Preinspeccion = O.Preinspeccion,
-                    Pri = O.Pri,
-                    Producto = O.Producto,
-                    Talla = O.Talla
-                }).ToList();
-                if (Records.Count > 0) {
-                    Records = Utility.ExpressionBuilderHelper.W2uiSearch<PaylessProdPrioriDetModel>(Records, Request.Form);
-                    Total = Records.Count;
-                }
-                return Json(new { Total, Records, errorMessage = "" });
-            }
-            catch (Exception e1)
-            {
-                return Json(new { total = "", errorMessage = e1.ToString(), records = "", listAllProd = "" });
-            }
-        }
+        //public async Task<IActionResult> GetPaylessProdPriori2()
+        //{
+        //    try
+        //    {//field, type, operator, value, searchLogic, search[0][field],  is, begins, contains, ends                
+        //        RetData<Tuple<IEnumerable<PaylessProdPrioriM>, IEnumerable<PaylessProdPrioriDet>, IEnumerable<PaylessTransporte>>> ListProdPriori = await ApiClientFactory.Instance.GetPaylessProdPriori("08/04/2019");
+        //        if (ListProdPriori.Info.CodError != 0)
+        //            return Json(new { errorMessage = ListProdPriori.Info.Mensaje, data = "", });
+        //        if (ListProdPriori.Data.Item2.Count() == 0)
+        //        {
+        //            return Json(new { total = 0, errorMessage = (ListProdPriori.Info.CodError != 0 ? ListProdPriori.Info.Mensaje : string.Empty), records = "" });
+        //        }
+        //        int Total = ListProdPriori.Data.Item2.Count();
+        //        List<PaylessProdPrioriDetModel> Records = ListProdPriori.Data.Item2.Select(O => new PaylessProdPrioriDetModel()
+        //        {
+        //            Barcode = O.Barcode,
+        //            Cargada = O.Cargada,
+        //            Categoria = O.Categoria,
+        //            Cp = O.Cp,
+        //            Departamento = O.Departamento,
+        //            Estado = O.Estado,
+        //            Etiquetada = O.Etiquetada,
+        //            Id = O.Id,
+        //            IdPaylessProdPrioriM = O.IdPaylessProdPrioriM,
+        //            Lote = O.Lote,
+        //            M3 = O.M3,
+        //            //Oid = O.Oid,
+        //            Peso = O.Peso,
+        //            Pickeada = O.Pickeada,
+        //            PoolP = O.PoolP,
+        //            Preinspeccion = O.Preinspeccion,
+        //            Pri = O.Pri,
+        //            Producto = O.Producto,
+        //            Talla = O.Talla
+        //        }).ToList();
+        //        if (Records.Count > 0) {
+        //            Records = Utility.ExpressionBuilderHelper.W2uiSearch<PaylessProdPrioriDetModel>(Records, Request.Form);
+        //            Total = Records.Count;
+        //        }
+        //        return Json(new { Total, Records, errorMessage = "" });
+        //    }
+        //    catch (Exception e1)
+        //    {
+        //        return Json(new { total = "", errorMessage = e1.ToString(), records = "", listAllProd = "" });
+        //    }
+        //}
         public async Task<RetData<IEnumerable<PaylessTiendas>>> GetAllPaylessStores() {
             DateTime StartTime = DateTime.Now;
             try {
@@ -1200,6 +1200,21 @@ namespace EdiViewer.Controllers
                 return Ret;
             } catch (Exception e1) {
                 return new RetData<string> {
+                    Info = new RetInfo() {
+                        CodError = -1,
+                        Mensaje = e1.ToString(),
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            }
+        }
+        public async Task<RetData<IEnumerable<PaylessPeriodoTransporteModel>>> GetTransportByPeriod(string Period) {
+            DateTime StartTime = DateTime.Now;
+            try {
+                RetData<IEnumerable<PaylessPeriodoTransporteModel>> ListTransport = await ApiClientFactory.Instance.GetTransportByPeriod(Period);
+                return ListTransport;
+            } catch (Exception e1) {
+                return new RetData<IEnumerable<PaylessPeriodoTransporteModel>> {
                     Info = new RetInfo() {
                         CodError = -1,
                         Mensaje = e1.ToString(),

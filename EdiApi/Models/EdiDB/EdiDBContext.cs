@@ -60,6 +60,7 @@ namespace EdiApi.Models.EdiDB
         public virtual DbSet<LearTd3856> LearTd3856 { get; set; }
         public virtual DbSet<LearTd5856> LearTd5856 { get; set; }
         public virtual DbSet<LearUit830> LearUit830 { get; set; }
+        public virtual DbSet<PaylessPeriodoTransporte> PaylessPeriodoTransporte { get; set; }
         public virtual DbSet<PaylessProdPriori> PaylessProdPriori { get; set; }
         public virtual DbSet<PaylessProdPrioriArchDet> PaylessProdPrioriArchDet { get; set; }
         public virtual DbSet<PaylessProdPrioriArchM> PaylessProdPrioriArchM { get; set; }
@@ -1239,6 +1240,13 @@ namespace EdiApi.Models.EdiDB
                 entity.Property(e => e.UnitOfMeasure).HasMaxLength(2);
             });
 
+            modelBuilder.Entity<PaylessPeriodoTransporte>(entity =>
+            {
+                entity.ToTable("PAYLESS_PeriodoTransporte");
+
+                entity.Property(e => e.Periodo).HasMaxLength(10);
+            });
+
             modelBuilder.Entity<PaylessProdPriori>(entity =>
             {
                 entity.ToTable("PAYLESS_ProdPriori");
@@ -1287,6 +1295,12 @@ namespace EdiApi.Models.EdiDB
             modelBuilder.Entity<PaylessProdPrioriDet>(entity =>
             {
                 entity.ToTable("PAYLESS_ProdPrioriDet");
+
+                entity.HasIndex(e => e.Barcode)
+                    .HasName("PAYLESS_ProdPrioriDetIdxBarcode");
+
+                entity.HasIndex(e => e.IdPaylessProdPrioriM)
+                    .HasName("IndexPaylessProdPrioriDetIdF");
 
                 entity.Property(e => e.Barcode).HasMaxLength(16);
 
@@ -1377,6 +1391,9 @@ namespace EdiApi.Models.EdiDB
 
             modelBuilder.Entity<PedidosDetExternos>(entity =>
             {
+                entity.HasIndex(e => e.CodProducto)
+                    .HasName("PedidosDetExternosIdxCodProducto");
+
                 entity.Property(e => e.CodProducto).HasMaxLength(50);
 
                 entity.Property(e => e.Producto).HasMaxLength(1);

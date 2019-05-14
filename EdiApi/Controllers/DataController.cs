@@ -1276,42 +1276,26 @@ namespace EdiApi.Controllers
             }            
         }
         [HttpPost]
-        public RetData<Tuple<IEnumerable<PaylessProdPrioriM>, IEnumerable<PaylessProdPrioriDet>, IEnumerable<PaylessTransporte>>> GetPaylessProdPriori(object Period)
+        public RetData<IEnumerable<PaylessProdPrioriDetModel>> GetPaylessProdPriori(object Period)
         {
             DateTime StartTime = DateTime.Now;
             try
             { // Para no olvidar, hago Fod del master porque no permito ingresar más de 1 archivo por periodo.
-                IEnumerable<PaylessProdPrioriM> PpM = DbO.PaylessProdPrioriM.Where(Pp => Pp.Periodo == Period.ToString());
-                if (PpM.Count() > 0)
+                IEnumerable<PaylessProdPrioriDetModel> ListPaylessProdPrioriDet = ManualDB.SP_GetGetPaylessProdPrioriByPeriod(ref DbO, Period.ToString());
+                return new RetData<IEnumerable<PaylessProdPrioriDetModel>>()
                 {
-                    IEnumerable<PaylessProdPrioriDet> ListPaylessProdPrioriDet = DbO.PaylessProdPrioriDet.Where(Pp => Pp.IdPaylessProdPrioriM == PpM.Fod().Id);
-                    IEnumerable<PaylessTransporte> ListTransporte = DbO.PaylessTransporte;
-                    return new RetData<Tuple<IEnumerable<PaylessProdPrioriM>, IEnumerable<PaylessProdPrioriDet>, IEnumerable<PaylessTransporte>>>
+                    Data = ListPaylessProdPrioriDet,
+                    Info = new RetInfo()
                     {
-                        Data = new Tuple<IEnumerable<PaylessProdPrioriM>, IEnumerable<PaylessProdPrioriDet>, IEnumerable<PaylessTransporte>>(PpM, ListPaylessProdPrioriDet, ListTransporte),
-                        Info = new RetInfo()
-                        {
-                            CodError = 0,
-                            Mensaje = "ok",
-                            ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
-                        }
-                    };
-                } else
-                {
-                    return new RetData<Tuple<IEnumerable<PaylessProdPrioriM>, IEnumerable<PaylessProdPrioriDet>, IEnumerable<PaylessTransporte>>>
-                    {
-                        Info = new RetInfo()
-                        {
-                            CodError = 0,
-                            Mensaje = "ok",
-                            ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
-                        }
-                    };
-                }
+                        CodError = 0,
+                        Mensaje = "ok",
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
             }
             catch (Exception e1)
             {
-                return new RetData<Tuple<IEnumerable<PaylessProdPrioriM>, IEnumerable<PaylessProdPrioriDet>, IEnumerable<PaylessTransporte>>>
+                return new RetData<IEnumerable<PaylessProdPrioriDetModel>>()
                 {
                     Info = new RetInfo()
                     {
@@ -1356,7 +1340,17 @@ namespace EdiApi.Controllers
                 if (ListTrans.Count() > 0)
                     TransporteO = ListTrans.Fod();
                 else
-                    DbO.PaylessTransporte.Add(TransporteO);
+                    DbO.PaylessTransporte.Add(TransporteO);                
+                DbO.SaveChanges();
+                PaylessPeriodoTransporte NewPeriodoTransporte = new PaylessPeriodoTransporte() {
+                    Periodo = Periodo,
+                    IdTransporte = TransporteO.Id
+                };
+                IEnumerable<PaylessPeriodoTransporte> ListCheckPerTrans = DbO.PaylessPeriodoTransporte.Where(Pt => Pt.Periodo == Periodo && Pt.IdTransporte == TransporteO.Id);
+                if (ListCheckPerTrans.Count() > 0)
+                    NewPeriodoTransporte = ListCheckPerTrans.Fod();
+                else
+                    DbO.PaylessPeriodoTransporte.Add(NewPeriodoTransporte);
                 DbO.SaveChanges();
                 foreach (PaylessUploadFileModel Uf in ListUpload)
                 {
@@ -2153,6 +2147,38 @@ namespace EdiApi.Controllers
                 };
             } catch (Exception e1) {
                 return new RetData<string> {
+                    Info = new RetInfo() {
+                        CodError = -1,
+                        Mensaje = e1.ToString(),
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            }
+        }
+        [HttpPost]
+        public RetData<IEnumerable<PaylessPeriodoTransporteModel>> GetTransportByPeriod(string Period) {
+            DateTime StartTime = DateTime.Now;
+            try {
+                IEnumerable<PaylessPeriodoTransporteModel> ListTransport = (
+                    from M in DbO.PaylessPeriodoTransporte
+                    from T in DbO.PaylessTransporte
+                    where M.Periodo == Period
+                    && T.Id == M.IdTransporte
+                    select new PaylessPeriodoTransporteModel() {
+                        IdTransporte = T.Id,
+                        Periodo = Period,
+                        Transporte = T.Transporte
+                    });
+                return new RetData<IEnumerable<PaylessPeriodoTransporteModel>> {
+                    Data = ListTransport,
+                    Info = new RetInfo() {
+                        CodError = 0,
+                        Mensaje = "ok",
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            } catch (Exception e1) {
+                return new RetData<IEnumerable<PaylessPeriodoTransporteModel>> {
                     Info = new RetInfo() {
                         CodError = -1,
                         Mensaje = e1.ToString(),

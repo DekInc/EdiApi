@@ -17,7 +17,14 @@
                                 <div class="col-sm">
                                     <label for="dtpPeriodoBuscar">Periodo</label>
                                     <input class="form-control datepicker" data-date-format="dd/mm/yyyy" id="dtpPeriodoBuscar" placeholder="dd/mm/yyyy" maxlength="10" autocorrect="off" autocapitalize="off" autocomplete="off" />
-                                </div>                                
+                                </div>
+                                <div class="col-sm">
+                                    <label for="cboTransporte">Transporte</label>
+                                    <div id="divSpinCboTransporte" class="spinner-border spinner-border-sm text-danger" style="display: none" role="status">
+                                        <span class="sr-only">Loading...</span>
+                                    </div>
+                                    <select class="form-control" id="cboTransporte" name="cboTransporte"></select>
+                                </div>
                             </div>
                             <div class="row margin5">
                                 <div class="col-sm">
@@ -67,6 +74,33 @@
         w2ui.grid.autoLoad = auto;
         w2ui.grid.skip(0);
     }
+    function getTransportes() {
+        if ($('#dtpPeriodoBuscar').val() == '') return;
+        $('#divSpinCboTransporte').show();
+        $.ajax({
+            url: '@this.Url.Action("GetTransportByPeriod", "HomeExtern")?Period=' + $('#dtpPeriodoBuscar').val(),
+            type: 'GET',
+            dataType: 'JSON',
+            success: function (json) {
+                $('#divSpinCboTransporte').hide();
+                if (json.info.codError != 0) {
+                    menErrorEdi(json.info.mensaje);
+                    return json.data;
+                }
+                $.each(json.data, function (indexI, itemO) {
+                    $('#cboTransporte').append($('<option>', {
+                        value: this.idTransporte,
+                        text: this.transporte,
+                        selected: false
+                    }));
+                });
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                menErrorEdi(xhr.status, '');
+                menErrorEdi(thrownError, '');
+            }
+        });
+    }
     function crearGrid() {
         var config = {
             grid: {
@@ -74,7 +108,7 @@
                 selectType: 'cell',
                 bResponsive: true,
                 bMobile: window.mobileAndTabletcheck(),
-                url: "@this.Url.Action("GetPaylessProdPrioriAdmin", "Grids")?dtpPeriodoBuscar=" + $('#dtpPeriodoBuscar').val(),                
+                url: '@this.Url.Action("GetPaylessProdPrioriAdmin", "Grids")?dtpPeriodoBuscar=' + $('#dtpPeriodoBuscar').val() + '&cboTransporte=' + $('#cboTransporte').val(),
                 show: {
                     footer: true,
                     toolbar: true,
@@ -99,6 +133,7 @@
                 ],
                 columns: [
                     { field: "id", caption: "id", sortable: true, hidden: true },
+                    { field: "transporte", caption: "Transporte", sortable: true },
                     { field: "oid", caption: "oid", sortable: true },
                     { field: "barcode", caption: "Cod. caja", sortable: true },
                     { field: "estado", caption: "estado", sortable: true },
@@ -115,9 +150,7 @@
                     { field: "preinspeccion", caption: "preinspeccion", sortable: true },
                     { field: "cargada", caption: "cargada", sortable: true },
                     { field: "m3", caption: "m3", sortable: true },
-                    { field: "peso", caption: "peso", sortable: true },
-                    { field: "transporte", caption: "Transporte", sortable: true },
-
+                    { field: "peso", caption: "peso", sortable: true }                    
                 ]
             }
         };
@@ -136,16 +169,23 @@
                 menErrorEdi('El periodo es necesario para una búsqueda', 'Error');
                 return;
             }
+            if ($('#cboTransporte').val() == '') {
+                menErrorEdi('El contenedor es necesario para una búsqueda', 'Error');
+                return;
+            }
             $('#divSpinFiltrar').show();
-            mainGrid.reload2("@this.Url.Action("GetPaylessProdPrioriAdmin", "Grids")?dtpPeriodoBuscar=" + $('#dtpPeriodoBuscar').val());
+            mainGrid.reload2('@this.Url.Action("GetPaylessProdPrioriAdmin", "Grids")?dtpPeriodoBuscar=' + $('#dtpPeriodoBuscar').val() + '&cboTransporte=' + $('#cboTransporte').val());
         });
         $('#btnLimpiar').on("click", function (Event) {
             $('#divSpinFiltrar').hide();
             $('#dtpPeriodoBuscar').val('');
-            mainGrid.reload2("@this.Url.Action("GetPaylessProdPrioriAdmin", "Grids")?dtpPeriodoBuscar=" + $('#dtpPeriodoBuscar').val());
+            mainGrid.reload2('@this.Url.Action("GetPaylessProdPrioriAdmin", "Grids")?dtpPeriodoBuscar=' + $('#dtpPeriodoBuscar').val() + '&cboTransporte=' + $('#cboTransporte').val());
         });
         $('#btnUploadResume').on('click', function (Event) {
             window.location.href = '@this.Url.Action("CargaProdPriori")';
+        });
+        $('#dtpPeriodoBuscar').on('change', function (Event) {
+            getTransportes();
         });
         if (window.mobileAndTabletcheck()) {
             $('.div856Search').css({ "max-width": "unset" });

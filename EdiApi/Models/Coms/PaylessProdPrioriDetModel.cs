@@ -13,6 +13,6 @@ namespace EdiApi.Models
         public int Disponible { get { return Existencia - Reservado; } }
         public int CantPedir { get; set; }
         public string dateProm { set; get; }
-        public new string Oid { get { return string.Empty; } }
+        public string Transporte { set; get; }
     }
 }
