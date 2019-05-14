@@ -1394,6 +1394,9 @@ namespace EdiApi.Models.EdiDB
                 entity.HasIndex(e => e.CodProducto)
                     .HasName("PedidosDetExternosIdxCodProducto");
 
+                entity.HasIndex(e => e.PedidoId)
+                    .HasName("IndexPedidosDetExternosPedidoId");
+
                 entity.Property(e => e.CodProducto).HasMaxLength(50);
 
                 entity.Property(e => e.Producto).HasMaxLength(1);

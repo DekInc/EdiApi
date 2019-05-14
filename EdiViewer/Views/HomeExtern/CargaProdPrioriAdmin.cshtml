@@ -87,6 +87,7 @@
                     menErrorEdi(json.info.mensaje);
                     return json.data;
                 }
+                $('#cboTransporte').empty();
                 $.each(json.data, function (indexI, itemO) {
                     $('#cboTransporte').append($('<option>', {
                         value: this.idTransporte,

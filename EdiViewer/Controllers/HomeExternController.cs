@@ -795,7 +795,7 @@ namespace EdiViewer.Controllers
                 };
             }
         }
-        public async Task<RetData<PaylessProdPrioriArchM>> SetPaylessPeriodPrioriFile(string cboPeriod, int clienteId)
+        public async Task<RetData<PaylessProdPrioriArchM>> SetPaylessPeriodPrioriFile(string CboPeriod, int IdTransporte)
         {
             DateTime StartTime = DateTime.Now;
             List<PaylessProdPrioriArchDet> ListBarcodes = new List<PaylessProdPrioriArchDet>();
@@ -859,7 +859,7 @@ namespace EdiViewer.Controllers
                         }
                     }
                 }
-                RetData<PaylessProdPrioriArchM> Ret = await ApiClientFactory.Instance.SetPaylessProdPrioriFile(ListBarcodes, clienteId, cboPeriod, HttpContext.Session.GetObjSession<string>("Session.CodUsr"));
+                RetData<PaylessProdPrioriArchM> Ret = await ApiClientFactory.Instance.SetPaylessProdPrioriFile(ListBarcodes, IdTransporte, CboPeriod, HttpContext.Session.GetObjSession<string>("Session.CodUsr"));
                 return Ret;
             }
             catch (Exception ex1)

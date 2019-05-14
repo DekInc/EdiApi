@@ -44,3 +44,4 @@ GO
 EXEC SP_GetPedidosExternosDetById 1
 
 --select * from EdiDB.dbo.PedidosExternos
+--select * from EdiDB.dbo.PedidosDetExternos

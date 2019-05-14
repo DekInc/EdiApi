@@ -47,7 +47,7 @@ GO
 CREATE TABLE PAYLESS_ProdPrioriArchM(
 	[Id] int PRIMARY KEY IDENTITY(1,1),
 	[Periodo] [nvarchar](10) NULL,
-	[ClienteId] [int] NULL,	
+	IdTransporte [int] NULL,	
 	[CodUsr] nvarchar(128),
 	InsertDate nvarchar(16),
 	UpdateDate nvarchar(16)

@@ -248,7 +248,8 @@ namespace EdiApi.Models
                             M3 = Convert.ToDouble(Dr.GetValue(17)),
                             Peso = Convert.ToDouble(Dr.GetValue(18)),
                             IdTransporte = Convert.ToInt32(Dr.GetValue(19)),
-                            Transporte = Convert.ToString(Dr.GetValue(20))
+                            Transporte = Convert.ToString(Dr.GetValue(20)),
+                            CantPedir = Convert.ToInt32(Dr.GetValue(21))
                         });
                     }
                 }

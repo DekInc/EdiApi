@@ -890,6 +890,29 @@ namespace EdiApi.Controllers
             }
         }
         [HttpPost]
+        public RetData<IEnumerable<PaylessProdPrioriDetModel>> GetPedidosExternosDet(object PedidoId) {
+            DateTime StartTime = DateTime.Now;
+            try {
+                IEnumerable<PaylessProdPrioriDetModel> ListDePe = ManualDB.SP_GetPedidosExternosDetById(ref DbO, Convert.ToInt32(PedidoId));
+                return new RetData<IEnumerable<PaylessProdPrioriDetModel>> {
+                    Data = ListDePe,
+                    Info = new RetInfo() {
+                        CodError = 0,
+                        Mensaje = "ok",
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            } catch (Exception e1) {
+                return new RetData<IEnumerable<PaylessProdPrioriDetModel>> {
+                    Info = new RetInfo() {
+                        CodError = -1,
+                        Mensaje = e1.ToString(),
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            }
+        }
+        [HttpPost]
         public RetData<Tuple<IEnumerable<PedidosExternos>, IEnumerable<PedidosDetExternos>>> GetPedidosExternosGuardados(object ClienteId) {
             DateTime StartTime = DateTime.Now;
             try {
@@ -1461,13 +1484,13 @@ namespace EdiApi.Controllers
             }
         }
         [HttpPost]
-        public RetData<PaylessProdPrioriArchM> SetPaylessProdPrioriFile(IEnumerable<PaylessProdPrioriArchDet> ListUpload, int ClienteId, string Periodo, string codUsr)
+        public RetData<PaylessProdPrioriArchM> SetPaylessProdPrioriFile(IEnumerable<PaylessProdPrioriArchDet> ListUpload, int IdTransporte, string Periodo, string codUsr)
         {
             DateTime StartTime = DateTime.Now;
             try
             {
 
-                IEnumerable<PaylessProdPrioriArchM> ListPaylessProdPrioriArchM = DbO.PaylessProdPrioriArchM.Where(Pp => Pp.Periodo == Periodo && Pp.ClienteId == ClienteId);
+                IEnumerable<PaylessProdPrioriArchM> ListPaylessProdPrioriArchM = DbO.PaylessProdPrioriArchM.Where(Pp => Pp.Periodo == Periodo && Pp.IdTransporte == IdTransporte);
                 if (ListPaylessProdPrioriArchM.Count() > 0)
                 {
                     IEnumerable<PaylessProdPrioriArchDet> ListPaylessProdPrioriArchDet = DbO.PaylessProdPrioriArchDet.Where(Pd => Pd.IdM == ListPaylessProdPrioriArchM.Fod().Id);
@@ -1484,7 +1507,7 @@ namespace EdiApi.Controllers
                 {
                     NewMas = new PaylessProdPrioriArchM()
                     {
-                        ClienteId = ClienteId,
+                        IdTransporte = IdTransporte,
                         Periodo = Periodo,
                         InsertDate = DateTime.Now.ToString(ApplicationSettings.DateTimeFormat),
                         CodUsr = codUsr
@@ -1531,57 +1554,55 @@ namespace EdiApi.Controllers
             DateTime StartTime = DateTime.Now;
             try
             {
-                List<PaylessProdPrioriArchMModel> ListPe = (
+                List<PaylessProdPrioriArchMModel> ListArchMaMo = (
                     from Pe in DbO.PaylessProdPrioriArchM
+                    from T in DbO.PaylessTransporte
+                    where Pe.IdTransporte == T.Id
                     orderby Pe.Id descending
                     select new PaylessProdPrioriArchMModel {
-                        ClienteId = Pe.ClienteId,
+                        IdTransporte = Pe.IdTransporte,
+                        Transporte = T.Transporte,
                         Id = Pe.Id,
                         InsertDate = Pe.InsertDate,
                         UpdateDate = Pe.UpdateDate,
                         Periodo = Pe.Periodo
                     }).ToList();
-                IEnumerable<PaylessProdPrioriArchDet> ListDePe = (
+                IEnumerable<PaylessProdPrioriArchDet> ListArchDet = (
                     from Dp in DbO.PaylessProdPrioriArchDet
                     from Pe in DbO.PaylessProdPrioriArchM
                     where Dp.IdM == Pe.Id
                     orderby Dp.Id descending
                     select Dp
                     );
-                IEnumerable<PaylessProdPrioriArchDet> ListCount = (
+                IEnumerable<PaylessProdPrioriArchDet> ListExcelEscaneados = (
                     from Dp in DbO.PaylessProdPrioriArchDet
                     from Pe in DbO.PaylessProdPrioriArchM
                     from Fu in DbO.PaylessProdPrioriM
                     from FuD in DbO.PaylessProdPrioriDet
                     where Dp.IdM == Pe.Id
                     && Fu.Periodo == Pe.Periodo
-                    && Fu.ClienteId == Pe.ClienteId
+                    && FuD.IdTransporte == Pe.IdTransporte
                     && FuD.IdPaylessProdPrioriM == Fu.Id
                     && FuD.Barcode == Dp.Barcode
                     orderby Dp.Id descending
                     select Dp
                     );
-                for(int Ci = 0; Ci < ListPe.Count(); Ci++)
+                for(int Ci = 0; Ci < ListArchMaMo.Count(); Ci++)
                 {
-                    IEnumerable<Clientes> ListClients = from C in WmsDbO.Clientes where C.ClienteId == ListPe[Ci].ClienteId select C;
-                    if (ListClients.Count() > 0)
+                    IEnumerable<PaylessProdPrioriArchDet> ListCountTemp = ListExcelEscaneados.Where(O => O.IdM == ListArchMaMo[Ci].Id).Distinct();
+                    if (ListCountTemp.Count() == 0)
                     {
-                        ListPe[Ci].ClientName = ListClients.Fod().Nombre;
-                        IEnumerable<PaylessProdPrioriArchDet> ListCountTemp = ListCount.Where(O => O.IdM == ListPe[Ci].Id).Distinct();
-                        if (ListCountTemp.Count() == 0)
-                        {
-                            ListPe[Ci].PorValid = 0.0;
-                        }
-                        else {
-                            int t1 = ListDePe.Where(O => O.IdM == ListPe[Ci].Id).Count();
-                            int t2 = ListCountTemp.Count();
-                            ListPe[Ci].PorValid = Math.Round(((double)t2 / (double)t1) * 100, 3);
-                        }
+                        ListArchMaMo[Ci].PorValid = 0.0;
+                    }
+                    else {
+                        int t1 = ListArchDet.Where(O => O.IdM == ListArchMaMo[Ci].Id).Count();
+                        int t2 = ListCountTemp.Count();
+                        ListArchMaMo[Ci].PorValid = Math.Round(((double)t2 / (double)t1) * 100, 3);
                     }
                 }
                 return new RetData<Tuple<IEnumerable<PaylessProdPrioriArchMModel>, IEnumerable<PaylessProdPrioriArchDet>>>
                 {
-                    Data = new Tuple<IEnumerable<PaylessProdPrioriArchMModel>, IEnumerable<PaylessProdPrioriArchDet>>(ListPe, ListDePe),
+                    Data = new Tuple<IEnumerable<PaylessProdPrioriArchMModel>, IEnumerable<PaylessProdPrioriArchDet>>(ListArchMaMo, ListArchDet),
                     Info = new RetInfo()
                     {
                         CodError = 0,
@@ -1610,7 +1631,7 @@ namespace EdiApi.Controllers
                 IEnumerable<PaylessProdPrioriArchM> ListM = (
                     from M in DbO.PaylessProdPrioriArchM
                     where M.Periodo == Period
-                    && M.ClienteId == ClienteId
+                    //&& M.ClienteId == ClienteId Hilmer3
                     select M
                     );
                 IEnumerable<PaylessProdPrioriArchDet> ListD = (
@@ -1650,7 +1671,7 @@ namespace EdiApi.Controllers
                     from FuD in DbO.PaylessProdPrioriDet
                     where Dp.IdM == Pe.Id
                     && Fu.Periodo == Pe.Periodo
-                    && Fu.ClienteId == Pe.ClienteId
+                    //&& Fu.ClienteId == Pe.ClienteId Hilmer4
                     && FuD.IdPaylessProdPrioriM == Fu.Id
                     && FuD.Barcode == Dp.Barcode
                     && Pe.Id == idProdArch
@@ -1663,7 +1684,7 @@ namespace EdiApi.Controllers
                     from Fu in DbO.PaylessProdPrioriM
                     from FuD in DbO.PaylessProdPrioriDet
                     where Pe.Id == idProdArch
-                    && Fu.ClienteId == Pe.ClienteId
+                    //&& Fu.ClienteId == Pe.ClienteId Hilmer5
                     && Fu.Periodo == Pe.Periodo
                     && FuD.IdPaylessProdPrioriM == Fu.Id
                     select FuD

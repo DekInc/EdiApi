@@ -8,7 +8,8 @@ namespace EdiApi.Models
     {
         public int Id { get; set; }
         public string Periodo { get; set; }
-        public int? ClienteId { get; set; }
+        public int? IdTransporte { get; set; }
+        public string Transporte { get; set; }
         public string ClientName { get; set; }
         public double PorValid { get; set; }
         public string InsertDate { get; set; }
