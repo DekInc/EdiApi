@@ -219,6 +219,45 @@ namespace EdiApi.Models
             }
             return ListExists;
         }
+        public static IEnumerable<PaylessProdPrioriDetModel> SP_GetPedidosExternosDetById(ref Models.EdiDB.EdiDBContext _DbO, int PedidoId) {
+            List<PaylessProdPrioriDetModel> List = new List<PaylessProdPrioriDetModel>();
+            using (DbCommand Cmd = _DbO.Database.GetDbConnection().CreateCommand()) {
+                Cmd.CommandText = $"[dbo].[SP_GetPedidosExternosDetById] {PedidoId}";
+                _DbO.Database.OpenConnection();
+                DbDataReader Dr = Cmd.ExecuteReader();
+                if (Dr.HasRows) {
+                    while (Dr.Read()) {
+                        List.Add(new PaylessProdPrioriDetModel() {
+                            Id = Convert.ToInt32(Dr.GetValue(0)),
+                            IdPaylessProdPrioriM = Convert.ToInt32(Dr.GetValue(1)),
+                            Oid = Convert.ToString(Dr.GetValue(2)),
+                            Barcode = Convert.ToString(Dr.GetValue(3)),
+                            Estado = Convert.ToString(Dr.GetValue(4)),
+                            Pri = Convert.ToString(Dr.GetValue(5)),
+                            PoolP = Convert.ToString(Dr.GetValue(6)),
+                            Producto = Convert.ToString(Dr.GetValue(7)),
+                            Talla = Convert.ToString(Dr.GetValue(8)),
+                            Lote = Convert.ToString(Dr.GetValue(9)),
+                            Categoria = Convert.ToString(Dr.GetValue(10)),
+                            Departamento = Convert.ToString(Dr.GetValue(11)),
+                            Cp = Convert.ToString(Dr.GetValue(12)),
+                            Pickeada = Convert.ToString(Dr.GetValue(13)),
+                            Etiquetada = Convert.ToString(Dr.GetValue(14)),
+                            Preinspeccion = Convert.ToString(Dr.GetValue(15)),
+                            Cargada = Convert.ToString(Dr.GetValue(16)),
+                            M3 = Convert.ToDouble(Dr.GetValue(17)),
+                            Peso = Convert.ToDouble(Dr.GetValue(18)),
+                            IdTransporte = Convert.ToInt32(Dr.GetValue(19)),
+                            Transporte = Convert.ToString(Dr.GetValue(20))
+                        });
+                    }
+                }
+                _DbO.Database.CloseConnection();
+                if (!Dr.IsClosed)
+                    Dr.Close();
+            }
+            return List;
+        }
         public static IEnumerable<PedidosDetExternos> SP_GetPedidosDetExternosGuardados(ref Models.EdiDB.EdiDBContext _DbO, int _IdClient) {
             List<PedidosDetExternos> ListExists = new List<PedidosDetExternos>();
             using (DbCommand Cmd = _DbO.Database.GetDbConnection().CreateCommand()) {

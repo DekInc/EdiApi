@@ -4,7 +4,8 @@ IF OBJECT_ID('SP_GetPedidosExternosDetById', 'P') IS NOT NULL
 	DROP PROC SP_GetPedidosExternosDetById
 GO
 
-CREATE PROCEDURE [dbo].SP_GetGetPaylessProdPrioriByPeriod @Period VARCHAR(10)
+CREATE PROCEDURE [dbo].SP_GetPedidosExternosDetById 
+@PedidoId int
 AS
 BEGIN
 	SELECT
@@ -28,14 +29,18 @@ BEGIN
 		D.M3,
 		D.Peso,
 		D.IdTransporte,
-		T.Transporte
+		T.Transporte,
+		Pde.CantPedir
 	FROM PAYLESS_ProdPrioriDet D
-	INNER JOIN PAYLESS_ProdPrioriM M
-		ON M.Id = D.IdPAYLESS_ProdPrioriM
-		AND M.Periodo = @Period
+	JOIN PAYLESS_ProdPrioriM M
+		ON M.Id = D.IdPAYLESS_ProdPrioriM	
+	JOIN PedidosDetExternos Pde
+		ON Pde.PedidoId = @PedidoId AND Pde.CodProducto = D.Barcode
 	LEFT JOIN dbo.PAYLESS_Transporte T
 		ON T.Id = D.IdTransporte
 END
 GO
 
-EXEC SP_GetGetPaylessProdPrioriByPeriod '13/05/2019'
+EXEC SP_GetPedidosExternosDetById 1
+
+--select * from EdiDB.dbo.PedidosExternos
