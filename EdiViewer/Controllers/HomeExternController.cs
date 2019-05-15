@@ -1057,6 +1057,9 @@ namespace EdiViewer.Controllers
                         foreach (string Col in ExcelColumns) {
                             ExcelO.CreateCell(CellType.String);
                             switch (Col) {
+                                case "Recibo de Almacén":
+                                    ExcelO.SetCellValue("");
+                                    break;
                                 case "Fecha":
                                     ExcelO.SetCellValue(DateTime.Now.ToString(ApplicationSettings.DateTimeFormat));
                                     break;

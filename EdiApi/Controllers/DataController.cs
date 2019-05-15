@@ -1592,17 +1592,19 @@ namespace EdiApi.Controllers
                     );
                 for(int Ci = 0; Ci < ListArchMaMo.Count(); Ci++)
                 {
-                    IEnumerable<PaylessProdPrioriArchDet> ListCountTemp = ListExcelEscaneados.Where(O => O.IdM == ListArchMaMo[Ci].Id).Distinct();
-                    if (ListCountTemp.Count() == 0 && ListArchMaMo[Ci].PorValid == null)
-                    {
-                        ListArchMaMo[Ci].PorValid = 0.0;
-                    }
-                    else {
-                        int t1 = ListArchDet.Where(O => O.IdM == ListArchMaMo[Ci].Id).Count();
-                        int t2 = ListCountTemp.Count();
-                        ListArchMaMo[Ci].PorValid = Math.Round(((double)t2 / (double)t1) * 100, 3);
+                    if (ListArchMaMo[Ci].PorValid == null) {
+                        IEnumerable<PaylessProdPrioriArchDet> ListCountTemp = ListExcelEscaneados.Where(O => O.IdM == ListArchMaMo[Ci].Id).Distinct();
+                        if (ListCountTemp.Count() > 0) {
+                            int t1 = ListArchDet.Where(O => O.IdM == ListArchMaMo[Ci].Id).Count();
+                            int t2 = ListCountTemp.Count();
+                            ListArchMaMo[Ci].PorValid = Math.Round(((double)t2 / (double)t1) * 100, 3);
+                            PaylessProdPrioriArchM Am = DbO.PaylessProdPrioriArchM.Where(O => O.Id == ListArchMaMo[Ci].Id).Fod();
+                            Am.PorcValidez = ListArchMaMo[Ci].PorValid;
+                            DbO.PaylessProdPrioriArchM.Update(Am);                            
+                        }
                     }
                 }
+                DbO.SaveChanges();
                 return new RetData<Tuple<IEnumerable<PaylessProdPrioriArchMModel>, IEnumerable<PaylessProdPrioriArchDet>>>
                 {
                     Data = new Tuple<IEnumerable<PaylessProdPrioriArchMModel>, IEnumerable<PaylessProdPrioriArchDet>>(ListArchMaMo, ListArchDet),
