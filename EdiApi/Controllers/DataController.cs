@@ -2206,5 +2206,65 @@ namespace EdiApi.Controllers
                 };
             }
         }
+        [HttpPost]
+        public RetData<IEnumerable<Bodegas>> GetWmsBodegas(int LocationId) {
+            DateTime StartTime = DateTime.Now;
+            try {
+                IEnumerable<Bodegas> List = (
+                    from B in WmsDbO.Bodegas
+                    from E in WmsDbO.Estatus
+                    where B.EstatusId == E.EstatusId
+                    && B.Locationid == LocationId
+                    orderby B.NomBodega
+                    select B
+                    );
+                return new RetData<IEnumerable<Bodegas>> {
+                    Data = List,
+                    Info = new RetInfo() {
+                        CodError = 0,
+                        Mensaje = "ok",
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            } catch (Exception e1) {
+                return new RetData<IEnumerable<Bodegas>> {
+                    Info = new RetInfo() {
+                        CodError = -1,
+                        Mensaje = e1.ToString(),
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            }
+        }
+        [HttpPost]
+        public RetData<IEnumerable<Regimen>> GetWmsRegimen(int BodegaId) {
+            DateTime StartTime = DateTime.Now;
+            try {
+                IEnumerable<Regimen> List = (
+                    from R in WmsDbO.Regimen
+                    from B in WmsDbO.BodegaxRegimen
+                    where B.Regimen == R.Idregimen
+                    && B.BodegaId == BodegaId
+                    orderby R.Regimen1
+                    select R
+                    );
+                return new RetData<IEnumerable<Regimen>> {
+                    Data = List,
+                    Info = new RetInfo() {
+                        CodError = 0,
+                        Mensaje = "ok",
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            } catch (Exception e1) {
+                return new RetData<IEnumerable<Regimen>> {
+                    Info = new RetInfo() {
+                        CodError = -1,
+                        Mensaje = e1.ToString(),
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            }
+        }
     }
 }
