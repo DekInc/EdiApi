@@ -1,10 +1,10 @@
 USE EdiDB
 GO
-IF OBJECT_ID('SP_GetGetPaylessProdPrioriByPeriod', 'P') IS NOT NULL
-	DROP PROC SP_GetGetPaylessProdPrioriByPeriod
+IF OBJECT_ID('SP_GetPaylessProdPrioriByPeriod', 'P') IS NOT NULL
+	DROP PROC SP_GetPaylessProdPrioriByPeriod
 GO
 
-CREATE PROCEDURE [dbo].SP_GetGetPaylessProdPrioriByPeriod @Period VARCHAR(10)
+CREATE PROCEDURE [dbo].SP_GetPaylessProdPrioriByPeriod @Period VARCHAR(10)
 AS
 BEGIN
 	SELECT
@@ -29,13 +29,13 @@ BEGIN
 		D.Peso,
 		D.IdTransporte,
 		T.Transporte
-	FROM PAYLESS_ProdPrioriDet D
-	INNER JOIN PAYLESS_ProdPrioriM M
+	FROM PAYLESS_ProdPrioriDet D WITH(NOLOCK)
+	INNER JOIN PAYLESS_ProdPrioriM M WITH(NOLOCK)
 		ON M.Id = D.IdPAYLESS_ProdPrioriM
 		AND M.Periodo = @Period
-	LEFT JOIN dbo.PAYLESS_Transporte T
+	LEFT JOIN dbo.PAYLESS_Transporte T WITH(NOLOCK)
 		ON T.Id = D.IdTransporte
 END
 GO
 
-EXEC SP_GetGetPaylessProdPrioriByPeriod '13/05/2019'
+--EXEC SP_GetPaylessProdPrioriByPeriod '13/05/2019'

@@ -31,12 +31,12 @@ BEGIN
 		D.IdTransporte,
 		T.Transporte,
 		Pde.CantPedir
-	FROM PAYLESS_ProdPrioriDet D
-	JOIN PAYLESS_ProdPrioriM M
+	FROM PAYLESS_ProdPrioriDet D WITH(NOLOCK)
+	JOIN PAYLESS_ProdPrioriM M WITH(NOLOCK)
 		ON M.Id = D.IdPAYLESS_ProdPrioriM	
-	JOIN PedidosDetExternos Pde
+	JOIN PedidosDetExternos Pde WITH(NOLOCK)
 		ON Pde.PedidoId = @PedidoId AND Pde.CodProducto = D.Barcode
-	LEFT JOIN dbo.PAYLESS_Transporte T
+	LEFT JOIN dbo.PAYLESS_Transporte T WITH(NOLOCK)
 		ON T.Id = D.IdTransporte
 END
 GO

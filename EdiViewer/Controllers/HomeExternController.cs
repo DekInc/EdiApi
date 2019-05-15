@@ -1018,10 +1018,10 @@ namespace EdiViewer.Controllers
                 };
             }            
         }
-        public async Task<IActionResult> MakeExcelWms1(string Periodo, int IdTransporte) {
+        public async Task<IActionResult> MakeExcelWms1(string Period, int IdTransport) {
             DateTime StartTime = DateTime.Now;
             try {
-                RetData<IEnumerable<WmsFileModel>> ListInfo = await ApiClientFactory.Instance.GetWmsFile(Periodo, IdTransporte);
+                RetData<IEnumerable<WmsFileModel>> ListInfo = await ApiClientFactory.Instance.GetWmsFile(Period, IdTransport);
                 if (ListInfo.Info.CodError != 0)
                     return Json( ListInfo.Info );
                 Utility.ExceL ExcelO = new Utility.ExceL();
@@ -1107,6 +1107,9 @@ namespace EdiViewer.Controllers
                                     break;
                                 case "estilo":
                                     ExcelO.SetCellValue(RowO.Estilo);
+                                    break;
+                                case "COLOR":
+                                    ExcelO.SetCellValue(RowO.Transporte);
                                     break;
                                 default:
                                     break;

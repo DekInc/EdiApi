@@ -1304,7 +1304,7 @@ namespace EdiApi.Controllers
             DateTime StartTime = DateTime.Now;
             try
             { // Para no olvidar, hago Fod del master porque no permito ingresar más de 1 archivo por periodo.
-                IEnumerable<PaylessProdPrioriDetModel> ListPaylessProdPrioriDet = ManualDB.SP_GetGetPaylessProdPrioriByPeriod(ref DbO, Period.ToString());
+                IEnumerable<PaylessProdPrioriDetModel> ListPaylessProdPrioriDet = ManualDB.SP_GetPaylessProdPrioriByPeriod(ref DbO, Period.ToString());
                 return new RetData<IEnumerable<PaylessProdPrioriDetModel>>()
                 {
                     Data = ListPaylessProdPrioriDet,
@@ -1565,7 +1565,9 @@ namespace EdiApi.Controllers
                         Id = Pe.Id,
                         InsertDate = Pe.InsertDate,
                         UpdateDate = Pe.UpdateDate,
-                        Periodo = Pe.Periodo
+                        Periodo = Pe.Periodo,
+                        PorValid = Pe.PorcValidez
+                        
                     }).ToList();
                 IEnumerable<PaylessProdPrioriArchDet> ListArchDet = (
                     from Dp in DbO.PaylessProdPrioriArchDet
@@ -1580,6 +1582,7 @@ namespace EdiApi.Controllers
                     from Fu in DbO.PaylessProdPrioriM
                     from FuD in DbO.PaylessProdPrioriDet
                     where Dp.IdM == Pe.Id
+                    && Pe.PorcValidez == null
                     && Fu.Periodo == Pe.Periodo
                     && FuD.IdTransporte == Pe.IdTransporte
                     && FuD.IdPaylessProdPrioriM == Fu.Id
@@ -1590,7 +1593,7 @@ namespace EdiApi.Controllers
                 for(int Ci = 0; Ci < ListArchMaMo.Count(); Ci++)
                 {
                     IEnumerable<PaylessProdPrioriArchDet> ListCountTemp = ListExcelEscaneados.Where(O => O.IdM == ListArchMaMo[Ci].Id).Distinct();
-                    if (ListCountTemp.Count() == 0)
+                    if (ListCountTemp.Count() == 0 && ListArchMaMo[Ci].PorValid == null)
                     {
                         ListArchMaMo[Ci].PorValid = 0.0;
                     }
@@ -1939,23 +1942,13 @@ namespace EdiApi.Controllers
             }
         }
         [HttpGet]
-        public RetData<IEnumerable<WmsFileModel>> GetWmsFile(string Periodo, int IdTransporte) { 
+        public RetData<IEnumerable<WmsFileModel>> GetWmsFile(string Period, int IdTransport) { 
             DateTime StartTime = DateTime.Now;
             try {
-                List<Clientes> ListClients = WmsDbO.Clientes.ToList();
+                IEnumerable<PaylessProdPrioriDetModel> ListData = ManualDB.SP_GetPaylessProdPrioriByPeriodAndIdTransport(ref DbO, Period, IdTransport);                
                 IEnumerable<WmsFileModel> ListRep = (
-                    from Ad in DbO.PaylessProdPrioriArchDet
-                    from Am in DbO.PaylessProdPrioriArchM
-                    from Ex in DbO.PaylessProdPrioriDet
-                    from T in DbO.PaylessTiendas
-                    from C in ListClients
-                    where Ad.IdM == Am.Id
-                    && Am.IdTransporte == IdTransporte
-                    && Am.Periodo == Periodo
-                    && Ex.Barcode == Ad.Barcode
-                    && T.TiendaId == Convert.ToInt32(Ad.Barcode.Substring(0, 4))
-                    && C.ClienteId == T.ClienteId
-                    group new { Ex, C} by new { Ex.Barcode, C.ClienteId } into G
+                    from Ex in ListData
+                    group new { Ex} by new { Ex.Barcode } into G
                     select new WmsFileModel() {
                         Barcode = G.Fod().Ex.Barcode,
                         Descripcion = G.Fod().Ex.Categoria,
@@ -1965,7 +1958,7 @@ namespace EdiApi.Controllers
                         CodigoLocalizacion = "STAGE-01",
                         Peso = G.Sum(Lin => Lin.Ex.Peso),
                         Volumen = G.Fod().Ex.M3,
-                        Cliente = G.Fod().C.Nombre,
+                        Cliente = G.Fod().Ex.dateProm,
                         UOM = 1,
                         Exportador = 2,
                         PaisOrigen = 166,
@@ -1973,9 +1966,9 @@ namespace EdiApi.Controllers
                         Cont = G.Count(),
                         Modelo = G.Where(O1 => !string.IsNullOrEmpty(O1.Ex.Talla)).Select(O2 => O2.Ex.Talla).Distinct().Count() == 1? G.Fod().Ex.Talla : "Varios",
                         Lote = G.Where(O1 => !string.IsNullOrEmpty(O1.Ex.Producto)).Select(O2 => O2.Ex.Producto).Distinct().Count() == 1 ? G.Fod().Ex.Producto : "Varios",
-                        Estilo = G.Where(O1 => !string.IsNullOrEmpty(O1.Ex.Lote)).Select(O2 => O2.Ex.Lote).Distinct().Count() == 1 ? G.Fod().Ex.Lote : "Varios"
-                    }
-                    );                
+                        Estilo = G.Where(O1 => !string.IsNullOrEmpty(O1.Ex.Lote)).Select(O2 => O2.Ex.Lote).Distinct().Count() == 1 ? G.Fod().Ex.Lote : "Varios",
+                        Transporte = G.Fod().Ex.Transporte
+                    });
                 return new RetData<IEnumerable<WmsFileModel>> {
                     Data = ListRep,
                     Info = new RetInfo() {

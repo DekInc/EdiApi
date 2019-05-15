@@ -230,8 +230,8 @@ namespace CoreApiClient
         public async Task<RetData<IEnumerable<PaylessReportes>>> GetPaylessReportes() {
             return await GetAsync<RetData<IEnumerable<PaylessReportes>>>(CreateRequestUri(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Data/GetPaylessReportes")));
         }
-        public async Task<RetData<IEnumerable<WmsFileModel>>> GetWmsFile(string Periodo, int IdTransporte) {
-            return await GetAsync<RetData<IEnumerable<WmsFileModel>>>(CreateRequestUri(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Data/GetWmsFile"), $"?Periodo={Periodo}&IdTransporte={IdTransporte}"));
+        public async Task<RetData<IEnumerable<WmsFileModel>>> GetWmsFile(string Period, int IdTransport) {
+            return await GetAsync<RetData<IEnumerable<WmsFileModel>>>(CreateRequestUri(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Data/GetWmsFile"), $"?Period={Period}&IdTransport={IdTransport}"));
         }
         public async Task<RetData<string>> SetGroupAccess(int IdGroup, int IdAccess) {
             return await PostGetAsyncJson<RetData<string>>(CreateRequestUri(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Data/SetGroupAccess"), $"?IdGroup={IdGroup}&IdAccess={IdAccess}"), "");

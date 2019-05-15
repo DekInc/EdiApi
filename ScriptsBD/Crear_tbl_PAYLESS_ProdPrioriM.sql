@@ -50,9 +50,12 @@ CREATE TABLE PAYLESS_ProdPrioriArchM(
 	IdTransporte [int] NULL,	
 	[CodUsr] nvarchar(128),
 	InsertDate nvarchar(16),
-	UpdateDate nvarchar(16)
+	UpdateDate nvarchar(16),
+	PorcValidez float
 )
 GO
+--ALTER TABLE PAYLESS_ProdPrioriArchM
+--ADD PorcValidez float null
 IF OBJECT_ID('PAYLESS_ProdPrioriArchDet', 'U') IS NOT NULL 
 	DROP TABLE PAYLESS_ProdPrioriArchDet
 GO

@@ -21,5 +21,6 @@ namespace ComModels {
         public string Modelo { get; set; }
         public string Lote { get; set; }
         public string Estilo { get; set; }
+        public string Transporte { get; set; }
     }
 }

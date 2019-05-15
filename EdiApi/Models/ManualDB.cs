@@ -303,12 +303,12 @@ namespace EdiApi.Models
             }
             return ListExists;
         }
-        public static IEnumerable<PaylessProdPrioriDetModel> SP_GetGetPaylessProdPrioriByPeriod(ref Models.EdiDB.EdiDBContext _DbO, string Period)
+        public static IEnumerable<PaylessProdPrioriDetModel> SP_GetPaylessProdPrioriByPeriod(ref Models.EdiDB.EdiDBContext _DbO, string Period)
         {
             List<PaylessProdPrioriDetModel> ListProdDet = new List<PaylessProdPrioriDetModel>();
             using (DbCommand Cmd = _DbO.Database.GetDbConnection().CreateCommand())
             {
-                Cmd.CommandText = $"[dbo].[SP_GetGetPaylessProdPrioriByPeriod] '{Period}'";
+                Cmd.CommandText = $"[dbo].[SP_GetPaylessProdPrioriByPeriod] '{Period}'";
                 _DbO.Database.OpenConnection();
                 DbDataReader Dr = Cmd.ExecuteReader();
                 if (Dr.HasRows)
@@ -338,6 +338,46 @@ namespace EdiApi.Models
                             Peso = Convert.ToDouble(Dr.GetValue(18)),
                             IdTransporte = Convert.ToInt32(Dr.GetValue(19)),
                             Transporte = Convert.ToString(Dr.GetValue(20))                            
+                        });
+                    }
+                }
+                _DbO.Database.CloseConnection();
+                if (!Dr.IsClosed)
+                    Dr.Close();
+            }
+            return ListProdDet;
+        }
+        public static IEnumerable<PaylessProdPrioriDetModel> SP_GetPaylessProdPrioriByPeriodAndIdTransport(ref Models.EdiDB.EdiDBContext _DbO, string Period, int IdTransport) {
+            List<PaylessProdPrioriDetModel> ListProdDet = new List<PaylessProdPrioriDetModel>();
+            using (DbCommand Cmd = _DbO.Database.GetDbConnection().CreateCommand()) {
+                Cmd.CommandText = $"[dbo].[SP_GetPaylessProdPrioriByPeriodAndIdTransport] '{Period}', {IdTransport}";
+                _DbO.Database.OpenConnection();
+                DbDataReader Dr = Cmd.ExecuteReader();
+                if (Dr.HasRows) {
+                    while (Dr.Read()) {
+                        ListProdDet.Add(new PaylessProdPrioriDetModel() {
+                            Id = Convert.ToInt32(Dr.GetValue(0)),
+                            IdPaylessProdPrioriM = Convert.ToInt32(Dr.GetValue(1)),
+                            Oid = Convert.ToString(Dr.GetValue(2)),
+                            Barcode = Convert.ToString(Dr.GetValue(3)),
+                            Estado = Convert.ToString(Dr.GetValue(4)),
+                            Pri = Convert.ToString(Dr.GetValue(5)),
+                            PoolP = Convert.ToString(Dr.GetValue(6)),
+                            Producto = Convert.ToString(Dr.GetValue(7)),
+                            Talla = Convert.ToString(Dr.GetValue(8)),
+                            Lote = Convert.ToString(Dr.GetValue(9)),
+                            Categoria = Convert.ToString(Dr.GetValue(10)),
+                            Departamento = Convert.ToString(Dr.GetValue(11)),
+                            Cp = Convert.ToString(Dr.GetValue(12)),
+                            Pickeada = Convert.ToString(Dr.GetValue(13)),
+                            Etiquetada = Convert.ToString(Dr.GetValue(14)),
+                            Preinspeccion = Convert.ToString(Dr.GetValue(15)),
+                            Cargada = Convert.ToString(Dr.GetValue(16)),
+                            M3 = Convert.ToDouble(Dr.GetValue(17)),
+                            Peso = Convert.ToDouble(Dr.GetValue(18)),
+                            IdTransporte = Convert.ToInt32(Dr.GetValue(19)),
+                            Transporte = Convert.ToString(Dr.GetValue(20)),
+                            dateProm = Convert.ToString(Dr.GetValue(21)) //Realmente NomCliente
                         });
                     }
                 }

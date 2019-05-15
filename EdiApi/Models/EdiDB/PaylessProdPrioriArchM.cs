@@ -11,5 +11,6 @@ namespace EdiApi.Models.EdiDB
         public string CodUsr { get; set; }
         public string InsertDate { get; set; }
         public string UpdateDate { get; set; }
+        public double? PorcValidez { get; set; }
     }
 }

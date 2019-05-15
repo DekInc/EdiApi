@@ -1274,6 +1274,9 @@ namespace EdiApi.Models.EdiDB
             {
                 entity.ToTable("PAYLESS_ProdPrioriArchDet");
 
+                entity.HasIndex(e => e.IdM)
+                    .HasName("IndexPaylessProdPrioriArchDetIdM");
+
                 entity.Property(e => e.Barcode)
                     .HasColumnName("barcode")
                     .HasMaxLength(16);
@@ -1282,6 +1285,9 @@ namespace EdiApi.Models.EdiDB
             modelBuilder.Entity<PaylessProdPrioriArchM>(entity =>
             {
                 entity.ToTable("PAYLESS_ProdPrioriArchM");
+
+                entity.HasIndex(e => e.Periodo)
+                    .HasName("IndexPaylessProdPrioriArchMPeriodo");
 
                 entity.Property(e => e.CodUsr).HasMaxLength(128);
 
@@ -1301,6 +1307,9 @@ namespace EdiApi.Models.EdiDB
 
                 entity.HasIndex(e => e.IdPaylessProdPrioriM)
                     .HasName("IndexPaylessProdPrioriDetIdF");
+
+                entity.HasIndex(e => e.IdTransporte)
+                    .HasName("IndexPaylessProdPrioriDetIdTransporte");
 
                 entity.Property(e => e.Barcode).HasMaxLength(16);
 

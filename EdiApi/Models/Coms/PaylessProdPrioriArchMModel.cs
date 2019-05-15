@@ -11,7 +11,7 @@ namespace EdiApi.Models
         public int? IdTransporte { get; set; }
         public string Transporte { get; set; }
         public string ClientName { get; set; }
-        public double PorValid { get; set; }
+        public double? PorValid { get; set; }
         public string InsertDate { get; set; }
         public string UpdateDate { get; set; }
     }
