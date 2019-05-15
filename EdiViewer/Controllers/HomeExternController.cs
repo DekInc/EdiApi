@@ -1120,7 +1120,10 @@ namespace EdiViewer.Controllers
                     }
                     MemoryStream Ms2 = new MemoryStream();
                     ExcelO.ExcelWorkBook.Write(Ms2);
-                    return File(Ms2.ToArray(), "application/octet-stream", "Archivo_WMS_" + DateTime.Now.ToString("ddMMyyyy") + ".xls");
+                    string Transporte = "";
+                    if (ListInfo.Data.Count() > 0)
+                        Transporte = ListInfo.Data.Fod().Transporte;
+                    return File(Ms2.ToArray(), "application/octet-stream", "Archivo_WMS_" + Transporte + "_" + DateTime.Now.ToString("ddMMyyyy") + ".xls");
                 }
             } catch (Exception e1) {
                 return Json(JsonConvert.SerializeObject(e1));
