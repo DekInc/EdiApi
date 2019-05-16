@@ -2266,5 +2266,88 @@ namespace EdiApi.Controllers
                 };
             }
         }
+        [HttpPost]
+        public RetData<string> SetIngresoExcelWms2(IEnumerable<WmsFileModel> ListProducts, int cboBodega, int cboRegimen) {
+            DateTime StartTime = DateTime.Now;
+            try {
+                if (ListProducts.Count() == 0)
+                    return new RetData<string> {
+                        Info = new RetInfo() {
+                            CodError = -1,
+                            Mensaje = "Error, no hay filas a cargar",
+                            ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                        }
+                    };
+                if (ListProducts.Where(O => string.IsNullOrEmpty(O.ReciboAlmacen)).Count() > 0)
+                    return new RetData<string> {
+                        Info = new RetInfo() {
+                            CodError = -1,
+                            Mensaje = "Error, el recibo de almacen está vacio para un registro",
+                            ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                        }
+                    };
+                if (ListProducts.Select(O => O.ReciboAlmacen).Distinct().Count() > 1)
+                    return new RetData<string> {
+                        Info = new RetInfo() {
+                            CodError = -1,
+                            Mensaje = "Error, hay más de un recibo de almacen",
+                            ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                        }
+                    };
+                string ReciboAlmacen = ListProducts.Fod().ReciboAlmacen;
+                List<DocumentosxTransaccion> ListC1 = (
+                    from D in WmsDbO.DocumentosxTransaccion
+                    from T in WmsDbO.Transacciones
+                    where D.TransaccionId == T.TransaccionId
+                    && D.InformeAlmacen == ReciboAlmacen
+                    select D
+                    ).ToList();
+                if (ListC1.Count > 0)
+                    return new RetData<string> {
+                        Info = new RetInfo() {
+                            CodError = -1,
+                            Mensaje = "Error, existen informes de almacen duplicados, el numero de informe Almacen ya existe.",
+                            ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                        }
+                    };
+                List<string> ListProductsClients = ListProducts.Select(O => O.Cliente).Distinct().ToList();
+                List<Clientes> ListC2 = (
+                    from C in WmsDbO.Clientes
+                    from Lp in ListProductsClients
+                    where C.Nombre == Lp
+                    select C
+                    ).ToList();
+                if (ListC2.Count != ListProductsClients.Count) {
+                    string ClienteNoExiste = "";
+                    foreach (string ProductClient in ListProductsClients) {
+                        if (WmsDbO.Clientes.Where(O2 => O2.Nombre == ProductClient).Count() == 0) {
+                            ClienteNoExiste = ProductClient;
+                        }
+                    }
+                    return new RetData<string> {
+                        Info = new RetInfo() {
+                            CodError = -1,
+                            Mensaje = "No existe el cliente " + ClienteNoExiste,
+                            ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                        }
+                    };
+                }
+                return new RetData<string> {
+                    Info = new RetInfo() {
+                        CodError = 0,
+                        Mensaje = "Se cargo el archivo",
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            } catch (Exception e1) {
+                return new RetData<string> {
+                    Info = new RetInfo() {
+                        CodError = -1,
+                        Mensaje = e1.ToString(),
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            }
+        }
     }
 }

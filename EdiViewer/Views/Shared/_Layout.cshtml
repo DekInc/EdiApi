@@ -69,6 +69,14 @@
                             </div>
                         </li>
                     }
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownBod" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Bodega
+                        </a>
+                        <div class="dropdown-menu mr-auto" aria-labelledby="navbarDropdownBod">
+                            <a class="dropdown-item" asp-area="" asp-controller="HomeExtern" asp-action="CargaWmsIngreso">Cargar ingreso WMS</a>
+                        </div>
+                    </li>
                     @if (Context.Session.GetObjSession<List<string>>("ListPermits").Where(O => O == "Admin_Pedidos_Lear" || O == "Admin_Pedidos_Payless" || O == "Admin_Confirmacion_Lear").Count() > 0) {
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown1" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -101,16 +109,16 @@
                             </a>
                             <div class="dropdown-menu mr-auto" aria-labelledby="navbarDropdown">
                                 @if (Context.Session.GetObjSession<List<string>>("ListPermits").Where(O => O == "Admin_CargaExcel_Payless").Count() > 0) {
-                                <a class="dropdown-item" asp-area="" asp-controller="HomeExtern" asp-action="CargaProdPrioriAdmin">Cargar archivo</a>
+                                    <a class="dropdown-item" asp-area="" asp-controller="HomeExtern" asp-action="CargaProdPrioriAdmin">Cargar archivo</a>
                                 }
                                 @if (Context.Session.GetObjSession<List<string>>("ListPermits").Where(O => O == "Admin_ExcelConsolidado_Payless").Count() > 0) {
-                                <a class="dropdown-item" asp-area="" asp-controller="HomeExtern" asp-action="CargaProdPriori">Excel consolidado</a>
+                                    <a class="dropdown-item" asp-area="" asp-controller="HomeExtern" asp-action="CargaProdPriori">Excel consolidado</a>
                                 }
                                 @if (Context.Session.GetObjSession<List<string>>("ListPermits").Where(O => O == "Usuario_CargaEscaners_Payless").Count() > 0) {
-                                <a class="dropdown-item" asp-area="" asp-controller="HomeExtern" asp-action="CargaProdArchBod">Carga de archivo de escaners</a>
+                                    <a class="dropdown-item" asp-area="" asp-controller="HomeExtern" asp-action="CargaProdArchBod">Carga de archivo de escaners</a>
                                 }
                                 @if (Context.Session.GetObjSession<List<string>>("ListPermits").Where(O => O == "Usuario_HacerPedidos_Payless").Count() > 0) {
-                                <a class="dropdown-item" asp-area="" asp-controller="HomeExtern" asp-action="PedidosPayless">Realizar pedidos Payless</a>
+                                    <a class="dropdown-item" asp-area="" asp-controller="HomeExtern" asp-action="PedidosPayless">Realizar pedidos Payless</a>
                                 }
                                 @*<a class="dropdown-item" asp-area="" asp-controller="HomeExtern" asp-action="Inventario">Realizar pedidos WMS</a>*@
                             </div>
@@ -147,7 +155,7 @@
                             </div>
                         </li>
                     }
-                    </ul>
+                </ul>
                 <ul class="navbar-nav ">
                     <!-- PROFILE DROPDOWN - scrolling off the page to the right -->
                     <li class="nav-item dropdown">

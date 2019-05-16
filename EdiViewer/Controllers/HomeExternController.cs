@@ -78,7 +78,10 @@ namespace EdiViewer.Controllers
         {
             //IdM para exportar a Excel :)
             return View();
-        }        
+        }
+        public IActionResult CargaWmsIngreso() {
+            return View();
+        }
         public async Task<RetData<string>> SetPaylessProdPriori(string dtpPeriodUpload, string txtTransporte, bool ChkUpDelete)
         {
             DateTime StartTime = DateTime.Now;
@@ -1227,6 +1230,249 @@ namespace EdiViewer.Controllers
                     Info = new RetInfo() {
                         CodError = -1,
                         Mensaje = e1.ToString(),
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            }
+        }
+        public async Task<RetData<IEnumerable<Bodegas>>> GetWmsBodegas(string Period) {
+            DateTime StartTime = DateTime.Now;
+            try {
+                RetData<IEnumerable<Bodegas>> List = await ApiClientFactory.Instance.GetWmsBodegas(7);
+                return List;
+            } catch (Exception e1) {
+                return new RetData<IEnumerable<Bodegas>> {
+                    Info = new RetInfo() {
+                        CodError = -1,
+                        Mensaje = e1.ToString(),
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            }
+        }
+        public async Task<RetData<IEnumerable<Regimen>>> GetWmsRegimen(int BodegaId) {
+            DateTime StartTime = DateTime.Now;
+            try {
+                RetData<IEnumerable<Regimen>> List = await ApiClientFactory.Instance.GetWmsRegimen(BodegaId);
+                return List;
+            } catch (Exception e1) {
+                return new RetData<IEnumerable<Regimen>> {
+                    Info = new RetInfo() {
+                        CodError = -1,
+                        Mensaje = e1.ToString(),
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            }
+        }
+        public async Task<RetData<string>> SetIngresoExcelWms(int cboBodega, int cboRegimen) {
+            DateTime StartTime = DateTime.Now;
+            List<string> ListCols = new List<string>();
+            List<WmsFileModel> ListExcelRows = new List<WmsFileModel>();
+            int i = 0, j = 0;
+            if (cboBodega == 0 || cboRegimen == 0)
+                return new RetData<string>() {
+                    Data = "",
+                    Info = new RetInfo() {
+                        CodError = -1,
+                        Mensaje = "Bodega y regimen inválidos, son cero.",
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            try {
+                IFormFile FileUploaded = Request.Form.Files[0];
+                if (FileUploaded.Length > 0) {
+                    string[] ExcelColumns = new string[] {
+                        "Identificador", "Fecha", "Recibo de Almacén", "Codigo", "Modelo", "Descripción", "Piezas", "Unidad",
+                        "Cantidad", "Código de la Localización", "Peso (Kg)", "Volumen (m³)", "Valor Unitario", "Valor",
+                        "Número de Entrada", "Observaciones", "Oden de Compra", "Lote", "Número de Factura", "CLIENTE",
+                        "RACKID", "fecha_im5", "EMBALAJE", "UOM", "exportador", "destino", "estilo", "cod_equivale", "pais_orig", "COLOR"
+                    };
+                    string FileExtension = Path.GetExtension(FileUploaded.FileName).ToLower();
+                    ISheet Sheet;
+                    using (MemoryStream stream = new MemoryStream()) {
+                        FileUploaded.CopyTo(stream);
+                        stream.Position = 0;
+                        if (FileExtension == ".xls") {
+                            try {
+                                HSSFWorkbook hssfwb = new HSSFWorkbook(stream);
+                                Sheet = hssfwb.GetSheetAt(0);
+                            } catch (Exception e2) {
+                                throw new Exception("El archivo no es de Excel. Utilice un formato propio de Microsoft Excel. " + e2.ToString());
+                            }
+                        } else if (FileExtension == ".xlsx") {
+                            try {
+                                XSSFWorkbook hssfwb = new XSSFWorkbook(stream);
+                                Sheet = hssfwb.GetSheetAt(0);
+                            } catch (Exception e3) {
+                                throw new Exception("El archivo no es de Excel. Utilice un formato propio de Microsoft Excel. " + e3.ToString());
+                            }
+                        } else {
+                            return new RetData<string>() {
+                                Data = "",
+                                Info = new RetInfo() {
+                                    CodError = -1,
+                                    Mensaje = "El archivo no tiene la extensión .xls o .xlsx",
+                                    ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                                }
+                            };
+                        }
+                        IRow HeaderRow = Sheet.GetRow(0);
+                        PaylessUploadFileModel NewRow = new PaylessUploadFileModel();
+                        int CellCount = HeaderRow.LastCellNum;                        
+                        for (j = 0; j < CellCount; j++) {
+                            bool PropExists = false;
+                            foreach (string Pi in ExcelColumns) {
+                                if (Pi.Trim().ToLower() == ((NPOI.SS.UserModel.ICell)HeaderRow.GetCell(j)).ToString().ToLower().Trim()) {
+                                    PropExists = true;
+                                    ListCols.Add(Pi.ToLower());
+                                }
+                            }
+                            if (!PropExists) {
+                                return new RetData<string>() {
+                                    Data = "",
+                                    Info = new RetInfo() {
+                                        CodError = -1,
+                                        Mensaje = "El archivo contiene columnas que no han sido establecidas, nombre de columna que da error: " + ((NPOI.SS.UserModel.ICell)HeaderRow.GetCell(j)).ToString(),
+                                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                                    }
+                                };
+                            }
+                        }
+                        for (i = (Sheet.FirstRowNum + 1); i <= Sheet.LastRowNum; i++) {
+                            IRow row = Sheet.GetRow(i);
+                            WmsFileModel NewRowInsert = new WmsFileModel();
+                            if (row == null) continue;
+                            if (row.Cells.All(d => d.CellType == CellType.Blank)) continue;
+                            for (j = row.FirstCellNum; j < CellCount; j++) {
+                                if (row.GetCell(j) != null) {
+                                    try {
+                                        if (string.IsNullOrEmpty(row.GetCell(j).ToString())) continue;
+                                        switch (ListCols[j].ToLower()) {
+                                            case "identificador":
+                                                NewRowInsert.Identificador = Convert.ToInt32(row.GetCell(j).ToString());
+                                                break;
+                                            case "fecha":
+                                                NewRowInsert.Fecha = row.GetCell(j).DateCellValue.ToString(ApplicationSettings.DateTimeFormat);
+                                                break;
+                                            case "recibo de almacén":
+                                                NewRowInsert.ReciboAlmacen = row.GetCell(j).ToString().Trim();
+                                                break;
+                                            case "codigo":
+                                                NewRowInsert.Barcode = row.GetCell(j).ToString();
+                                                break;
+                                            case "modelo":
+                                                NewRowInsert.Modelo = row.GetCell(j).ToString();
+                                                break;
+                                            case "descripción":
+                                                NewRowInsert.Descripcion = row.GetCell(j).ToString();
+                                                break;
+                                            case "piezas":
+                                                NewRowInsert.Piezas = Convert.ToInt32(row.GetCell(j).ToString());
+                                                break;
+                                            case "unidad":
+                                                NewRowInsert.Unidad = Convert.ToInt32(row.GetCell(j).ToString());
+                                                break;
+                                            case "cantidad":
+                                                NewRowInsert.Cantidad = Convert.ToInt32(Convert.ToDouble(row.GetCell(j).ToString()));
+                                                break;
+                                            case "código de la localización":
+                                                NewRowInsert.CodigoLocalizacion = row.GetCell(j).ToString();
+                                                break;
+                                            case "peso (kg)":
+                                                NewRowInsert.Peso = Convert.ToDouble(row.GetCell(j).ToString());
+                                                break;
+                                            case "volumen (m³)":
+                                                NewRowInsert.Volumen = Convert.ToDouble(row.GetCell(j).ToString());
+                                                break;
+                                            case "valor unitario":
+                                                NewRowInsert.ValorUnitario = Convert.ToDouble(row.GetCell(j).ToString());
+                                                break;
+                                            case "valor":
+                                                NewRowInsert.Valor = Convert.ToDouble(row.GetCell(j).ToString());
+                                                break;
+                                            case "número de entrada":
+                                                NewRowInsert.NumeroEntrada = Convert.ToDouble(row.GetCell(j).ToString());
+                                                break;
+                                            case "observaciones":
+                                                NewRowInsert.Observaciones = row.GetCell(j).ToString();
+                                                break;
+                                            case "oden de compra":
+                                                NewRowInsert.OrdenDeCompra = Convert.ToInt32(row.GetCell(j).ToString());
+                                                break;
+                                            case "lote":
+                                                NewRowInsert.Lote = row.GetCell(j).ToString();
+                                                break;
+                                            case "número de factura":
+                                                NewRowInsert.NumeroFactura = row.GetCell(j).ToString();
+                                                break;
+                                            case "cliente":
+                                                NewRowInsert.Cliente = row.GetCell(j).ToString();
+                                                break;
+                                            case "rackid":
+                                                NewRowInsert.RackId = Convert.ToInt32(row.GetCell(j).ToString());
+                                                break;
+                                            case "fecha_im5":
+                                                NewRowInsert.FechaIm5 = row.GetCell(j).ToString();
+                                                break;
+                                            case "embalaje":
+                                                NewRowInsert.Embalaje = Convert.ToInt32(row.GetCell(j).ToString());
+                                                break;
+                                            case "uom":
+                                                NewRowInsert.UOM = Convert.ToInt32(row.GetCell(j).ToString());
+                                                break;
+                                            case "exportador":
+                                                NewRowInsert.Exportador = Convert.ToInt32(row.GetCell(j).ToString());
+                                                break;
+                                            case "destino":
+                                                NewRowInsert.Destino = Convert.ToInt32(row.GetCell(j).ToString());
+                                                break;
+                                            case "estilo":
+                                                NewRowInsert.Estilo = row.GetCell(j).ToString();
+                                                break;
+                                            case "cod_equivale":
+                                                NewRowInsert.CodEquivalente = row.GetCell(j).ToString();
+                                                break;
+                                            case "pais_orig":
+                                                NewRowInsert.PaisOrigen = Convert.ToInt32(row.GetCell(j).ToString());
+                                                break;
+                                            case "color":
+                                                NewRowInsert.Color = row.GetCell(j).ToString();
+                                                break;
+                                            default:
+                                                break;
+                                        }
+                                    } catch (Exception ec1) {
+                                        return new RetData<string>() {
+                                            Data = "",
+                                            Info = new RetInfo() {
+                                                CodError = -1,
+                                                Mensaje = $"Error en conversión de tipo para el campo {ListCols[j]} {ec1.ToString()} en la fila {i}",
+                                                ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                                            }
+                                        };
+                                    }
+                                }
+                            }
+                            ListExcelRows.Add(NewRowInsert);
+                        }
+                    }
+                }
+                RetData<string> Ret = await ApiClientFactory.Instance.SetIngresoExcelWms2(ListExcelRows, cboBodega, cboRegimen);
+                return new RetData<string>() {
+                    Data = "",
+                    Info = new RetInfo() {
+                        CodError = -1,
+                        Mensaje = "",
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            } catch (Exception ex1) {
+                return new RetData<string>() {
+                    Data = "",
+                    Info = new RetInfo() {
+                        CodError = -1,
+                        Mensaje = ex1.ToString(),
                         ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
                     }
                 };

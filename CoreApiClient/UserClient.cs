@@ -239,6 +239,16 @@ namespace CoreApiClient
         public async Task<RetData<IEnumerable<PaylessPeriodoTransporteModel>>> GetTransportByPeriod(string Period) {
             return await PostGetAsyncJson<RetData<IEnumerable<PaylessPeriodoTransporteModel>>>(CreateRequestUri(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Data/GetTransportByPeriod"), $"?Period={Period}"), "");
         }
+        public async Task<RetData<IEnumerable<Bodegas>>> GetWmsBodegas(int LocationId) {
+            return await PostGetAsyncJson<RetData<IEnumerable<Bodegas>>>(CreateRequestUri(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Data/GetWmsBodegas"), $"?LocationId={LocationId}"), "");
+        }
+        public async Task<RetData<IEnumerable<Regimen>>> GetWmsRegimen(int BodegaId) {
+            return await PostGetAsyncJson<RetData<IEnumerable<Regimen>>>(CreateRequestUri(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Data/GetWmsRegimen"), $"?BodegaId={BodegaId}"), "");
+        }
+        public async Task<RetData<string>> SetIngresoExcelWms2(IEnumerable<WmsFileModel> ListProducts, int cboBodega, int cboRegimen) {
+            string JsonParams = JsonConvert.SerializeObject(ListProducts);
+            return await PostGetAsyncJson<RetData<string>>(CreateRequestUri(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Data/SetIngresoExcelWms2"), $"?cboBodega={cboBodega}&cboRegimen={cboRegimen}"), JsonParams);
+        }
         /////////////////////////////////////////
         //public async Task<List<UsersModel>> GetUsers()
         //{

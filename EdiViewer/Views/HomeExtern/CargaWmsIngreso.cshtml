@@ -1,0 +1,251 @@
+﻿@using ComModels
+@{
+    ViewData["Title"] = "Carga de archivo de ingreso en WMS";
+    Layout = "_Layout";
+}
+<div id="mainDiv">
+    <div class="container">
+        <div class="card-deck cardMain">
+            <div class="card box-shadow">
+                <div class="card-header">
+                    <h4 class="my-0 font-weight-normal">Carga de archivo de ingreso en WMS&nbsp;<img class="imgHeaderHelp" src="~/images/help.png" title="Carga de archivo de ingreso en WMS" alt="Carga de archivo de ingreso en WMS"></h4>
+                </div>
+                <div class="card-body">
+                    <form id="formSearch">
+                        <div class="container div856Search">
+                            <div class="row">
+                                <div class="col-sm">
+                                    <label for="cboBodegas">Bodega</label>
+                                    <select class="form-control" id="cboBodegas" name="cboBodegas"></select>
+                                </div>
+                                <div class="col-sm">
+                                    <label for="cboRegimen">Regimen</label>
+                                    <div id="divSpinCboRegimen" class="spinner-border spinner-border-sm text-danger" style="display: none" role="status">
+                                        <span class="sr-only">Loading...</span>
+                                    </div>
+                                    <select class="form-control" id="cboRegimen" name="cboRegimen"></select>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm custom-file divUpload" style="max-width: unset !important; margin-bottom: 10px;">
+                                    <input type="file" class="custom-file-input" id="fUpload" name="fUpload">
+                                    <label id="lblFile" class="custom-file-label" for="fUpload">Archivo a cargar</label>
+                                </div>
+                            </div>
+                            <div class="row margin5">
+                                <div class="col-sm">
+                                    <button class="btn btn-primary" type="button" id="btnUpload">
+                                        &nbsp;&nbsp;&nbsp;Cargar archivo&nbsp;&nbsp;&nbsp;
+                                        <div id="divSpinUploadFile" class="spinner-border spinner-border-sm text-danger" style="display: none" role="status">
+                                            <span class="sr-only">Loading...</span>
+                                        </div>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                    <form id="formReportes" action=""></form>                    
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    var tblReportes = null;
+    var mainGrid = null;
+    function getWmsBodegas() {
+        $.ajax({
+            url: '@this.Url.Action("GetWmsBodegas", "HomeExtern")',
+            type: 'GET',
+            dataType: 'JSON',
+            success: function (json) {
+                if (json.info.codError != 0) {
+                    menErrorEdi(json.info.mensaje);
+                    return json.data;
+                }
+                $('#cboBodegas').empty();
+                $.each(json.data, function (indexI, itemO) {
+                    $('#cboBodegas').append($('<option>', {
+                        value: this.bodegaId,
+                        text: this.nomBodega,
+                        selected: false
+                    }));
+                });                
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                menErrorEdi(xhr.status, '');
+                menErrorEdi(thrownError, '');
+            }
+        });
+    }
+    function getWmsRegimen() {
+        if ($('#cboBodega').val() == '') return;
+        $('#divSpinCboRegimen').show();
+        $.ajax({
+            url: '@this.Url.Action("GetWmsRegimen", "HomeExtern")?BodegaId=' + $('#cboBodegas').val(),
+            type: 'GET',
+            dataType: 'JSON',
+            success: function (json) {
+                $('#divSpinCboRegimen').hide();
+                if (json.info.codError != 0) {
+                    menErrorEdi(json.info.mensaje);
+                    return json.data;
+                }
+                $('#cboRegimen').empty();
+                $.each(json.data, function (indexI, itemO) {
+                    $('#cboRegimen').append($('<option>', {
+                        value: this.idregimen,
+                        text: this.regimen1,
+                        selected: false
+                    }));
+                });
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                menErrorEdi(xhr.status, '');
+                menErrorEdi(thrownError, '');
+            }
+        });
+    }
+    function refreshGrid(auto) {
+        w2ui.grid.autoLoad = auto;
+        w2ui.grid.skip(0);
+    }
+    function crearGrid() {
+        var config = {
+            grid: {
+                name: 'gridScans',
+                selectType: 'cell',
+                bResponsive: true,
+                bMobile: window.mobileAndTabletcheck(),
+                url: '@this.Url.Action("GetPaylessPeriodPrioriFile", "Grids")',
+                show: {
+                    footer: true,
+                    toolbar: true,
+                    expandColumn: window.mobileAndTabletcheck()
+                },
+                searches: [
+                    { field: "clientName", caption: "Cliente", type: 'text' },
+                    { field: "periodo", caption: "Periodo", type: 'text' }
+                ],
+                colShowResponsive: [
+                    { field: 'clientName' },
+                    { field: 'periodo' }
+                ],
+                columns: [
+                    { field: "id", caption: "Id", sortable: true, hidden: true },
+                    { field: "periodo", caption: "Periodo", sortable: true },
+                    { field: "transporte", caption: "Transporte", sortable: true },
+                    {
+                        field: "insertDate", caption: "Fecha de carga / actualización", sortable: true, render: function (record) {
+                            if (record.updateDate)
+                                return '<div>' + record.updateDate + '</div>';
+                            else
+                                return '<div>' + record.insertDate + '</div>';
+                        }
+                    },
+                    { field: "porValid", caption: "Porc. validez", sortable: true },
+                    {
+                        field: "updateDate", caption: "", sortable: true, render: function (record) {
+                            return '<a href="javascript:downloadWmsFile(' + "'" + record.periodo + "'" + ', ' + "'" + record.idTransporte + "'" + ')">Archivo WMS</a>&nbsp;|&nbsp;<a href="javascript:verDetalle(' + record.id + ')">Ver detalle</a>';
+                        }
+                    }
+                ]
+            }
+        };
+        mainGrid = $('#gridScans').w2grid(config.grid);
+        arrayGrids['gridScans'] = mainGrid;
+    }
+    function downloadWmsFile(period, idTransport) {
+        window.open('@this.Url.Action("MakeExcelWms1", "HomeExtern")?Period=' + period + '&IdTransport=' + idTransport);
+    }
+    function verDetalle(idM) {
+        idProdArch = idM;
+        gridRepDet1.reload2('@this.Url.Action("GetPaylessFileDif", "Grids")?idProdArch=' + idProdArch + '&idData=1');
+        $('#modalCargaProdArchBodDet').modal();
+    }
+    $(document).ready(function () {
+        $('.imgHeaderHelp').tooltip();
+        getWmsBodegas();
+        $('#cboBodegas').on('change', function (Event) {
+            getWmsRegimen();
+        });
+        $('#fUpload').on('change', function (event) {
+            var fullPath = $('#fUpload').val();
+            if (fullPath) {
+                var startIndex = (fullPath.indexOf('\\') >= 0 ? fullPath.lastIndexOf('\\') : fullPath.lastIndexOf('/'));
+                var filename = fullPath.substring(startIndex);
+                if (filename.indexOf('\\') === 0 || filename.indexOf('/') === 0) {
+                    filename = filename.substring(1);
+                }
+                $('#lblFile').text(filename);
+            }
+        });
+        $('#btnUpload').on('click', function () {
+            if ($('#cboBodegas').val() == '') {
+                menErrorEdi('El valor de la bodega no puede estar vacio', 'Error');
+                return;
+            }
+            if ($('#cboRegimen').val() == '') {
+                menErrorEdi('El valor del regimen no puede estar vacio', 'Error');
+                return;
+            }
+            var fileExtension = ['xls', 'XLS', 'xlsx', 'XLSX'];
+            var filename = $('#fUpload').val();
+            if (filename.length == 0) {
+                menErrorEdi('Por favor seleccione un archivo', 'Error');
+                return false;
+            }
+            else {
+                var extension = filename.replace(/^.*\./, '');
+                if ($.inArray(extension, fileExtension) == -1) {
+                    menErrorEdi('Solo se permiten archivos de Excel', 'Error');
+                    return false;
+                }
+            }
+            $('#divSpinUploadFile').show();
+            var fdata = new FormData();
+            var fileUpload = $("#fUpload").get(0);
+            var files = fileUpload.files;
+            fdata.append(files[0].name, files[0]);
+            $.ajax({
+                type: "POST",
+                url: '@this.Url.Action("SetIngresoExcelWms", "HomeExtern")?cboBodega=' + $('#cboBodegas').val() + '&cboRegimen=' + $('#cboRegimen').val(),
+                beforeSend: function (xhr) {
+                    xhr.setRequestHeader("XSRF-TOKEN",
+                        $('input:hidden[name="__RequestVerificationToken"]').val());
+                },
+                data: fdata,
+                contentType: false,
+                processData: false,
+                success: function (response) {
+                    $('#divSpinUploadFile').hide();
+                    if (response.info.codError != null) {
+                        if (response.info.codError != 0) {
+                            menErrorEdi(response.info.mensaje, 'Error en el proceso');
+                            return;
+                        }
+                    }
+                    if (response.length == 0)
+                        menErrorEdi('Error al subir el archivo', 'Error');
+                    else {
+                        if (response.info.codError == 0)
+                            menErrorEdi('Archivo cargado', 'Información');
+                    }
+                },
+                error: function (resp) {
+                    $('#divSpinUploadFile').hide();
+                    menErrorEdi(resp.info.mensaje);
+                }
+            });
+        });
+        if (window.mobileAndTabletcheck()) {
+            $('.div856Search').css({ "max-width": "unset" });
+            $('#dtpPeriodoBuscar').css({ "width": "100%" });
+            $('.btn').css({ "margin-bottom": "10px" });
+            $('.btn').addClass('btn-block');
+            $("#tblReportes").hide();
+            $('.inputUpload').css({ "max-width": "84vw" });
+            $('.divUpload').css({ "max-width": "84vw" });
+        }
+    });
+</script>
