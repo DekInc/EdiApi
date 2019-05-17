@@ -15,7 +15,7 @@ namespace EdiApi.Models
             List<TsqlDespachosWmsComplex> ListSn = new List<TsqlDespachosWmsComplex>();
             using (DbCommand Cmd = _DbO.Database.GetDbConnection().CreateCommand())
             {
-                Cmd.CommandText = "[dbo].[GetSN]";
+                Cmd.CommandText ="[dbo].[GetSN]";
                 _DbO.Database.OpenConnection();
                 DbDataReader Dr = Cmd.ExecuteReader();
                 if (Dr.HasRows)

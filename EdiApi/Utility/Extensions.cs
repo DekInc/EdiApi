@@ -87,5 +87,11 @@ namespace EdiApi
                         Convert.ToInt32(_Str.Substring(0, 2))
                         );
         }
+        public static string ToSqlDate(this DateTime _D) {
+            return $"CONVERT(DATETIME, '{_D.ToString(ApplicationSettings.DateTimeFormatShort)}', 103)";
+        }
+        public static string ToSqlDate(this DateTime? _D) {
+            return $"CONVERT(DATETIME, '{_D.Value.ToString(ApplicationSettings.DateTimeFormatShort)}', 103)";
+        }
     }
 }

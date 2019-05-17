@@ -2269,11 +2269,20 @@ namespace EdiApi.Controllers
         [HttpPost]
         public RetData<string> SetIngresoExcelWms2(IEnumerable<WmsFileModel> ListProducts, int cboBodega, int cboRegimen) {
             DateTime StartTime = DateTime.Now;
-            int MaxInventarioId = 0;
+            //int MaxInventarioId = 0;
             List<string> ListSql = new List<string>();
-            ListSql.Add("BEGIN" + Environment.NewLine);
+            ListSql.Add("SET XACT_ABORT ON" + Environment.NewLine);
+            ListSql.Add("BEGIN TRANSACTION TRAN1" + Environment.NewLine);
             ListSql.Add("DECLARE @MaxTransaccionId INT;" + Environment.NewLine);
+            ListSql.Add("DECLARE @MaxInventarioId INT;" + Environment.NewLine);
+            ListSql.Add("DECLARE @MaxDTId INT;" + Environment.NewLine);
+            ListSql.Add("DECLARE @MaxItemInventario INT;" + Environment.NewLine);
+            ListSql.Add("DECLARE @MaxDetItemTran INT;" + Environment.NewLine);
+            ListSql.Add("DECLARE @MaxDocTran INT;" + Environment.NewLine);
+            ListSql.Add("BEGIN TRY" + Environment.NewLine);
+            
             try {
+                List<Producto> ListProductsWms = (from P in WmsDbO.Producto select new Producto() { CodProducto = P.CodProducto, Existencia = P.Existencia }).ToList();
                 List<Clientes> ListUploadClients = new List<Clientes>();
                 if (ListProducts.Count() == 0)
                     return new RetData<string> {
@@ -2330,8 +2339,7 @@ namespace EdiApi.Controllers
                             Mensaje = "Error, el código de embalaje no existe",
                             ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
                         }
-                    };
-                Transacciones TNew = new Transacciones();
+                    };                
                 foreach (WmsFileModel Product in ListProducts) {
                     bool AllRackFull = true;
                     IEnumerable<Clientes> ListVerifCliente = (from C in WmsDbO.Clientes where C.Nombre.ToLower() == Product.Cliente.ToLower() select C);
@@ -2347,13 +2355,11 @@ namespace EdiApi.Controllers
                         Product.ClienteId = ListVerifCliente.Fod().ClienteId;
                     }
                     if (ListUploadClients.Where(Uc => Uc.ClienteId == Product.ClienteId).Count() == 0) {
-                        //int MaxTransaccionId = (from T2 in WmsDbO.Transacciones select T2.TransaccionId).Max();
-                        //MaxTransaccionId++;
-                        ListSql.Add(SqlGenHelper.GetSqlWmsMaxTbl("Transacciones", "TransaccionId"));
-                        
+                        Transacciones TNew = new Transacciones();
+                        ListSql.Add(SqlGenHelper.GetSqlWmsMaxTbl("Transacciones", "TransaccionId", "MaxTransaccionId"));
                         TNew = new Transacciones() {
-                            TransaccionId = MaxTransaccionId,
-                            NoTransaccion = "IN" + MaxTransaccionId.ToString().PadLeft(5, '0'),
+                            //TransaccionId = MaxTransaccionId,
+                            //NoTransaccion = "IN" + MaxTransaccionId.ToString().PadLeft(5, '0'),
                             IdtipoTransaccion = "IN",
                             FechaTransaccion = DateTime.Now,
                             BodegaId = cboBodega,
@@ -2367,174 +2373,139 @@ namespace EdiApi.Controllers
                             Exportadorid = Product.Exportador,
                             Destinoid = Product.Destino
                         };
-                        WmsDbO.Transacciones.Add(TNew);
-                        WmsDbO.SaveChanges();
-                        ListUploadClients.Add(new Clientes() {
+                        ListSql.Add(SqlGenHelper.GetSqlWmsInsertTransacciones(TNew));
+                        ListUploadClients.Add(new Clientes() { ClienteId = Product.ClienteId });
+                    }
+                    Producto PNew = new Producto();
+                    if (ListProductsWms.Where(Pr1 => Pr1.CodProducto == Product.Barcode).Count() == 0) {
+                        PNew = new Producto() {
+                            CodProducto = Product.Barcode,
+                            Descripcion = Product.Descripcion,
+                            UnidadMedida = Product.UOM,
                             ClienteId = Product.ClienteId,
-                            EstatusId = MaxTransaccionId
-                        });
+                            EstatusId = 1,
+                            CategoriaId = 10,
+                            CantMinima = 0,
+                            Fecha = DateTime.Now,
+                            Comentario = "INGRESOS DESDE INTRANET",
+                            StockMaximo = 0,
+                            Descargoid = 1,
+                            Partida = "0"
+                        };
+                        ListSql.Add(SqlGenHelper.GetSqlWmsInsertProducto(PNew));
+                        ListProductsWms.Add(new Producto() { CodProducto = Product.Barcode, Existencia = 1 });
                     } else {
-                        //TNew = WmsDbO.Transacciones.Where(Tr => Tr.TransaccionId == ListUploadClients.Where(Uc1 => Uc1.ClienteId == Product.ClienteId).Fod().EstatusId).Fod();
-                        if (TNew.ClienteId != Product.ClienteId) {
-                            TNew = (
-                                from Tra in WmsDbO.Transacciones
-                                where Tra.TransaccionId == ListUploadClients.Where(Uc1 => Uc1.ClienteId == Product.ClienteId).Fod().EstatusId
-                                select Tra
-                                ).Fod();
+                        PNew = ListProductsWms.Where(Pr1 => Pr1.CodProducto == Product.Barcode).Fod();
+                        if (PNew.Existencia.HasValue) {
+                            return new RetData<string> {
+                                Info = new RetInfo() {
+                                    CodError = -1,
+                                    Mensaje = "El producto ya existe en la base de datos, CodProducto = " + Product.Barcode,
+                                    ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                                }
+                            };
                         }
                     }
-                    if (TNew.TransaccionId > 0) {
-                        IEnumerable<Producto> ListVerifProd = (from P in WmsDbO.Producto where P.CodProducto == Product.Barcode select P);
-                        Producto PNew = new Producto();
-                        if (ListVerifProd.Count() == 0) {
-                            PNew = new Producto() {
+                    for (int J = 1; J <= Product.Unidad; J++) {
+                        AllRackFull = !(Product.RackId == 0);
+                        ListSql.Add(SqlGenHelper.GetSqlWmsMaxTbl("Inventario", "InventarioId", "MaxInventarioId"));
+                        Inventario INew = new Inventario() {
+                            //InventarioId = MaxInventarioId,
+                            //Barcode = "BRC" + MaxInventarioId.ToString().PadLeft(7, '0'),
+                            FechaCreacion = DateTime.Now,
+                            ClienteId = Product.ClienteId,
+                            Descripcion = Product.Descripcion,
+                            Declarado = Product.Unidad,
+                            Valor = (Product.Valor / ((double)Product.Cantidad * (double)Product.Unidad)),
+                            Articulos = 1,
+                            Peso = Product.Peso / (double)Product.Piezas,
+                            Volumen = (Product.Volumen / (double)Product.Piezas),
+                            EstatusId = 2,
+                            IsAgranel = false,
+                            TipoBulto = Product.Embalaje,
+                            Existencia = Product.Unidad,
+                            Auditado = Product.Unidad,
+                            CantidadInicial = Product.Unidad
+                        };
+                        if (Product.RackId != 0)
+                            INew.Rack = Product.RackId;
+                        ListSql.Add(SqlGenHelper.GetSqlWmsInsertInventario(INew));
+                        ListSql.Add(SqlGenHelper.GetSqlWmsMaxTbl("DetalleTransacciones", "DtllTrnsaccionId", "MaxDTId"));
+                        DetalleTransacciones DTNew = new DetalleTransacciones() {
+                            //DtllTrnsaccionId = MaxDTId,
+                            //TransaccionId = TNew.TransaccionId,
+                            //InventarioId = MaxInventarioId,
+                            Conteo = 1,
+                            Cantidad = Product.Unidad,
+                            Valor = Convert.ToDecimal(Product.Valor / ((double)Product.Cantidad * (double)Product.Unidad)),
+                            Fechaitem = Product.Fecha.ToDateFromEspDate(),
+                            Rack = INew.Rack,
+                            Embalaje = ListEmbalajes.Where(E2 => E2.UnidadMedidaId == Product.Embalaje).Fod().Simbolo,
+                            IsEscaneado = INew.Rack > 0
+                        };
+                        ListSql.Add(SqlGenHelper.GetSqlWmsInsertDetalleTransacciones(DTNew));
+                        ListSql.Add(SqlGenHelper.GetSqlWmsMaxTbl("ItemInventario", "ItemInventarioId", "MaxItemInventario"));
+                        ItemInventario IINew = new ItemInventario() {
+                            //ItemInventarioId = MaxItemInventario,
+                            //InventarioId = MaxInventarioId,
+                            CodProducto = Product.Barcode,
+                            Declarado = Product.Unidad,
+                            Precio = Product.ValorUnitario,
+                            Observacion = "INGRESOS DESDE INTRANET",
+                            Fechaitem = Product.Fecha.ToDateFromEspDate(),
+                            Descripcion = Product.Descripcion,
+                            Auditado = Product.Unidad,
+                            Existencia = Product.Unidad,
+                            CantidadInicial = Product.Unidad,
+                            CodEquivale = Product.CodEquivalente,
+                            PaisOrig = Product.PaisOrigen,
+                            Lote = Product.Lote,
+                            NumeroOc = Product.OrdenDeCompra.ToString(),
+                            Modelo = Product.Modelo,
+                            Color = Product.Color,
+                            Estilo = Product.Estilo
+                        };
+                        ListSql.Add(SqlGenHelper.GetSqlWmsInsertItemInventario(IINew));
+                        ListSql.Add(SqlGenHelper.GetSqlWmsMaxTbl("DtllItemTransaccion", "DtllItemTransaccionId", "MaxDetItemTran"));
+                        DtllItemTransaccion ITNew = new DtllItemTransaccion() {
+                            //DtllItemTransaccionId = MaxDetItemTran,
+                            //TransaccionId = TNew.TransaccionId,
+                            //DtllTransaccionId = DTNew.DtllTrnsaccionId,
+                            //ItemInventarioId = MaxItemInventario,
+                            Cantidad = Product.Unidad,
+                            Precio = Product.ValorUnitario,
+                            Rack = INew.Rack
+                        };
+                        ListSql.Add(SqlGenHelper.GetSqlWmsInsertDtllItemTransaccion(ITNew));
+                        if (!string.IsNullOrEmpty(Product.Lote)) {
+                            ItemParamaetroxProducto ParProdNew = new ItemParamaetroxProducto() {
+                                //InventarioId = MaxInventarioId,
+                                //ItemInventarioId = MaxItemInventario,
                                 CodProducto = Product.Barcode,
-                                Descripcion = Product.Descripcion,
-                                UnidadMedida = Product.UOM,
-                                ClienteId = Product.ClienteId,
-                                EstatusId = 1,
-                                CategoriaId = 10,
-                                CantMinima = 0,
-                                Fecha = DateTime.Now,
-                                Comentario = "INGRESOS DESDE INTRANET",
-                                StockMaximo = 0,
-                                Descargoid = 1,
-                                Partida = "0"
+                                ParametroId = 23,
+                                ValParametro = Product.Valor.ToString()
                             };
-                            WmsDbO.Producto.Add(PNew);
-                            //WmsDbO.SaveChanges();
-                        } else {
-                            PNew = ListVerifProd.Fod();
-                            if (PNew.Existencia.HasValue) {
-                                return new RetData<string> {
-                                    Info = new RetInfo() {
-                                        CodError = -1,
-                                        Mensaje = "El producto ya existe en la base de datos, CodProducto = " + Product.Barcode,
-                                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
-                                    }
-                                };
-                            } else {
-                                //PNew.Existencia++;
-                                //WmsDbO.Producto.Update(PNew);
-                                //WmsDbO.SaveChanges();
-                            }
+                            ListSql.Add(SqlGenHelper.GetSqlWmsInsertItemParamaetroxProducto(ParProdNew));
                         }
-                        for (int J = 1; J <= Product.Unidad; J++) {
-                            AllRackFull = !(Product.RackId == 0);
-                            MaxInventarioId = (from I2 in WmsDbO.Inventario select I2.InventarioId).Max();
-                            MaxInventarioId++;
-                            Inventario INew = new Inventario() {
-                                InventarioId = MaxInventarioId,
-                                Barcode = "BRC" + MaxInventarioId.ToString().PadLeft(7, '0'),
-                                FechaCreacion = DateTime.Now,
-                                ClienteId = Product.ClienteId,
-                                Descripcion = Product.Descripcion,
-                                Declarado = Product.Unidad,
-                                Valor = (Product.Valor / ((double)Product.Cantidad * (double)Product.Unidad)),
-                                Articulos = 1,
-                                Peso = Product.Peso / (double)Product.Piezas,
-                                Volumen = (Product.Volumen / (double)Product.Piezas),
-                                EstatusId = 2,
-                                IsAgranel = false,
-                                TipoBulto = Product.Embalaje,
-                                Existencia = Product.Unidad,
-                                Auditado = Product.Unidad,
-                                CantidadInicial = Product.Unidad
+                        if (!string.IsNullOrEmpty(Product.Modelo)) {
+                            ItemParamaetroxProducto ParProdNew2 = new ItemParamaetroxProducto() {
+                                //InventarioId = MaxInventarioId,
+                                //ItemInventarioId = MaxItemInventario,
+                                CodProducto = Product.Barcode,
+                                ParametroId = 15,
+                                ValParametro = Product.Modelo
                             };
-                            if (Product.RackId != 0)
-                                INew.Rack = Product.RackId;
-                            WmsDbO.Inventario.Add(INew);
-                            WmsDbO.SaveChanges();
-                            if (INew.InventarioId > 0) {
-                                int MaxDTId = (from I2 in WmsDbO.DetalleTransacciones select I2.DtllTrnsaccionId).Max();
-                                MaxDTId++;
-                                DetalleTransacciones DTNew = new DetalleTransacciones() {
-                                    DtllTrnsaccionId = MaxDTId,
-                                    TransaccionId = TNew.TransaccionId,
-                                    InventarioId = MaxInventarioId,
-                                    Conteo = 1,
-                                    Cantidad = Product.Unidad,
-                                    Valor = Convert.ToDecimal(Product.Valor / ((double)Product.Cantidad * (double)Product.Unidad)),
-                                    Fechaitem = Product.Fecha.ToDateFromEspDate(),
-                                    Rack = INew.Rack,
-                                    Embalaje = ListEmbalajes.Where(E2 => E2.UnidadMedidaId == Product.Embalaje).Fod().Simbolo,
-                                    IsEscaneado = INew.Rack > 0
-                                };
-                                WmsDbO.DetalleTransacciones.Add(DTNew);
-                                //WmsDbO.SaveChanges();
-                                int MaxItemInventario = (from I2 in WmsDbO.ItemInventario select I2.ItemInventarioId).Max();
-                                MaxItemInventario++;
-                                ItemInventario IINew = new ItemInventario() {
-                                    ItemInventarioId = MaxItemInventario,
-                                    InventarioId = MaxInventarioId,
-                                    CodProducto = Product.Barcode,
-                                    Declarado = Product.Unidad,
-                                    Precio = Product.ValorUnitario,
-                                    Observacion = "INGRESOS DESDE INTRANET",
-                                    Fechaitem = Product.Fecha.ToDateFromEspDate(),
-                                    Descripcion = Product.Descripcion,
-                                    Auditado = Product.Unidad,
-                                    Existencia = Product.Unidad,
-                                    CantidadInicial = Product.Unidad,
-                                    CodEquivale = Product.CodEquivalente,
-                                    PaisOrig = Product.PaisOrigen,
-                                    Lote = Product.Lote,
-                                    NumeroOc = Product.OrdenDeCompra.ToString(),
-                                    Modelo = Product.Modelo,
-                                    Color = Product.Color,
-                                    Estilo = Product.Estilo
-                                };
-                                WmsDbO.ItemInventario.Add(IINew);
-                                //WmsDbO.SaveChanges();
-                                int MaxDetItemTran = (from I2 in WmsDbO.DtllItemTransaccion select I2.DtllItemTransaccionId).Max();
-                                MaxDetItemTran++;
-                                DtllItemTransaccion ITNew = new DtllItemTransaccion() {
-                                    DtllItemTransaccionId = MaxDetItemTran,
-                                    TransaccionId = TNew.TransaccionId,
-                                    DtllTransaccionId = DTNew.DtllTrnsaccionId,
-                                    ItemInventarioId = MaxItemInventario,
-                                    Cantidad = Product.Unidad,
-                                    Precio = Product.ValorUnitario,
-                                    Rack = INew.Rack
-                                };
-                                WmsDbO.DtllItemTransaccion.Add(ITNew);
-                                //WmsDbO.SaveChanges();
-                                if (!string.IsNullOrEmpty(Product.Lote)) {
-                                    ItemParamaetroxProducto ParProdNew = new ItemParamaetroxProducto() {
-                                        InventarioId = MaxInventarioId,
-                                        ItemInventarioId = MaxItemInventario,
-                                        CodProducto = Product.Barcode,
-                                        ParametroId = 23,
-                                        ValParametro = Product.Valor.ToString()
-                                    };
-                                    WmsDbO.ItemParamaetroxProducto.Add(ParProdNew);
-                                    //WmsDbO.SaveChanges();
-                                }
-                                if (!string.IsNullOrEmpty(Product.Modelo)) {
-                                    ItemParamaetroxProducto ParProdNew2 = new ItemParamaetroxProducto() {
-                                        InventarioId = MaxInventarioId,
-                                        ItemInventarioId = MaxItemInventario,
-                                        CodProducto = Product.Barcode,
-                                        ParametroId = 15,
-                                        ValParametro = Product.Modelo
-                                    };
-                                    WmsDbO.ItemParamaetroxProducto.Add(ParProdNew2);
-                                    //WmsDbO.SaveChanges();
-                                }
-                            }
+                            ListSql.Add(SqlGenHelper.GetSqlWmsInsertItemParamaetroxProducto(ParProdNew2));
                         }
-                        if (AllRackFull) {
-                            TNew.EstatusId = 6;
-                            WmsDbO.Transacciones.Update(TNew);
-                            //WmsDbO.SaveChanges();
-                        }
-                        //fin de carga bultos
                     }
-                    int MaxDocTran = (from I2 in WmsDbO.DocumentosxTransaccion select I2.IddocxTransaccion).Max();
-                    MaxDocTran++;
+                    if (AllRackFull) {
+                        ListSql.Add(SqlGenHelper.GetSqlWmsUpdateTransaccionesRackFull());
+                    }
+                    //fin de carga bultos
+                    ListSql.Add(SqlGenHelper.GetSqlWmsMaxTbl("DocumentosxTransaccion", "IddocxTransaccion", "MaxDocTran"));
                     DocumentosxTransaccion DocTranNew = new DocumentosxTransaccion() {
-                        IddocxTransaccion = MaxDocTran,
-                        TransaccionId = TNew.TransaccionId,
+                        //IddocxTransaccion = MaxDocTran,
+                        //TransaccionId = TNew.TransaccionId,
                         Fecha = DateTime.Now,
                         InformeAlmacen = ReciboAlmacen,
                         FeInformeAlmacen = Product.Fecha.ToDateFromEspDate()
@@ -2549,10 +2520,30 @@ namespace EdiApi.Controllers
                     if (!string.IsNullOrEmpty(Product.NumeroFactura)) {
                         DocTranNew.FactComercial = Product.NumeroFactura;
                     }
-                    WmsDbO.DocumentosxTransaccion.Add(DocTranNew);
-                    WmsDbO.SaveChanges();
+                    ListSql.Add(SqlGenHelper.GetSqlWmsInsertDocumentosxTransaccion(DocTranNew));
                     // fin if transaccionId
-                }                
+                }
+                ListSql.Add(@"
+                COMMIT TRANSACTION TRAN1
+                END TRY
+                BEGIN CATCH	
+	                ROLLBACK TRANSACTION TRAN1
+	                PRINT 'ERROR, LINEA: ' + CONVERT(VARCHAR(16), ERROR_LINE()) + ' - ' + ERROR_MESSAGE()
+	                PRINT '@MaxTransaccionId = ' + CONVERT(VARCHAR(16), @MaxTransaccionId)
+	                PRINT '@MaxInventarioId = ' + CONVERT(VARCHAR(16), @MaxInventarioId)
+	                PRINT '@MaxDTId = ' + CONVERT(VARCHAR(16), @MaxDTId)
+	                PRINT '@MaxItemInventario = ' + CONVERT(VARCHAR(16), @MaxItemInventario)
+	                PRINT '@MaxDetItemTran = ' + CONVERT(VARCHAR(16), @MaxDetItemTran)
+	                PRINT '@MaxDocTran = ' + CONVERT(VARCHAR(16), @MaxDocTran)
+                END CATCH
+                --COMMIT TRANSACTION TRAN1
+                --ROLLBACK TRANSACTION TRAN1
+                SET XACT_ABORT OFF
+                " + Environment.NewLine);
+                ListSql.Add((DateTime.Now - StartTime).TotalSeconds.ToString());
+                System.IO.StreamWriter Salida = new System.IO.StreamWriter("sql.sql", false);
+                ListSql.ForEach(S => Salida.WriteLine(S));
+                Salida.Close();
                 return new RetData<string> {
                     Info = new RetInfo() {
                         CodError = 0,
@@ -2564,7 +2555,7 @@ namespace EdiApi.Controllers
                 return new RetData<string> {
                     Info = new RetInfo() {
                         CodError = -1,
-                        Mensaje = $"MaxInventarioId = {MaxInventarioId}. Det: {e1.ToString()}",
+                        Mensaje = $"Det: {e1.ToString()}",
                         ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
                     }
                 };

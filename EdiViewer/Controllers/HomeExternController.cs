@@ -1353,7 +1353,7 @@ namespace EdiViewer.Controllers
                                                 NewRowInsert.Identificador = Convert.ToInt32(row.GetCell(j).ToString());
                                                 break;
                                             case "fecha":
-                                                NewRowInsert.Fecha = row.GetCell(j).DateCellValue.ToString(ApplicationSettings.DateTimeFormat);
+                                                NewRowInsert.Fecha = row.GetCell(j).ToString().Trim(); //row.GetCell(j).DateCellValue.ToString(ApplicationSettings.DateTimeFormat);
                                                 break;
                                             case "recibo de almacén":
                                                 NewRowInsert.ReciboAlmacen = row.GetCell(j).ToString().Trim();
