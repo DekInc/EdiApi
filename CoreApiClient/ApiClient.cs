@@ -20,7 +20,7 @@ namespace CoreApiClient
             }
             BaseEndpoint = baseEndpoint;
             _httpClient = new HttpClient();
-            _httpClient.Timeout = TimeSpan.FromMinutes(3);
+            _httpClient.Timeout = TimeSpan.FromMinutes(13);
         }
         private async Task<T> GetAsync<T>(Uri requestUrl)
         {

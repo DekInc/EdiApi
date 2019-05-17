@@ -36,6 +36,7 @@ namespace ComModels {
         public string Color { get; set; }
         public string Cp { get; set; }
         public int Cont { get; set; }
+        public int ClienteId { get; set; }
         public string Transporte { get; set; }
     }
 }

@@ -346,7 +346,7 @@ namespace EdiApi.Models
                     Dr.Close();
             }
             return ListProdDet;
-        }
+        }        
         public static IEnumerable<PaylessProdPrioriDetModel> SP_GetPaylessProdPrioriByPeriodAndIdTransport(ref Models.EdiDB.EdiDBContext _DbO, string Period, int IdTransport) {
             List<PaylessProdPrioriDetModel> ListProdDet = new List<PaylessProdPrioriDetModel>();
             using (DbCommand Cmd = _DbO.Database.GetDbConnection().CreateCommand()) {

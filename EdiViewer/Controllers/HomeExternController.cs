@@ -1374,7 +1374,10 @@ namespace EdiViewer.Controllers
                                                 NewRowInsert.Unidad = Convert.ToInt32(row.GetCell(j).ToString());
                                                 break;
                                             case "cantidad":
-                                                NewRowInsert.Cantidad = Convert.ToInt32(Convert.ToDouble(row.GetCell(j).ToString()));
+                                                if (string.IsNullOrEmpty(row.GetCell(j).ToString()))
+                                                    NewRowInsert.Cantidad = 1;
+                                                else
+                                                    NewRowInsert.Cantidad = Convert.ToInt32(Convert.ToDouble(row.GetCell(j).ToString()));
                                                 break;
                                             case "código de la localización":
                                                 NewRowInsert.CodigoLocalizacion = row.GetCell(j).ToString();
@@ -1416,10 +1419,16 @@ namespace EdiViewer.Controllers
                                                 NewRowInsert.FechaIm5 = row.GetCell(j).ToString();
                                                 break;
                                             case "embalaje":
-                                                NewRowInsert.Embalaje = Convert.ToInt32(row.GetCell(j).ToString());
+                                                if (string.IsNullOrEmpty(row.GetCell(j).ToString()))
+                                                    NewRowInsert.Embalaje = 136;
+                                                else
+                                                    NewRowInsert.Embalaje = Convert.ToInt32(row.GetCell(j).ToString());
                                                 break;
                                             case "uom":
-                                                NewRowInsert.UOM = Convert.ToInt32(row.GetCell(j).ToString());
+                                                if (string.IsNullOrEmpty(row.GetCell(j).ToString()))
+                                                    NewRowInsert.UOM = 346;
+                                                else
+                                                    NewRowInsert.UOM = Convert.ToInt32(row.GetCell(j).ToString());
                                                 break;
                                             case "exportador":
                                                 NewRowInsert.Exportador = Convert.ToInt32(row.GetCell(j).ToString());
@@ -1459,14 +1468,7 @@ namespace EdiViewer.Controllers
                     }
                 }
                 RetData<string> Ret = await ApiClientFactory.Instance.SetIngresoExcelWms2(ListExcelRows, cboBodega, cboRegimen);
-                return new RetData<string>() {
-                    Data = "",
-                    Info = new RetInfo() {
-                        CodError = -1,
-                        Mensaje = "",
-                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
-                    }
-                };
+                return Ret;
             } catch (Exception ex1) {
                 return new RetData<string>() {
                     Data = "",

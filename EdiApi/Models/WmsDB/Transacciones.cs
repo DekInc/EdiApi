@@ -40,7 +40,7 @@ namespace EdiApi.Models.WmsDB
         public string RecivingCliente { get; set; }
         public DateTime? FechaReciving { get; set; }
         public int? FacturaId { get; set; }
-        public long? IdRcontrol { get; set; }
+        //public long? IdRcontrol { get; set; }
 
         public Aduana AduFroNavigation { get; set; }
         public Destconsigna Destino { get; set; }

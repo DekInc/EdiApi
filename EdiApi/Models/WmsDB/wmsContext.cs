@@ -1792,7 +1792,7 @@ namespace EdiApi.Models.WmsDB
 
                 entity.Property(e => e.Fechacrea).HasColumnType("datetime");
 
-                entity.Property(e => e.IdRcontrol).HasColumnName("IdRControl");
+                //entity.Property(e => e.IdRcontrol).HasColumnName("IdRControl");
 
                 entity.Property(e => e.IdtipoTransaccion)
                     .HasColumnName("IDTipoTransaccion")

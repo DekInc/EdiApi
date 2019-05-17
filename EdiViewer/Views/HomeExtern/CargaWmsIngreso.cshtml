@@ -219,6 +219,7 @@
                 processData: false,
                 success: function (response) {
                     $('#divSpinUploadFile').hide();
+                    console.log(response);
                     if (response.info.codError != null) {
                         if (response.info.codError != 0) {
                             menErrorEdi(response.info.mensaje, 'Error en el proceso');
