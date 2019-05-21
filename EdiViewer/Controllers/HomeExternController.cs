@@ -82,6 +82,9 @@ namespace EdiViewer.Controllers
         public IActionResult CargaWmsIngreso() {
             return View();
         }
+        public IActionResult CrearWmsSalida() {
+            return View();
+        }        
         public async Task<RetData<string>> SetPaylessProdPriori(string dtpPeriodUpload, string txtTransporte, bool ChkUpDelete)
         {
             DateTime StartTime = DateTime.Now;
@@ -877,66 +880,66 @@ namespace EdiViewer.Controllers
                     }
                 };
             }
-        }        
-        public async Task<IActionResult> GetPaylessFileDif(string idProdArch, int idData = 1)
-        {
-            try
-            {
-                //var dict = Request.Form.ToDictionary(x => x.Key, x => x.Value.ToString());
-                var draw = HttpContext.Request.Form["draw"].Fod();
-                // Skiping number of Rows count  
-                var start = Request.Form["start"].Fod();
-                // Paging Length 10,20  
-                var length = Request.Form["length"].Fod();
-                // Sort Column Name  
-                var sortColumn = Request.Form["columns[" + Request.Form["order[0][column]"].Fod() + "][name]"].Fod();
-                // Sort Column Direction ( asc ,desc)  
-                var sortColumnDirection = Request.Form["order[0][dir]"].Fod();
-                // Search Value from (Search box)   
-                var searchValue = Request.Form["search[value]"].Fod();
-                //Paging Size (10,20,50,100)  
-                int pageSize = length != null ? Convert.ToInt32(length) : 0;
-                int skip = start != null ? Convert.ToInt32(start) : 0;
-                int recordsTotal = 0;
-                RetData<Tuple<IEnumerable<PaylessProdPrioriDet>, IEnumerable<PaylessProdPrioriDet>, IEnumerable<PaylessProdPrioriDet>>> ListProdPrioriArch = await ApiClientFactory.Instance.GetPaylessFileDif(Convert.ToInt32(idProdArch));
-                if (ListProdPrioriArch.Info.CodError != 0)
-                    return Json(new { draw = 0, recordsFiltered = 0, recordsTotal = 0, errorMessage = ListProdPrioriArch.Info.Mensaje, data = "" });
-                if (ListProdPrioriArch.Data == null)
-                    return Json(new { draw = 0, recordsFiltered = 0, recordsTotal = 0, errorMessage = (ListProdPrioriArch.Info.CodError != 0 ? ListProdPrioriArch.Info.Mensaje : string.Empty), data = "" });
-                if (ListProdPrioriArch.Data.Item1.Count() == 0 && idData == 1)
-                    return Json(new { draw = 0, recordsFiltered = 0, recordsTotal = 0, errorMessage = (ListProdPrioriArch.Info.CodError != 0 ? ListProdPrioriArch.Info.Mensaje : string.Empty), data = "" });
-                if (ListProdPrioriArch.Data.Item2.Count() == 0 && idData == 2)
-                    return Json(new { draw = 0, recordsFiltered = 0, recordsTotal = 0, errorMessage = (ListProdPrioriArch.Info.CodError != 0 ? ListProdPrioriArch.Info.Mensaje : string.Empty), data = "" });
-                if (ListProdPrioriArch.Data.Item3.Count() == 0 && idData == 3)
-                    return Json(new { draw = 0, recordsFiltered = 0, recordsTotal = 0, errorMessage = (ListProdPrioriArch.Info.CodError != 0 ? ListProdPrioriArch.Info.Mensaje : string.Empty), data = "" });
-                IEnumerable<PaylessProdPrioriDet> Item1 = ListProdPrioriArch.Data.Item1;
-                IEnumerable<PaylessProdPrioriDet> Item2 = ListProdPrioriArch.Data.Item2;
-                IEnumerable<PaylessProdPrioriDet> Item3 = ListProdPrioriArch.Data.Item3;
-                if (!(string.IsNullOrEmpty(sortColumn) && string.IsNullOrEmpty(sortColumnDirection)) && idData == 1)
-                    Item1 = Item1.AsQueryable().OrderBy(sortColumn + " " + sortColumnDirection);
-                if (!(string.IsNullOrEmpty(sortColumn) && string.IsNullOrEmpty(sortColumnDirection)) && idData == 2)
-                    Item2 = Item2.AsQueryable().OrderBy(sortColumn + " " + sortColumnDirection);
-                if (!(string.IsNullOrEmpty(sortColumn) && string.IsNullOrEmpty(sortColumnDirection)) && idData == 3)
-                    Item3 = Item3.AsQueryable().OrderBy(sortColumn + " " + sortColumnDirection);
-                //total number of rows count
-                if (idData == 1) recordsTotal = Item1.Count();
-                if (idData == 2) recordsTotal = Item2.Count();
-                if (idData == 3) recordsTotal = Item3.Count();
-                //Paging
-                if (idData == 1) Item1 = Item1.Skip(skip).Take(pageSize);
-                if (idData == 2) Item2 = Item2.Skip(skip).Take(pageSize);
-                if (idData == 3) Item3 = Item3.Skip(skip).Take(pageSize);
-                //Returning Json Data
-                if (idData == 1) return Json(new { draw, recordsFiltered = recordsTotal, recordsTotal, data = Item1, errorMessage = "" });
-                if (idData == 2) return Json(new { draw, recordsFiltered = recordsTotal, recordsTotal, data = Item2, errorMessage = "" });
-                if (idData == 3) return Json(new { draw, recordsFiltered = recordsTotal, recordsTotal, data = Item3, errorMessage = "" });
-                return Json(new { draw = 0, recordsFiltered = 0, recordsTotal = 0, errorMessage = (ListProdPrioriArch.Info.CodError != 0 ? ListProdPrioriArch.Info.Mensaje : string.Empty), data = "" });
-            }
-            catch (Exception e1)
-            {
-                return Json(new { draw = 0, recordsFiltered = 0, recordsTotal = 0, errorMessage = e1.ToString(), data = "" });
-            }
         }
+        //public async Task<IActionResult> GetPaylessFileDif(string idProdArch, int idData = 1)
+        //{
+        //    try
+        //    {
+        //        //var dict = Request.Form.ToDictionary(x => x.Key, x => x.Value.ToString());
+        //        var draw = HttpContext.Request.Form["draw"].Fod();
+        //        // Skiping number of Rows count  
+        //        var start = Request.Form["start"].Fod();
+        //        // Paging Length 10,20  
+        //        var length = Request.Form["length"].Fod();
+        //        // Sort Column Name  
+        //        var sortColumn = Request.Form["columns[" + Request.Form["order[0][column]"].Fod() + "][name]"].Fod();
+        //        // Sort Column Direction ( asc ,desc)  
+        //        var sortColumnDirection = Request.Form["order[0][dir]"].Fod();
+        //        // Search Value from (Search box)   
+        //        var searchValue = Request.Form["search[value]"].Fod();
+        //        //Paging Size (10,20,50,100)  
+        //        int pageSize = length != null ? Convert.ToInt32(length) : 0;
+        //        int skip = start != null ? Convert.ToInt32(start) : 0;
+        //        int recordsTotal = 0;
+        //        RetData<Tuple<IEnumerable<PaylessProdPrioriDet>, IEnumerable<PaylessProdPrioriDet>, IEnumerable<PaylessProdPrioriDet>>> ListProdPrioriArch = await ApiClientFactory.Instance.GetPaylessFileDif(Convert.ToInt32(idProdArch));
+        //        if (ListProdPrioriArch.Info.CodError != 0)
+        //            return Json(new { draw = 0, recordsFiltered = 0, recordsTotal = 0, errorMessage = ListProdPrioriArch.Info.Mensaje, data = "" });
+        //        if (ListProdPrioriArch.Data == null)
+        //            return Json(new { draw = 0, recordsFiltered = 0, recordsTotal = 0, errorMessage = (ListProdPrioriArch.Info.CodError != 0 ? ListProdPrioriArch.Info.Mensaje : string.Empty), data = "" });
+        //        if (ListProdPrioriArch.Data.Item1.Count() == 0 && idData == 1)
+        //            return Json(new { draw = 0, recordsFiltered = 0, recordsTotal = 0, errorMessage = (ListProdPrioriArch.Info.CodError != 0 ? ListProdPrioriArch.Info.Mensaje : string.Empty), data = "" });
+        //        if (ListProdPrioriArch.Data.Item2.Count() == 0 && idData == 2)
+        //            return Json(new { draw = 0, recordsFiltered = 0, recordsTotal = 0, errorMessage = (ListProdPrioriArch.Info.CodError != 0 ? ListProdPrioriArch.Info.Mensaje : string.Empty), data = "" });
+        //        if (ListProdPrioriArch.Data.Item3.Count() == 0 && idData == 3)
+        //            return Json(new { draw = 0, recordsFiltered = 0, recordsTotal = 0, errorMessage = (ListProdPrioriArch.Info.CodError != 0 ? ListProdPrioriArch.Info.Mensaje : string.Empty), data = "" });
+        //        IEnumerable<PaylessProdPrioriDet> Item1 = ListProdPrioriArch.Data.Item1;
+        //        IEnumerable<PaylessProdPrioriDet> Item2 = ListProdPrioriArch.Data.Item2;
+        //        IEnumerable<PaylessProdPrioriDet> Item3 = ListProdPrioriArch.Data.Item3;
+        //        if (!(string.IsNullOrEmpty(sortColumn) && string.IsNullOrEmpty(sortColumnDirection)) && idData == 1)
+        //            Item1 = Item1.AsQueryable().OrderBy(sortColumn + " " + sortColumnDirection);
+        //        if (!(string.IsNullOrEmpty(sortColumn) && string.IsNullOrEmpty(sortColumnDirection)) && idData == 2)
+        //            Item2 = Item2.AsQueryable().OrderBy(sortColumn + " " + sortColumnDirection);
+        //        if (!(string.IsNullOrEmpty(sortColumn) && string.IsNullOrEmpty(sortColumnDirection)) && idData == 3)
+        //            Item3 = Item3.AsQueryable().OrderBy(sortColumn + " " + sortColumnDirection);
+        //        //total number of rows count
+        //        if (idData == 1) recordsTotal = Item1.Count();
+        //        if (idData == 2) recordsTotal = Item2.Count();
+        //        if (idData == 3) recordsTotal = Item3.Count();
+        //        //Paging
+        //        if (idData == 1) Item1 = Item1.Skip(skip).Take(pageSize);
+        //        if (idData == 2) Item2 = Item2.Skip(skip).Take(pageSize);
+        //        if (idData == 3) Item3 = Item3.Skip(skip).Take(pageSize);
+        //        //Returning Json Data
+        //        if (idData == 1) return Json(new { draw, recordsFiltered = recordsTotal, recordsTotal, data = Item1, errorMessage = "" });
+        //        if (idData == 2) return Json(new { draw, recordsFiltered = recordsTotal, recordsTotal, data = Item2, errorMessage = "" });
+        //        if (idData == 3) return Json(new { draw, recordsFiltered = recordsTotal, recordsTotal, data = Item3, errorMessage = "" });
+        //        return Json(new { draw = 0, recordsFiltered = 0, recordsTotal = 0, errorMessage = (ListProdPrioriArch.Info.CodError != 0 ? ListProdPrioriArch.Info.Mensaje : string.Empty), data = "" });
+        //    }
+        //    catch (Exception e1)
+        //    {
+        //        return Json(new { draw = 0, recordsFiltered = 0, recordsTotal = 0, errorMessage = e1.ToString(), data = "" });
+        //    }
+        //}
         //public async Task<IActionResult> GetPaylessProdPriori2()
         //{
         //    try
@@ -1467,11 +1470,157 @@ namespace EdiViewer.Controllers
                         }
                     }
                 }
-                RetData<string> Ret = await ApiClientFactory.Instance.SetIngresoExcelWms2(ListExcelRows, cboBodega, cboRegimen);
+                RetData<string> Ret = await ApiLongClientFactory.Instance.SetIngresoExcelWms2(ListExcelRows, cboBodega, cboRegimen);
                 return Ret;
             } catch (Exception ex1) {
                 return new RetData<string>() {
                     Data = "",
+                    Info = new RetInfo() {
+                        CodError = -1,
+                        Mensaje = ex1.ToString(),
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            }
+        }
+        public IActionResult TransformEscanerToWmsIn() {
+            DateTime StartTime = DateTime.Now;
+            List<string> ListBarcodes = new List<string>();
+            try {
+                IFormFile FileUploaded = Request.Form.Files[0];
+                StringBuilder sb = new StringBuilder();
+                if (FileUploaded.Length > 0) {
+                    string FileExtension = Path.GetExtension(FileUploaded.FileName).ToLower();
+                    using (MemoryStream stream = new MemoryStream()) {
+                        FileUploaded.CopyTo(stream);
+                        stream.Position = 0;
+                        if (!(FileExtension == ".xml" || FileExtension == ".XML")) {
+                            return Json(new {
+                                Info = new RetInfo() {
+                                    CodError = -1,
+                                    Mensaje = "El archivo no tiene la extensión .xml",
+                                    ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                                }
+                            });
+                        }
+                        System.Data.DataSet FileUploadDs = new System.Data.DataSet();
+                        FileUploadDs.ReadXml(stream);
+                        if (FileUploadDs.Tables.Count > 3 && FileUploadDs.Tables[1].Columns[0].ColumnName == "OriginType") {
+                            if (FileUploadDs.Tables[3].TableName == "CaseDetail") {
+                                foreach (System.Data.DataRow FileCod in FileUploadDs.Tables[3].Rows) {
+                                    if (ListBarcodes.Where(Bc => Bc == FileCod["CaseNumber"].ToString()).Count() == 0)
+                                        ListBarcodes.Add(FileCod["CaseNumber"].ToString());
+                                }
+                            } else {
+                                return Json(new {
+                                    Info = new RetInfo() {
+                                        CodError = -1,
+                                        Mensaje = "El archivo no es correcto",
+                                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                                    }
+                                });
+                            }
+                        } else {
+                            return Json(new {
+                                Info = new RetInfo() {
+                                    CodError = -1,
+                                    Mensaje = "El archivo no es correcto",
+                                    ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                                }
+                            });
+                        }
+                    }
+                }
+                Utility.ExceL ExcelO = new Utility.ExceL();
+                using (FileStream FilePlantilla = new FileStream("plantillaWms2.xls", FileMode.Open, FileAccess.Read, FileShare.ReadWrite)) {
+                    MemoryStream Ms = new MemoryStream();
+                    FilePlantilla.CopyTo(Ms);
+                    try {
+                        ExcelO.ExcelWorkBook = new HSSFWorkbook(Ms);
+                        ExcelO.CurrentSheet = ExcelO.ExcelWorkBook.GetSheetAt(0);
+                    } catch (Exception e2) {
+                        throw new Exception("El archivo no es de Excel. Utilice un formato propio de Microsoft Excel. " + e2.ToString());
+                    }                    
+                    ExcelO.CurrentRow = 1;
+                    foreach (string Code1 in ListBarcodes) {
+                        ExcelO.CreateRow();
+                        ExcelO.CurrentCol = 0;
+                        ExcelO.CreateCell(CellType.Numeric);
+                        ExcelO.SetCellValue(Code1);
+                        ExcelO.CurrentCol = 1;
+                        ExcelO.CreateCell(CellType.Numeric);
+                        ExcelO.SetCellValue(1);
+                        ExcelO.CurrentCol = 4;
+                        ExcelO.CreateCell(CellType.Numeric);
+                        ExcelO.SetCellValue(1);
+                        ExcelO.CurrentRow++;
+                    }
+                    MemoryStream Ms2 = new MemoryStream();
+                    ExcelO.ExcelWorkBook.Write(Ms2);
+                    return File(Ms2.ToArray(), "application/octet-stream", "ArchivoSalida_WMS_" + DateTime.Now.ToString("ddMMyyyy") + ".xls");
+                }
+            } catch (Exception ex1) {
+                return Json(new {
+                    Info = new RetInfo() {
+                        CodError = -1,
+                        Mensaje = ex1.ToString(),
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                });
+            }
+        }
+        public async Task<RetData<string>> SetSalidaWmsFromEscaner() {
+            DateTime StartTime = DateTime.Now;
+            List<string> ListBarcodes = new List<string>();
+            try {
+                IFormFile FileUploaded = Request.Form.Files[0];
+                StringBuilder sb = new StringBuilder();
+                if (FileUploaded.Length > 0) {
+                    string FileExtension = Path.GetExtension(FileUploaded.FileName).ToLower();
+                    using (MemoryStream stream = new MemoryStream()) {
+                        FileUploaded.CopyTo(stream);
+                        stream.Position = 0;
+                        if (!(FileExtension == ".xml" || FileExtension == ".XML")) {
+                            return new RetData<string> { 
+                                Info = new RetInfo() {
+                                    CodError = -1,
+                                    Mensaje = "El archivo no tiene la extensión .xml",
+                                    ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                                }
+                            };
+                        }
+                        System.Data.DataSet FileUploadDs = new System.Data.DataSet();
+                        FileUploadDs.ReadXml(stream);
+                        if (FileUploadDs.Tables.Count > 3 && FileUploadDs.Tables[1].Columns[0].ColumnName == "OriginType") {
+                            if (FileUploadDs.Tables[3].TableName == "CaseDetail") {
+                                foreach (System.Data.DataRow FileCod in FileUploadDs.Tables[3].Rows) {
+                                    if (ListBarcodes.Where(Bc => Bc == FileCod["CaseNumber"].ToString()).Count() == 0)
+                                        ListBarcodes.Add(FileCod["CaseNumber"].ToString());
+                                }
+                            } else {
+                                return new RetData<string> {
+                                    Info = new RetInfo() {
+                                        CodError = -1,
+                                        Mensaje = "El archivo no es correcto",
+                                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                                    }
+                                };
+                            }
+                        } else {
+                            return new RetData<string> {
+                                Info = new RetInfo() {
+                                    CodError = -1,
+                                    Mensaje = "El archivo no es correcto",
+                                    ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                                }
+                            };
+                        }
+                    }
+                }
+                RetData<string> Ret = await ApiClientFactory.Instance.SetSalidaWmsFromEscaner(ListBarcodes);
+                return Ret;
+            } catch (Exception ex1) {
+                return new RetData<string> {
                     Info = new RetInfo() {
                         CodError = -1,
                         Mensaje = ex1.ToString(),

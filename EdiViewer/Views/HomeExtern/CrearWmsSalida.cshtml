@@ -1,0 +1,126 @@
+﻿@using ComModels
+@{
+    ViewData["Title"] = "Arch Escaners -> Archivo salida wms";
+    Layout = "_Layout";
+}
+<div id="mainDiv">
+    <div class="container">
+        <div class="card-deck cardMain">
+            <div class="card box-shadow">
+                <div class="card-header">
+                    <h4 class="my-0 font-weight-normal">Arch Escaners -> Archivo salida WMS&nbsp;<img class="imgHeaderHelp" src="~/images/help.png" title="Convierte archivo de escaners a archivo de salida WMS" alt="Convierte archivo de escaners a archivo de salida WMS"></h4>
+                </div>
+                <div class="card-body">                    
+                    <form id="formSearch" target="_blank" enctype="multipart/form-data" asp-controller="HomeExtern" asp-action="TransformEscanerToWmsIn">
+                        <div class="container div856Search">                            
+                            <div class="row">
+                                <div class="col-sm custom-file divUpload" style="max-width: unset !important; margin-bottom: 10px;">
+                                    <input type="file" class="custom-file-input" id="fUpload" name="fUpload">
+                                    <label id="lblFile" class="custom-file-label" for="fUpload">Archivo a transformar</label>
+                                </div>
+                            </div>
+                            <div class="row margin5">
+                                <div class="col-sm">
+                                    <button class="btn btn-primary" type="submit" id="btnUpload">
+                                        &nbsp;&nbsp;&nbsp;Cargar archivo&nbsp;&nbsp;&nbsp;
+                                        <div id="divSpinUploadFile" class="spinner-border spinner-border-sm text-danger" style="display: none" role="status">
+                                            <span class="sr-only">Loading...</span>
+                                        </div>
+                                    </button>
+                                </div>
+                                <div class="col-sm">
+                                    <button class="btn btn-primary" type="button" id="btnGenSalidaWms">
+                                        &nbsp;&nbsp;&nbsp;Generar salida WMS&nbsp;&nbsp;&nbsp;
+                                        <div id="divSpinGenSalidaWms" class="spinner-border spinner-border-sm text-danger" style="display: none" role="status">
+                                            <span class="sr-only">Loading...</span>
+                                        </div>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>                    
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    var tblReportes = null;
+    var mainGrid = null;
+    $(document).ready(function () {
+        $('.imgHeaderHelp').tooltip();
+        $('#fUpload').on('change', function (event) {
+            var fullPath = $('#fUpload').val();
+            if (fullPath) {
+                var startIndex = (fullPath.indexOf('\\') >= 0 ? fullPath.lastIndexOf('\\') : fullPath.lastIndexOf('/'));
+                var filename = fullPath.substring(startIndex);
+                if (filename.indexOf('\\') === 0 || filename.indexOf('/') === 0) {
+                    filename = filename.substring(1);
+                }
+                $('#lblFile').text(filename);
+            }
+        });
+        $('#btnGenSalidaWms').on('click', function () {
+            //if ($('#cboBodegas').val() == '') {
+            //    menErrorEdi('El valor de la bodega no puede estar vacio', 'Error');
+            //    return;
+            //}
+            //if ($('#cboRegimen').val() == '') {
+            //    menErrorEdi('El valor del regimen no puede estar vacio', 'Error');
+            //    return;
+            //}
+            var fileExtension = ['xml', 'XML'];
+            var filename = $('#fUpload').val();
+            if (filename.length == 0) {
+                menErrorEdi('Por favor seleccione un archivo', 'Error');
+                return false;
+            }
+            else {
+                var extension = filename.replace(/^.*\./, '');
+                if ($.inArray(extension, fileExtension) == -1) {
+                    menErrorEdi('Solo se permiten archivos .xml', 'Error');
+                    return false;
+                }
+            }
+            $('#divSpinGenSalidaWms').show();
+            var fdata = new FormData();
+            var fileUpload = $("#fUpload").get(0);
+            var files = fileUpload.files;
+            fdata.append(files[0].name, files[0]);
+            $.ajax({
+                type: "POST",
+                timeout: 360000,
+                url: '@this.Url.Action("SetSalidaWmsFromEscaner", "HomeExtern")',
+                beforeSend: function (xhr) {
+                    xhr.setRequestHeader("XSRF-TOKEN",
+                        $('input:hidden[name="__RequestVerificationToken"]').val());
+                },
+                data: fdata,
+                contentType: false,
+                processData: false,
+                success: function (response) {
+                    $('#divSpinGenSalidaWms').hide();
+                    console.log(response);
+                    if (response.info.codError != null) {
+                        if (response.info.codError != 0) {
+                            menErrorEdi(response.info.mensaje, 'Error en el proceso');
+                            return;
+                        }
+                    }
+                    if (response.length == 0)
+                        menErrorEdi('Error al subir el archivo', 'Error');
+                    else {
+                        if (response.info.codError == 0)
+                            menErrorEdi('Archivo cargado', 'Información');
+                    }
+                },
+                error: function (resp) {
+                    $('#divSpinGenSalidaWms').hide();
+                    if (resp.statusText != null)
+                        menErrorEdi(resp.statusText, 'Error');
+                    menErrorEdi(resp.info.mensaje);
+                }
+            });
+        });
+    });
+</script>

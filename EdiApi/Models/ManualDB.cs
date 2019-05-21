@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Data.Common;
 using System.Linq;
 using System.Threading.Tasks;
@@ -386,6 +387,29 @@ namespace EdiApi.Models
                     Dr.Close();
             }
             return ListProdDet;
+        }
+        public static int UploadBatch(ref Models.WmsDB.WmsContext _Wms, string Batch) {
+            int Res = 0;
+            using (DbCommand Cmd = _Wms.Database.GetDbConnection().CreateCommand()) {
+                Cmd.CommandText = Batch;
+                _Wms.Database.OpenConnection();
+                 Res = Cmd.ExecuteNonQuery();
+                _Wms.Database.CloseConnection();
+            }
+            return Res;
+        }
+        public static DataTable SpGeneraSalidaWMS(ref Models.WmsDB.WmsContext _Wms, string FechaSalida, string CodProducto, int BodegaId, int RegimenId, int ClienteId, int LocationId, int RackId) {
+            DataTable Dt = new DataTable();
+            using (DbCommand Cmd = _Wms.Database.GetDbConnection().CreateCommand()) {
+                Cmd.CommandText = $"[dbo].[spGeneraSalida] '{FechaSalida}', '{CodProducto}', {BodegaId}, {RegimenId}, {ClienteId}, {LocationId}, {RackId} ";
+                _Wms.Database.OpenConnection();
+                DbDataReader Dr = Cmd.ExecuteReader();
+                Dt.Load(Dr);
+                _Wms.Database.CloseConnection();
+                if (!Dr.IsClosed)
+                    Dr.Close();
+            }
+            return Dt;
         }
     }
 }

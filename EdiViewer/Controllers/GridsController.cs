@@ -355,7 +355,7 @@ namespace EdiViewer.Controllers
         public async Task<IActionResult> GetPaylessFileDif(string idProdArch, int idData = 1) {
             try {
                 //if (idProdArch == "0") return null;
-                RetData<Tuple<IEnumerable<PaylessProdPrioriDet>, IEnumerable<PaylessProdPrioriDet>, IEnumerable<PaylessProdPrioriDet>>> ListProdPrioriArch = await ApiClientFactory.Instance.GetPaylessFileDif(Convert.ToInt32(idProdArch));
+                RetData<Tuple<IEnumerable<PaylessProdPrioriDet>, IEnumerable<PaylessProdPrioriDet>, IEnumerable<PaylessProdPrioriDet>>> ListProdPrioriArch = await ApiClientFactory.Instance.GetPaylessFileDif(Convert.ToInt32(idProdArch), idData);
                 if (ListProdPrioriArch.Info.CodError != 0)
                     return Json(new { total = 0, records = "", errorMessage = ListProdPrioriArch.Info.Mensaje });
                 if (ListProdPrioriArch.Data == null)
@@ -481,6 +481,28 @@ namespace EdiViewer.Controllers
                     return Json(new { total = 0, records = "", errorMessage = (ListPaylessReportes.Info.CodError != 0 ? ListPaylessReportes.Info.Mensaje : string.Empty) });                
                 List<PaylessReportesGModel> Records = ListPaylessReportes.Data.Select(O => Utility.Funcs.Reflect(O, new PaylessReportesGModel())).ToList();                
                 List<PaylessReportesGModel> AllRecords = new List<PaylessReportesGModel>();
+                int Total = Records.Count;
+                if (Records.Count() > 0) {
+                    AllRecords = Utility.ExpressionBuilderHelper.W2uiSearchNoSkip(Records, Request.Form);
+                    Records = Utility.ExpressionBuilderHelper.W2uiSearch(Records, Request.Form);
+                }
+                return Json(new { Total, Records, errorMessage = "", AllRecords });
+            } catch (Exception e1) {
+                return Json(new { total = 0, records = "", errorMessage = e1.ToString() });
+            }
+
+        }
+        public async Task<IActionResult> GetAllPeriods() {
+            DateTime StartTime = DateTime.Now;
+            try {
+                RetData<IEnumerable<string>> ListPeriods = await ApiClientFactory.Instance.GetPaylessPeriodPriori();
+                if (ListPeriods.Info.CodError != 0)
+                    return Json(new { total = 0, records = "", errorMessage = ListPeriods.Info.Mensaje });
+                if (ListPeriods.Data == null)
+                    return Json(new { total = 0, records = "", errorMessage = (ListPeriods.Info.CodError != 0 ? ListPeriods.Info.Mensaje : string.Empty) });
+                int Cont = 1;
+                List<PeriodModel> Records = ListPeriods.Data.Select(P => new PeriodModel() { Periodo = P, recid = Cont++ }).OrderBy(P2 => P2.Periodo.ToDateFromEspDate()).ToList();
+                List<PeriodModel> AllRecords = new List<PeriodModel>();
                 int Total = Records.Count;
                 if (Records.Count() > 0) {
                     AllRecords = Utility.ExpressionBuilderHelper.W2uiSearchNoSkip(Records, Request.Form);

@@ -14,6 +14,9 @@
                     <div style="color: orangered;">
                         El Excel no debe tener clientes intercalados, sino un mismo cliente de forma contigua.
                     </div>
+                    <div style="color: black;">
+                        Pantalla para hacer ingresos al WMS utilizando el formato generado en la pantalla "carga de archivo de escaners"
+                    </div>
                     <form id="formSearch">
                         <div class="container div856Search">
                             <div class="row">
@@ -47,7 +50,7 @@
                             </div>
                         </div>
                     </form>
-                    <form id="formReportes" action=""></form>                    
+                    <form id="formReportes" action=""></form>
                 </div>
             </div>
         </div>
@@ -109,63 +112,6 @@
             }
         });
     }
-    function refreshGrid(auto) {
-        w2ui.grid.autoLoad = auto;
-        w2ui.grid.skip(0);
-    }
-    function crearGrid() {
-        var config = {
-            grid: {
-                name: 'gridScans',
-                selectType: 'cell',
-                bResponsive: true,
-                bMobile: window.mobileAndTabletcheck(),
-                url: '@this.Url.Action("GetPaylessPeriodPrioriFile", "Grids")',
-                show: {
-                    footer: true,
-                    toolbar: true,
-                    expandColumn: window.mobileAndTabletcheck()
-                },
-                searches: [
-                    { field: "clientName", caption: "Cliente", type: 'text' },
-                    { field: "periodo", caption: "Periodo", type: 'text' }
-                ],
-                colShowResponsive: [
-                    { field: 'clientName' },
-                    { field: 'periodo' }
-                ],
-                columns: [
-                    { field: "id", caption: "Id", sortable: true, hidden: true },
-                    { field: "periodo", caption: "Periodo", sortable: true },
-                    { field: "transporte", caption: "Transporte", sortable: true },
-                    {
-                        field: "insertDate", caption: "Fecha de carga / actualización", sortable: true, render: function (record) {
-                            if (record.updateDate)
-                                return '<div>' + record.updateDate + '</div>';
-                            else
-                                return '<div>' + record.insertDate + '</div>';
-                        }
-                    },
-                    { field: "porValid", caption: "Porc. validez", sortable: true },
-                    {
-                        field: "updateDate", caption: "", sortable: true, render: function (record) {
-                            return '<a href="javascript:downloadWmsFile(' + "'" + record.periodo + "'" + ', ' + "'" + record.idTransporte + "'" + ')">Archivo WMS</a>&nbsp;|&nbsp;<a href="javascript:verDetalle(' + record.id + ')">Ver detalle</a>';
-                        }
-                    }
-                ]
-            }
-        };
-        mainGrid = $('#gridScans').w2grid(config.grid);
-        arrayGrids['gridScans'] = mainGrid;
-    }
-    function downloadWmsFile(period, idTransport) {
-        window.open('@this.Url.Action("MakeExcelWms1", "HomeExtern")?Period=' + period + '&IdTransport=' + idTransport);
-    }
-    function verDetalle(idM) {
-        idProdArch = idM;
-        gridRepDet1.reload2('@this.Url.Action("GetPaylessFileDif", "Grids")?idProdArch=' + idProdArch + '&idData=1');
-        $('#modalCargaProdArchBodDet').modal();
-    }
     $(document).ready(function () {
         $('.imgHeaderHelp').tooltip();
         getWmsBodegas();
@@ -212,6 +158,7 @@
             fdata.append(files[0].name, files[0]);
             $.ajax({
                 type: "POST",
+                timeout: 360000,
                 url: '@this.Url.Action("SetIngresoExcelWms", "HomeExtern")?cboBodega=' + $('#cboBodegas').val() + '&cboRegimen=' + $('#cboRegimen').val(),
                 beforeSend: function (xhr) {
                     xhr.setRequestHeader("XSRF-TOKEN",
@@ -238,18 +185,11 @@
                 },
                 error: function (resp) {
                     $('#divSpinUploadFile').hide();
+                    if (resp.statusText != null)
+                        menErrorEdi(resp.statusText, 'Error');
                     menErrorEdi(resp.info.mensaje);
                 }
             });
         });
-        if (window.mobileAndTabletcheck()) {
-            $('.div856Search').css({ "max-width": "unset" });
-            $('#dtpPeriodoBuscar').css({ "width": "100%" });
-            $('.btn').css({ "margin-bottom": "10px" });
-            $('.btn').addClass('btn-block');
-            $("#tblReportes").hide();
-            $('.inputUpload').css({ "max-width": "84vw" });
-            $('.divUpload').css({ "max-width": "84vw" });
-        }
     });
 </script>

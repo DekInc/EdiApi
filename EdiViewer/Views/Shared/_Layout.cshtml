@@ -75,6 +75,7 @@
                         </a>
                         <div class="dropdown-menu mr-auto" aria-labelledby="navbarDropdownBod">
                             <a class="dropdown-item" asp-area="" asp-controller="HomeExtern" asp-action="CargaWmsIngreso">Cargar ingreso WMS</a>
+                            <a class="dropdown-item" asp-area="" asp-controller="HomeExtern" asp-action="CrearWmsSalida">Escaner Salida WMS</a>
                         </div>
                     </li>
                     @if (Context.Session.GetObjSession<List<string>>("ListPermits").Where(O => O == "Admin_Pedidos_Lear" || O == "Admin_Pedidos_Payless" || O == "Admin_Confirmacion_Lear").Count() > 0) {

@@ -11,6 +11,9 @@
                     <h4 class="my-0 font-weight-normal">Carga de planilla de productos&nbsp;<img class="imgHeaderHelp" src="~/images/help.png" title="Pantalla utilizada para cargar el excel inicial de productos a enviar" alt="Pantalla utilizada para cargar el excel inicial de productos a enviar"></h4>
                 </div>
                 <div class="card-body">
+                    <div class="divPaso">
+                        Paso 1. Cargar archivos de Excel que vienen de Payless, estos van a ser los productos que van a entrar en la bodega de SPS, el periodo es la fecha que ingresa.
+                    </div>
                     <form id="formSearch">
                         <div class="container div856Search">
                             <div class="row">
@@ -42,6 +45,7 @@
                                     </button>
                                     <button id="btnNewUpload" class="btn btn-primary" type="button">Cargar archivo Excel</button>
                                     <button id="btnUploadResume" class="btn btn-primary" type="button">Ver cajas</button>
+                                    <button id="btnShowPeriods" class="btn btn-primary" type="button">Ver Periodos cargados</button>
                                 </div>
                             </div>
                         </div>
@@ -55,12 +59,14 @@
     </div>
 </div>
 @await Html.PartialAsync("_PopNewProdUpload")
+@await Html.PartialAsync("_PopCargaProdPrioriAdminShowPeriods")
 <script>
     var ModalPopPeticionDet = null;
     var domtblReportes = null;
     var domtblPeticionDet = null;
     var mainGrid = null;
-    var HashId = '';    
+    var gridPeriods = null;
+    var HashId = '';
     var foo = function () {
     };
     $.urlParam = function (name) {
@@ -102,6 +108,30 @@
             }
         });
     }
+    function crearGridPeriods() {
+        var config = {
+            grid: {
+                name: 'gridPeriods',
+                bResponsive: true,
+                bMobile: window.mobileAndTabletcheck(),
+                url: '@this.Url.Action("GetAllPeriods", "Grids")',
+                show: {
+                    footer: true,
+                    toolbar: true,
+                    expandColumn: window.mobileAndTabletcheck(),
+                    toolbarInput: false
+                },                
+                colShowResponsive: [
+                    { field: 'Periodo' }
+                ],
+                columns: [
+                    { field: "periodo", caption: "Periodo", hidden: false }                    
+                ]
+            }
+        };
+        gridPeriods = $('#gridPeriods').w2grid(config.grid);
+        arrayGrids['gridPeriods'] = gridPeriods;
+    }
     function crearGrid() {
         var config = {
             grid: {
@@ -113,7 +143,7 @@
                 show: {
                     footer: true,
                     toolbar: true,
-                    expandColumn: window.mobileAndTabletcheck()                    
+                    expandColumn: window.mobileAndTabletcheck()
                 },
                 searches: [
                     { field: "oid", caption: "oid", type: 'text' },
@@ -151,21 +181,21 @@
                     { field: "preinspeccion", caption: "preinspeccion", sortable: true },
                     { field: "cargada", caption: "cargada", sortable: true },
                     { field: "m3", caption: "m3", sortable: true },
-                    { field: "peso", caption: "peso", sortable: true }                    
+                    { field: "peso", caption: "peso", sortable: true }
                 ]
             }
         };
         mainGrid = $('#gridExcelFile').w2grid(config.grid);
         arrayGrids['gridExcelFile'] = mainGrid;
-    }    
-    $(document).ready(function () {        
+    }
+    $(document).ready(function () {
         $('#dtpPeriodoBuscar').datepicker();
         $('.imgHeaderHelp').tooltip();
         crearGrid();
         $('#btnNewUpload').on('click', function (Event) {
             $('#modalPopNewProdUpload').modal();
         });
-        $('#btnFiltrar').on("click", function (Event) {            
+        $('#btnFiltrar').on("click", function (Event) {
             if ($('#dtpPeriodoBuscar').val() == '') {
                 menErrorEdi('El periodo es necesario para una búsqueda', 'Error');
                 return;
@@ -184,6 +214,12 @@
         });
         $('#btnUploadResume').on('click', function (Event) {
             window.location.href = '@this.Url.Action("CargaProdPriori")';
+        });
+        $('#btnShowPeriods').on('click', function (Event) {
+            $('#modalPeriods').modal();
+            if (gridPeriods == null) {
+                crearGridPeriods();
+            }
         });
         $('#dtpPeriodoBuscar').on('change', function (Event) {
             getTransportes();

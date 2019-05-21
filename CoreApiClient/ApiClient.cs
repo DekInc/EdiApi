@@ -12,15 +12,12 @@ namespace CoreApiClient
     {
         private readonly HttpClient _httpClient;
         private Uri BaseEndpoint { get; set; }
-        public ApiClient(Uri baseEndpoint)
+        public ApiClient(Uri baseEndpoint, bool LongPlay)
         {
-            if (baseEndpoint == null)
-            {
-                throw new ArgumentNullException("baseEndpoint");
-            }
-            BaseEndpoint = baseEndpoint;
-            _httpClient = new HttpClient();
-            _httpClient.Timeout = TimeSpan.FromMinutes(2);
+            BaseEndpoint = baseEndpoint ?? throw new ArgumentNullException("baseEndpoint");
+            _httpClient = new HttpClient {
+                Timeout = (LongPlay ? TimeSpan.FromMinutes(6) : TimeSpan.FromMinutes(2))
+            };
         }
         private async Task<T> GetAsync<T>(Uri requestUrl)
         {
@@ -69,8 +66,9 @@ namespace CoreApiClient
         private Uri CreateRequestUri(string relativePath, string queryString = "")
         {
             var endpoint = new Uri(BaseEndpoint, relativePath);
-            var uriBuilder = new UriBuilder(endpoint);
-            uriBuilder.Query = queryString;
+            UriBuilder uriBuilder = new UriBuilder(endpoint) {
+                Query = queryString
+            };
             return uriBuilder.Uri;
         }
         private HttpContent CreateHttpContent<T>(T content)

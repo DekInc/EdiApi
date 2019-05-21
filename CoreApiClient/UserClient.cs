@@ -177,9 +177,9 @@ namespace CoreApiClient
         {
             return await GetAsync<RetData<IEnumerable<IenetUsers>>>(CreateRequestUri(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Data/GetClients")));
         }
-        public async Task<RetData<Tuple<IEnumerable<PaylessProdPrioriDet>, IEnumerable<PaylessProdPrioriDet>, IEnumerable<PaylessProdPrioriDet>>>> GetPaylessFileDif(int idProdArch)
+        public async Task<RetData<Tuple<IEnumerable<PaylessProdPrioriDet>, IEnumerable<PaylessProdPrioriDet>, IEnumerable<PaylessProdPrioriDet>>>> GetPaylessFileDif(int idProdArch, int idData)
         {
-            return await GetAsync<RetData<Tuple<IEnumerable<PaylessProdPrioriDet>, IEnumerable<PaylessProdPrioriDet>, IEnumerable<PaylessProdPrioriDet>>>>(CreateRequestUri(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Data/GetPaylessFileDif"), $"?idProdArch={idProdArch}"));
+            return await GetAsync<RetData<Tuple<IEnumerable<PaylessProdPrioriDet>, IEnumerable<PaylessProdPrioriDet>, IEnumerable<PaylessProdPrioriDet>>>>(CreateRequestUri(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Data/GetPaylessFileDif"), $"?idProdArch={idProdArch}&idData={idData}"));
         }
         /////////////////////////////////////////Account
         public async Task<string> LoginIe(string _User, string _Password)
@@ -248,6 +248,10 @@ namespace CoreApiClient
         public async Task<RetData<string>> SetIngresoExcelWms2(IEnumerable<WmsFileModel> ListProducts, int cboBodega, int cboRegimen) {
             string JsonParams = JsonConvert.SerializeObject(ListProducts);
             return await PostGetAsyncJson<RetData<string>>(CreateRequestUri(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Data/SetIngresoExcelWms2"), $"?cboBodega={cboBodega}&cboRegimen={cboRegimen}"), JsonParams);
+        }
+        public async Task<RetData<string>> SetSalidaWmsFromEscaner(IEnumerable<string> ListProducts) {
+            string JsonParams = JsonConvert.SerializeObject(ListProducts);
+            return await PostGetAsyncJson<RetData<string>>(CreateRequestUri(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Data/SetSalidaWmsFromEscaner")), JsonParams);
         }
         /////////////////////////////////////////
         //public async Task<List<UsersModel>> GetUsers()
