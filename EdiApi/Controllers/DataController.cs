@@ -20,6 +20,7 @@ namespace EdiApi.Controllers
     {
         public EdiDBContext DbO;
         public WmsContext WmsDbO;
+        public WmsContext WmsDbOLong;
         public static readonly string G1;
         public readonly IConfiguration Config;
         IConfiguration IMapConfig => Config.GetSection("IMapConfig");
@@ -38,9 +39,10 @@ namespace EdiApi.Controllers
         string FtpDirOut => (string)IEdiFtpConfig.GetValue(typeof(string), "DirOut");
         string FtpDirChecked => (string)IEdiFtpConfig.GetValue(typeof(string), "DirChecked");
         object MaxEdiComs => Config.GetSection("MaxEdiComs").GetValue(typeof(object), "Value");
-        public DataController(EdiDBContext _DbO, WmsContext _WmsDbO, IConfiguration _Config) {
+        public DataController(EdiDBContext _DbO, WmsContext _WmsDbO, WmsContext _WmsDbOLong, IConfiguration _Config) {
             DbO = _DbO;
             WmsDbO = _WmsDbO;
+            WmsDbOLong = _WmsDbOLong;
             Config = _Config;
         }
         private IEnumerable<Rep830Info> GetExToIe1(Exception E1)
@@ -53,7 +55,7 @@ namespace EdiApi.Controllers
         }
         [HttpGet]
         public string GetVersion() {
-            return "1.1.1.0";
+            return "1.1.2.0";
         }
         [HttpGet]
         public string UpdateLinComments(string LinHashId, string TxtLinComData, string ListFst) {
@@ -813,28 +815,19 @@ namespace EdiApi.Controllers
             }
         }
         [HttpPost]
-        public RetData<Clientes> GetClient(object ClientId)
+        public RetData<PaylessTiendas> GetClient(object TiendaId)
         {
             DateTime StartTime = DateTime.Now;
             try
             {
-                int? IdPedidoExterno = (
-                    from Pe in DbO.PedidosExternos
-                    where Pe.ClienteId == Convert.ToInt32(ClientId)
-                    && Pe.IdEstado == 1
-                    orderby Pe.Id descending
-                    select Pe.Id                    
+                PaylessTiendas Tienda = (
+                    from T in DbO.PaylessTiendas
+                    where T.TiendaId == Convert.ToInt32(TiendaId)
+                    select T
                     ).Fod();
-                IEnumerable<Clientes> ListClients = WmsDbO.Clientes.Where(C => C.ClienteId == Convert.ToInt32(ClientId));
-
-                Clientes ClienteO = new Clientes();
-                if (ListClients.Count() > 0) {
-                    ClienteO = WmsDbO.Clientes.Where(C => C.ClienteId == Convert.ToInt32(ClientId)).Fod();
-                    ClienteO.EstatusId = IdPedidoExterno;
-                }
-                return new RetData<Clientes>
+                return new RetData<PaylessTiendas>
                 {
-                    Data = ClienteO,
+                    Data = Tienda,
                     Info = new RetInfo()
                     {
                         CodError = 0,
@@ -845,7 +838,7 @@ namespace EdiApi.Controllers
             }
             catch (Exception e1)
             {
-                return new RetData<Clientes>
+                return new RetData<PaylessTiendas>
                 {
                     Info = new RetInfo()
                     {
@@ -1334,6 +1327,29 @@ namespace EdiApi.Controllers
             }
         }
         [HttpPost]
+        public RetData<IEnumerable<PaylessProdPrioriDetModel>> GetPaylessProdPrioriAll(string TiendaId) {
+            DateTime StartTime = DateTime.Now;
+            try { // Para no olvidar, hago Fod del master porque no permito ingresar más de 1 archivo por periodo.
+                IEnumerable<PaylessProdPrioriDetModel> ListPaylessProdPrioriDet = ManualDB.SP_GetPaylessProdPrioriAll(ref DbO, TiendaId);
+                return new RetData<IEnumerable<PaylessProdPrioriDetModel>>() {
+                    Data = ListPaylessProdPrioriDet,
+                    Info = new RetInfo() {
+                        CodError = 0,
+                        Mensaje = "ok",
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            } catch (Exception e1) {
+                return new RetData<IEnumerable<PaylessProdPrioriDetModel>>() {
+                    Info = new RetInfo() {
+                        CodError = -1,
+                        Mensaje = e1.ToString(),
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            }
+        }
+        [HttpPost]
         public RetData<string> SetPaylessProdPriori(IEnumerable<PaylessUploadFileModel> ListUpload, int ClienteId, string Periodo, string codUsr, string transporte, bool ChkUpDelete)
         {
             DateTime StartTime = DateTime.Now;
@@ -1572,46 +1588,57 @@ namespace EdiApi.Controllers
                         Periodo = Pe.Periodo,
                         PorValid = Pe.PorcValidez
                         
-                    }).ToList();
-                IEnumerable<PaylessProdPrioriArchDet> ListArchDet = (
-                    from Dp in DbO.PaylessProdPrioriArchDet
-                    from Pe in DbO.PaylessProdPrioriArchM
-                    where Dp.IdM == Pe.Id
-                    orderby Dp.Id descending
-                    select Dp
-                    );
-                IEnumerable<PaylessProdPrioriArchDet> ListExcelEscaneados = (
-                    from Dp in DbO.PaylessProdPrioriArchDet
-                    from Pe in DbO.PaylessProdPrioriArchM
-                    from Fu in DbO.PaylessProdPrioriM
-                    from FuD in DbO.PaylessProdPrioriDet
-                    where Dp.IdM == Pe.Id
-                    && Pe.PorcValidez == null
-                    && Fu.Periodo == Pe.Periodo
-                    && FuD.IdTransporte == Pe.IdTransporte
-                    && FuD.IdPaylessProdPrioriM == Fu.Id
-                    && FuD.Barcode == Dp.Barcode
-                    orderby Dp.Id descending
-                    select Dp
-                    );
+                    }).ToList();                
                 for(int Ci = 0; Ci < ListArchMaMo.Count(); Ci++)
                 {
                     if (ListArchMaMo[Ci].PorValid == null) {
-                        IEnumerable<PaylessProdPrioriArchDet> ListCountTemp = ListExcelEscaneados.Where(O => O.IdM == ListArchMaMo[Ci].Id).Distinct();
-                        if (ListCountTemp.Count() > 0) {
-                            int t1 = ListArchDet.Where(O => O.IdM == ListArchMaMo[Ci].Id).Count();
-                            int t2 = ListCountTemp.Count();
-                            ListArchMaMo[Ci].PorValid = Math.Round(((double)t2 / (double)t1) * 100, 3);
-                            PaylessProdPrioriArchM Am = DbO.PaylessProdPrioriArchM.Where(O => O.Id == ListArchMaMo[Ci].Id).Fod();
-                            Am.PorcValidez = ListArchMaMo[Ci].PorValid;
-                            DbO.PaylessProdPrioriArchM.Update(Am);                            
-                        }
+                        IEnumerable<string> ListExcelOriginal = (
+                            from Fu in DbO.PaylessProdPrioriM
+                            from FuD in DbO.PaylessProdPrioriDet
+                            from Pe in DbO.PaylessProdPrioriArchM
+                            where Pe.Id == ListArchMaMo[Ci].Id
+                            && Fu.Periodo == Pe.Periodo
+                            && FuD.IdTransporte == Pe.IdTransporte
+                            && FuD.IdPaylessProdPrioriM == Fu.Id
+                            select FuD.Barcode
+                            ).Distinct();
+                        IEnumerable<string> ListExcelEscaneados = (
+                            from Fu in DbO.PaylessProdPrioriM
+                            from FuD in DbO.PaylessProdPrioriDet
+                            from Pe in DbO.PaylessProdPrioriArchM
+                            from Dp in DbO.PaylessProdPrioriArchDet
+                            where Pe.Id == ListArchMaMo[Ci].Id
+                            && Dp.IdM == Pe.Id
+                            && Fu.Periodo == Pe.Periodo
+                            && FuD.IdTransporte == Pe.IdTransporte
+                            && FuD.IdPaylessProdPrioriM == Fu.Id
+                            && FuD.Barcode == Dp.Barcode
+                            select Dp.Barcode
+                            ).Distinct();
+                        IEnumerable<string> ListEscaneados = (
+                            from Pe in DbO.PaylessProdPrioriArchM
+                            from Dp in DbO.PaylessProdPrioriArchDet
+                            where Pe.Id == ListArchMaMo[Ci].Id
+                            && Dp.IdM == Pe.Id
+                            select Dp.Barcode
+                            ).Distinct();
+                        double PorcValidez = ((double)ListExcelEscaneados.Count() / (double)ListExcelOriginal.Count());
+                        if (ListEscaneados.Count() > ListExcelOriginal.Count())
+                            PorcValidez -= (double)(ListEscaneados.Count() - ListExcelOriginal.Count())/(double)ListExcelOriginal.Count();
+                        PaylessProdPrioriArchM Am = DbO.PaylessProdPrioriArchM.Where(O => O.Id == ListArchMaMo[Ci].Id).Fod();
+                        Am.PorcValidez = Math.Round(PorcValidez * 100, 3);
+                        DbO.PaylessProdPrioriArchM.Update(Am);
+                        ListArchMaMo[Ci].PorValid = Am.PorcValidez;
                     }
                 }
                 DbO.SaveChanges();
+                //////////////////////////
+                //////////////////////////
+                ///////////////////
+                /// REVISA EL RETURN
                 return new RetData<Tuple<IEnumerable<PaylessProdPrioriArchMModel>, IEnumerable<PaylessProdPrioriArchDet>>>
                 {
-                    Data = new Tuple<IEnumerable<PaylessProdPrioriArchMModel>, IEnumerable<PaylessProdPrioriArchDet>>(ListArchMaMo, ListArchDet),
+                    Data = new Tuple<IEnumerable<PaylessProdPrioriArchMModel>, IEnumerable<PaylessProdPrioriArchDet>>(ListArchMaMo, null),
                     Info = new RetInfo()
                     {
                         CodError = 0,
@@ -1667,76 +1694,125 @@ namespace EdiApi.Controllers
                 };
             }
         }
-        [HttpGet]
-        public RetData<Tuple<IEnumerable<PaylessProdPrioriDet>, IEnumerable<PaylessProdPrioriDet>, IEnumerable<PaylessProdPrioriDet>>> GetPaylessFileDif(int idProdArch, int idData)
-        {
+        [HttpPost]
+        public RetData<Tuple<IEnumerable<PaylessProdPrioriArchM>, IEnumerable<PaylessProdPrioriArchDet>>> GetPaylessPeriodPrioriFileExists2(string TiendaId) {
             DateTime StartTime = DateTime.Now;
-            try
-            {                
-                List<PaylessProdPrioriDet> ListExist = ( 
-                    from Dp in DbO.PaylessProdPrioriArchDet
-                    from Pe in DbO.PaylessProdPrioriArchM
-                    from Fu in DbO.PaylessProdPrioriM
-                    from FuD in DbO.PaylessProdPrioriDet
-                    where Dp.IdM == Pe.Id
-                    && Fu.Periodo == Pe.Periodo
-                    //&& Fu.ClienteId == Pe.ClienteId Hilmer4
-                    && FuD.IdPaylessProdPrioriM == Fu.Id
-                    && FuD.Barcode == Dp.Barcode
-                    && Pe.Id == idProdArch
-                    orderby FuD.Barcode
-                    select FuD
-                    ).Distinct().ToList();
-                //List<PaylessProdPrioriDet> ListNotExist = DbO.PaylessProdPrioriDet.ToList(); //Cargado en Excel y no escaneado
-                List<PaylessProdPrioriDet> ListNotExist = (
-                    from Pe in DbO.PaylessProdPrioriArchM
-                    from Fu in DbO.PaylessProdPrioriM
-                    from FuD in DbO.PaylessProdPrioriDet
-                    where Pe.Id == idProdArch
-                    //&& Fu.ClienteId == Pe.ClienteId Hilmer5
-                    && Fu.Periodo == Pe.Periodo
-                    && FuD.IdPaylessProdPrioriM == Fu.Id
-                    select FuD
-                    ).ToList();
-                List<PaylessProdPrioriDet> ListNotExistSobrante = new List<PaylessProdPrioriDet>(); //Escaneado y sobro
-                List<PaylessProdPrioriArchDet> ListDet = (
-                    from Dp in DbO.PaylessProdPrioriArchDet
-                    where Dp.IdM == idProdArch
-                    select Dp
-                    ).ToList();
-                foreach (PaylessProdPrioriDet Ex in ListExist)
-                {
-                    Ex.Estado = "En Excel y escaneado";
-                    ListNotExist.Remove(Ex);
-                    List<PaylessProdPrioriArchDet> ListTemp = ListDet.Where(O => O.Barcode == Ex.Barcode).ToList();
-                    foreach (PaylessProdPrioriArchDet O1 in ListTemp)
-                    {
-                        ListDet.Remove(O1);
-                    }
-                    //ListDet.Remove(ListDet.Where(O => O.Barcode == Ex.Barcode).Fod());
-                }                
-                ListNotExist.ForEach(Ne => Ne.Estado = "En Excel y no escaneado" );
-                ListDet.ForEach(Sobra => {
-                    ListNotExistSobrante.Add(new PaylessProdPrioriDet() {
-                        Barcode = Sobra.Barcode,
-                        Estado = "Escaneado y no encontrado en Excel"
-                    });
-                });                
-                return new RetData<Tuple<IEnumerable<PaylessProdPrioriDet>, IEnumerable<PaylessProdPrioriDet>, IEnumerable<PaylessProdPrioriDet>>>
-                {
-                    Data = new Tuple<IEnumerable<PaylessProdPrioriDet>, IEnumerable<PaylessProdPrioriDet>, IEnumerable<PaylessProdPrioriDet>>(ListExist, ListNotExist, ListNotExistSobrante),
-                    Info = new RetInfo()
-                    {
+            try {
+                IEnumerable<PaylessProdPrioriArchM> ListM = (
+                    from M in DbO.PaylessProdPrioriArchM
+                    //where M.Periodo == Period
+                    //&& M.ClienteId == ClienteId Hilmer3
+                    select M
+                    );
+                IEnumerable<PaylessProdPrioriArchDet> ListD = (
+                    from M in DbO.PaylessProdPrioriArchM
+                    from D in DbO.PaylessProdPrioriArchDet
+                    where D.IdM == M.Id
+                    && D.Barcode.Substring(0, 4) == TiendaId
+                    select D
+                    );
+                return new RetData<Tuple<IEnumerable<PaylessProdPrioriArchM>, IEnumerable<PaylessProdPrioriArchDet>>> {
+                    Data = new Tuple<IEnumerable<PaylessProdPrioriArchM>, IEnumerable<PaylessProdPrioriArchDet>>(ListM, ListD),
+                    Info = new RetInfo() {
                         CodError = 0,
                         Mensaje = "ok",
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            } catch (Exception e1) {
+                return new RetData<Tuple<IEnumerable<PaylessProdPrioriArchM>, IEnumerable<PaylessProdPrioriArchDet>>> {
+                    Info = new RetInfo() {
+                        CodError = -1,
+                        Mensaje = e1.ToString(),
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            }
+        }
+        [HttpGet]
+        public RetData<IEnumerable<PaylessProdPrioriDetModel>> GetPaylessFileDif(int idProdArch, int idData)
+        {
+            DateTime StartTime = DateTime.Now;
+            if (idProdArch == 0)
+                return new RetData<IEnumerable<PaylessProdPrioriDetModel>> {
+                    Info = new RetInfo() {
+                        CodError = 0,
+                        Mensaje = "Sin datos",
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };            
+            try
+            {
+                switch (idData) {
+                    case 1:
+                        IEnumerable<PaylessProdPrioriDetModel> Ret = ManualDB.SP_GetPaylessProdPrioriFileDif(ref DbO, idData, idProdArch);
+                        return new RetData<IEnumerable<PaylessProdPrioriDetModel>> {
+                            Data = Ret,
+                            Info = new RetInfo() {
+                                CodError = 0,
+                                Mensaje = "ok",
+                                ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                            }
+                        };
+                    case 2:
+                        List<PaylessProdPrioriDetModel> ListOriginal = ManualDB.SP_GetPaylessProdPrioriFileDif(ref DbO, 2, idProdArch).ToList();
+                        List<PaylessProdPrioriDetModel> ListExcelEscaneado = ManualDB.SP_GetPaylessProdPrioriFileDif(ref DbO, 1, idProdArch).ToList();
+                        ListExcelEscaneado.ForEach(Or => {
+                            if (ListOriginal.Where(Oi => Oi.Barcode == Or.Barcode).Count() > 0)
+                                ListOriginal.Remove(ListOriginal.Where(Oi => Oi.Barcode == Or.Barcode).Fod());
+                        });
+                        return new RetData<IEnumerable<PaylessProdPrioriDetModel>> {
+                            Data = ListOriginal,
+                            Info = new RetInfo() {
+                                CodError = 0,
+                                Mensaje = "ok",
+                                ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                            }
+                        };
+                    case 3:
+                        List<string> ListEscaneados = (
+                           from Pe in DbO.PaylessProdPrioriArchM
+                           from Dp in DbO.PaylessProdPrioriArchDet
+                           where Pe.Id == idProdArch
+                           && Dp.IdM == Pe.Id
+                           select Dp.Barcode
+                           ).Distinct().ToList();
+                        List<string> ListExcelEscaneados3 = (
+                            from Fu in DbO.PaylessProdPrioriM
+                            from FuD in DbO.PaylessProdPrioriDet
+                            from Pe in DbO.PaylessProdPrioriArchM
+                            from Dp in DbO.PaylessProdPrioriArchDet
+                            where Pe.Id == idProdArch
+                            && Dp.IdM == Pe.Id
+                            && Fu.Periodo == Pe.Periodo
+                            && FuD.IdTransporte == Pe.IdTransporte
+                            && FuD.IdPaylessProdPrioriM == Fu.Id
+                            && FuD.Barcode == Dp.Barcode
+                            select FuD.Barcode
+                            ).Distinct().ToList();
+                        ListExcelEscaneados3.ForEach(Ee => ListEscaneados.Remove(Ee));
+                        return new RetData<IEnumerable<PaylessProdPrioriDetModel>> {
+                            Data = ListEscaneados.Select(E => new PaylessProdPrioriDetModel() { Barcode = E }),
+                            Info = new RetInfo() {
+                                CodError = 0,
+                                Mensaje = "ok",
+                                ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                            }
+                        };
+                    default:
+                        break;
+                }
+                return new RetData<IEnumerable<PaylessProdPrioriDetModel>> {
+                    Info = new RetInfo() {
+                        CodError = -1,
+                        Mensaje = "Error de programación",
                         ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
                     }
                 };
             }
             catch (Exception e1)
             {
-                return new RetData<Tuple<IEnumerable<PaylessProdPrioriDet>, IEnumerable<PaylessProdPrioriDet>, IEnumerable<PaylessProdPrioriDet>>>
-                {
+                return new RetData<IEnumerable<PaylessProdPrioriDetModel>> {
                     Info = new RetInfo()
                     {
                         CodError = -1,
@@ -2273,19 +2349,17 @@ namespace EdiApi.Controllers
         [HttpPost]
         public RetData<string> SetIngresoExcelWms2(IEnumerable<WmsFileModel> ListProducts, int cboBodega, int cboRegimen) {
             DateTime StartTime = DateTime.Now;
+            string LaFecha = "";
             //int MaxInventarioId = 0;
-            List<string> ListSql = new List<string> {
-                "SET XACT_ABORT ON" + Environment.NewLine,
-                "BEGIN TRANSACTION TRAN1" + Environment.NewLine,
-                "DECLARE @MaxTransaccionId INT;" + Environment.NewLine,
-                "DECLARE @MaxInventarioId INT;" + Environment.NewLine,
-                "DECLARE @MaxDTId INT;" + Environment.NewLine,
-                "DECLARE @MaxItemInventario INT;" + Environment.NewLine,
-                "DECLARE @MaxDetItemTran INT;" + Environment.NewLine,
-                "DECLARE @MaxDocTran INT;" + Environment.NewLine,
-                "BEGIN TRY" + Environment.NewLine
-            };
-
+            if (ListProducts.Select(P => P.Barcode).Distinct().Count() != ListProducts.Count())
+                return new RetData<string> {
+                    Info = new RetInfo() {
+                        CodError = -1,
+                        Mensaje = "Error, el CodProducto debe ser único",
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            List<string> ListSql = new List<string>();
             try {
                 List<Producto> ListProductsWms = (from P in WmsDbO.Producto select new Producto() { CodProducto = P.CodProducto, Existencia = P.Existencia }).ToList();
                 List<Clientes> ListUploadClients = new List<Clientes>();
@@ -2322,14 +2396,14 @@ namespace EdiApi.Controllers
                     && D.InformeAlmacen == ReciboAlmacen
                     select D
                     ).ToList();
-                //if (ListC1.Count > 0)
-                //    return new RetData<string> {
-                //        Info = new RetInfo() {
-                //            CodError = -1,
-                //            Mensaje = "Error, existen informes de almacen duplicados, el numero de informe Almacen ya existe.",
-                //            ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
-                //        }
-                //    };
+                if (ListC1.Count > 0)
+                    return new RetData<string> {
+                        Info = new RetInfo() {
+                            CodError = -1,
+                            Mensaje = "Error, existen informes de almacen duplicados, el numero de informe Almacen ya existe.",
+                            ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                        }
+                    };
                 List<int> ListC2Verif = ListProducts.Select(O3 => O3.Embalaje).Distinct().ToList();
                 IEnumerable<UnidadMedida> ListEmbalajes = (
                     from Um in WmsDbO.UnidadMedida
@@ -2348,8 +2422,23 @@ namespace EdiApi.Controllers
                     };
                 //where C.Nombre.Contains("payless", StringComparison.InvariantCultureIgnoreCase)
                 List<Clientes> ListClientes = (from C in WmsDbO.Clientes orderby C.Nombre select C).ToList();
+                Transacciones TNew = new Transacciones();
+                //System.IO.StreamWriter Salida = new System.IO.StreamWriter("SetIngresoExcelWms2.sql", false);
+                //Salida.WriteLine("");
+                //Salida.Close();
                 foreach (WmsFileModel Product in ListProducts) {
                     bool AllRackFull = true;
+                    ListSql = new List<string> {
+                        "SET XACT_ABORT ON" + Environment.NewLine,
+                        "BEGIN TRANSACTION TRAN1" + Environment.NewLine,
+                        "DECLARE @MaxTransaccionId INT;" + Environment.NewLine,
+                        "DECLARE @MaxInventarioId INT;" + Environment.NewLine,
+                        "DECLARE @MaxDTId INT;" + Environment.NewLine,
+                        "DECLARE @MaxItemInventario INT;" + Environment.NewLine,
+                        "DECLARE @MaxDetItemTran INT;" + Environment.NewLine,
+                        "DECLARE @MaxDocTran INT;" + Environment.NewLine,
+                        "BEGIN TRY" + Environment.NewLine
+                    };
                     IEnumerable<Clientes> ListVerifCliente = ListClientes.Where(C2 => C2.Nombre.ToLower() == Product.Cliente.ToLower());
                     if (ListVerifCliente.Count() == 0) {
                         return new RetData<string> {
@@ -2362,12 +2451,13 @@ namespace EdiApi.Controllers
                     } else {
                         Product.ClienteId = ListVerifCliente.Fod().ClienteId;
                     }
-                    if (ListUploadClients.Where(Uc => Uc.ClienteId == Product.ClienteId).Count() == 0) {
-                        Transacciones TNew = new Transacciones();
-                        ListSql.Add(SqlGenHelper.GetSqlWmsMaxTbl("Transacciones", "TransaccionId", "MaxTransaccionId"));
+                    if (ListUploadClients.Where(Uc => Uc.ClienteId == Product.ClienteId).Count() == 0) {                        
+                        //ListSql.Add(SqlGenHelper.GetSqlWmsMaxTbl("Transacciones", "TransaccionId", "MaxTransaccionId"));
+                        int MaxTransaccionId = (from T3 in WmsDbO.Transacciones select T3.TransaccionId).Max();
+                        MaxTransaccionId++;
                         TNew = new Transacciones() {
-                            //TransaccionId = MaxTransaccionId,
-                            //NoTransaccion = "IN" + MaxTransaccionId.ToString().PadLeft(5, '0'),
+                            TransaccionId = MaxTransaccionId,
+                            NoTransaccion = "IN" + MaxTransaccionId.ToString().PadLeft(5, '0'),
                             IdtipoTransaccion = "IN",
                             FechaTransaccion = DateTime.Now,
                             BodegaId = cboBodega,
@@ -2381,9 +2471,12 @@ namespace EdiApi.Controllers
                             Exportadorid = Product.Exportador,
                             Destinoid = Product.Destino
                         };
-                        ListSql.Add(SqlGenHelper.GetSqlWmsInsertTransacciones(TNew));
+                        WmsDbO.Transacciones.Add(TNew);
+                        WmsDbO.SaveChanges();                        
+                        //ListSql.Add(SqlGenHelper.GetSqlWmsInsertTransacciones(TNew));
                         ListUploadClients.Add(new Clientes() { ClienteId = Product.ClienteId });
                     }
+                    ListSql.Add($"SET @MaxTransaccionId = {TNew.TransaccionId}; {Environment.NewLine}");
                     Producto PNew = new Producto();
                     if (ListProductsWms.Where(Pr1 => Pr1.CodProducto == Product.Barcode).Count() == 0) {
                         PNew = new Producto() {
@@ -2439,6 +2532,7 @@ namespace EdiApi.Controllers
                             INew.Rack = Product.RackId;
                         ListSql.Add(SqlGenHelper.GetSqlWmsInsertInventario(INew));
                         ListSql.Add(SqlGenHelper.GetSqlWmsMaxTbl("DetalleTransacciones", "DtllTrnsaccionId", "MaxDTId"));
+                        LaFecha = Product.Fecha;
                         DetalleTransacciones DTNew = new DetalleTransacciones() {
                             //DtllTrnsaccionId = MaxDTId,
                             //TransaccionId = TNew.TransaccionId,
@@ -2521,7 +2615,7 @@ namespace EdiApi.Controllers
                         };
                         if (Product.NumeroEntrada == 0 || !Product.NumeroEntrada.HasValue) {
                             DocTranNew.Im5 = Product.NumeroEntrada.ToString();
-                            DocTranNew.FeIm5 = Product.FechaIm5.ToDateFromEspDate();
+                            //DocTranNew.FeIm5 = Product.FechaIm5.ToDateFromEspDate();
                         }
                         if (Product.OrdenDeCompra != 0) {
                             DocTranNew.OrdenCompra = Product.OrdenDeCompra.ToString();
@@ -2533,29 +2627,28 @@ namespace EdiApi.Controllers
                         ListDocXTran.Add(Product.ClienteId);
                     }
                     // fin if transaccionId
+                    ListSql.Add(@"
+COMMIT TRANSACTION TRAN1
+END TRY
+BEGIN CATCH	
+	ROLLBACK TRANSACTION TRAN1
+	PRINT 'ERROR, LINEA: ' + CONVERT(VARCHAR(16), ERROR_LINE()) + ' - ' + ERROR_MESSAGE()
+	PRINT '@MaxTransaccionId = ' + CONVERT(VARCHAR(16), @MaxTransaccionId)
+	PRINT '@MaxInventarioId = ' + CONVERT(VARCHAR(16), @MaxInventarioId)
+	PRINT '@MaxDTId = ' + CONVERT(VARCHAR(16), @MaxDTId)
+	PRINT '@MaxItemInventario = ' + CONVERT(VARCHAR(16), @MaxItemInventario)
+	PRINT '@MaxDetItemTran = ' + CONVERT(VARCHAR(16), @MaxDetItemTran)
+	PRINT '@MaxDocTran = ' + CONVERT(VARCHAR(16), @MaxDocTran)
+END CATCH
+SET XACT_ABORT OFF
+                        " + Environment.NewLine);
+                    //System.IO.StreamWriter Salida2 = new System.IO.StreamWriter("SetIngresoExcelWms2.sql", true);
+                    //ListSql.ForEach(S1 => Salida2.WriteLine(S1));
+                    //Salida2.Close();
+                    ManualDB.UploadBatch(ref WmsDbOLong, string.Join("", ListSql));
+                    ListSql.Clear();
                 }
-                ListSql.Add(@"
-                COMMIT TRANSACTION TRAN1
-                END TRY
-                BEGIN CATCH	
-	                ROLLBACK TRANSACTION TRAN1
-	                PRINT 'ERROR, LINEA: ' + CONVERT(VARCHAR(16), ERROR_LINE()) + ' - ' + ERROR_MESSAGE()
-	                PRINT '@MaxTransaccionId = ' + CONVERT(VARCHAR(16), @MaxTransaccionId)
-	                PRINT '@MaxInventarioId = ' + CONVERT(VARCHAR(16), @MaxInventarioId)
-	                PRINT '@MaxDTId = ' + CONVERT(VARCHAR(16), @MaxDTId)
-	                PRINT '@MaxItemInventario = ' + CONVERT(VARCHAR(16), @MaxItemInventario)
-	                PRINT '@MaxDetItemTran = ' + CONVERT(VARCHAR(16), @MaxDetItemTran)
-	                PRINT '@MaxDocTran = ' + CONVERT(VARCHAR(16), @MaxDocTran)
-                END CATCH
-                --COMMIT TRANSACTION TRAN1
-                --ROLLBACK TRANSACTION TRAN1
-                SET XACT_ABORT OFF
-                " + Environment.NewLine);
-                ManualDB.UploadBatch(ref WmsDbO, string.Join("", ListSql));
                 //ListSql.Add((DateTime.Now - StartTime).TotalSeconds.ToString());
-                //System.IO.StreamWriter Salida = new System.IO.StreamWriter("sql.sql", false);
-                //ListSql.ForEach(S => Salida.WriteLine(S));
-                //Salida.Close();
                 return new RetData<string> {
                     Info = new RetInfo() {
                         CodError = 0,
@@ -2564,6 +2657,10 @@ namespace EdiApi.Controllers
                     }
                 };
             } catch (Exception e1) {
+                System.IO.StreamWriter Salida = new System.IO.StreamWriter("Errores.txt", true);
+                Salida.WriteLine(e1.ToString());
+                Salida.WriteLine(LaFecha);
+                Salida.Close();
                 return new RetData<string> {
                     Info = new RetInfo() {
                         CodError = -1,
@@ -2573,106 +2670,202 @@ namespace EdiApi.Controllers
                 };
             }
         }
-        public RetData<string> SetSalidaWmsFromEscaner(IEnumerable<string> ListProducts2) {
+        [HttpPost]
+        public RetData<string> SetSalidaWmsFromEscaner(IEnumerable<string> ListProducts2, string dtpPeriodo, int cboBodegas, int cboRegimen) {
             DateTime StartTime = DateTime.Now;
-            try {                
+            string ProductoSinExistencia = "";
+            List<SpGeneraSalidaWMSModel> ListSp = new List<SpGeneraSalidaWMSModel>();
+            List<string> ListSql = new List<string> {
+                "SET XACT_ABORT ON" + Environment.NewLine,
+                "BEGIN TRANSACTION TRAN1" + Environment.NewLine,
+                "DECLARE @TransaccionID INT;" + Environment.NewLine,
+                "DECLARE @MaxPedidoId INT;" + Environment.NewLine,
+                "DECLARE @MaxPedidoDet INT;" + Environment.NewLine,
+                "DECLARE @MaxDetTran INT;" + Environment.NewLine,
+                "DECLARE @MaxDetItemTran INT;" + Environment.NewLine,
+                "BEGIN TRY" + Environment.NewLine
+            };
+            try {
+                List<SysTempSalidas> ListSysSalidas = new List<SysTempSalidas>();
                 List<string> ListProducts = ListProducts2.ToList();
                 List<System.Data.DataTable> ListDt = new List<System.Data.DataTable>();
-                string FechaSalida = "16-05-2019";
-                int BodegaID = 81;
-                int RegimenID = 2;
                 int ClienteID = 1432;
                 int LocationID = 7;
                 int RackID = 0;
-                int TransaccionId = 115963;
-                List<SysTempSalidas> ListSysSalidas = new List<SysTempSalidas>();
-                Transacciones T = (from T1 in WmsDbO.Transacciones where T1.TransaccionId == TransaccionId select T1).Fod();
-                int MaxPedidoId = (from P in WmsDbO.Pedido select P.PedidoId).Max();
-                MaxPedidoId++;
+                string FechaSalida = dtpPeriodo.ToDateFromEspDate().ToString("dd-MM-yyyy");
+                //int TransaccionId = 116085;
+                ListSql.Add(SqlGenHelper.GetSqlWmsMaxTbl("Transacciones", "TransaccionId", "TransaccionID"));
+                //ListSql.Add($"SET @TransaccionID = {TransaccionId};{Environment.NewLine}");
+                Transacciones TNew = new Transacciones() {
+                    IdtipoTransaccion = "SA",
+                    FechaTransaccion = dtpPeriodo.ToDateFromEspDate(),
+                    BodegaId = cboBodegas,
+                    RegimenId = cboRegimen,
+                    ClienteId = ClienteID,
+                    TipoIngreso = "XL",
+                    Observacion = "",
+                    Usuariocrea = "Hilmer",
+                    Fechacrea = DateTime.Now,
+                    EstatusId = 4
+                };
+                ListSql.Add(SqlGenHelper.GetSqlWmsInsertTransaccionesOut(TNew));
+                //Transacciones T = (from T1 in WmsDbO.Transacciones where T1.TransaccionId == TransaccionId select T1).Fod();
+                //int MaxPedidoId = (from P in WmsDbO.Pedido select P.PedidoId).Max();
+                //MaxPedidoId++;
+                ListSql.Add(SqlGenHelper.GetSqlWmsMaxTbl("Pedido", "PedidoId", "MaxPedidoId"));
                 Pedido NewPedido = new Pedido() {
-                    PedidoId = MaxPedidoId,
+                    //PedidoId = MaxPedidoId,
                     Fechapedido = DateTime.Now,
                     ClienteId = ClienteID,
                     TipoPedido = "XL",
-                    FechaRequerido = new DateTime(2019, 5, 16),
+                    FechaRequerido = dtpPeriodo.ToDateFromEspDate(),
                     EstatusId = 8,
                     Observacion = "SALIDA GENERADA DE XLS Hilmer",
-                    BodegaId = BodegaID,
-                    RegimenId = RegimenID,
-                    PedidoBarcode = "PD" + MaxPedidoId.ToString().PadLeft(5, '0')
+                    BodegaId = cboBodegas,
+                    RegimenId = cboRegimen,
+                    //PedidoBarcode = "PD" + MaxPedidoId.ToString().PadLeft(5, '0')
                 };
-                WmsDbO.Pedido.Add(NewPedido);
-                T.PedidoId = MaxPedidoId;
-                WmsDbO.Transacciones.Update(T);
-                WmsDbO.SaveChanges();
+                ListSql.Add(SqlGenHelper.GetSqlWmsInsertPedido2(NewPedido));
+                ListSql.Add(SqlGenHelper.GetSqlWmsUpdateTransaccionesPedidoId());
+                //WmsDbO.Pedido.Add(NewPedido);
+                //T.PedidoId = MaxPedidoId;
+                //WmsDbO.Transacciones.Update(T);
+                //WmsDbO.SaveChanges();
                 for (int i = 0; i < ListProducts.Count(); i++) {
-                    System.Data.DataTable DtProdExists = ManualDB.SpGeneraSalidaWMS(ref WmsDbO, FechaSalida, ListProducts[i], BodegaID, RegimenID, ClienteID, LocationID, RackID);
-                    ListDt.Add(DtProdExists);
-                    int MaxPedidoDet = (from Pd in WmsDbO.DtllPedido select Pd.DtllPedidoId).Max();
-                    MaxPedidoDet++;
+                    ProductoSinExistencia = ListProducts[i];
+                    System.Data.DataTable DtProdExists = ManualDB.SpGeneraSalidaWMS(ref WmsDbO, FechaSalida, ListProducts[i], cboBodegas, cboRegimen, ClienteID, LocationID, RackID);
+                    if (DtProdExists != null) {
+                        if (DtProdExists.Rows.Count > 0) {
+                            ListSp.Add(new SpGeneraSalidaWMSModel() {
+                                CodProducto = DtProdExists.Rows[0]["CodProducto"].ToString(),
+                                InventarioID = DtProdExists.Rows[0]["InventarioID"].ToString(),
+                                ItemInventarioID = DtProdExists.Rows[0]["ItemInventarioID"].ToString(),
+                                Precio = DtProdExists.Rows[0]["precio"].ToString(),
+                                Lote = DtProdExists.Rows[0]["lote"].ToString(),
+                                Rack = DtProdExists.Rows[0]["rack"].ToString()
+                            });
+                        } else {
+                            return new RetData<string> {
+                                Info = new RetInfo() {
+                                    CodError = -1,
+                                    Mensaje = "Falta existencia para el producto " + ListProducts[i] + " por favor la fecha de la entrada para el producto.",
+                                    ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                                }
+                            };
+                        }
+                    } else {
+                        return new RetData<string> {
+                            Info = new RetInfo() {
+                                CodError = -1,
+                                Mensaje = "Falta existencia para el producto " + ListProducts[i] + " por favor la fecha de la entrada para el producto.",
+                                ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                            }
+                        };
+                    }
+                    //ListDt.Add(DtProdExists);
+                    //int MaxPedidoDet = (from Pd in WmsDbO.DtllPedido select Pd.DtllPedidoId).Max();
+                    //MaxPedidoDet++;
+                    ListSql.Add(SqlGenHelper.GetSqlWmsMaxTbl("DtllPedido", "DtllPedidoId", "MaxPedidoDet"));
                     DtllPedido PedidoDet = new DtllPedido() {
-                        DtllPedidoId = MaxPedidoDet,
-                        PedidoId = MaxPedidoId,
+                        //DtllPedidoId = MaxPedidoDet,
+                        //PedidoId = MaxPedidoId,
                         Cantidad = 1,
                         CodProducto = ListProducts[i]
                     };
-                    WmsDbO.DtllPedido.Add(PedidoDet);
-                    WmsDbO.SaveChanges();
+                    ListSql.Add(SqlGenHelper.GetSqlWmsInsertDtllPedido(PedidoDet));
+                    //WmsDbO.DtllPedido.Add(PedidoDet);
+                    //WmsDbO.SaveChanges();
                     SysTempSalidas NewSysSalida = new SysTempSalidas() {
-                        TransaccionId = TransaccionId,
-                        PedidoId = MaxPedidoId,
-                        InventarioId = Convert.ToInt32(DtProdExists.Rows[0]["InventarioID"]),
-                        DtllPedidoId = MaxPedidoDet,
-                        ItemInventarioId = Convert.ToInt32(DtProdExists.Rows[0]["ItemInventarioID"]),
+                        //TransaccionId = TransaccionId,
+                        //PedidoId = MaxPedidoId,
+                        InventarioId = Convert.ToInt32(ListSp.LastOrDefault().InventarioID),
+                        //DtllPedidoId = MaxPedidoDet,
+                        ItemInventarioId = Convert.ToInt32(ListSp.LastOrDefault().ItemInventarioID),
                         CodProducto = ListProducts[i],
                         Cantidad = 1,
-                        Precio = Convert.ToDouble(DtProdExists.Rows[0]["precio"]),
+                        Precio = Convert.ToDouble(ListSp.LastOrDefault().Precio),
                         Fecha = DateTime.Now,
-                        Usuario = "RPERDOMO",
-                        Lote = DtProdExists.Rows[0]["lote"].ToString()
+                        Usuario = "HCAMPOS",
+                        Lote = ListSp.LastOrDefault().Lote
                     };
-                    WmsDbO.SysTempSalidas.Add(NewSysSalida);
-                    WmsDbO.SaveChanges();
+                    ListSql.Add(SqlGenHelper.GetSqlWmsInsertSysTempSalidas(NewSysSalida));
+                    //WmsDbO.SysTempSalidas.Add(NewSysSalida);
+                    //WmsDbO.SaveChanges();
                     ListSysSalidas.Add(NewSysSalida);
                     //string strSQL = "Insert Into SysTempSalidas(TransaccionID, PedidoID, " +
                     //    "InventarioID, DtllPedidoID, ItemInventarioID, CodProducto, " +
                     //    "Cantidad, Precio, Fecha, Usuario,doc_fac,lote) Values(" + Valores + ")";
                 }
-                string Deg1 = "";
-                Deg1 = "23323";
-                for (int j = 0; j < ListSysSalidas.Count; j++) {
-                    System.Data.DataTable DtProdExists = ListDt.Where(Dt => Dt.Rows[0]["CodProducto"].ToString() == ListSysSalidas[j].CodProducto).Fod();
-                    int MaxDetTran = (from Pd in WmsDbO.DetalleTransacciones select Pd.DtllTrnsaccionId).Max();
-                    MaxDetTran++;
-                    DetalleTransacciones NewDetTran = new DetalleTransacciones() {
-                        DtllTrnsaccionId = MaxDetTran,
-                        TransaccionId = T.TransaccionId,
-                        InventarioId = ListSysSalidas[j].InventarioId,
-                        Conteo = 1,
-                        Cantidad = 1,
-                        Valor = Convert.ToDecimal(1.0 * Convert.ToDouble(DtProdExists.Rows[0]["precio"])),
-                        Rack = Convert.ToInt32(DtProdExists.Rows[j]["rack"]),
-                        IsEscaneado = false
+                if (ListSp.Count != ListProducts.Count) {
+                    return new RetData<string> {
+                        Info = new RetInfo() {
+                            CodError = -1,
+                            Mensaje = "Faltan existencias de productos",
+                            ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                        }
                     };
-                    WmsDbO.DetalleTransacciones.Add(NewDetTran);
-                    WmsDbO.SaveChanges();
-                    int MaxDetItemTran = (from Pd in WmsDbO.DtllItemTransaccion select Pd.DtllItemTransaccionId).Max();
-                    MaxDetItemTran++;
-                    DtllItemTransaccion NewDetItemTran = new DtllItemTransaccion() {
-                        DtllItemTransaccionId = MaxDetItemTran,
-                        TransaccionId = T.TransaccionId,
-                        DtllTransaccionId = MaxDetTran,
-                        ItemInventarioId = ListSysSalidas[j].ItemInventarioId,
-                        Cantidad = 1,
-                        Precio = Convert.ToDouble(DtProdExists.Rows[0]["precio"]),
-                        Rack = Convert.ToInt32(DtProdExists.Rows[0]["rack"])
-                    };
-                    WmsDbO.DtllItemTransaccion.Add(NewDetItemTran);
-                    WmsDbO.SaveChanges();
-                    //string strSQL = "Insert Into DtllItemTransaccion(DtllItemTransaccionID, " +
-                    //    "TransaccionID, DtllTransaccionID, ItemInventarioID, Cantidad, Precio," +
-                    //    "RACK) Values (" + nDtllItemTransaccionID + ", " + Valores + ")";
                 }
+                for (int j = 0; j < ListSysSalidas.Count; j++) {
+                    try {
+                        //int MaxDetTran = (from Pd in WmsDbO.DetalleTransacciones select Pd.DtllTrnsaccionId).Max();
+                        //MaxDetTran++;
+                        ListSql.Add(SqlGenHelper.GetSqlWmsMaxTbl("DetalleTransacciones", "DtllTrnsaccionId", "MaxDetTran"));
+                        DetalleTransacciones NewDetTran = new DetalleTransacciones() {
+                            //DtllTrnsaccionId = MaxDetTran,
+                            //TransaccionId = T.TransaccionId,
+                            InventarioId = ListSysSalidas[j].InventarioId,
+                            Conteo = 1,
+                            Cantidad = 1,
+                            Valor = Convert.ToDecimal(1.0 * Convert.ToDouble(ListSp[j].Precio)),
+                            Rack = Convert.ToInt32(ListSp[j].Rack),
+                            Embalaje = "CS",
+                            IsEscaneado = false
+                        };
+                        //WmsDbO.DetalleTransacciones.Add(NewDetTran);
+                        //WmsDbO.SaveChanges();
+                        ListSql.Add(SqlGenHelper.GetSqlWmsInsertDetalleTransacciones2(NewDetTran));
+                        //int MaxDetItemTran = (from Pd in WmsDbO.DtllItemTransaccion select Pd.DtllItemTransaccionId).Max();
+                        //MaxDetItemTran++;
+                        ListSql.Add(SqlGenHelper.GetSqlWmsMaxTbl("DtllItemTransaccion", "DtllItemTransaccionId", "MaxDetItemTran"));
+                        DtllItemTransaccion NewDetItemTran = new DtllItemTransaccion() {
+                            //DtllItemTransaccionId = MaxDetItemTran,
+                            //TransaccionId = T.TransaccionId,
+                            //DtllTransaccionId = MaxDetTran,
+                            ItemInventarioId = ListSysSalidas[j].ItemInventarioId,
+                            Cantidad = 1,
+                            Precio = Convert.ToDouble(ListSp[j].Precio),
+                            Rack = Convert.ToInt32(ListSp[j].Rack)
+                        };
+                        ListSql.Add(SqlGenHelper.GetSqlWmsInsertDtllItemTransaccion2(NewDetItemTran));
+                        //WmsDbO.DtllItemTransaccion.Add(NewDetItemTran);
+                        //WmsDbO.SaveChanges();
+                        //string strSQL = "Insert Into DtllItemTransaccion(DtllItemTransaccionID, " +
+                        //    "TransaccionID, DtllTransaccionID, ItemInventarioID, Cantidad, Precio," +
+                        //    "RACK) Values (" + nDtllItemTransaccionID + ", " + Valores + ")";
+                    } catch (Exception e1) {
+                        throw e1;
+                    }                    
+                }
+                ListSql.Add(@"
+                COMMIT TRANSACTION TRAN1
+                END TRY
+                BEGIN CATCH	
+	                ROLLBACK TRANSACTION TRAN1
+	                PRINT 'ERROR, LINEA: ' + CONVERT(VARCHAR(16), ERROR_LINE()) + ' - ' + ERROR_MESSAGE()
+	                PRINT '@MaxPedidoId = ' + CONVERT(VARCHAR(16), @MaxPedidoId)
+	                PRINT '@MaxPedidoDet = ' + CONVERT(VARCHAR(16), @MaxPedidoDet)
+	                PRINT '@MaxDetTran = ' + CONVERT(VARCHAR(16), @MaxDetTran)
+	                PRINT '@MaxDetItemTran = ' + CONVERT(VARCHAR(16), @MaxDetItemTran)
+                END CATCH
+                --COMMIT TRANSACTION TRAN1
+                --ROLLBACK TRANSACTION TRAN1
+                SET XACT_ABORT OFF
+                " + Environment.NewLine);
+                ManualDB.UploadBatch(ref WmsDbOLong, string.Join("", ListSql));
+                //ListSql.Add((DateTime.Now - StartTime).TotalSeconds.ToString());
+                //System.IO.StreamWriter Salida = new System.IO.StreamWriter("sql.sql", false);
+                //ListSql.ForEach(S => Salida.WriteLine(S));
+                //Salida.Close();
                 return new RetData<string> {
                     Info = new RetInfo() {
                         CodError = 0,
@@ -2684,26 +2877,23 @@ namespace EdiApi.Controllers
                 return new RetData<string> {
                     Info = new RetInfo() {
                         CodError = -1,
-                        Mensaje = e1.ToString(),
+                        Mensaje = "Fallo el CodProducto = " + ProductoSinExistencia + e1.ToString(),
                         ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
                     }
                 };
             }            
         }
-        [HttpPost]
+        [HttpGet]
         public RetData<int> TestVel1() {
             DateTime StartTime = DateTime.Now;
             try {
-                IEnumerable<Regimen> List = (
-                    from R in WmsDbO.Regimen
-                    from B in WmsDbO.BodegaxRegimen
-                    where B.Regimen == R.Idregimen
-                    && B.BodegaId == BodegaId
-                    orderby R.Regimen1
-                    select R
+                IEnumerable<Transacciones> List = (
+                    from T in WmsDbO.Transacciones
+                    where T.TransaccionId == 101029
+                    select T
                     );
-                return new RetData<IEnumerable<Regimen>> {
-                    Data = List,
+                return new RetData<int> {
+                    Data = 1,
                     Info = new RetInfo() {
                         CodError = 0,
                         Mensaje = "ok",
@@ -2711,7 +2901,30 @@ namespace EdiApi.Controllers
                     }
                 };
             } catch (Exception e1) {
-                return new RetData<IEnumerable<Regimen>> {
+                return new RetData<int> {
+                    Info = new RetInfo() {
+                        CodError = -1,
+                        Mensaje = e1.ToString(),
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            }
+        }
+        [HttpGet]
+        public RetData<int> TestVel2() {
+            DateTime StartTime = DateTime.Now;
+            try {
+                IEnumerable<Transacciones> List = ManualDB.GetTransaccionById(ref WmsDbO, 101029);
+                return new RetData<int> {
+                    Data = 1,
+                    Info = new RetInfo() {
+                        CodError = 0,
+                        Mensaje = "ok",
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            } catch (Exception e1) {
+                return new RetData<int> {
                     Info = new RetInfo() {
                         CodError = -1,
                         Mensaje = e1.ToString(),

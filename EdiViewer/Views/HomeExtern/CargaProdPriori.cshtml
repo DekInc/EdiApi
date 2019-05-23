@@ -40,6 +40,7 @@
                                             <span class="sr-only">Loading...</span>
                                         </div>
                                     </button>
+                                    <button id="btnShowPeriods" class="btn btn-primary" type="button">Ver Periodos cargados</button>
                                 </div>
                             </div>
                         </div>
@@ -54,12 +55,13 @@
 </div>
 
 @await Html.PartialAsync("_PopCargaProdPrioriDet")
-
+@await Html.PartialAsync("_PopCargaProdPrioriAdminShowPeriods")
 <script>
     var ModalPopPeticionDet = null;
     var domtblReportes = null;
     var domtblPeticionDet = null;
     var mainGrid = null;
+    var gridPeriods = null;
     var HashId = '';
     var foo = function () {
     };
@@ -102,6 +104,30 @@
         w2ui.grid.autoLoad = auto;
         w2ui.grid.skip(0);
     }
+    function crearGridPeriods() {
+        var config = {
+            grid: {
+                name: 'gridPeriods',
+                bResponsive: true,
+                bMobile: window.mobileAndTabletcheck(),
+                url: '@this.Url.Action("GetAllPeriods", "Grids")',
+                show: {
+                    footer: true,
+                    toolbar: true,
+                    expandColumn: window.mobileAndTabletcheck(),
+                    toolbarInput: false
+                },                
+                colShowResponsive: [
+                    { field: 'Periodo' }
+                ],
+                columns: [
+                    { field: "periodo", caption: "Periodo", hidden: false }                    
+                ]
+            }
+        };
+        gridPeriods = $('#gridPeriods').w2grid(config.grid);
+        arrayGrids['gridPeriods'] = gridPeriods;
+    }
     function crearGrid() {
         var config = {
             grid: {
@@ -113,7 +139,7 @@
                 show: {
                     footer: true,
                     toolbar: true,
-                    expandColumn: window.mobileAndTabletcheck()                    
+                    expandColumn: window.mobileAndTabletcheck()
                 },
                 searches: [
                     { field: "barcode", caption: "Cod. caja", type: 'text' },
@@ -131,7 +157,7 @@
                     { field: "id", caption: "id", sortable: true, hidden: true },
                     { field: "transporte", caption: "Transporte", sortable: true },
                     { field: "tienda", caption: "Tienda", sortable: true },
-                    { field: "barcode", caption: "Cod. caja", sortable: true },                    
+                    { field: "barcode", caption: "Cod. caja", sortable: true },
                     {
                         field: "producto", caption: "Lote", sortable: false, render: function (record) {
                             if (record.peso > 1)
@@ -140,13 +166,13 @@
                                 return '<span>' + record.producto + '</span>';
                         }
                     },
-                    { field: "talla", caption: "Talla", sortable: true },
+                    //{ field: "talla", caption: "Talla", sortable: true },
                     { field: "categoria", caption: "Genero", sortable: true },
-                    { field: "departamento", caption: "Departamento", sortable: true },
+                    //{ field: "departamento", caption: "Departamento", sortable: true },
                     { field: "cp", caption: "cp", sortable: true },
                     {
                         field: "peso", caption: "", sortable: true, render: function (record) {
-                            return '<div class="w2ui-buttons"><a href="javascript:verDetalle(' + record.barcode + ', ' + "'" + record.talla + "'" + ')" title="barcode: ' + record.barcode + ' - talla: ' + record.talla + '">Ver detalle</a></div>';
+                            return '<div class="w2ui-buttons"><a href="javascript:verDetalle(' + record.barcode + ')" title="barcode: ' + record.barcode + ' - talla: ' + record.talla + '">Ver detalle</a></div>';
                         }
                     }
                 ]
@@ -154,12 +180,11 @@
         };
         mainGrid = $('#gridExcelConsolidado').w2grid(config.grid);
         arrayGrids['gridExcelConsolidado'] = mainGrid;
-    }    
-    function verDetalle(barcode2, talla2) {
+    }
+    function verDetalle(barcode2) {
         barcode = barcode2;
-        talla = talla2;
         $('#modalPopCargaProdPrioriDet').modal();
-        detGrid.reload2("@this.Url.Action("GetPaylessProdPrioriDet", "Grids")?barcode=" + barcode + '&talla=' + talla);
+        detGrid.reload2("@this.Url.Action("GetPaylessProdPrioriDet", "Grids")?barcode=" + barcode);
     }
     $(document).ready(function () {
         $('#dtpPeriodoBuscar').datepicker();
@@ -186,7 +211,13 @@
             $('#divSpinFiltrar').hide();
             $('#dtpPeriodoBuscar').val('');
             mainGrid.reload2("@this.Url.Action("GetPaylessProdPriori", "Grids")?dtpPeriodoBuscar=" + $('#dtpPeriodoBuscar').val() + '&cboTransporte=' + $('#cboTransporte').val());
-        });        
+        });
+        $('#btnShowPeriods').on('click', function (Event) {
+            $('#modalPeriods').modal();
+            if (gridPeriods == null) {
+                crearGridPeriods();
+            }
+        });
         if (window.mobileAndTabletcheck()) {
             $('.div856Search').css({ "max-width": "unset" });
             $('#dtpPeriodoBuscar').css({ "width": "100%" });

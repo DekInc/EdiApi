@@ -16,7 +16,7 @@ namespace CoreApiClient
         {
             BaseEndpoint = baseEndpoint ?? throw new ArgumentNullException("baseEndpoint");
             _httpClient = new HttpClient {
-                Timeout = (LongPlay ? TimeSpan.FromMinutes(6) : TimeSpan.FromMinutes(2))
+                Timeout = (LongPlay ? TimeSpan.FromMinutes(10) : TimeSpan.FromMinutes(2))
             };
         }
         private async Task<T> GetAsync<T>(Uri requestUrl)

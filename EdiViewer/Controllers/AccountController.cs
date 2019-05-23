@@ -220,8 +220,9 @@ namespace EdiViewer.Controllers
                 if (string.IsNullOrEmpty(HashId))
                     return LocalRedirect("/Account/?error=USER_INCORRECT");
                 string HashIdDecrypted = Encoding.UTF8.GetString(CryptoHelper.DecryptData(Convert.FromBase64String(HashId)));
-                if (HashIdDecrypted.Split("|").Length != 6)
+                if (HashIdDecrypted.Split("|").Length != 8)
                     return View("Index", new Models.ErrorModel() { ErrorMessage = "Error en el sistema de auth." });
+                HttpContext.Session.SetObjSession("Session.TiendaId", HashIdDecrypted.Split("|")[7]);
                 HttpContext.Session.SetObjSession("Session.ClientId", HashIdDecrypted.Split("|")[3]);
                 HttpContext.Session.SetObjSession("Session.HashId", HashIdDecrypted.Split("|")[5]);
                 HttpContext.Session.SetObjSession("Session.IdGroup", HashIdDecrypted.Split("|")[1]);

@@ -151,6 +151,7 @@
                     return false;
                 }
             }
+            $('#btnUpload').prop('disabled', true);
             $('#divSpinUploadFile').show();
             var fdata = new FormData();
             var fileUpload = $("#fUpload").get(0);
@@ -158,7 +159,7 @@
             fdata.append(files[0].name, files[0]);
             $.ajax({
                 type: "POST",
-                timeout: 360000,
+                timeout: 600000,
                 url: '@this.Url.Action("SetIngresoExcelWms", "HomeExtern")?cboBodega=' + $('#cboBodegas').val() + '&cboRegimen=' + $('#cboRegimen').val(),
                 beforeSend: function (xhr) {
                     xhr.setRequestHeader("XSRF-TOKEN",

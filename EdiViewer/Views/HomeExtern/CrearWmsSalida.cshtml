@@ -12,22 +12,41 @@
                 </div>
                 <div class="card-body">                    
                     <form id="formSearch" target="_blank" enctype="multipart/form-data" asp-controller="HomeExtern" asp-action="TransformEscanerToWmsIn">
-                        <div class="container div856Search">                            
+                        <div class="container div856Search">
+                            <div class="row">
+                                <div class="col-sm">
+                                    <label for="dtpPeriodo">Periodo</label>
+                                    <input class="form-control datepicker" data-date-format="dd/mm/yyyy" id="dtpPeriodo" placeholder="dd/mm/yyyy" maxlength="10" autocorrect="off" autocapitalize="off" autocomplete="off" />
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm">
+                                    <label for="cboBodegas">Bodega</label>
+                                    <select class="form-control" id="cboBodegas" name="cboBodegas"></select>
+                                </div>
+                                <div class="col-sm">
+                                    <label for="cboRegimen">Regimen</label>
+                                    <div id="divSpinCboRegimen" class="spinner-border spinner-border-sm text-danger" style="display: none" role="status">
+                                        <span class="sr-only">Loading...</span>
+                                    </div>
+                                    <select class="form-control" id="cboRegimen" name="cboRegimen"></select>
+                                </div>
+                            </div>
                             <div class="row">
                                 <div class="col-sm custom-file divUpload" style="max-width: unset !important; margin-bottom: 10px;">
                                     <input type="file" class="custom-file-input" id="fUpload" name="fUpload">
-                                    <label id="lblFile" class="custom-file-label" for="fUpload">Archivo a transformar</label>
+                                    <label id="lblFile" class="custom-file-label" for="fUpload">Archivo de salida de escaners</label>
                                 </div>
                             </div>
                             <div class="row margin5">
-                                <div class="col-sm">
+                                @*<div class="col-sm">
                                     <button class="btn btn-primary" type="submit" id="btnUpload">
                                         &nbsp;&nbsp;&nbsp;Cargar archivo&nbsp;&nbsp;&nbsp;
                                         <div id="divSpinUploadFile" class="spinner-border spinner-border-sm text-danger" style="display: none" role="status">
                                             <span class="sr-only">Loading...</span>
                                         </div>
                                     </button>
-                                </div>
+                                </div>*@
                                 <div class="col-sm">
                                     <button class="btn btn-primary" type="button" id="btnGenSalidaWms">
                                         &nbsp;&nbsp;&nbsp;Generar salida WMS&nbsp;&nbsp;&nbsp;
@@ -47,8 +66,66 @@
 <script>
     var tblReportes = null;
     var mainGrid = null;
+    function getWmsBodegas() {
+        $.ajax({
+            url: '@this.Url.Action("GetWmsBodegas", "HomeExtern")',
+            type: 'GET',
+            dataType: 'JSON',
+            success: function (json) {
+                if (json.info.codError != 0) {
+                    menErrorEdi(json.info.mensaje);
+                    return json.data;
+                }
+                $('#cboBodegas').empty();
+                $.each(json.data, function (indexI, itemO) {
+                    $('#cboBodegas').append($('<option>', {
+                        value: this.bodegaId,
+                        text: this.nomBodega,
+                        selected: false
+                    }));
+                });                
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                menErrorEdi(xhr.status, '');
+                menErrorEdi(thrownError, '');
+            }
+        });
+    }
+    function getWmsRegimen() {
+        if ($('#cboBodega').val() == '') return;
+        $('#divSpinCboRegimen').show();
+        $.ajax({
+            url: '@this.Url.Action("GetWmsRegimen", "HomeExtern")?BodegaId=' + $('#cboBodegas').val(),
+            type: 'GET',
+            dataType: 'JSON',
+            success: function (json) {
+                $('#divSpinCboRegimen').hide();
+                if (json.info.codError != 0) {
+                    menErrorEdi(json.info.mensaje);
+                    return json.data;
+                }
+                $('#cboRegimen').empty();
+                $.each(json.data, function (indexI, itemO) {
+                    $('#cboRegimen').append($('<option>', {
+                        value: this.idregimen,
+                        text: this.regimen1,
+                        selected: false
+                    }));
+                });
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                menErrorEdi(xhr.status, '');
+                menErrorEdi(thrownError, '');
+            }
+        });
+    }
     $(document).ready(function () {
+        $('#dtpPeriodo').datepicker();
         $('.imgHeaderHelp').tooltip();
+        getWmsBodegas();
+        $('#cboBodegas').on('change', function (Event) {
+            getWmsRegimen();
+        });
         $('#fUpload').on('change', function (event) {
             var fullPath = $('#fUpload').val();
             if (fullPath) {
@@ -61,14 +138,18 @@
             }
         });
         $('#btnGenSalidaWms').on('click', function () {
-            //if ($('#cboBodegas').val() == '') {
-            //    menErrorEdi('El valor de la bodega no puede estar vacio', 'Error');
-            //    return;
-            //}
-            //if ($('#cboRegimen').val() == '') {
-            //    menErrorEdi('El valor del regimen no puede estar vacio', 'Error');
-            //    return;
-            //}
+            if ($('#dtpPeriodo').val() == '') {
+                menErrorEdi('El periodo es necesario', 'Error');
+                return;
+            }
+            if ($('#cboBodegas').val() == '') {
+                menErrorEdi('El valor de la bodega no puede estar vacio', 'Error');
+                return;
+            }
+            if ($('#cboRegimen').val() == '') {
+                menErrorEdi('El valor del regimen no puede estar vacio', 'Error');
+                return;
+            }
             var fileExtension = ['xml', 'XML'];
             var filename = $('#fUpload').val();
             if (filename.length == 0) {
@@ -82,6 +163,7 @@
                     return false;
                 }
             }
+            $('#btnGenSalidaWms').prop('disabled', true);
             $('#divSpinGenSalidaWms').show();
             var fdata = new FormData();
             var fileUpload = $("#fUpload").get(0);
@@ -89,8 +171,8 @@
             fdata.append(files[0].name, files[0]);
             $.ajax({
                 type: "POST",
-                timeout: 360000,
-                url: '@this.Url.Action("SetSalidaWmsFromEscaner", "HomeExtern")',
+                timeout: 600000,
+                url: '@this.Url.Action("SetSalidaWmsFromEscaner", "HomeExtern")?dtpPeriodo=' + $('#dtpPeriodo').val() + '&cboBodegas=' + $('#cboBodegas').val() + '&cboRegimen=' + $('#cboRegimen').val(),
                 beforeSend: function (xhr) {
                     xhr.setRequestHeader("XSRF-TOKEN",
                         $('input:hidden[name="__RequestVerificationToken"]').val());

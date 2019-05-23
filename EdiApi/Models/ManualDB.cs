@@ -5,6 +5,7 @@ using System.Data.Common;
 using System.Linq;
 using System.Threading.Tasks;
 using EdiApi.Models.EdiDB;
+using EdiApi.Models.WmsDB;
 using Microsoft.EntityFrameworkCore;
 
 namespace EdiApi.Models
@@ -410,6 +411,161 @@ namespace EdiApi.Models
                     Dr.Close();
             }
             return Dt;
+        }
+        public static IEnumerable<Transacciones> GetTransaccionById(ref WmsContext _Wms, int TransaccionID) {
+            List<Transacciones> List = new List<Transacciones>();
+            using (DbCommand Cmd = _Wms.Database.GetDbConnection().CreateCommand()) {
+                Cmd.CommandText = $"select TransaccionID, NoTransaccion, FechaTransaccion, IdTipoTransaccion, PedidoId, BodegaId, RegimenId, ClienteId, Total, TipoIngreso, UsuarioCrea, FechaCrea, Observacion, EstatusId, OperarioId, TipoPicking, ExportadorId, DestinoId, TransportistaId, Pais_Orig, Adu_fro, Placa, Marchamo, Contenedor, Cod_Motoris, Remolque, RecivingCliente, FechaReciving, FacturaId, IdrControl from dbo.Transacciones where TransaccionId = {TransaccionID}";
+                _Wms.Database.OpenConnection();
+                DbDataReader Dr = Cmd.ExecuteReader();
+                if (Dr.HasRows) {
+                    while (Dr.Read()) {
+                        List.Add(new Transacciones() {
+                            TransaccionId = Dr.Gr<int>(0),
+                            NoTransaccion = Dr.Gr<string>(1),
+                            FechaTransaccion = Dr.Gr<DateTime>(2),
+                            IdtipoTransaccion = Dr.Gr<string>(3),
+                            PedidoId = Dr.Gr<int>(4),
+                            BodegaId = Dr.Gr<int>(5),
+                            RegimenId = Dr.Gr<int>(6),
+                            ClienteId = Dr.Gr<int>(7),
+                            Total = Dr.Gr<double>(8),
+                            TipoIngreso = Dr.Gr<string>(9),
+                            Usuariocrea = Dr.Gr<string>(10),
+                            Fechacrea = Dr.Gr<DateTime>(11),
+                            Observacion = Dr.Gr<string>(12),
+                            EstatusId = Dr.Gr<int>(13),
+                            Operarioid = Dr.Gr<int>(14),
+                            TipoPicking = Dr.Gr<string>(15),
+                            Exportadorid = Dr.Gr<int>(16),
+                            Destinoid = Dr.Gr<int>(17),
+                            Transportistaid = Dr.Gr<int>(18),
+                            PaisOrig = Dr.Gr<int>(19),
+                            AduFro = Dr.Gr<string>(20),
+                            Marchamo = Dr.Gr<string>(21),
+                            Contenedor = Dr.Gr<string>(22),
+                            CodMotoris = Dr.Gr<string>(23),
+                            Remolque = Dr.Gr<string>(24),
+                            RecivingCliente = Dr.Gr<string>(25),
+                            FechaReciving = Dr.Gr<DateTime>(26),
+                            FacturaId = Dr.Gr<int>(27)
+                            //TransaccionId = Convert.ToInt32(Dr.GetValue(0)),
+                            //NoTransaccion = Convert.ToString(Dr.GetValue(1)),
+                            //FechaTransaccion = Dr.GetDateTime(2),
+                            //IdtipoTransaccion = Convert.ToString(Dr.GetValue(3)),
+                            //PedidoId = Convert.ToInt32(Dr.GetValue(4)),
+                            //BodegaId = Convert.ToInt32(Dr.GetValue(5)),
+                            //RegimenId = Convert.ToInt32(Dr.GetValue(6)),
+                            //ClienteId = Convert.ToInt32(Dr.GetValue(7)),
+                            //Total = Convert.ToDouble(Dr.GetValue(8)),
+                            //TipoIngreso = Convert.ToString(Dr.GetValue(9)),
+                            //Usuariocrea = Convert.ToString(Dr.GetValue(10)),
+                            //Fechacrea = Dr.GetDateTime(11),
+                            //Observacion = Convert.ToString(Dr.GetValue(12)),
+                            //EstatusId = Convert.ToInt32(Dr.GetValue(13)),
+                            //Operarioid = Convert.ToInt32(Dr.GetValue(14)),
+                            //TipoPicking = Convert.ToString(Dr.GetValue(15)),
+                            //Exportadorid = Convert.ToInt32(Dr.GetValue(16)),
+                            //Destinoid = Convert.ToInt32(Dr.GetValue(17)),
+                            //Transportistaid = Convert.ToInt32(Dr.GetValue(18)),
+                            //PaisOrig = Convert.ToInt32(Dr.GetValue(19)),
+                            //AduFro = Convert.ToString(Dr.GetValue(20)),
+                            //Marchamo = Convert.ToString(Dr.GetValue(21)),
+                            //Contenedor = Convert.ToString(Dr.GetValue(22)),
+                            //CodMotoris = Convert.ToString(Dr.GetValue(23)),
+                            //Remolque = Convert.ToString(Dr.GetValue(24)),
+                            //RecivingCliente = Convert.ToString(Dr.GetValue(25)),
+                            //FechaReciving = Dr.GetDateTime(26),
+                            //FacturaId = Convert.ToInt32(Dr.GetValue(27))
+                            //idrcontrol = Convert.ToInt32(Dr.GetValue(27)),
+                        });
+                    }
+                }
+                _Wms.Database.CloseConnection();
+                if (!Dr.IsClosed)
+                    Dr.Close();
+            }
+            return List;
+        }
+        public static IEnumerable<PaylessProdPrioriDetModel> SP_GetPaylessProdPrioriFileDif(ref Models.EdiDB.EdiDBContext _DbO, int IdData, int IdProdArch) {
+            List<PaylessProdPrioriDetModel> ListProdDet = new List<PaylessProdPrioriDetModel>();
+            using (DbCommand Cmd = _DbO.Database.GetDbConnection().CreateCommand()) {
+                Cmd.CommandText = $"dbo.SP_GetPaylessProdPrioriFileDif {IdData}, {IdProdArch}";
+                _DbO.Database.OpenConnection();
+                DbDataReader Dr = Cmd.ExecuteReader();
+                if (Dr.HasRows) {
+                    int NRow = 0;
+                    while (Dr.Read()) {
+                        ListProdDet.Add(new PaylessProdPrioriDetModel() {
+                            Id = NRow++,
+                            //Id = Convert.ToInt32(Dr.GetValue(0)),
+                            IdPaylessProdPrioriM = Convert.ToInt32(Dr.GetValue(1)),
+                            Oid = Convert.ToString(Dr.GetValue(2)),
+                            Barcode = Convert.ToString(Dr.GetValue(3)),
+                            Estado = Convert.ToString(Dr.GetValue(4)),
+                            Pri = Convert.ToString(Dr.GetValue(5)),
+                            PoolP = Convert.ToString(Dr.GetValue(6)),
+                            Producto = Convert.ToString(Dr.GetValue(7)),
+                            Talla = Convert.ToString(Dr.GetValue(8)),
+                            Lote = Convert.ToString(Dr.GetValue(9)),
+                            Categoria = Convert.ToString(Dr.GetValue(10)),
+                            Departamento = Convert.ToString(Dr.GetValue(11)),
+                            Cp = Convert.ToString(Dr.GetValue(12)),
+                            //Pickeada = Convert.ToString(Dr.GetValue(13)),
+                            //Etiquetada = Convert.ToString(Dr.GetValue(14)),
+                            //Preinspeccion = Convert.ToString(Dr.GetValue(15)),
+                            //Cargada = Convert.ToString(Dr.GetValue(16)),
+                            M3 = Convert.ToDouble(Dr.GetValue(17)),
+                            Peso = Convert.ToDouble(Dr.GetValue(18)),
+                            IdTransporte = Convert.ToInt32(Dr.GetValue(19)),
+                            Transporte = Convert.ToString(Dr.GetValue(20))
+                        });
+                    }
+                }
+                _DbO.Database.CloseConnection();
+                if (!Dr.IsClosed)
+                    Dr.Close();
+            }
+            return ListProdDet;
+        }
+        public static IEnumerable<PaylessProdPrioriDetModel> SP_GetPaylessProdPrioriAll(ref Models.EdiDB.EdiDBContext _DbO, string TiendaId) {
+            List<PaylessProdPrioriDetModel> ListProdDet = new List<PaylessProdPrioriDetModel>();
+            using (DbCommand Cmd = _DbO.Database.GetDbConnection().CreateCommand()) {
+                Cmd.CommandText = $"[dbo].[SP_GetPaylessProdPrioriAll] '{TiendaId}'";
+                _DbO.Database.OpenConnection();
+                DbDataReader Dr = Cmd.ExecuteReader();
+                if (Dr.HasRows) {
+                    while (Dr.Read()) {
+                        ListProdDet.Add(new PaylessProdPrioriDetModel() {
+                            Id = Convert.ToInt32(Dr.GetValue(0)),
+                            IdPaylessProdPrioriM = Convert.ToInt32(Dr.GetValue(1)),
+                            Oid = Convert.ToString(Dr.GetValue(2)),
+                            Barcode = Convert.ToString(Dr.GetValue(3)),
+                            Estado = Convert.ToString(Dr.GetValue(4)),
+                            Pri = Convert.ToString(Dr.GetValue(5)),
+                            PoolP = Convert.ToString(Dr.GetValue(6)),
+                            Producto = Convert.ToString(Dr.GetValue(7)),
+                            Talla = Convert.ToString(Dr.GetValue(8)),
+                            Lote = Convert.ToString(Dr.GetValue(9)),
+                            Categoria = Convert.ToString(Dr.GetValue(10)),
+                            Departamento = Convert.ToString(Dr.GetValue(11)),
+                            Cp = Convert.ToString(Dr.GetValue(12)),
+                            Pickeada = Convert.ToString(Dr.GetValue(13)),
+                            Etiquetada = Convert.ToString(Dr.GetValue(14)),
+                            Preinspeccion = Convert.ToString(Dr.GetValue(15)),
+                            Cargada = Convert.ToString(Dr.GetValue(16)),
+                            M3 = Convert.ToDouble(Dr.GetValue(17)),
+                            Peso = Convert.ToDouble(Dr.GetValue(18)),
+                            IdTransporte = Convert.ToInt32(Dr.GetValue(19)),
+                            Transporte = Convert.ToString(Dr.GetValue(20))
+                        });
+                    }
+                }
+                _DbO.Database.CloseConnection();
+                if (!Dr.IsClosed)
+                    Dr.Close();
+            }
+            return ListProdDet;
         }
     }
 }

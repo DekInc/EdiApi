@@ -60,34 +60,19 @@
                     expandColumn: window.mobileAndTabletcheck()                    
                 },
                 searches: [
-                    { field: "oid", caption: "oid", type: 'text' },
                     { field: "barcode", caption: "Cod. caja", type: 'text' },
-                    { field: "poolP", caption: "poolP", type: 'text' },
-                    { field: "producto", caption: "Lote", type: 'text' },
-                    { field: "talla", caption: "talla", type: 'text' },
-                    { field: "lote", caption: "Estilo", type: 'text' },
                     { field: "categoria", caption: "Genero", type: 'text' },
-                    { field: "departamento", caption: "departamento", type: 'text' },
                     { field: "cp", caption: "cp", type: 'text' }
                 ],
                 colShowResponsive: [
                     { field: 'barcode' },
-                    { field: 'producto' }
+                    { field: 'categoria' }
                 ],
-                columns: [                    
-                    { field: "id", caption: "id", hidden: true, sortable: true },
+                columns: [
                     { field: "transporte", caption: "Transporte", sortable: true },
-                    { field: "oid", caption: "oid", sortable: true },
                     { field: "barcode", caption: "Cod. caja", sortable: true },
-                    { field: "pri", caption: "pri", sortable: true },
-                    { field: "poolP", caption: "poolP", sortable: true },
-                    { field: "producto", caption: "Lote", sortable: true },
-                    { field: "talla", caption: "Estilo", sortable: true },
-                    { field: "lote", caption: "lote", sortable: true },
                     { field: "categoria", caption: "Genero", sortable: true },
-                    { field: "departamento", caption: "departamento", sortable: true },
-                    { field: "cp", caption: "cp", sortable: true },
-                    { field: "estado", caption: "estado", sortable: true }                    
+                    { field: "cp", caption: "cp", sortable: true }
                 ]
             }
         };
@@ -108,33 +93,19 @@
                     expandColumn: window.mobileAndTabletcheck()                    
                 },
                 searches: [
-                    { field: "oid", caption: "oid", type: 'text' },
                     { field: "barcode", caption: "Cod. caja", type: 'text' },
-                    { field: "poolP", caption: "poolP", type: 'text' },
-                    { field: "producto", caption: "Lote", type: 'text' },
-                    { field: "talla", caption: "talla", type: 'text' },
-                    { field: "lote", caption: "Estilo", type: 'text' },
                     { field: "categoria", caption: "Genero", type: 'text' },
-                    { field: "departamento", caption: "departamento", type: 'text' },
                     { field: "cp", caption: "cp", type: 'text' }
                 ],
                 colShowResponsive: [
                     { field: 'barcode' },
-                    { field: 'producto' }
+                    { field: 'categoria' }
                 ],
-                columns: [                    
-                    { field: "id", caption: "id", hidden: true, sortable: true },
-                    { field: "oid", caption: "oid", sortable: true },
+                columns: [
+                    { field: "transporte", caption: "Transporte", sortable: true },
                     { field: "barcode", caption: "Cod. caja", sortable: true },
-                    { field: "pri", caption: "pri", sortable: true },
-                    { field: "poolP", caption: "poolP", sortable: true },
-                    { field: "producto", caption: "Lote", sortable: true },
-                    { field: "talla", caption: "Estilo", sortable: true },
-                    { field: "lote", caption: "lote", sortable: true },
                     { field: "categoria", caption: "Genero", sortable: true },
-                    { field: "departamento", caption: "departamento", sortable: true },
-                    { field: "cp", caption: "cp", sortable: true },
-                    { field: "estado", caption: "estado", sortable: true }                    
+                    { field: "cp", caption: "cp", sortable: true }
                 ]
             }
         };
@@ -155,16 +126,13 @@
                     expandColumn: window.mobileAndTabletcheck()                    
                 },
                 searches: [
-                    { field: "barcode", caption: "Cod. caja", type: 'text' },
-                    { field: "estado", caption: "Estado", type: 'text' }
+                    { field: "barcode", caption: "Cod. caja", type: 'text' }
                 ],
                 colShowResponsive: [
-                    { field: 'barcode' },
-                    { field: 'estado' }
+                    { field: 'barcode' }
                 ],
                 columns: [                    
-                    { field: "barcode", caption: "Cod. caja", sortable: true },
-                    { field: "estado", caption: "Estado", sortable: true }
+                    { field: "barcode", caption: "Cod. caja", sortable: true }
                 ]
             }
         };
@@ -178,13 +146,13 @@
         $('.nav-tabs a').on('shown.bs.tab', function (event) {
             switch ($(event.target).attr('id')) {
                 case 'tab1':                    
-                    gridRepDet1.reload2('@this.Url.Action("GetPaylessFileDif", "Grids")?idProdArch=' + idProdArch + '&idData=1');
+                    gridRepDet3.reload2('@this.Url.Action("GetPaylessFileDif", "Grids")?idProdArch=' + idProdArch + '&idData=3');
                     break;
                 case 'tab2':
                     gridRepDet2.reload2('@this.Url.Action("GetPaylessFileDif", "Grids")?idProdArch=' + idProdArch + '&idData=2');
                     break;
                 case 'tab3':
-                    gridRepDet3.reload2('@this.Url.Action("GetPaylessFileDif", "Grids")?idProdArch=' + idProdArch + '&idData=3');
+                    gridRepDet1.reload2('@this.Url.Action("GetPaylessFileDif", "Grids")?idProdArch=' + idProdArch + '&idData=1');
                     break;
                 default:
             }

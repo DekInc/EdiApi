@@ -93,5 +93,9 @@ namespace EdiApi
         public static string ToSqlDate(this DateTime? _D) {
             return $"CONVERT(DATETIME, '{_D.Value.ToString(ApplicationSettings.DateTimeFormatShort)}', 103)";
         }
+        public static T Gr<T>(this System.Data.Common.DbDataReader Dr, int I) {
+            if (Dr.IsDBNull(I)) return default(T);
+            return (T)Dr.GetValue(I);
+        }
     }
 }

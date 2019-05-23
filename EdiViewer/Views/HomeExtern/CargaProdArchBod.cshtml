@@ -165,7 +165,8 @@
     }
     function verDetalle(idM) {
         idProdArch = idM;
-        gridRepDet1.reload2('@this.Url.Action("GetPaylessFileDif", "Grids")?idProdArch=' + idProdArch + '&idData=3');
+        gridRepDet3.reload2('@this.Url.Action("GetPaylessFileDif", "Grids")?idProdArch=' + idProdArch + '&idData=3');
+        $('#tab1').click();
         $('#modalCargaProdArchBodDet').modal();        
     }
     $(document).ready(function () {

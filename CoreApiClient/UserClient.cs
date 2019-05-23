@@ -85,11 +85,11 @@ namespace CoreApiClient
             string JsonRes = await PostAsyncJson<string>(CreateRequestUri(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Data/GetStock")), JsonParams);
             return JsonConvert.DeserializeObject<RetData<IEnumerable<ExistenciasExternModel>>>(JsonRes);
         }
-        public async Task<RetData<Clientes>> GetClient(int ClientId)
+        public async Task<RetData<PaylessTiendas>> GetClient(int TiendaId)
         {
-            string JsonParams = JsonConvert.SerializeObject(ClientId);
+            string JsonParams = JsonConvert.SerializeObject(TiendaId);
             string JsonRes = await PostAsyncJson<string>(CreateRequestUri(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Data/GetClient")), JsonParams);
-            return JsonConvert.DeserializeObject<RetData<Clientes>>(JsonRes);
+            return JsonConvert.DeserializeObject<RetData<PaylessTiendas>>(JsonRes);
         }
         public async Task<RetData<Tuple<IEnumerable<PedidosExternos>, IEnumerable<PedidosDetExternos>>>> GetPedidosExternos(int ClienteId)
         {
@@ -151,6 +151,9 @@ namespace CoreApiClient
             string JsonParams = JsonConvert.SerializeObject(Period);
             return await PostGetAsyncJson<RetData<IEnumerable<PaylessProdPrioriDetModel>>>(CreateRequestUri(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Data/GetPaylessProdPriori")), JsonParams);
         }
+        public async Task<RetData<IEnumerable<PaylessProdPrioriDetModel>>> GetPaylessProdPrioriAll(string TiendaId) {
+            return await PostGetAsyncJson<RetData<IEnumerable<PaylessProdPrioriDetModel>>>(CreateRequestUri(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Data/GetPaylessProdPrioriAll"), $"?TiendaId={TiendaId}"), "");
+        }
         public async Task<RetData<string>> SetPaylessProdPriori(IEnumerable<PaylessUploadFileModel> ListUpload, int ClienteId, string Periodo, string codUsr, string transporte, bool ChkUpDelete)
         {
             string JsonParams = JsonConvert.SerializeObject(ListUpload);
@@ -177,9 +180,9 @@ namespace CoreApiClient
         {
             return await GetAsync<RetData<IEnumerable<IenetUsers>>>(CreateRequestUri(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Data/GetClients")));
         }
-        public async Task<RetData<Tuple<IEnumerable<PaylessProdPrioriDet>, IEnumerable<PaylessProdPrioriDet>, IEnumerable<PaylessProdPrioriDet>>>> GetPaylessFileDif(int idProdArch, int idData)
+        public async Task<RetData<IEnumerable<PaylessProdPrioriDetModel>>> GetPaylessFileDif(string idProdArch, int idData)
         {
-            return await GetAsync<RetData<Tuple<IEnumerable<PaylessProdPrioriDet>, IEnumerable<PaylessProdPrioriDet>, IEnumerable<PaylessProdPrioriDet>>>>(CreateRequestUri(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Data/GetPaylessFileDif"), $"?idProdArch={idProdArch}&idData={idData}"));
+            return await GetAsync<RetData<IEnumerable<PaylessProdPrioriDetModel>>>(CreateRequestUri(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Data/GetPaylessFileDif"), $"?idProdArch={idProdArch}&idData={idData}"));
         }
         /////////////////////////////////////////Account
         public async Task<string> LoginIe(string _User, string _Password)
@@ -224,6 +227,9 @@ namespace CoreApiClient
         public async Task<RetData<Tuple<IEnumerable<PaylessProdPrioriArchM>, IEnumerable<PaylessProdPrioriArchDet>>>> GetPaylessPeriodPrioriFileExists(string Period, int ClienteId) {
             return await PostGetAsyncJson<RetData<Tuple<IEnumerable<PaylessProdPrioriArchM>, IEnumerable<PaylessProdPrioriArchDet>>>>(CreateRequestUri(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Data/GetPaylessPeriodPrioriFileExists"), $"?Period={Period}&ClienteId={ClienteId}"), "");
         }
+        public async Task<RetData<Tuple<IEnumerable<PaylessProdPrioriArchM>, IEnumerable<PaylessProdPrioriArchDet>>>> GetPaylessPeriodPrioriFileExists2(string TiendaId) {
+            return await PostGetAsyncJson<RetData<Tuple<IEnumerable<PaylessProdPrioriArchM>, IEnumerable<PaylessProdPrioriArchDet>>>>(CreateRequestUri(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Data/GetPaylessPeriodPrioriFileExists2"), $"?TiendaId={TiendaId}"), "");
+        }
         public async Task<RetData<bool>> ChangePedidoState(int PedidoId, int ClienteId) {
             return await PostGetAsyncJson<RetData<bool>>(CreateRequestUri(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Data/ChangePedidoState"), $"?PedidoId={PedidoId}&ClienteId={ClienteId}"), "");
         }
@@ -249,9 +255,9 @@ namespace CoreApiClient
             string JsonParams = JsonConvert.SerializeObject(ListProducts);
             return await PostGetAsyncJson<RetData<string>>(CreateRequestUri(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Data/SetIngresoExcelWms2"), $"?cboBodega={cboBodega}&cboRegimen={cboRegimen}"), JsonParams);
         }
-        public async Task<RetData<string>> SetSalidaWmsFromEscaner(IEnumerable<string> ListProducts) {
-            string JsonParams = JsonConvert.SerializeObject(ListProducts);
-            return await PostGetAsyncJson<RetData<string>>(CreateRequestUri(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Data/SetSalidaWmsFromEscaner")), JsonParams);
+        public async Task<RetData<string>> SetSalidaWmsFromEscaner(IEnumerable<string> ListProducts2, string dtpPeriodo, int cboBodegas, int cboRegimen) {
+            string JsonParams = JsonConvert.SerializeObject(ListProducts2);
+            return await PostGetAsyncJson<RetData<string>>(CreateRequestUri(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Data/SetSalidaWmsFromEscaner"), $"?dtpPeriodo={dtpPeriodo}&cboBodegas={cboBodegas}&cboRegimen={cboRegimen}"), JsonParams);
         }
         /////////////////////////////////////////
         //public async Task<List<UsersModel>> GetUsers()

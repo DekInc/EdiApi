@@ -6178,6 +6178,7 @@ w2utils.event = {
                                 for (var r = 0; r < data.records.length; r++) {
                                     this.records.push(data.records[r]);
                                 }
+                                console.log(data.records);
                             }                            
                             if (data.allRecords) {
                                 if (this.allRecords.length == 0)

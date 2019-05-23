@@ -1,0 +1,285 @@
+﻿@{
+    ViewData["Title"] = "Pedidos Payless v2";
+    Layout = "_Layout";
+}
+@*<script>
+        var arrayProductosOld = [];
+        @if(ViewBag.ListOldDis != null)
+        {
+            <text>arrayProductosOld = </text> @Html.Raw(ViewBag.ListOldDis);
+        }
+    </script>*@
+<div id="mainDiv">
+    <div class="container">
+        <div class="card-deck cardMain">
+            <div class="card box-shadow">
+                <div class="card-header">
+                    <h4 class="my-0 font-weight-normal">Pedidos Payless&nbsp;<img class="imgHeaderHelp" src="~/images/help.png" title="Pantalla utilizada para hacer pedidos a partir del consolidado" alt="Pantalla utilizada para hacer pedidos a partir del consolidado"></h4>
+                </div>
+                <div class="card-body">
+                    <div>
+                        <span id="spanClientName">
+                            <span id="divSpinClientName" class="spinner-border spinner-border-sm text-danger" style="display: none" role="status">
+                                <span class="sr-only">Loading...</span>
+                            </span>
+                        </span>
+                    </div>
+                    <form id="formSearch">
+                        <div class="container div856Search">                            
+                            <div class="row margin5">
+                                <div class="col-sm">
+                                    <button id="btnFiltrar" class="btn btn-primary" type="button">
+                                        &nbsp;&nbsp;&nbsp;Mostrar inventario&nbsp;&nbsp;&nbsp;
+                                        <div id="divSpinFiltrar" class="spinner-border spinner-border-sm text-danger" style="display: none" role="status">
+                                            <span class="sr-only">Loading...</span>
+                                        </div>
+                                    </button>
+                                    <button id="btnLimpiar" class="btn btn-primary" type="button">
+                                        &nbsp;&nbsp;&nbsp;Limpiar&nbsp;&nbsp;&nbsp;
+                                        <div id="divSpinLimpiar" class="spinner-border spinner-border-sm text-danger" style="display: none" role="status">
+                                            <span class="sr-only">Loading...</span>
+                                        </div>
+                                    </button>
+                                    <button type="button" class="btn btn-primary" id="btnNewDis" data-togle="tooltip" data-html="true" title="Seleccione los productos a pedir y acá click acá para solicitarlos">Crear pedido</button>
+                                    <button type="button" class="btn btn-primary" id="btnAddFiltered" data-togle="tooltip" data-html="true" title="Agregar todos los productos filtrados con disponibilidad al pedido">Agregar filtrado a pedido</button>
+                                    @*<button type="button" class="btn btn-primary" id="btnExportDis" data-togle="tooltip" data-html="true" title="Exportar pedido en Excel">
+                                            Exportar pedido a Excel <img src="/images/excel.png" class="imgButton">
+                                            <div id="divSpinPrintAll" class="spinner-border spinner-border-sm text-danger" style="display: none" role="status">
+                                                <span class="sr-only">Loading...</span>
+                                            </div>
+                                        </button>*@
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                    <div class="clearfix"></div>
+                    <br />
+                    <div id="gridExcelConsolidado" style="min-height: 460px; width: 100%;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@await Html.PartialAsync("_PopNewDis")
+
+<script>
+    var ModalPopPeticionDet = null;
+    var domtblReportes = null;
+    var domtblPeticionDet = null;
+    var mainGrid = null;
+    var HashId = '';
+    var foo = function () {
+    }
+    $.urlParam = function (name) {
+        var results = new RegExp('[\?&]' + name + '=([^&#]*)').exec(window.location.href);
+        if (results == null) {
+            return null;
+        }
+        return decodeURI(results[1]) || 0;
+    }
+    function reDrawObjects() {
+        $('#spanClientName').css('display', 'block');
+        if (window.mobileAndTabletcheck()) {
+            $('#btnNewDis').addClass('btn-block');
+            $('#btnNewDis').css('margin-bottom', '16px');
+            $('#btnNewDis').css('margin-top', '16px');
+            $('#spanClientName').css('text-align', 'center');
+            $('#btnExportDis').addClass('btn-block');
+            $('#btnExportDis').css('margin-bottom', '16px');
+        } else {
+            $('#spanClientName').css('margin-bottom', '10px');
+        }
+    }
+    function changeProdPedido(isValid, idR, txtCant) {
+        if (!isValid) return isValid;
+        if ($('#TxtProducto' + idR).attr('readonly') != undefined)
+            return;
+        setTimeout(function () {
+            if ($(txtCant).val() < 0) {
+                menErrorEdi('Error, el valor es inválido', 'Error');
+                $(txtCant).val('0')
+                return;
+            } else {
+                if ($(txtCant).val() > mainGrid.records.filter(O => O.id == idR)[0].disponible) {
+                    menErrorEdi('Error, el valor es mayor al disponible', 'Error');
+                    $(txtCant).val('0')
+                    return;
+                }
+            }
+            var contProd = 0;
+            for (var j = 0; j < mainGrid.allRecords.length; j++) {
+                if (mainGrid.allRecords[j].barcode == mainGrid.records.filter(O => O.id == idR)[0].barcode) {
+                    mainGrid.allRecords[j].cantPedir = $(txtCant).val();
+                    contProd++;
+                }
+            }
+            if (contProd > 1) {
+                menErrorEdi('Se han establecido ' + contProd + ' productos para el pedido con barcode = ' + mainGrid.records.filter(O => O.id == idR)[0].barcode, 'Información');
+            }
+            for (var j = 0; j < mainGrid.records.length; j++) {
+                if (mainGrid.records[j].barcode == mainGrid.records.filter(O => O.id == idR)[0].barcode) {
+                    mainGrid.records[j].cantPedir = $(txtCant).val();
+                }
+            }
+            mainGrid.refresh();
+        }, 366);
+        return isValid;
+    }
+    function getClientName() {
+        $('#divSpinClientName').show();
+        $.ajax({
+            method: "GET",
+            url: "@this.Url.Action("GetClientName", "HomeExtern")",
+            success: function (data) {
+                if (data.info.codError != 0) {
+                    menErrorEdi(data.info.mensaje, 'Error');
+                    return;
+                }
+                $('#spanClientName').html(data.data);
+                $('#divSpinClientName').hide();
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                menErrorEdi(xhr.status, 'Error throw in js');
+                menErrorEdi(thrownError, 'Error throw in js');
+            }
+        });
+    }
+    function getPeriods() {
+        $('#divSpincboPeriod').show();
+        $.ajax({
+            url: '@this.Url.Action("GetPaylessPeriodPrioriByClient", "HomeExtern")',
+            type: 'GET',
+            dataType: 'JSON',
+            success: function (json) {
+                if (json.info.codError != 0) {
+                    menErrorEdi(json.info.mensaje);
+                    return json.data;
+                }
+                $('#divSpincboPeriod').hide();
+                $.each(json.data, function (indexI, itemO) {
+                    $('#cboPeriod').append($('<option>', {
+                        value: this,
+                        text: this,
+                        selected: false
+                    }));
+                });
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                menErrorEdi(xhr.status, '');
+                menErrorEdi(thrownError, '');
+            }
+        });
+    }
+    function refreshGrid(auto) {
+        w2ui.grid.autoLoad = auto;
+        w2ui.grid.skip(0);
+    }
+    function crearGrid() {
+        var config = {
+            grid: {
+                name: 'gridExcelConsolidado',
+                selectType: 'cell',
+                bResponsive: true,
+                bMobile: window.mobileAndTabletcheck(),
+                url: '@this.Url.Action("GetPaylessProdPrioriInventario2", "Grids")',
+                show: {
+                    footer: true,
+                    toolbar: true,
+                    expandColumn: window.mobileAndTabletcheck()
+                },
+                searches: [
+                    { field: "categoria", caption: "Genero", type: 'text' }
+                ],
+                colShowResponsive: [
+                    { field: 'categoria' },
+                    { field: 'cantPedir' }
+                ],
+                columns: [
+                    { field: "id", caption: "id", sortable: true, hidden: true },
+                    { field: "categoria", caption: "Genero", type: 'text', sortable: true },
+                    { field: "existencia", caption: "Existencia", sortable: true },
+                    { field: "reservado", caption: "Reservado", sortable: true },
+                    { field: "disponible", caption: "Disponible", sortable: true },
+                    {
+                        field: "cantPedir", caption: "Cantidad a pedir", sortable: true, render: function (record) {
+                            var cantPedir2 = record.cantPedir;
+                            if ((record.cp != '' && parseInt(record.cantPedir) == 0) && parseInt(record.disponible) > 0)
+                                cantPedir2 = record.disponible;
+                            var posDisable = '';
+                            var isCp = '';
+                            if (record.cp != '') {
+                                posDisable = 'readonly="readonly"';
+                                isCp = 'backRed';
+                            }
+                            return '<input id="TxtProducto' + record.id + '" name="TxtProducto' + record.id + '" type="textbox" maxlength="7" class="editor-active form-control ' + isCp + ' txtCantPedir w2ui-input" ' + posDisable + ' tabIndex="' + record.id + '" value="' + cantPedir2 + '" onkeypress="return changeProdPedido(isNumberKey(event), ' + "'" + record.id + "'" + ', this)">';
+                        }
+                    }
+                ]
+            }
+        };
+        mainGrid = $('#gridExcelConsolidado').w2grid(config.grid);
+        arrayGrids['gridExcelConsolidado'] = mainGrid;
+    }
+    function verDetalle(barcode2, talla2) {
+        barcode = barcode2;
+        talla = talla2;
+        $('#modalPopCargaProdPrioriDet').modal();
+        detGrid.reload2("@this.Url.Action("GetPaylessProdPrioriDet", "Grids")?barcode=" + barcode + '&talla=' + talla);
+    }
+    $(document).ready(function () {
+        $('.imgHeaderHelp').tooltip();
+        crearGrid();
+        getPeriods();
+        getClientName();
+        reDrawObjects();
+        $('#btnNewDis').on('click', function (e) {
+            $('#exampleModalLabel2').html('Crear pedido');
+            ModalPopNewDis = $('#modalPopNewDis').modal();
+            if (gridPedidoDet == null) {
+                crearGridDet();
+            }
+            else {
+                gridPedidoDet.clear();
+                gridPedidoDet.records = mainGrid.allRecords.filter(O => O.cantPedir != 0);
+                gridPedidoDet.refresh();
+            }
+        });
+        $('#btnAddFiltered').on('click', function (e) {
+            var arrayFut = mainGrid.filteredRecords.filter(O => O.disponible > 0);
+            if (arrayFut != null) {
+                if (arrayFut.length != 0) {
+                    for (var i = 0; i < arrayFut.length; i++) {
+                        for (var j = 0; j < mainGrid.allRecords.length; j++) {
+                            if (mainGrid.allRecords[j].barcode == arrayFut[i].barcode) {
+                                mainGrid.allRecords[j].cantPedir = 1;
+                            }
+                        }
+                    }
+                }
+                mainGrid.refresh2();
+                mainGrid.refresh();
+            }
+        });
+        $('#btnFiltrar').on("click", function (Event) {
+            miAlive();
+            mainGrid.allRecords = [];            
+            $('#divSpinFiltrar').show();
+            mainGrid.searchReset(true);
+            mainGrid.reload2('@this.Url.Action("GetPaylessProdPrioriInventario2", "Grids")');
+        });
+        $('#btnLimpiar').on("click", function (Event) {
+            $('#divSpinFiltrar').hide();
+            mainGrid.allRecords = [];
+            mainGrid.searchReset();
+            mainGrid.reload2('@this.Url.Action("GetPaylessProdPrioriInventario2", "Grids")');
+        });
+        if (window.mobileAndTabletcheck()) {
+            $('.div856Search').css({ "max-width": "unset" });
+            $('#cboPeriod').css({ "width": "100%" });
+            $('.btn').css({ "margin-bottom": "10px" });
+            $('.btn').addClass('btn-block');
+            $("#tblReportes").hide();
+        }
+    });
+</script>

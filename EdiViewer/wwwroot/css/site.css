@@ -618,6 +618,9 @@ table.dataTable.dtr-inline.collapsed > tbody > tr[role="row"] > td:first-child:b
 .maxWidth320 {
     max-width: 320px;
 }
+.datepicker {
+    z-index: 9999 !important;
+}
 .datepicker, .day, .datepicker-switch, .prev, .next, .dow {
     color: #000 !important;
     font-style: italic !important;
@@ -684,4 +687,7 @@ table.dataTable.dtr-inline.collapsed > tbody > tr[role="row"] > td:first-child:b
 .divPaso {
     color: #000;
     font-weight: bold;
+}
+#dtpPeriodo {
+    max-width: 200px;
 }

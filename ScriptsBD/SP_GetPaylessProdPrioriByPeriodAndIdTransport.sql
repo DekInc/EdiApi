@@ -31,11 +31,11 @@ BEGIN
 		Ex.Peso,
 		Ex.IdTransporte,
 		T.Transporte,
-(select top 1 C.Nombre 
-from EdiDb.[dbo].[PAYLESS_Tiendas] T
-join [wms_test_29_01_2019].dbo.Clientes C
+(select top 1 C.Nombre, T.TiendaId 
+from EdiDb.dbo.PAYLESS_Tiendas T
+join wms.dbo.Clientes C
 	on C.ClienteID = T.ClienteID
-	AND T.TiendaId = SUBSTRING(Ad.BarCode, 0, 5)) NomCliente
+	AND T.TiendaId = SUBSTRING(Ad.BarCode, 1, 4)) NomCliente
 from EdiDb.dbo.PAYLESS_ProdPrioriArchDet Ad
 join EdiDb.dbo.PAYLESS_ProdPrioriArchM Am 
 	on Am.Id = Ad.IdM AND Am.Periodo = @Period
@@ -47,6 +47,7 @@ ORDER BY Ex.Barcode
 END
 GO
 
+exec SP_GetPaylessProdPrioriByPeriodAndIdTransport '17/05/2019', 8
 --EXEC SP_GetPaylessProdPrioriByPeriodAndIdTransport '13/05/2019', 6
 --select * from EdiDb.dbo.PAYLESS_ProdPrioriArchM
 --select * from EdiDb.dbo.PAYLESS_Tiendas where TiendaId = 7366

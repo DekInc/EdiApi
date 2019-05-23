@@ -29,8 +29,9 @@ namespace EdiApi
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
-            services.AddDbContext<EdiDBContext>(options => options.UseSqlServer(Configuration.GetConnectionString("EdiDB"), opt => opt.CommandTimeout((int)TimeSpan.FromMinutes(10).TotalSeconds)));
-            services.AddDbContext<WmsContext>(options => options.UseSqlServer(Configuration.GetConnectionString("wmsDB"), opt => opt.CommandTimeout((int)TimeSpan.FromMinutes(10).TotalSeconds)));
+            services.AddDbContext<EdiDBContext>(options => options.UseSqlServer(Configuration.GetConnectionString("EdiDB"), opt => opt.CommandTimeout((int)TimeSpan.FromMinutes(2).TotalSeconds)), ServiceLifetime.Transient);
+            services.AddDbContext<WmsContext>(options => options.UseSqlServer(Configuration.GetConnectionString("wmsdb"), opt => opt.CommandTimeout((int)TimeSpan.FromMinutes(2).TotalSeconds)), ServiceLifetime.Transient);
+            services.AddDbContext<WmsContext>(options => options.UseSqlServer(Configuration.GetConnectionString("wmsdbLong"), opt => opt.CommandTimeout((int)TimeSpan.FromMinutes(10).TotalSeconds)), ServiceLifetime.Transient);
             services.AddSingleton<IConfiguration>(Configuration);
             services.AddSwaggerGen(c =>
             {

@@ -293,15 +293,14 @@ namespace EdiViewer.Controllers
             DateTime StartTime = DateTime.Now;
             try
             {
-                RetData<Clientes> ClienteO = await ApiClientFactory.Instance.GetClient(HttpContext.Session.GetObjSession<int>("Session.ClientId"));                
-                RetData<IEnumerable<PaylessTiendas>> ListClients = await ApiClientFactory.Instance.GetAllPaylessStores(ApiClientFactory.Instance.Encrypt($"Fun|{HttpContext.Session.GetObjSession<string>("Session.HashId")}"));
-                if (ListClients.Info.CodError != 0) {
+                RetData<PaylessTiendas> ClienteO = await ApiClientFactory.Instance.GetClient(HttpContext.Session.GetObjSession<int>("Session.TiendaId"));                
+                if (ClienteO.Info.CodError != 0) {
                     return new RetData<string>() {
-                        Data = ListClients.Info.Mensaje,
-                        Info = ListClients.Info
+                        Data = ClienteO.Info.Mensaje,
+                        Info = ClienteO.Info
                     };
                 }
-                if (ClienteO.Data.ClienteId == 0) {
+                if (ClienteO.Data == null) {
                     return new RetData<string>() {
                         Info = new RetInfo() {
                             CodError = -1,
@@ -309,18 +308,10 @@ namespace EdiViewer.Controllers
                             ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
                         }
                     };
-                }
-                string ClientName = string.Empty;
-                if (ClienteO.Info.CodError == 0 && ListClients.Info.CodError == 0)
-                    ClientName = ListClients.Data.Where(C => C.ClienteId == ClienteO.Data.ClienteId).Fod().Descr;
-                if (ListClients.Info.CodError != 0) {
-                    return new RetData<string>() {
-                        Info = ListClients.Info
-                    };
-                }
+                }                
                 return new RetData<string>()
                 {
-                    Data = ClientName,
+                    Data = ClienteO.Data.Descr,
                     Info = ClienteO.Info
                 };
             }
@@ -338,6 +329,30 @@ namespace EdiViewer.Controllers
             }
         }
         public async Task<IActionResult> PedidosPayless() {
+            try {
+                //ViewBag.ListOldDis = null;
+                ViewBag.DateLastDis = DateTime.Now.ToString(ApplicationSettings.DateTimeFormatT);
+                //ViewBag.PedidoId = null;
+                //HttpContext.Session.SetObjSession("PedidoId", null);
+                RetData<Tuple<IEnumerable<PedidosExternos>, IEnumerable<PedidosDetExternos>>> ListDis = await ApiClientFactory.Instance.GetPedidosExternos(HttpContext.Session.GetObjSession<int>("Session.ClientId"));
+                if (ListDis.Info.CodError == 0) {
+                    if (ListDis.Data.Item1.Count() > 0) {
+                        PedidosExternos Pe = ListDis.Data.Item1.Where(O => O.IdEstado == 1).Fod();
+                        if (Pe != null) {
+                            HttpContext.Session.SetObjSession("PedidoId", Pe.Id);
+                            ViewBag.DateLastDis = Pe.FechaPedido;
+                            //if (ListDis.Data.Item2.Count() > 0) {
+                            //    ViewBag.ListOldDis = JsonConvert.SerializeObject(ListDis.Data.Item2.Where(Pde => Pde.PedidoId == ListDis.Data.Item1.Fod().Id).Select(Pd => new { codProducto = Pd.CodProducto.Replace(" ", "^"), cantPedir = Pd.CantPedir, producto = Pd.Producto }));
+                            //}
+                        }
+                    }
+                }
+            } catch (Exception e1) {
+                ViewBag.ClientName = e1.ToString();
+            }
+            return View();
+        }
+        public async Task<IActionResult> PedidosPayless2() {
             try {
                 //ViewBag.ListOldDis = null;
                 ViewBag.DateLastDis = DateTime.Now.ToString(ApplicationSettings.DateTimeFormatT);
@@ -768,7 +783,7 @@ namespace EdiViewer.Controllers
         public async Task<RetData<IEnumerable<string>>> GetPaylessPeriodPrioriByClient() {
             DateTime StartTime = DateTime.Now;
             try {
-                RetData<IEnumerable<string>> ListProdPriori = await ApiClientFactory.Instance.GetPaylessPeriodPrioriByClient(HttpContext.Session.GetObjSession<int>("Session.ClientId"));                
+                RetData<IEnumerable<string>> ListProdPriori = await ApiClientFactory.Instance.GetPaylessPeriodPriori();
                 return ListProdPriori;
             } catch (Exception e1) {
                 return new RetData<IEnumerable<string>>() {
@@ -1292,7 +1307,7 @@ namespace EdiViewer.Controllers
                         "RACKID", "fecha_im5", "EMBALAJE", "UOM", "exportador", "destino", "estilo", "cod_equivale", "pais_orig", "COLOR"
                     };
                     string FileExtension = Path.GetExtension(FileUploaded.FileName).ToLower();
-                    ISheet Sheet;
+                    ISheet Sheet, Sheet2 = null;                    
                     using (MemoryStream stream = new MemoryStream()) {
                         FileUploaded.CopyTo(stream);
                         stream.Position = 0;
@@ -1300,6 +1315,10 @@ namespace EdiViewer.Controllers
                             try {
                                 HSSFWorkbook hssfwb = new HSSFWorkbook(stream);
                                 Sheet = hssfwb.GetSheetAt(0);
+                                try {
+                                    Sheet2 = hssfwb.GetSheetAt(1);
+                                } catch {
+                                }
                             } catch (Exception e2) {
                                 throw new Exception("El archivo no es de Excel. Utilice un formato propio de Microsoft Excel. " + e2.ToString());
                             }
@@ -1307,6 +1326,10 @@ namespace EdiViewer.Controllers
                             try {
                                 XSSFWorkbook hssfwb = new XSSFWorkbook(stream);
                                 Sheet = hssfwb.GetSheetAt(0);
+                                try {
+                                    Sheet2 = hssfwb.GetSheetAt(1);
+                                } catch {
+                                }
                             } catch (Exception e3) {
                                 throw new Exception("El archivo no es de Excel. Utilice un formato propio de Microsoft Excel. " + e3.ToString());
                             }
@@ -1320,9 +1343,19 @@ namespace EdiViewer.Controllers
                                 }
                             };
                         }
+                        if (Sheet2 != null) {
+                            return new RetData<string>() {
+                                Data = "",
+                                Info = new RetInfo() {
+                                    CodError = -1,
+                                    Mensaje = "El archivo contiene más de una hoja, por favor coloque la información en la primera hoja.",
+                                    ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                                }
+                            };
+                        }
                         IRow HeaderRow = Sheet.GetRow(0);
                         PaylessUploadFileModel NewRow = new PaylessUploadFileModel();
-                        int CellCount = HeaderRow.LastCellNum;                        
+                        int CellCount = 30; //HeaderRow.LastCellNum;                        
                         for (j = 0; j < CellCount; j++) {
                             bool PropExists = false;
                             foreach (string Pi in ExcelColumns) {
@@ -1356,7 +1389,11 @@ namespace EdiViewer.Controllers
                                                 NewRowInsert.Identificador = Convert.ToInt32(row.GetCell(j).ToString());
                                                 break;
                                             case "fecha":
-                                                NewRowInsert.Fecha = row.GetCell(j).ToString().Trim(); //row.GetCell(j).DateCellValue.ToString(ApplicationSettings.DateTimeFormat);
+                                                if (row.GetCell(j).ToString().Trim().Length > 10) {
+                                                    NewRowInsert.Fecha = row.GetCell(j).DateCellValue.ToString(ApplicationSettings.DateTimeFormat);
+                                                } else if (row.GetCell(j).ToString().Trim().Length == 7) {
+                                                    NewRowInsert.Fecha = row.GetCell(j).DateCellValue.ToString(ApplicationSettings.DateTimeFormat);
+                                                } else NewRowInsert.Fecha = row.GetCell(j).ToString().Trim();
                                                 break;
                                             case "recibo de almacén":
                                                 NewRowInsert.ReciboAlmacen = row.GetCell(j).ToString().Trim();
@@ -1569,7 +1606,7 @@ namespace EdiViewer.Controllers
                 });
             }
         }
-        public async Task<RetData<string>> SetSalidaWmsFromEscaner() {
+        public async Task<RetData<string>> SetSalidaWmsFromEscaner(string dtpPeriodo, int cboBodegas, int cboRegimen) {
             DateTime StartTime = DateTime.Now;
             List<string> ListBarcodes = new List<string>();
             try {
@@ -1617,7 +1654,7 @@ namespace EdiViewer.Controllers
                         }
                     }
                 }
-                RetData<string> Ret = await ApiClientFactory.Instance.SetSalidaWmsFromEscaner(ListBarcodes);
+                RetData<string> Ret = await ApiClientFactory.Instance.SetSalidaWmsFromEscaner(ListBarcodes, dtpPeriodo, cboBodegas, cboRegimen);
                 return Ret;
             } catch (Exception ex1) {
                 return new RetData<string> {

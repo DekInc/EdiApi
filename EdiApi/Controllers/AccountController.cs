@@ -258,7 +258,7 @@ namespace EdiApi.Controllers
                 UserO.HashId = EdiBase.GetHashId();
                 DbO.IenetUsers.Update(UserO);
                 DbO.SaveChanges();
-                string Ret = $"UserO.IdIenetGroup|{UserO.IdIenetGroup}|UserO.ClientId|{UserO.ClienteId}|UserO.HashId|{UserO.HashId}";
+                string Ret = $"UserO.IdIenetGroup|{UserO.IdIenetGroup}|UserO.ClientId|{UserO.ClienteId}|UserO.HashId|{UserO.HashId}|UserO.TiendaId|{UserO.TiendaId}";
                 Ret = Convert.ToBase64String(CryptoHelper.EncryptData(Encoding.UTF8.GetBytes(Ret)));
                 return Ret;
             }
