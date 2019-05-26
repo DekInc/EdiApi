@@ -376,6 +376,9 @@ namespace EdiViewer.Controllers
             }
             return View();
         }
+        public IActionResult PedidosPayless3() {
+            return View();
+        }
         public async Task<IActionResult> Inventario()
         {
             try

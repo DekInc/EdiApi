@@ -41,9 +41,11 @@ namespace EdiApi.Controllers
         object MaxEdiComs => Config.GetSection("MaxEdiComs").GetValue(typeof(object), "Value");
         public DataController(EdiDBContext _DbO, WmsContext _WmsDbO, WmsContext _WmsDbOLong, IConfiguration _Config) {
             DbO = _DbO;
-            WmsDbO = _WmsDbO;
-            WmsDbOLong = _WmsDbOLong;
+            WmsDbO = _WmsDbO;            
+            WmsDbOLong = _WmsDbOLong;            
             Config = _Config;
+            WmsDbO.Database.SetCommandTimeout(TimeSpan.FromMinutes(2));
+            WmsDbOLong.Database.SetCommandTimeout(TimeSpan.FromMinutes(10));
         }
         private IEnumerable<Rep830Info> GetExToIe1(Exception E1)
         {
@@ -55,7 +57,7 @@ namespace EdiApi.Controllers
         }
         [HttpGet]
         public string GetVersion() {
-            return "1.1.2.0";
+            return "1.1.3.0";
         }
         [HttpGet]
         public string UpdateLinComments(string LinHashId, string TxtLinComData, string ListFst) {
@@ -2350,6 +2352,8 @@ namespace EdiApi.Controllers
         public RetData<string> SetIngresoExcelWms2(IEnumerable<WmsFileModel> ListProducts, int cboBodega, int cboRegimen) {
             DateTime StartTime = DateTime.Now;
             string LaFecha = "";
+            int MaxTransaccionId = 0;
+            bool MasiveInsertDone = false;
             //int MaxInventarioId = 0;
             if (ListProducts.Select(P => P.Barcode).Distinct().Count() != ListProducts.Count())
                 return new RetData<string> {
@@ -2361,7 +2365,7 @@ namespace EdiApi.Controllers
                 };
             List<string> ListSql = new List<string>();
             try {
-                List<Producto> ListProductsWms = (from P in WmsDbO.Producto select new Producto() { CodProducto = P.CodProducto, Existencia = P.Existencia }).ToList();
+                List<Producto> ListProductsWms = (from P in WmsDbOLong.Producto select new Producto() { CodProducto = P.CodProducto, Existencia = P.Existencia }).ToList();
                 List<Clientes> ListUploadClients = new List<Clientes>();
                 List<int> ListDocXTran = new List<int>();
                 if (ListProducts.Count() == 0)
@@ -2420,17 +2424,17 @@ namespace EdiApi.Controllers
                             ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
                         }
                     };
-                //where C.Nombre.Contains("payless", StringComparison.InvariantCultureIgnoreCase)
                 List<Clientes> ListClientes = (from C in WmsDbO.Clientes orderby C.Nombre select C).ToList();
                 Transacciones TNew = new Transacciones();
                 //System.IO.StreamWriter Salida = new System.IO.StreamWriter("SetIngresoExcelWms2.sql", false);
                 //Salida.WriteLine("");
                 //Salida.Close();
+                int NTran = 1;
                 foreach (WmsFileModel Product in ListProducts) {
                     bool AllRackFull = true;
                     ListSql = new List<string> {
                         "SET XACT_ABORT ON" + Environment.NewLine,
-                        "BEGIN TRANSACTION TRAN1" + Environment.NewLine,
+                        $"BEGIN TRANSACTION TRAN{NTran}" + Environment.NewLine,
                         "DECLARE @MaxTransaccionId INT;" + Environment.NewLine,
                         "DECLARE @MaxInventarioId INT;" + Environment.NewLine,
                         "DECLARE @MaxDTId INT;" + Environment.NewLine,
@@ -2453,7 +2457,7 @@ namespace EdiApi.Controllers
                     }
                     if (ListUploadClients.Where(Uc => Uc.ClienteId == Product.ClienteId).Count() == 0) {                        
                         //ListSql.Add(SqlGenHelper.GetSqlWmsMaxTbl("Transacciones", "TransaccionId", "MaxTransaccionId"));
-                        int MaxTransaccionId = (from T3 in WmsDbO.Transacciones select T3.TransaccionId).Max();
+                        MaxTransaccionId = (from T3 in WmsDbOLong.Transacciones select T3.TransaccionId).Max();
                         MaxTransaccionId++;
                         TNew = new Transacciones() {
                             TransaccionId = MaxTransaccionId,
@@ -2464,15 +2468,22 @@ namespace EdiApi.Controllers
                             RegimenId = cboRegimen,
                             ClienteId = Product.ClienteId,
                             TipoIngreso = "IN",
-                            Observacion = Product.Observaciones,
+                            Observacion = (string.IsNullOrEmpty(Product.Observaciones)? " " : Product.Observaciones),
                             Usuariocrea = "Hilmer",
                             Fechacrea = DateTime.Now,
                             EstatusId = 5,
                             Exportadorid = Product.Exportador,
                             Destinoid = Product.Destino
                         };
-                        WmsDbO.Transacciones.Add(TNew);
-                        WmsDbO.SaveChanges();                        
+                        try {
+                            WmsDbOLong.Transacciones.Add(TNew);
+                            WmsDbOLong.SaveChanges();
+                        } catch (Exception e2) {
+                            IEnumerable<Transacciones> TOld = (from T2 in WmsDbOLong.Transacciones where T2.TransaccionId == MaxTransaccionId select T2);
+                            if (TOld.Count() == 0) {
+                                throw e2;
+                            }
+                        }                        
                         //ListSql.Add(SqlGenHelper.GetSqlWmsInsertTransacciones(TNew));
                         ListUploadClients.Add(new Clientes() { ClienteId = Product.ClienteId });
                     }
@@ -2498,6 +2509,11 @@ namespace EdiApi.Controllers
                     } else {
                         PNew = ListProductsWms.Where(Pr1 => Pr1.CodProducto == Product.Barcode).Fod();
                         if (PNew.Existencia.HasValue) {
+                            IEnumerable<Transacciones> TDel = (from T in WmsDbOLong.Transacciones where T.TransaccionId == MaxTransaccionId select T);
+                            if (TDel.Count() > 0) {
+                                WmsDbOLong.Remove(TDel.Fod());
+                                WmsDbOLong.SaveChanges();
+                            }
                             return new RetData<string> {
                                 Info = new RetInfo() {
                                     CodError = -1,
@@ -2628,10 +2644,10 @@ namespace EdiApi.Controllers
                     }
                     // fin if transaccionId
                     ListSql.Add(@"
-COMMIT TRANSACTION TRAN1
+COMMIT TRANSACTION TRAN" + NTran.ToString() + @"
 END TRY
 BEGIN CATCH	
-	ROLLBACK TRANSACTION TRAN1
+	ROLLBACK TRANSACTION TRAN" + NTran.ToString() + @"
 	PRINT 'ERROR, LINEA: ' + CONVERT(VARCHAR(16), ERROR_LINE()) + ' - ' + ERROR_MESSAGE()
 	PRINT '@MaxTransaccionId = ' + CONVERT(VARCHAR(16), @MaxTransaccionId)
 	PRINT '@MaxInventarioId = ' + CONVERT(VARCHAR(16), @MaxInventarioId)
@@ -2647,7 +2663,9 @@ SET XACT_ABORT OFF
                     //Salida2.Close();
                     ManualDB.UploadBatch(ref WmsDbOLong, string.Join("", ListSql));
                     ListSql.Clear();
+                    NTran++;
                 }
+                MasiveInsertDone = true;
                 //ListSql.Add((DateTime.Now - StartTime).TotalSeconds.ToString());
                 return new RetData<string> {
                     Info = new RetInfo() {
@@ -2657,10 +2675,61 @@ SET XACT_ABORT OFF
                     }
                 };
             } catch (Exception e1) {
-                System.IO.StreamWriter Salida = new System.IO.StreamWriter("Errores.txt", true);
-                Salida.WriteLine(e1.ToString());
-                Salida.WriteLine(LaFecha);
-                Salida.Close();
+                if (!MasiveInsertDone) {
+                    IEnumerable<Transacciones> TDel = (from T in WmsDbOLong.Transacciones where T.TransaccionId == MaxTransaccionId select T);
+                    if (TDel.Count() > 0) {
+                        IEnumerable<ItemParamaetroxProducto> Lb1 = (
+                            from B1 in WmsDbOLong.ItemParamaetroxProducto
+                            from Ii in WmsDbOLong.ItemInventario
+                            from Dt in WmsDbOLong.DetalleTransacciones
+                            where Dt.TransaccionId == TDel.Fod().TransaccionId
+                            && Ii.InventarioId == Dt.InventarioId
+                            && B1.ItemInventarioId == Ii.ItemInventarioId
+                            select B1
+                            );
+                        if (Lb1.Count() > 0)
+                            WmsDbOLong.ItemParamaetroxProducto.RemoveRange(Lb1);
+                        IEnumerable<DtllItemTransaccion> Lb2 = (from B2 in WmsDbOLong.DtllItemTransaccion where B2.TransaccionId == TDel.Fod().TransaccionId select B2);
+                        if (Lb2.Count() > 0)
+                            WmsDbOLong.DtllItemTransaccion.RemoveRange(Lb2);
+                        IEnumerable<ItemInventario> Lb4 = (
+                            from Ii in WmsDbOLong.ItemInventario
+                            from Dt in WmsDbOLong.DetalleTransacciones
+                            where Ii.InventarioId == Dt.InventarioId
+                            && Dt.TransaccionId == TDel.Fod().TransaccionId
+                            select Ii
+                            );
+                        if (Lb4.Count() > 0)
+                            WmsDbOLong.ItemInventario.RemoveRange(Lb4);
+                        IEnumerable<Inventario> Lb5 = (
+                            from I in WmsDbOLong.Inventario
+                            from Dt in WmsDbOLong.DetalleTransacciones
+                            where Dt.TransaccionId == TDel.Fod().TransaccionId
+                            && I.InventarioId == Dt.InventarioId
+                            select I
+                            );
+                        if (Lb5.Count() > 0)
+                            WmsDbOLong.Inventario.RemoveRange(Lb5);
+                        IEnumerable<DocumentosxTransaccion> Lb6 = (from B6 in WmsDbOLong.DocumentosxTransaccion where B6.TransaccionId == TDel.Fod().TransaccionId select B6);
+                        if (Lb6.Count() > 0)
+                            WmsDbOLong.DocumentosxTransaccion.RemoveRange(Lb6);                        
+                        IEnumerable<DetalleTransacciones> Lb3 = (from B3 in WmsDbOLong.DetalleTransacciones where B3.TransaccionId == TDel.Fod().TransaccionId select B3);
+                        if (Lb3.Count() > 0)
+                            WmsDbOLong.DetalleTransacciones.RemoveRange(Lb3);                        
+                        IEnumerable<DetalleIngresoCliente> L2 = (from I2 in WmsDbOLong.DetalleIngresoCliente where I2.TransaccionId == TDel.Fod().TransaccionId select I2);
+                        if (L2.Count() > 0)
+                            WmsDbOLong.DetalleIngresoCliente.RemoveRange(L2);
+                        IEnumerable<DtllReceivexItemInventario> L1 = (from I1 in WmsDbOLong.DtllReceivexItemInventario where I1.TransaccionId == TDel.Fod().TransaccionId select I1);
+                        if (L1.Count() > 0)
+                            WmsDbOLong.DtllReceivexItemInventario.RemoveRange(L1);
+                        WmsDbOLong.Transacciones.Remove(TDel.Fod());
+                        WmsDbOLong.SaveChanges();
+                    }
+                }
+                //System.IO.StreamWriter Salida = new System.IO.StreamWriter("Errores.txt", true);
+                //Salida.WriteLine(e1.ToString());
+                //Salida.WriteLine(LaFecha);
+                //Salida.Close();
                 return new RetData<string> {
                     Info = new RetInfo() {
                         CodError = -1,

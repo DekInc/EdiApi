@@ -9,7 +9,7 @@ namespace ComModels
         public int IdPaylessProdPrioriM { get; set; }
         public string Oid { get; set; }
         public string Barcode { get; set; }
-        public string Tienda { get { return Barcode.Substring(0, 4); } }
+        public string Tienda { get { return (string.IsNullOrEmpty(Barcode)? string.Empty : Barcode.Substring(0, 4)); } }
         public string Estado { get; set; }
         public string Pri { get; set; }
         public string PoolP { get; set; }

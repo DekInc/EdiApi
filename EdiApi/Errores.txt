@@ -27,3 +27,72 @@ The statement has been terminated.
    at Microsoft.EntityFrameworkCore.DbContext.SaveChanges()
    at EdiApi.Controllers.DataController.SetIngresoExcelWms2(IEnumerable`1 ListProducts, Int32 cboBodega, Int32 cboRegimen) in E:\Documents\GLC\Codigo\EdiApi\EdiApi\Controllers\DataController.cs:line 2390
 
+System.Data.SqlClient.SqlException (0x80131904): Timeout expired.  The timeout period elapsed prior to completion of the operation or the server is not responding. ---> System.ComponentModel.Win32Exception (258): The wait operation timed out
+   at System.Data.SqlClient.SqlConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
+   at System.Data.SqlClient.SqlInternalConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
+   at System.Data.SqlClient.TdsParser.ThrowExceptionAndWarning(TdsParserStateObject stateObj, Boolean callerHasConnectionLock, Boolean asyncClose)
+   at System.Data.SqlClient.TdsParser.TryRun(RunBehavior runBehavior, SqlCommand cmdHandler, SqlDataReader dataStream, BulkCopySimpleResultSet bulkCopyHandler, TdsParserStateObject stateObj, Boolean& dataReady)
+   at System.Data.SqlClient.SqlCommand.RunExecuteNonQueryTds(String methodName, Boolean async, Int32 timeout, Boolean asyncWrite)
+   at System.Data.SqlClient.SqlCommand.InternalExecuteNonQuery(TaskCompletionSource`1 completion, Boolean sendToPipe, Int32 timeout, Boolean asyncWrite, String methodName)
+   at System.Data.SqlClient.SqlCommand.ExecuteNonQuery()
+   at EdiApi.Models.ManualDB.UploadBatch(WmsContext& _Wms, String Batch) in E:\Documents\GLC\Codigo\EdiApi\EdiApi\Models\ManualDB.cs:line 397
+   at EdiApi.Controllers.DataController.SetIngresoExcelWms2(IEnumerable`1 ListProducts, Int32 cboBodega, Int32 cboRegimen) in E:\Documents\GLC\Codigo\EdiApi\EdiApi\Controllers\DataController.cs:line 2655
+ClientConnectionId:0c26376c-1eff-4859-9392-612afee782ed
+Error Number:-2,State:0,Class:11
+21/05/2019
+System.Data.SqlClient.SqlException (0x80131904): Timeout expired.  The timeout period elapsed prior to completion of the operation or the server is not responding. ---> System.ComponentModel.Win32Exception (258): The wait operation timed out
+   at System.Data.SqlClient.SqlInternalConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
+   at System.Data.SqlClient.TdsParser.ThrowExceptionAndWarning(TdsParserStateObject stateObj, Boolean callerHasConnectionLock, Boolean asyncClose)
+   at System.Data.SqlClient.TdsParserStateObject.ReadSniError(TdsParserStateObject stateObj, UInt32 error)
+   at System.Data.SqlClient.TdsParserStateObject.ReadSniSyncOverAsync()
+   at System.Data.SqlClient.TdsParserStateObject.TryReadNetworkPacket()
+   at System.Data.SqlClient.TdsParserStateObject.TryPrepareBuffer()
+   at System.Data.SqlClient.TdsParserStateObject.TryReadByte(Byte& value)
+   at System.Data.SqlClient.TdsParser.TryRun(RunBehavior runBehavior, SqlCommand cmdHandler, SqlDataReader dataStream, BulkCopySimpleResultSet bulkCopyHandler, TdsParserStateObject stateObj, Boolean& dataReady)
+   at System.Data.SqlClient.SqlCommand.RunExecuteNonQueryTds(String methodName, Boolean async, Int32 timeout, Boolean asyncWrite)
+   at System.Data.SqlClient.SqlCommand.InternalExecuteNonQuery(TaskCompletionSource`1 completion, Boolean sendToPipe, Int32 timeout, Boolean asyncWrite, String methodName)
+   at System.Data.SqlClient.SqlCommand.ExecuteNonQuery()
+   at EdiApi.Models.ManualDB.UploadBatch(WmsContext& _Wms, String Batch) in E:\Documents\GLC\Codigo\EdiApi\EdiApi\Models\ManualDB.cs:line 397
+   at EdiApi.Controllers.DataController.SetIngresoExcelWms2(IEnumerable`1 ListProducts, Int32 cboBodega, Int32 cboRegimen) in E:\Documents\GLC\Codigo\EdiApi\EdiApi\Controllers\DataController.cs:line 2655
+ClientConnectionId:8acb6e21-dcc9-4534-9c3a-7bd4acc28e23
+Error Number:-2,State:0,Class:11
+21/05/2019
+System.Data.SqlClient.SqlException (0x80131904): Timeout expired.  The timeout period elapsed prior to completion of the operation or the server is not responding. ---> System.ComponentModel.Win32Exception (258): The wait operation timed out
+   at System.Data.SqlClient.SqlConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
+   at System.Data.SqlClient.SqlInternalConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
+   at System.Data.SqlClient.TdsParser.ThrowExceptionAndWarning(TdsParserStateObject stateObj, Boolean callerHasConnectionLock, Boolean asyncClose)
+   at System.Data.SqlClient.TdsParser.TryRun(RunBehavior runBehavior, SqlCommand cmdHandler, SqlDataReader dataStream, BulkCopySimpleResultSet bulkCopyHandler, TdsParserStateObject stateObj, Boolean& dataReady)
+   at System.Data.SqlClient.SqlCommand.RunExecuteNonQueryTds(String methodName, Boolean async, Int32 timeout, Boolean asyncWrite)
+   at System.Data.SqlClient.SqlCommand.InternalExecuteNonQuery(TaskCompletionSource`1 completion, Boolean sendToPipe, Int32 timeout, Boolean asyncWrite, String methodName)
+   at System.Data.SqlClient.SqlCommand.ExecuteNonQuery()
+   at EdiApi.Models.ManualDB.UploadBatch(WmsContext& _Wms, String Batch) in E:\Documents\GLC\Codigo\EdiApi\EdiApi\Models\ManualDB.cs:line 397
+   at EdiApi.Controllers.DataController.SetIngresoExcelWms2(IEnumerable`1 ListProducts, Int32 cboBodega, Int32 cboRegimen) in E:\Documents\GLC\Codigo\EdiApi\EdiApi\Controllers\DataController.cs:line 2657
+ClientConnectionId:d55720ff-f37b-4ae1-9d88-4775af215051
+Error Number:-2,State:0,Class:11
+21/05/2019
+System.Data.SqlClient.SqlException (0x80131904): Timeout expired.  The timeout period elapsed prior to completion of the operation or the server is not responding. ---> System.ComponentModel.Win32Exception (258): The wait operation timed out
+   at System.Data.SqlClient.SqlConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
+   at System.Data.SqlClient.SqlInternalConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
+   at System.Data.SqlClient.TdsParser.ThrowExceptionAndWarning(TdsParserStateObject stateObj, Boolean callerHasConnectionLock, Boolean asyncClose)
+   at System.Data.SqlClient.TdsParser.TryRun(RunBehavior runBehavior, SqlCommand cmdHandler, SqlDataReader dataStream, BulkCopySimpleResultSet bulkCopyHandler, TdsParserStateObject stateObj, Boolean& dataReady)
+   at System.Data.SqlClient.SqlCommand.RunExecuteNonQueryTds(String methodName, Boolean async, Int32 timeout, Boolean asyncWrite)
+   at System.Data.SqlClient.SqlCommand.InternalExecuteNonQuery(TaskCompletionSource`1 completion, Boolean sendToPipe, Int32 timeout, Boolean asyncWrite, String methodName)
+   at System.Data.SqlClient.SqlCommand.ExecuteNonQuery()
+   at EdiApi.Models.ManualDB.UploadBatch(WmsContext& _Wms, String Batch) in E:\Documents\GLC\Codigo\EdiApi\EdiApi\Models\ManualDB.cs:line 397
+   at EdiApi.Controllers.DataController.SetIngresoExcelWms2(IEnumerable`1 ListProducts, Int32 cboBodega, Int32 cboRegimen) in E:\Documents\GLC\Codigo\EdiApi\EdiApi\Controllers\DataController.cs:line 2664
+ClientConnectionId:b1c5529b-ea0c-48a6-8941-9c2a59f218b5
+Error Number:-2,State:0,Class:11
+21/05/2019
+System.Data.SqlClient.SqlException (0x80131904): Timeout expired.  The timeout period elapsed prior to completion of the operation or the server is not responding. ---> System.ComponentModel.Win32Exception (258): The wait operation timed out
+   at System.Data.SqlClient.SqlConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
+   at System.Data.SqlClient.SqlInternalConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
+   at System.Data.SqlClient.TdsParser.ThrowExceptionAndWarning(TdsParserStateObject stateObj, Boolean callerHasConnectionLock, Boolean asyncClose)
+   at System.Data.SqlClient.TdsParser.TryRun(RunBehavior runBehavior, SqlCommand cmdHandler, SqlDataReader dataStream, BulkCopySimpleResultSet bulkCopyHandler, TdsParserStateObject stateObj, Boolean& dataReady)
+   at System.Data.SqlClient.SqlCommand.RunExecuteNonQueryTds(String methodName, Boolean async, Int32 timeout, Boolean asyncWrite)
+   at System.Data.SqlClient.SqlCommand.InternalExecuteNonQuery(TaskCompletionSource`1 completion, Boolean sendToPipe, Int32 timeout, Boolean asyncWrite, String methodName)
+   at System.Data.SqlClient.SqlCommand.ExecuteNonQuery()
+   at EdiApi.Models.ManualDB.UploadBatch(WmsContext& _Wms, String Batch) in E:\Documents\GLC\Codigo\EdiApi\EdiApi\Models\ManualDB.cs:line 397
+   at EdiApi.Controllers.DataController.SetIngresoExcelWms2(IEnumerable`1 ListProducts, Int32 cboBodega, Int32 cboRegimen) in E:\Documents\GLC\Codigo\EdiApi\EdiApi\Controllers\DataController.cs:line 2652
+ClientConnectionId:64be90da-977c-4a87-bb87-89d55f83b1e4
+Error Number:-2,State:0,Class:11
+21/05/2019

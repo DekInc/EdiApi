@@ -490,16 +490,7 @@ namespace EdiViewer.Controllers
                 if (ListProd.Data == null)
                     return Json(new { total = 0, records = "", errorMessage = (ListProd.Info.CodError != 0 ? ListProd.Info.Mensaje : string.Empty) });
                 if (ListProd.Data.Count() == 0)
-                    return Json(new { total = 0, records = "", errorMessage = (ListProd.Info.CodError != 0 ? ListProd.Info.Mensaje : string.Empty) });
-                //RetData<IEnumerable<PaylessTiendas>> ListClients = await ApiLongClientFactory.Instance.GetAllPaylessStores(ApiClientFactory.Instance.Encrypt($"Fun|{HttpContext.Session.GetObjSession<string>("Session.HashId")}"));
-                //if (ListClients.Data == null)
-                //    return Json(new { total = 0, records = "", errorMessage = (ListClients.Info.CodError != 0 ? ListClients.Info.Mensaje : string.Empty) });
-                //if (ListClients.Data.Count() == 0)
-                //    return Json(new { total = 0, records = "", errorMessage = (ListClients.Info.CodError != 0 ? ListClients.Info.Mensaje : string.Empty) });
-                //if (ListClients.Info.CodError != 0)
-                //    return Json(new { total = 0, records = "", errorMessage = ListClients.Info.Mensaje });
-                ////IEnumerable<PaylessProdPrioriDetModel> AllRecords = ListProd.Data.Item2.Distinct().Select(O => Utility.Funcs.Reflect(O, new PaylessProdPrioriDetModel())).ToList();
-                //string IdTienda = ListClients.Data.Where(C => C.ClienteId == HttpContext.Session.GetObjSession<int>("Session.ClientId")).Fod().TiendaId.ToString();
+                    return Json(new { total = 0, records = "", errorMessage = (ListProd.Info.CodError != 0 ? ListProd.Info.Mensaje : string.Empty) });                
                 List<PaylessProdPrioriDetModel> Records = ListProd.Data.Where(R => R.Tienda == TiendaId).Select(O => Utility.Funcs.Reflect(O, new PaylessProdPrioriDetModel())).ToList();
                 foreach (PaylessProdPrioriDetModel R in Records) {
                     if (R.Categoria.Contains("ACCESORIOS", StringComparison.InvariantCultureIgnoreCase)) {
@@ -510,7 +501,6 @@ namespace EdiViewer.Controllers
                 Records = (
                     from Pp in Records
                     group Pp by new { Pp.Barcode, Pp.Categoria, Pp.Talla, Pp.Departamento, Pp.Cp, Pp.Transporte }
-                    //group Pp by new { Pp.Barcode, Pp.Producto, Pp.Talla, Pp.Categoria, Pp.Lote, Pp.Departamento, Pp.Cp, Pp.M3, Pp.Peso }
                     into Grp
                     select new PaylessProdPrioriDetModel {
                         Barcode = Grp.Fod().Barcode,
@@ -522,7 +512,7 @@ namespace EdiViewer.Controllers
                         //Pri = Grp.Fod().Pri,
                         //PoolP = Grp.Fod().PoolP,
                         Departamento = Grp.Fod().Departamento,
-                        Cp = Grp.Fod().Cp,
+                        Cp = string.IsNullOrEmpty(Grp.Fod().Cp)? "No" : "Si",
                         Id = Grp.Fod().Id,
                         Peso = Grp.Count(),
                         IdTransporte = Grp.Fod().IdTransporte,
@@ -536,7 +526,7 @@ namespace EdiViewer.Controllers
                 if (TuplePext.Info.CodError != 0)
                     return Json(new { total = 0, records = "", errorMessage = TuplePext.Info.Mensaje });
                 if (TuplePextSent.Info.CodError != 0)
-                    return Json(new { total = 0, records = "", errorMessage = TuplePextSent.Info.Mensaje });
+                    return Json(new { total = 0, records = "", errorMessage = TuplePextSent.Info.Mensaje });                
                 List<PedidosDetExternos> ListGuardados = (
                     from Pd in TuplePext.Data.Item2
                     from P in TuplePext.Data.Item1
@@ -632,30 +622,45 @@ namespace EdiViewer.Controllers
                         if (R.CantPedir < 0)
                             R.CantPedir = 0;
                     });
-                    IFormCollection GridForm = Request.Form;
-                    FilteredRecords = Utility.ExpressionBuilderHelper.W2uiSearchNoSkip<PaylessProdPrioriDetModel>(Records, Request.Form);
-                    Records = Utility.ExpressionBuilderHelper.W2uiSearch<PaylessProdPrioriDetModel>(Records, Request.Form);
+                    bool HaveForm = true;
+                    try {
+                        if (Request.Form != null) {
+                            IFormCollection GridForm = Request.Form;
+                        }
+                    } catch {
+                        HaveForm = false;
+                    }                    
+                    int NRow = 0;
+                    Records = (
+                        from R in Records
+                        group R by new { R.Categoria, R.Cp }
+                        into Grp
+                        select new PaylessProdPrioriDetModel {
+                            Id = NRow++,
+                            Categoria = Grp.Fod().Categoria,
+                            Existencia = Grp.Sum(O1 => O1.Existencia),
+                            Reservado = Grp.Sum(O1 => O1.Reservado),
+                            CantPedir = Grp.Sum(O1 => O1.CantPedir),
+                            Cp = Grp.Fod().Cp
+                        }).ToList();
+                    Total = Records.Count;
+                    FilteredRecords = Records;
+                    if (HaveForm) {
+                        FilteredRecords = Utility.ExpressionBuilderHelper.W2uiSearchNoSkip<PaylessProdPrioriDetModel>(Records, Request.Form);
+                        Records = Utility.ExpressionBuilderHelper.W2uiSearch<PaylessProdPrioriDetModel>(Records, Request.Form);
+                    }
                 }
-                int NRow = 0;
-                Records = (
-                    from R in Records
-                    group R by R.Categoria
-                    into Grp
-                    select new PaylessProdPrioriDetModel {
-                        Id = NRow++,
-                        Categoria = Grp.Fod().Categoria,
-                        Existencia = Grp.Sum(O1 => O1.Existencia),
-                        Reservado = Grp.Sum(O1 => O1.Reservado),
-                        CantPedir = Grp.Sum(O1 => O1.CantPedir)
-                    }).ToList();
-                Total = Records.Count;
                 //group Pp by new { Pp.IdTransporte, Pp.Tienda, Pp.Barcode, Pp.Categoria, Pp.Cp }
                 //    into Grp
                 //    orderby Grp.Fod().Barcode
                 //    select new PaylessProdPrioriDetModel {
                 //        Id = Grp.Fod().Id,
                 //        IdTransporte = Grp.Fod().IdTransporte,
-                return Json(new { Total, Records, errorMessage = "", AllRecords, FilteredRecords, pedidosPendientes = TuplePextSent.Data.Item1 });
+                AllRecords = Records;
+                if (TuplePextSent.Data.Item1.Count() > 0)
+                    return Json(new { Total, Records, errorMessage = "", AllRecords, FilteredRecords, pedidosPendientes = TuplePextSent.Data.Item1 });
+                else
+                    return Json(new { Total, Records, errorMessage = "", AllRecords, FilteredRecords });
             } catch (Exception e1) {
                 return Json(new { draw = 0, recordsFiltered = 0, recordsTotal = 0, errorMessage = e1.ToString(), data = "" });
             }

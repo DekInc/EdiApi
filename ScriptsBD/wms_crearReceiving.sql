@@ -1,4 +1,4 @@
---use wms
+use wms
 SELECT ii.CodProducto,ii.Descripcion,
  sum(IsNull(ii.Declarado,0)) as declarado,
  sum(IsNull(ii.Auditado,0)) as auditado,
@@ -30,7 +30,10 @@ SELECT ii.CodProducto,ii.Descripcion,
   left join transportista as tr on tr.transportistaid=t.transportistaID
   LEFT OUTER Join UnidadMedida As um On um.UnidadMedidaID = PR.UnidadMedida
   LEFT OUTER Join UnidadMedida As tb On tb.UnidadMedidaID = i.tipobulto 
-  WHERE d.INFORME_ALMACEN=''
+  WHERE d.INFORME_ALMACEN='GLCHN33-5-008'
+  --'GLCHN33-5-007'
+  --'GLCHN33-5-008'
+  --GLCHN33-5-001
   group by  b.NomBodega ,l.dsclocation ,r.Regimen,
    d.INFORME_ALMACEN, d.FE_INFORME_ALMACEN, d.IM_5, d.FE_IM_5 
   ,d.FACT_COMERCIAL ,d.FE_FACT_COMERCIAL,c.Nombre ,

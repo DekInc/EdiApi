@@ -2,13 +2,6 @@
     ViewData["Title"] = "Pedidos Payless v2";
     Layout = "_Layout";
 }
-@*<script>
-        var arrayProductosOld = [];
-        @if(ViewBag.ListOldDis != null)
-        {
-            <text>arrayProductosOld = </text> @Html.Raw(ViewBag.ListOldDis);
-        }
-    </script>*@
 <div id="mainDiv">
     <div class="container">
         <div class="card-deck cardMain">
@@ -54,7 +47,7 @@
                     </form>
                     <div class="clearfix"></div>
                     <br />
-                    <div id="gridExcelConsolidado" style="min-height: 460px; width: 100%;"></div>
+                    <div id="mainGrid" style="min-height: 460px; width: 100%;"></div>
                 </div>
             </div>
         </div>
@@ -178,7 +171,7 @@
     function crearGrid() {
         var config = {
             grid: {
-                name: 'gridExcelConsolidado',
+                name: 'mainGrid',
                 selectType: 'cell',
                 bResponsive: true,
                 bMobile: window.mobileAndTabletcheck(),
@@ -198,6 +191,7 @@
                 columns: [
                     { field: "id", caption: "id", sortable: true, hidden: true },
                     { field: "categoria", caption: "Genero", type: 'text', sortable: true },
+                    { field: "cp", caption: "CodPri", type: 'text', sortable: true },
                     { field: "existencia", caption: "Existencia", sortable: true },
                     { field: "reservado", caption: "Reservado", sortable: true },
                     { field: "disponible", caption: "Disponible", sortable: true },
@@ -218,8 +212,8 @@
                 ]
             }
         };
-        mainGrid = $('#gridExcelConsolidado').w2grid(config.grid);
-        arrayGrids['gridExcelConsolidado'] = mainGrid;
+        mainGrid = $('#mainGrid').w2grid(config.grid);
+        arrayGrids['mainGrid'] = mainGrid;
     }
     function verDetalle(barcode2, talla2) {
         barcode = barcode2;
@@ -228,8 +222,7 @@
         detGrid.reload2("@this.Url.Action("GetPaylessProdPrioriDet", "Grids")?barcode=" + barcode + '&talla=' + talla);
     }
     $(document).ready(function () {
-        $('.imgHeaderHelp').tooltip();
-        crearGrid();
+        $('.imgHeaderHelp').tooltip();        
         getPeriods();
         getClientName();
         reDrawObjects();
@@ -263,16 +256,26 @@
         });
         $('#btnFiltrar').on("click", function (Event) {
             miAlive();
-            mainGrid.allRecords = [];            
-            $('#divSpinFiltrar').show();
-            mainGrid.searchReset(true);
-            mainGrid.reload2('@this.Url.Action("GetPaylessProdPrioriInventario2", "Grids")');
+            $('#divSpinFiltrar').hide();
+            if (mainGrid == null) {
+                crearGrid();
+            }
+            else {
+                mainGrid.allRecords = [];
+                mainGrid.searchReset(true);
+                mainGrid.refresh();
+            }
         });
         $('#btnLimpiar').on("click", function (Event) {
             $('#divSpinFiltrar').hide();
-            mainGrid.allRecords = [];
-            mainGrid.searchReset();
-            mainGrid.reload2('@this.Url.Action("GetPaylessProdPrioriInventario2", "Grids")');
+            if (mainGrid == null) {
+                crearGrid();
+            }
+            else {
+                mainGrid.allRecords = [];
+                mainGrid.searchReset(true);
+                mainGrid.refresh();
+            }
         });
         if (window.mobileAndTabletcheck()) {
             $('.div856Search').css({ "max-width": "unset" });

@@ -39,7 +39,12 @@ namespace EdiApi.Controllers
         object MaxEdiComs => Config.GetSection("MaxEdiComs").GetValue(typeof(object), "Value");
         StreamReader Rep830File { set; get; }
         //public EdiController(EdiDBContext _DbO) { DbO = _DbO; }
-        public EdiController(EdiDBContext _DbO, Models.WmsDB.WmsContext _WmsDb, IConfiguration _Config) { DbO = _DbO; WmsDb = _WmsDb; Config = _Config; }
+        public EdiController(EdiDBContext _DbO, Models.WmsDB.WmsContext _WmsDb, IConfiguration _Config) {
+            DbO = _DbO;
+            WmsDb = _WmsDb;
+            Config = _Config;
+            WmsDb.Database.SetCommandTimeout(TimeSpan.FromMinutes(2));
+        }
         [HttpGet]
         public ActionResult<RetReporte> EnviarEjemplo()
         {

@@ -42,8 +42,8 @@ namespace EdiApi.Models {
             return $"UPDATE dbo.Transacciones SET EstatusId = 6 WHERE TransaccionID = @MaxTransaccionId; {Temp}";
         }
         public static string GetSqlWmsInsertDocumentosxTransaccion(DocumentosxTransaccion D) {
-            return $"INSERT INTO dbo.DocumentosxTransaccion(IDDocxTransaccion, transaccionid, fecha, INFORME_ALMACEN, FE_INFORME_ALMACEN, IM_5, fe_im_5, ORDEN_COMPRA) " +
-                $"SELECT @MaxDocTran, @MaxTransaccionId, {D.Fecha.ToSqlDate()}, '{D.InformeAlmacen}', {D.FeInformeAlmacen.ToSqlDate()}, '{D.Im5}', {D.FeIm5.ToSqlDate()}, '{D.OrdenCompra}'; {Temp}";
+            return $"INSERT INTO dbo.DocumentosxTransaccion(IDDocxTransaccion, transaccionid, fecha, INFORME_ALMACEN, FE_INFORME_ALMACEN, IM_5, ORDEN_COMPRA) " +
+                $"SELECT @MaxDocTran, @MaxTransaccionId, {D.Fecha.ToSqlDate()}, '{D.InformeAlmacen}', {D.FeInformeAlmacen.ToSqlDate()}, '{D.Im5}', '{D.OrdenCompra}'; {Temp}";
         }
         public static string GetSqlWmsInsertPedido(Pedido P) {
             return $"INSERT INTO dbo.Pedido(PedidoID, fechapedido, ClienteID, TipoPedido, FechaRequerido, EstatusID, Observacion, BodegaID, RegimenID, PedidoBarcode) " +

@@ -6062,6 +6062,9 @@ w2utils.event = {
                     obj.requestComplete(status, cmd, callBack);
                 })
                 .fail(function (xhr, status, error) {
+                    console.log(xhr);
+                    console.log(status);
+                    console.log(error);
                     // trigger event
                     var errorObj = { status: status, error: error, rawResponseText: xhr.responseText };
                     var edata2 = obj.trigger({ phase: 'before', type: 'error', error: errorObj, xhr: xhr });
@@ -6178,7 +6181,6 @@ w2utils.event = {
                                 for (var r = 0; r < data.records.length; r++) {
                                     this.records.push(data.records[r]);
                                 }
-                                console.log(data.records);
                             }                            
                             if (data.allRecords) {
                                 if (this.allRecords.length == 0)
