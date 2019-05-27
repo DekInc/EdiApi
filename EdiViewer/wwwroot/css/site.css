@@ -118,6 +118,9 @@ table{
 .cardMain {
     margin-top: 10px;
 }
+.cardPayless{
+
+}
 
 .box-shadow {
     box-shadow: 0 0.25rem 0.75rem rgba(0, 0, 0, .05);
@@ -506,7 +509,7 @@ table.dataTable thead th, table.dataTable thead td {
     border-radius: unset !important;
     border-color: unset !important;
     box-shadow: unset !important;
-    font-size: 10pt !important;
+    font-size: 12pt !important;
 }
 table.dataTable.dtr-inline.collapsed > tbody > tr.parent > td:first-child:before, table.dataTable.dtr-inline.collapsed > tbody > tr.parent > th:first-child:before {
     font-size: 18pt;
@@ -690,4 +693,65 @@ table.dataTable.dtr-inline.collapsed > tbody > tr[role="row"] > td:first-child:b
 }
 #dtpPeriodo {
     max-width: 200px;
+}
+
+.card-header-payless {
+    background-color: unset;
+    background: linear-gradient(35deg, rgb(233, 147, 91), rgb(234, 204, 175));
+    font-size: 13pt;
+    font-weight: bold;
+}
+.pedidoPaylessLogo {
+    max-height: 48px;
+}
+.pedidoPaylessIcon {
+    box-sizing: border-box;
+    width: 100%;
+    height: 100%;
+    z-index: 6;
+}
+.divPedidoPaylessMain {
+    /*width: 60vw !important;*/
+    /*width: 900px !important;*/
+    /*border: 1px solid #000;*/
+}
+.divPedidoPaylessOverInfo {
+    width: 100%;
+    /*height: 40%;*/
+    /*width: 440px;*/
+    float: left;
+    position: absolute;
+    left: 0px;
+    bottom: 0px;
+    z-index: 8;
+    /*padding: 5px;*/
+    color: #FFFFFF;
+    font-size: 16pt;
+}
+.divPedidoPaylessOverInfoContent {
+    z-index: 9;
+    background-color: rgba(0, 0, 64, 0.5);
+    padding: 8px;
+    width: 92%;
+    margin: 0 auto;
+    vertical-align: middle;
+    text-align: center;
+    text-shadow: 2px 2px #222;
+}
+.overInfoContentTittle {
+    font-size: 18pt;
+    font-weight: bold;
+    font-style: italic;
+}
+.overInfoContentContent{
+    box-sizing: border-box;
+    margin-left: 15px;    
+    text-align: left;
+}
+.overInfoContentContent {
+    padding-bottom: 10px;
+}
+.overInfoContentTittle {
+    display: inline-block;
+    padding-top: 10px;
 }
