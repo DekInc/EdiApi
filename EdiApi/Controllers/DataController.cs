@@ -3002,5 +3002,143 @@ SET XACT_ABORT OFF
                 };
             }
         }
+        [HttpPost]
+        public RetData<string> SetNewDisPayless(string dtpFechaEntrega, int txtWomanQty, int txtManQty, int txtKidQty, int txtAccQty, string radInvType, int ClienteId, int TiendaId) {
+            DateTime StartTime = DateTime.Now;
+            try {
+                PedidosExternos NewPe = new PedidosExternos() {
+                    ClienteId = ClienteId,
+                    FechaCreacion = DateTime.Now.ToString(ApplicationSettings.DateTimeFormat),
+                    FechaPedido = dtpFechaEntrega,
+                    IdEstado = 2,
+                    TiendaId = TiendaId
+                };                
+                List<PaylessProdPrioriDetModel> ListProdTienda = (
+                    from D in DbO.PaylessProdPrioriDet
+                    from M in DbO.PaylessProdPrioriM
+                    where D.Barcode.StartsWith(TiendaId.ToString())
+                    && M.Id == D.IdPaylessProdPrioriM
+                    select new PaylessProdPrioriDetModel() {
+                        Barcode = D.Barcode,
+                        Cp = D.Cp,
+                        Categoria = D.Categoria,
+                        IdPaylessProdPrioriM = D.IdPaylessProdPrioriM,
+                        Departamento = M.Periodo
+                    }).Distinct().ToList();
+                List<PaylessProdPrioriDetModel> ListProdWithStock = new List<PaylessProdPrioriDetModel>();
+                IEnumerable<ExistenciasExternModel> ListStock = ManualDB.SP_GetExistenciasExtern(ref DbO, ClienteId);
+                if (ListStock.Count() == 0)
+                    return new RetData<string> {
+                        Info = new RetInfo() {
+                            CodError = -1,
+                            Mensaje = "Error, no hay existencias de productos para el cliente.",
+                            ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                        }
+                    };
+                foreach (ExistenciasExternModel Stock in ListStock) {
+                    foreach (PaylessProdPrioriDetModel Product in ListProdTienda.Where(P => P.Barcode == Stock.CodProducto)) {
+                        Product.Existencia = Convert.ToInt32(Stock.Existencia);
+                        Product.Reservado = Convert.ToInt32(Stock.Reservado);
+                        if (Product.Existencia > 0 && ListProdWithStock.Where(Ws => Ws.Barcode == Product.Barcode).Count() == 0)
+                            ListProdWithStock.Add(Product);
+                    }
+                }
+                List<PaylessProdPrioriDetModel> ListProdPedido = new List<PaylessProdPrioriDetModel>();
+                ListProdPedido = (
+                    from P1 in ListProdWithStock
+                    where !string.IsNullOrEmpty(P1.Cp)
+                    select P1
+                    ).ToList();
+                switch (radInvType) {
+                    case "fifo":
+                        ListProdPedido.AddRange((
+                            from P2 in ListProdWithStock
+                            where string.IsNullOrEmpty(P2.Cp)
+                            && P2.Categoria.ToUpper() == "DAMAS"
+                            orderby P2.Departamento.ToDateFromEspDate() descending
+                            select P2
+                            ).Take(txtWomanQty).Distinct().ToList());
+                        ListProdPedido.AddRange((
+                            from P2 in ListProdWithStock
+                            where string.IsNullOrEmpty(P2.Cp)
+                            && P2.Categoria.ToUpper() == "CABALLEROS"
+                            orderby P2.Departamento.ToDateFromEspDate() descending
+                            select P2
+                            ).Take(txtManQty).Distinct().ToList());
+                        ListProdPedido.AddRange((
+                            from P2 in ListProdWithStock
+                            where string.IsNullOrEmpty(P2.Cp)
+                            && P2.Categoria.ToUpper() == "NIÑOS / AS"
+                            orderby P2.Departamento.ToDateFromEspDate() descending
+                            select P2
+                            ).Take(txtKidQty).Distinct().ToList());
+                        ListProdPedido.AddRange((
+                            from P2 in ListProdWithStock
+                            where string.IsNullOrEmpty(P2.Cp)
+                            && P2.Categoria.ToUpper() == "ACCESORIOS"
+                            orderby P2.Departamento.ToDateFromEspDate() descending
+                            select P2
+                            ).Take(txtAccQty).Distinct().ToList());
+                        break;
+                    case "lifo":
+                        ListProdPedido.AddRange((
+                            from P2 in ListProdWithStock
+                            where string.IsNullOrEmpty(P2.Cp)
+                            && P2.Categoria.ToUpper() == "DAMAS"
+                            orderby P2.Departamento.ToDateFromEspDate() ascending
+                            select P2
+                            ).Take(txtWomanQty).Distinct().ToList());
+                        ListProdPedido.AddRange((
+                            from P2 in ListProdWithStock
+                            where string.IsNullOrEmpty(P2.Cp)
+                            && P2.Categoria.ToUpper() == "CABALLEROS"
+                            orderby P2.Departamento.ToDateFromEspDate() ascending
+                            select P2
+                            ).Take(txtManQty).Distinct().ToList());
+                        ListProdPedido.AddRange((
+                            from P2 in ListProdWithStock
+                            where string.IsNullOrEmpty(P2.Cp)
+                            && P2.Categoria.ToUpper() == "NIÑOS / AS"
+                            orderby P2.Departamento.ToDateFromEspDate() ascending
+                            select P2
+                            ).Take(txtKidQty).Distinct().ToList());
+                        ListProdPedido.AddRange((
+                            from P2 in ListProdWithStock
+                            where string.IsNullOrEmpty(P2.Cp)
+                            && P2.Categoria.ToUpper() == "ACCESORIOS"
+                            orderby P2.Departamento.ToDateFromEspDate() ascending
+                            select P2
+                            ).Take(txtAccQty).Distinct().ToList());
+                        break;
+                    default:
+                        break;
+                }
+                DbO.PedidosExternos.Add(NewPe);
+                DbO.SaveChanges();
+                List<PedidosDetExternos> ListPed = ListProdPedido.Select(Pp => new PedidosDetExternos() {
+                    PedidoId = NewPe.Id,
+                    CodProducto = Pp.Barcode,
+                    CantPedir = 1
+                }).ToList();
+                DbO.PedidosDetExternos.AddRange(ListPed);
+                DbO.SaveChanges();
+                return new RetData<string> {
+                    Data = NewPe.Id.ToString(),
+                    Info = new RetInfo() {
+                        CodError = 0,
+                        Mensaje = "ok",
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            } catch (Exception e1) {
+                return new RetData<string> {
+                    Info = new RetInfo() {
+                        CodError = -1,
+                        Mensaje = e1.ToString(),
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            }
+        }
     }
 }

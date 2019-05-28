@@ -84,7 +84,29 @@ namespace EdiViewer.Controllers
         }
         public IActionResult CrearWmsSalida() {
             return View();
-        }        
+        }
+        public async Task<IActionResult> SetNewDisPayless(string dtpFechaEntrega, int txtWomanQty, int txtManQty, int txtKidQty, int txtAccQty, string radInvType) {
+            if (string.IsNullOrEmpty(radInvType)) {
+                return View("PedidosPayless3", new ErrorModel() { ErrorMessage = "El tipo de pedido está vacío." });
+            }
+            if (string.IsNullOrEmpty(dtpFechaEntrega)) {
+                return View("PedidosPayless3", new ErrorModel() { ErrorMessage = "La fecha de entrega está vacía." });
+            }
+            if (txtWomanQty.Equals("0") && txtManQty.Equals("0") && txtKidQty.Equals("0") && txtAccQty.Equals("0")) {
+                return View("PedidosPayless3", new ErrorModel() { ErrorMessage = "La cantidad a pedir es cero para todas las categorias." });
+            }
+            DateTime DateDis = dtpFechaEntrega.ToDate();
+            if ((DateDis - DateTime.Now).TotalHours < 24) {
+                return View("PedidosPayless3", new ErrorModel() { ErrorMessage = "La fecha y hora del pedido debe ser con más de 24 horas de anticipación." });
+            }
+            RetData<string> Ret = await ApiClientFactory.Instance.SetNewDisPayless(dtpFechaEntrega, txtWomanQty, txtManQty, txtKidQty, txtAccQty, radInvType, HttpContext.Session.GetObjSession<int>("Session.ClientId"), HttpContext.Session.GetObjSession<int>("Session.TiendaId"));
+            if (Ret.Info.CodError == 0) {
+                return View("PedidosPayless3", new ErrorModel() { ErrorMessage = $"Se ha creado el pedido # {Ret.Data}" });
+            } else {
+                return View("PedidosPayless3", new ErrorModel() { ErrorMessage = Ret.Info.Mensaje });
+            }
+            return View("PedidosPayless3", new ErrorModel());
+        }
         public async Task<RetData<string>> SetPaylessProdPriori(string dtpPeriodUpload, string txtTransporte, bool ChkUpDelete)
         {
             DateTime StartTime = DateTime.Now;
@@ -377,7 +399,7 @@ namespace EdiViewer.Controllers
             return View();
         }
         public IActionResult PedidosPayless3() {
-            return View();
+            return View(new ErrorModel());
         }
         public async Task<IActionResult> Inventario()
         {

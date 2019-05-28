@@ -1,163 +1,171 @@
-﻿@{
+﻿@model ErrorModel
+@{
     ViewData["Title"] = "Pedidos Payless v3";
     Layout = "_Layout";
 }
 <style>
-    .div856Search{
+    .div856Search {
         padding: 6px !important;
     }
-    .txtCantPedir{
+
+    .txtCantPedir {
         background: rgba(234, 217, 205, 0.7);
     }
 </style>
 <div id="mainDiv">
-    <div class="container">
-        <div class="card-deck cardMain cardPayless">
-            <div class="card box-shadow">
-                <div class="card-header card-header-payless">
-                    <h4 class="my-0 font-weight-normal">Pedidos Payless</h4>
-                </div>
-                <div class="card-body">
-                    <div>
-                        <span id="spanClientName">
-                            <span id="divSpinClientName" class="spinner-border spinner-border-sm text-danger" style="display: none" role="status">
-                                <span class="sr-only">Loading...</span>
-                            </span>
-                        </span>
+    <form id="formNewDis" action="@this.Url.Action("SetNewDisPayless", "HomeExtern")" method="post" enctype="multipart/form-data">
+        <div class="container">
+            <div class="card-deck cardMain cardPayless">
+                <div class="card box-shadow">
+                    <div class="card-header card-header-payless">
+                        <h4 class="my-0 font-weight-normal">Pedidos Payless</h4>
                     </div>
-                    <div class="container div856Search">
-                        <div class="row">
-                            <div class="col-sm">
-                                <label for="dtpFechaEntrega">Fecha esperada de entrega</label>
-                                <input class="form-control datepicker" data-date-format="dd/mm/yyyy hh:ii" id="dtpFechaEntrega" name="dtpFechaEntrega" placeholder="dd/mm/yyyy HH:mm" maxlength="10" autocorrect="off" autocapitalize="off" autocomplete="off" />
+                    <div class="card-body">
+                        <div>
+                            <span id="spanClientName">
+                                <span id="divSpinClientName" class="spinner-border spinner-border-sm text-danger" style="display: none" role="status">
+                                    <span class="sr-only">Loading...</span>
+                                </span>
+                            </span>
+                        </div>
+                        <div class="container div856Search">
+                            <div class="row">
+                                <div class="col-sm">
+                                    <label for="dtpFechaEntrega">Fecha esperada de entrega</label>
+                                    <input class="form-control datepicker" data-date-format="dd/mm/yyyy hh:ii" id="dtpFechaEntrega" name="dtpFechaEntrega" placeholder="dd/mm/yyyy HH:mm" maxlength="10" autocorrect="off" autocapitalize="off" autocomplete="off" />
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm">
+                                    <div class="form-check margin5">
+                                        <input class="form-check-input" id="radFifo" name="radInvType" type="radio" checked="checked" value="fifo" />
+                                        <label class="form-check-label" for="radFifo">FIFO</label>
+                                    </div>
+                                    <div class="form-check margin5">
+                                        <input class="form-check-input" id="radLifo" name="radInvType" type="radio" value="lifo" />
+                                        <label class="form-check-label" for="radLifo">LIFO</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <br />
+                            <div class="row">
+                                <div class="col-sm">
+                                    <button type="button" class="btn btn-primary" id="btnAll" data-togle="tooltip" data-html="true" title="">
+                                        Solicitar todo
+                                        <div class="spinner-border spinner-border-sm text-danger divSpinQty" style="display: none" role="status">
+                                            <span class="sr-only">...</span>
+                                        </div>
+                                    </button>
+                                </div>
                             </div>
                         </div>
-                        <div class="row">
-                            <div class="col-sm">
-                                <div class="form-check margin5">
-                                    <input class="form-check-input" id="radFifo" name="radInvType" type="radio" checked="checked" />
-                                    <label class="form-check-label" for="radFifo">FIFO</label>
+                        <div class="container-fluid divPedidoPaylessMain">
+                            <div class="row">
+                                <div class="col-sm colPedido">
+                                    <img src="~/images/woman1.png" class="pedidoPaylessIcon" />
+                                    <div class="divPedidoPaylessOverInfo">
+                                        <div class="divPedidoPaylessOverInfoContent">
+                                            <span class="overInfoContentTittle">Damas<br /></span>
+                                            <div class="overInfoContentContent">
+                                                Existencias: <span id="spanWomanQty" class="qty"></span>
+                                                <div class="spinner-border spinner-border-sm text-danger divSpinQty" style="display: none" role="status">
+                                                    <span class="sr-only">...</span>
+                                                </div>
+                                                <br />
+                                                CP: <span id="spanWomanCpQty"></span>
+                                                <div class="spinner-border spinner-border-sm text-danger divSpinQty" style="display: none" role="status">
+                                                    <span class="sr-only">...</span>
+                                                </div>
+                                                <br />
+                                                Cant. a pedir:
+                                                <input id="txtWomanQty" name="txtWomanQty" class="txtCantPedir" value="0" />
+                                                <button type="button" class="btn btn-primary btnTodos" style="height: 22px; font-size: 10pt; padding: 5px; padding-top: 1px; max-width: 92%;">&nbsp;T&nbsp;</button>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div class="form-check margin5">
-                                    <input class="form-check-input" id="radLifo" name="radInvType" type="radio" />
-                                    <label class="form-check-label" for="radLifo">LIFO</label>
+                                <div class="col-sm colPedido">
+                                    <img src="~/images/man1.png" class="pedidoPaylessIcon" />
+                                    <div class="divPedidoPaylessOverInfo">
+                                        <div class="divPedidoPaylessOverInfoContent">
+                                            <span class="overInfoContentTittle">Caballeros<br /></span>
+                                            <div class="overInfoContentContent">
+                                                Existencias: <span id="spanManQty" class="qty"></span>
+                                                <div class="spinner-border spinner-border-sm text-danger divSpinQty" style="display: none" role="status">
+                                                    <span class="sr-only">...</span>
+                                                </div>
+                                                <br />
+                                                CP: <span id="spanManCpQty"></span>
+                                                <div class="spinner-border spinner-border-sm text-danger divSpinQty" style="display: none" role="status">
+                                                    <span class="sr-only">...</span>
+                                                </div>
+                                                <br />
+                                                Cant. a pedir:
+                                                <input id="txtManQty" name="txtManQty" class="txtCantPedir" value="0" />
+                                                <button type="button" class="btn btn-primary btnTodos" style="height: 22px; font-size: 10pt; padding: 5px; padding-top: 1px; max-width: 92%;">&nbsp;T&nbsp;</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-sm colPedido">
+                                    <img src="~/images/kids1.png" class="pedidoPaylessIcon" />
+                                    <div class="divPedidoPaylessOverInfo">
+                                        <div class="divPedidoPaylessOverInfoContent">
+                                            <span class="overInfoContentTittle">Niñ@s<br /></span>
+                                            <div class="overInfoContentContent">
+                                                Existencias: <span id="spanKidQty" class="qty"></span>
+                                                <div class="spinner-border spinner-border-sm text-danger divSpinQty" style="display: none" role="status">
+                                                    <span class="sr-only">...</span>
+                                                </div>
+                                                <br />
+                                                CP: <span id="spanKidCpQty"></span>
+                                                <div class="spinner-border spinner-border-sm text-danger divSpinQty" style="display: none" role="status">
+                                                    <span class="sr-only">...</span>
+                                                </div>
+                                                <br />
+                                                Cant. a pedir:
+                                                <input id="txtKidQty" name="txtKidQty" class="txtCantPedir" value="0" />
+                                                <button type="button" class="btn btn-primary btnTodos" style="height: 22px; font-size: 10pt; padding: 5px; padding-top: 1px; max-width: 92%;">&nbsp;T&nbsp;</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-sm colPedido">
+                                    <img src="~/images/acc1.png" class="pedidoPaylessIcon" />
+                                    <div class="divPedidoPaylessOverInfo">
+                                        <div class="divPedidoPaylessOverInfoContent">
+                                            <span class="overInfoContentTittle">Accesorios<br /></span>
+                                            <div class="overInfoContentContent">
+                                                Existencias: <span id="spanAccQty" class="qty"></span>
+                                                <div class="spinner-border spinner-border-sm text-danger divSpinQty" style="display: none" role="status">
+                                                    <span class="sr-only">...</span>
+                                                </div>
+                                                <br />
+                                                Cant. a pedir:
+                                                <input id="txtAccQty" name="txtAccQty" class="txtCantPedir" value="0" />
+                                                <button type="button" class="btn btn-primary btnTodos" style="height: 22px; font-size: 10pt; padding: 5px; padding-top: 1px; max-width: 92%;">&nbsp;T&nbsp;</button>
+                                                <br />&nbsp;
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                         <br />
-                        <div class="row">
-                            <div class="col-sm">
-                                <button type="button" class="btn btn-primary" id="btnAll" data-togle="tooltip" data-html="true" title="">
-                                    Solicitar todo
-                                    <div class="spinner-border spinner-border-sm text-danger divSpinQty" style="display: none" role="status">
-                                        <span class="sr-only">...</span>
-                                    </div>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="container-fluid divPedidoPaylessMain">
-                        <div class="row">
-                            <div class="col-sm colPedido">
-                                <img src="~/images/woman1.png" class="pedidoPaylessIcon" />
-                                <div class="divPedidoPaylessOverInfo">
-                                    <div class="divPedidoPaylessOverInfoContent">
-                                        <span class="overInfoContentTittle">Damas<br /></span>
-                                        <div class="overInfoContentContent">
-                                            Existencias: <span id="spanWomanQty" class="qty"></span>
-                                            <div class="spinner-border spinner-border-sm text-danger divSpinQty" style="display: none" role="status">
-                                                <span class="sr-only">...</span>
-                                            </div>
-                                            <br />
-                                            CP: <span id="spanWomanCpQty"></span>
-                                            <div class="spinner-border spinner-border-sm text-danger divSpinQty" style="display: none" role="status">
-                                                <span class="sr-only">...</span>
-                                            </div>
-                                            <br />
-                                            Cant. a pedir:
-                                            <input id="txtWomanCpQty" name="txtWomanCpQty" class="txtCantPedir" />
-                                        </div>
-                                    </div>
+                        <span id="spanTotal" class="font-weight-bold"></span>
+                        <br />
+                        <div class="container div856Search">
+                            <div class="row">
+                                <div class="col-sm">
+                                    <button type="submit" class="btn btn-primary" id="btnNewDis" data-togle="tooltip" data-html="true" title="Seleccione los productos a pedir y acá click acá para solicitarlos">Crear pedido</button>
                                 </div>
-                            </div>
-                            <div class="col-sm colPedido">
-                                <img src="~/images/man1.png" class="pedidoPaylessIcon" />
-                                <div class="divPedidoPaylessOverInfo">
-                                    <div class="divPedidoPaylessOverInfoContent">
-                                        <span class="overInfoContentTittle">Caballeros<br /></span>
-                                        <div class="overInfoContentContent">
-                                            Existencias: <span id="spanManQty" class="qty"></span>
-                                            <div class="spinner-border spinner-border-sm text-danger divSpinQty" style="display: none" role="status">
-                                                <span class="sr-only">...</span>
-                                            </div>
-                                            <br />
-                                            CP: <span id="spanManCpQty"></span>
-                                            <div class="spinner-border spinner-border-sm text-danger divSpinQty" style="display: none" role="status">
-                                                <span class="sr-only">...</span>
-                                            </div>
-                                            <br />
-                                            Cant. a pedir:
-                                            <input id="txtManQty" name="txtManQty" class="txtCantPedir" />
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-sm colPedido">
-                                <img src="~/images/kids1.png" class="pedidoPaylessIcon" />
-                                <div class="divPedidoPaylessOverInfo">
-                                    <div class="divPedidoPaylessOverInfoContent">
-                                        <span class="overInfoContentTittle">Niñ@s<br /></span>
-                                        <div class="overInfoContentContent">
-                                            Existencias: <span id="spanKidQty" class="qty"></span>
-                                            <div class="spinner-border spinner-border-sm text-danger divSpinQty" style="display: none" role="status">
-                                                <span class="sr-only">...</span>
-                                            </div>
-                                            <br />
-                                            CP: <span id="spanKidCpQty"></span>
-                                            <div class="spinner-border spinner-border-sm text-danger divSpinQty" style="display: none" role="status">
-                                                <span class="sr-only">...</span>
-                                            </div>
-                                            <br />
-                                            Cant. a pedir:
-                                            <input id="txtKidQty" name="txtKidQty" class="txtCantPedir" />
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-sm colPedido">
-                                <img src="~/images/acc1.png" class="pedidoPaylessIcon" />
-                                <div class="divPedidoPaylessOverInfo">
-                                    <div class="divPedidoPaylessOverInfoContent">
-                                        <span class="overInfoContentTittle">Accesorios<br /></span>
-                                        <div class="overInfoContentContent">
-                                            Existencias: <span id="spanAccQty" class="qty"></span>
-                                            <div class="spinner-border spinner-border-sm text-danger divSpinQty" style="display: none" role="status">
-                                                <span class="sr-only">...</span>
-                                            </div>
-                                            <br />
-                                            Cant. a pedir:
-                                            <input id="txtAccCpQty" name="txtAccCpQty" class="txtCantPedir" />
-                                            <br />&nbsp;
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <br />
-                    <span id="spanTotal" class="font-weight-bold"></span>
-                    <br />
-                    <div class="container div856Search">
-                        <div class="row">
-                            <div class="col-sm">
-                                <button type="button" class="btn btn-primary" id="btnNewDis" data-togle="tooltip" data-html="true" title="Seleccione los productos a pedir y acá click acá para solicitarlos">Crear pedido</button>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
+    </form>
 </div>
 <script>
     var ModalPopPeticionDet = null;
@@ -176,7 +184,7 @@
     }
     function reDrawObjects() {
         $('#spanClientName').css('display', 'block');
-        if (window.mobileAndTabletcheck()) {            
+        if (window.mobileAndTabletcheck()) {
             $('#spanClientName').css('text-align', 'center');
             $('.pedidoPaylessIcon').width(window.outerWidth * 0.75);
             $('.divPedidoPaylessOverInfo').width(window.outerWidth * 0.75);
@@ -186,7 +194,7 @@
             $('.divPedidoPaylessOverInfo').width($('.pedidoPaylessIcon').width());
             $('#dtpFechaEntrega').addClass('btn-block');
             $('#dtpFechaEntrega').css('margin-bottom', '16px');
-            $('#dtpFechaEntrega').css('margin-top', '16px');            
+            $('#dtpFechaEntrega').css('margin-top', '16px');
             $('#dtpFechaEntrega').css('margin-top', 'unset');
 
             $('.div856Search').css({ "max-width": "unset" });
@@ -194,11 +202,11 @@
             $('.btn').css({ "margin-bottom": "10px" });
             $('.btn').addClass('btn-block');
             $('.divPedidoPaylessOverInfo').css({ "left": "unset" });
-            
+            $('.btnTodos').css({ "margin-top": "10px" });
         } else {
             $('#spanClientName').css('margin-bottom', '10px');
         }
-    }    
+    }
     function getClientName() {
         $('#divSpinClientName').show();
         $.ajax({
@@ -217,7 +225,7 @@
                 menErrorEdi(thrownError, 'Error throw in js');
             }
         });
-    }    
+    }
     function refreshGrid(auto) {
         w2ui.grid.autoLoad = auto;
         w2ui.grid.skip(0);
@@ -234,7 +242,7 @@
                 if (json.errorMessage != '') {
                     menErrorEdi(json.errorMessage, 'Error en petición');
                     return json.data;
-                }                    
+                }
                 if (json.records) {
                     $('#btnAll').prop('disabled', false);
                     var total = 0;
@@ -243,7 +251,7 @@
                             case 'DAMAS':
                                 if (itemO.cp == 'No')
                                     $('#spanWomanQty').text(itemO.existencia);
-                                else 
+                                else
                                     $('#spanWomanCpQty').text(itemO.existencia);
                                 break;
                             case 'CABALLEROS':
@@ -265,7 +273,7 @@
                                     $('#spanAccCpQty').text(itemO.existencia);
                                 break;
                             default:
-                        }                        
+                        }
                     });
                     if ($('#spanWomanQty').text() == '') $('#spanWomanQty').text('0');
                     if ($('#spanWomanCpQty').text() == '') $('#spanWomanCpQty').text('0');
@@ -276,8 +284,10 @@
                     if ($('#spanAccQty').text() == '') $('#spanAccQty').text('0');
                     if ($('#spanAccCpQty').text() == '') $('#spanAccCpQty').text('0');
                     total = parseInt($('#spanWomanQty').text()) + parseInt($('#spanManQty').text())
-                        + parseInt($('#spanKidQty').text()) + parseInt($('#spanAccQty').text());
-                    $('#spanTotal').text('Total en inventario ' + total);
+                        + parseInt($('#spanKidQty').text()) + parseInt($('#spanAccQty').text()) + 
+                        parseInt($('#spanWomanCpQty').text()) + parseInt($('#spanManCpQty').text())
+                        + parseInt($('#spanKidCpQty').text());
+                    $('#spanTotal').text('Total en inventario con existencia ' + total);
                 }
             },
             error: function (xhr, ajaxOptions, thrownError) {
@@ -287,7 +297,7 @@
         });
     }
     $('.txtCantPedir').prop('disabled', true);
-    $('#btnAll').prop('disabled', true);    
+    $('#btnAll').prop('disabled', true);
     $(document).ready(function () {
         $('.imgHeaderHelp').tooltip();
         //$('#dtpFechaEntrega').datepicker();
@@ -295,14 +305,27 @@
         getClientName();
         showQtys();
         reDrawObjects();
-        $('.txtCantPedir').on('keypress', function (Event) {            
-            if (!isNumberKey(Event.originalEvent.key)) return false;        
+        $('.txtCantPedir').on('keypress', function (Event) {
+            if (!isNumberKey(Event)) return false;
             if ($(this).attr('readonly') != undefined)
-                return;            
+                return;
             var cant = parseInt($($(this).closest('div').find('.qty')[0]).text());
             var cantE = parseInt(Event.originalEvent.key);
             if (parseInt($(this).val() + cantE) > cant)
                 return false;
         });
+        $('#btnAll').on('click', function (Event) {
+            if ($('#spanWomanQty').text() != '') $('#txtWomanQty').val($('#spanWomanQty').text());
+            if ($('#spanManQty').text() != '') $('#txtManQty').val($('#spanManQty').text());
+            if ($('#spanKidQty').text() != '') $('#txtKidQty').val($('#spanKidQty').text());
+            if ($('#spanAccQty').text() != '') $('#txtAccQty').val($('#spanAccQty').text());
+        });
+        $('.btnTodos').on('click', function (Event) {
+            $($(this).closest('div').find('.txtCantPedir')[0]).val($($(this).closest('div').find('.qty')[0]).text());
+        });
+        @if (!string.IsNullOrEmpty(Model.ErrorMessage))
+        {
+            @: menErrorEdi('@Html.Raw(Model.ErrorMessage.Replace(Environment.NewLine, "<br />"))');
+        }
     });
 </script>

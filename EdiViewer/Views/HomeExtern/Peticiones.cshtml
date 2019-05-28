@@ -87,7 +87,7 @@
                 },
                 searches: [
                     { field: "id", caption: "Id orden", type: 'text' },
-                    { field: "periodo", caption: "Periodo", type: 'text' },
+                    //{ field: "periodo", caption: "Periodo", type: 'text' },
                     { field: "fechaCreacion", caption: "Fecha de creación", type: 'text' },
                     { field: "fechaPedido", caption: "Fecha y hora esperada", type: 'text' }
                 ],
@@ -97,7 +97,7 @@
                 ],
                 columns: [
                     { field: "id", caption: "Id orden", sortable: true },
-                    { field: "periodo", caption: "Periodo", sortable: true },
+                    //{ field: "periodo", caption: "Periodo", sortable: true },
                     { field: "fechaCreacion", caption: "Fecha de creación", sortable: true },
                     { field: "fechaPedido", caption: "Fecha y hora esperada", sortable: true },                    
                     { field: "cont", caption: "Cantidad total", sortable: true },                    
@@ -112,7 +112,7 @@
                         field: "periodo", caption: "", sortable: true, render: function (record) {
                             var strBtn = '<div class="w2ui-buttons"><a href="javascript:verDetalle(' + record.id + ')">Ver detalle</a>';
                             if (record.idEstado == 2 && record.changeState)
-                                strBtn += ' | <a href="javascript:regresarEstado(' + record.id + ')">Regresar estado</a>';
+                                strBtn += ' | <a href="javascript:regresarEstado(' + record.id + ')">Modificar</a>';
                             strBtn += '</div>';
                             return strBtn;
                         }

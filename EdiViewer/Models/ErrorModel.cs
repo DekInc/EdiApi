@@ -7,6 +7,6 @@ namespace EdiViewer.Models
 {
     public class ErrorModel
     {
-        public string ErrorMessage { get; set; }
+        public string ErrorMessage { get; set; } = string.Empty;
     }
 }
