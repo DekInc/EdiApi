@@ -14,12 +14,15 @@ select ClienteID from wms.dbo.Clientes where ClienteID between 1397 and 1422 AND
 select * from wms.dbo.Inventario where ClienteID in (
 select ClienteID from wms.dbo.Clientes where ClienteID between 1397 and 1422 AND Nombre like'%pay%'
 )
-select top 6 * from dbo.Transacciones
-----1
-
+select top 6 * from wms.dbo.Transacciones
+select * from wms.dbo.Transacciones WITH(NOLOCK) where usuarioCrea = 'Hilmer' order by FechaCrea DESC
+select * from wms.dbo.DocumentosxTransaccion where TransaccionID = 116871
+select * from EdiDb.dbo.AsyncStates
+--delete from EdiDb.dbo.AsyncStates where Id = 1
+----1-------------------------------
 begin
 DECLARE @TransaccionId int;
-SET @TransaccionId = 116551;
+SET @TransaccionId = 116883;
 
 Delete From wms.dbo.ItemParamaetroxProducto Where ItemInventarioID In (
 Select ItemInventarioID From wms.dbo.ItemInventario Where InventarioID In (

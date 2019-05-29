@@ -105,7 +105,6 @@ namespace EdiViewer.Controllers
             } else {
                 return View("PedidosPayless3", new ErrorModel() { ErrorMessage = Ret.Info.Mensaje });
             }
-            return View("PedidosPayless3", new ErrorModel());
         }
         public async Task<RetData<string>> SetPaylessProdPriori(string dtpPeriodUpload, string txtTransporte, bool ChkUpDelete)
         {
@@ -1679,13 +1678,43 @@ namespace EdiViewer.Controllers
                         }
                     }
                 }
-                RetData<string> Ret = await ApiClientFactory.Instance.SetSalidaWmsFromEscaner(ListBarcodes, dtpPeriodo, cboBodegas, cboRegimen);
+                RetData<string> Ret = await ApiLongClientFactory.Instance.SetSalidaWmsFromEscaner(ListBarcodes, dtpPeriodo, cboBodegas, cboRegimen);
                 return Ret;
             } catch (Exception ex1) {
                 return new RetData<string> {
                     Info = new RetInfo() {
                         CodError = -1,
                         Mensaje = ex1.ToString(),
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            }
+        }
+        public async Task<RetData<PaylessTiendas>> GetStores() {
+            DateTime StartTime = DateTime.Now;
+            try {
+                RetData<PaylessTiendas> ListStores = await ApiClientFactory.Instance.GetStores();
+                return ListStores;
+            } catch (Exception e2) {
+                return new RetData<PaylessTiendas>() {
+                    Info = new RetInfo() {
+                        CodError = -1,
+                        Mensaje = e2.ToString(),
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            }
+        }
+        public async Task<RetData<IEnumerable<AsyncStates>>> GetAsyncState0() {
+            DateTime StartTime = DateTime.Now;
+            try {
+                RetData<IEnumerable<AsyncStates>> List = await ApiClientFactory.Instance.GetAsyncState(0);
+                return List;
+            } catch (Exception e2) {
+                return new RetData<IEnumerable<AsyncStates>>() {
+                    Info = new RetInfo() {
+                        CodError = -1,
+                        Mensaje = e2.ToString(),
                         ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
                     }
                 };

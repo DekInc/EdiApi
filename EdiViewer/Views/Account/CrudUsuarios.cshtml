@@ -11,14 +11,13 @@
                     <h4 class="my-0 font-weight-normal">Crud usuarios</h4>
                 </div>
                 <div class="card-body">
-                    <div id="gridUsuarios" style="min-height: 460px; width: 100%;">
-
-                    </div>
+                    <div id="gridUsuarios" style="min-height: 460px; width: 100%;"></div>
                 </div>
             </div>
         </div>
     </div>
 </div>
+@await Html.PartialAsync("_PopChangeStore")
 <script>
     var mainGrid = null;
     var foo = function () {
@@ -54,19 +53,19 @@
                 ],
                 colShowResponsive: [
                     { field: 'ienetGroup' },
-                    { field: 'codUsr' }                    
+                    { field: 'codUsr' }
                 ],
                 columns: [
-                    { field: "id", caption: "Id", sortable: true, hidden: false},
-                    { field: "idIenetGroup", caption: "IdIenetGroup", sortable: true},
-                    { field: "ienetGroup", caption: "Grupo", sortable: true},
+                    { field: "id", caption: "Id", sortable: true, hidden: true},
+                    { field: "idIenetGroup", caption: "IdIenetGroup", sortable: true, hidden: true},
+                    { field: "ienetGroup", caption: "Grupo", sortable: true, hidden: true},
                     { field: "codUsr", caption: "Cod. usuario", sortable: true},
                     { field: "nomUsr", caption: "Nombre usuario", sortable: true},
-                    { field: "clienteId", caption: "ClienteId", sortable: true},
+                    { field: "clienteId", caption: "ClienteId", sortable: true, hidden: true},
                     { field: "cliente", caption: "Cliente", sortable: true },
                     {
                         field: "", caption: "", render: function (record) {
-                            return '<a href="javascript:changeClient(' + "'" + record.id + "'" + ')">Cambiar cliente</a>';
+                            return '<a href="javascript:changeStore(' + "'" + record.id + "'" + ')">Cambiar tienda</a>';
                         }
                     }
                 ]
@@ -74,6 +73,9 @@
         };
         mainGrid = $('#gridUsuarios').w2grid(config.grid);
         arrayGrids['gridUsuarios'] = mainGrid;
+    }
+    function changeStore(recId) {
+
     }
     $(document).ready(function () {
         crearGrid();

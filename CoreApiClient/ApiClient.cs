@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace CoreApiClient
@@ -12,12 +13,14 @@ namespace CoreApiClient
     {
         private readonly HttpClient _httpClient;
         private Uri BaseEndpoint { get; set; }
+        private CancellationTokenSource Cts { set; get; }
         public ApiClient(Uri baseEndpoint, bool LongPlay)
         {
             BaseEndpoint = baseEndpoint ?? throw new ArgumentNullException("baseEndpoint");
             _httpClient = new HttpClient {
-                Timeout = (LongPlay ? TimeSpan.FromMinutes(10) : TimeSpan.FromMinutes(2))
+                Timeout = (LongPlay ? TimeSpan.FromMinutes(10) : TimeSpan.FromMinutes(4))
             };
+            //Cts = new CancellationTokenSource(LongPlay ? new TimeSpan(0, 10, 0) : new TimeSpan(0, 4, 0));            
         }
         private async Task<T> GetAsync<T>(Uri requestUrl)
         {
@@ -83,6 +86,6 @@ namespace CoreApiClient
                     DateFormatHandling = DateFormatHandling.MicrosoftDateFormat
                 };
             }
-        }        
+        }
     }
 }

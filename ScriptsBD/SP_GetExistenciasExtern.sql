@@ -175,4 +175,4 @@ BEGIN
 END
 GO
 
-EXEC [SP_GetExistenciasExtern] 385
+EXEC [SP_GetExistenciasExtern] 1432

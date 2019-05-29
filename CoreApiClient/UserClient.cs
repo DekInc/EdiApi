@@ -263,6 +263,12 @@ namespace CoreApiClient
             string JsonParams = JsonConvert.SerializeObject(TiendaId);
             return await PostGetAsyncJson<RetData<string>>(CreateRequestUri(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Data/SetNewDisPayless"), $"?dtpFechaEntrega={dtpFechaEntrega}&txtWomanQty={txtWomanQty}&txtManQty={txtManQty}&txtKidQty={txtKidQty}&txtAccQty={txtAccQty}&radInvType={radInvType}&ClienteId={ClienteId}&TiendaId={TiendaId}"), JsonParams);
         }
+        public async Task<RetData<PaylessTiendas>> GetStores() {
+            return await GetAsync<RetData<PaylessTiendas>>(CreateRequestUri(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Data/GetStores")));
+        }
+        public async Task<RetData<IEnumerable<AsyncStates>>> GetAsyncState(int Typ) {
+            return await GetAsync<RetData<IEnumerable<AsyncStates>>>(CreateRequestUri(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Data/GetAsyncState"), $"?Typ={Typ}"));
+        }
         /////////////////////////////////////////
         //public async Task<List<UsersModel>> GetUsers()
         //{

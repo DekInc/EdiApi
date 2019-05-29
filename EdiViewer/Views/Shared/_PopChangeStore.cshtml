@@ -1,0 +1,56 @@
+﻿<div class="modal fade2" id="modalPopChangeStore" tabindex="-1" role="dialog" aria-labelledby="modalPopChangeStoreLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal" role="document">
+        <div class="modal-content modal-content-normal">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalPopChangeStoreLabel">Cambio de tienda</h5>                
+            </div>
+            <div class="modal-body">
+                <div id="divPopChangeStoreContent">
+                    <form method="post" enctype="multipart/form-data">
+                        <div class="row">
+                            <div class="col">
+                                Seleccione la tienda
+                                <br />
+                                <select class="form-control" id="cboStore" name="cboStore"></select>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="modal-footer text-center">
+                <button id="btnPopChangeStoreLabelOk" type="button" class="btn btn-success btnModal" data-dismiss="modal">Guardar</button>
+                <button id="btnPopChangeStoreLabelClose" type="button" class="btn btn-success btnModal" data-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    function getStores() {
+        $('#divSpinClientName').show();
+        $.ajax({
+            method: "GET",
+            url: "@this.Url.Action("GetStores", "HomeExtern")",
+            success: function (data) {
+                if (data.info.codError != 0) {
+                    menErrorEdi(data.info.mensaje, 'Error');
+                    return;
+                }
+                $('#spanClientName').html(data.data);
+                $('#divSpinClientName').hide();
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                menErrorEdi(xhr.status, 'Error throw in js');
+                menErrorEdi(thrownError, 'Error throw in js');
+            }
+        });
+    }
+    $(document).ready(function () {
+        getStores();        
+    });
+    $('#modalPopChangeStore').on("shown.bs.modal", function () {        
+        $('#cboStore').focus();
+    });
+    $('#btnPopChangeStoreLabelOk').on('click', function () {
+        
+    });
+</script>

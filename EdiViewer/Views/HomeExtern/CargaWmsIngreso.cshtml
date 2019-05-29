@@ -45,6 +45,7 @@
                                         <div id="divSpinUploadFile" class="spinner-border spinner-border-sm text-danger" style="display: none" role="status">
                                             <span class="sr-only">Loading...</span>
                                         </div>
+                                        <span id="spanCont"></span>
                                     </button>
                                     <button class="btn btn-primary" type="button" onclick="window.location.href = window.location.href;">
                                         &nbsp;&nbsp;&nbsp;Recargar&nbsp;&nbsp;&nbsp;
@@ -172,26 +173,74 @@
                 contentType: false,
                 processData: false,
                 success: function (response) {
-                    $('#divSpinUploadFile').hide();
-                    console.log(response);
-                    if (response.info.codError != null) {
-                        if (response.info.codError != 0) {
-                            menErrorEdi(response.info.mensaje, 'Error en el proceso');
-                            return;
-                        }
-                    }
-                    if (response.length == 0)
-                        menErrorEdi('Error al subir el archivo', 'Error');
-                    else {
-                        if (response.info.codError == 0)
-                            menErrorEdi('Archivo cargado', 'Información');
-                    }
+                    setInterval(function () {
+                        $.ajax({
+                            url: '@this.Url.Action("GetAsyncState0", "HomeExtern")',
+                            type: 'GET',
+                            dataType: 'JSON',
+                            success: function (json) {                                
+                                if (json.info.codError != 0) {
+                                    menErrorEdi(json.info.mensaje);
+                                    return json.data;
+                                }
+                                if (json.data) {
+                                    $('#spanCont').text(json.data[0].val + ' / ' + json.data[0].Maximum);
+                                    if (json.data[0].Mess != '') {
+                                        $('#divSpinUploadFile').hide();
+                                        menErrorEdi(json.data[0].Mess, 'Información');
+                                    }
+                                }
+                            },
+                            error: function (xhr, ajaxOptions, thrownError) {
+                                menErrorEdi(xhr.status, '');
+                                menErrorEdi(thrownError, '');
+                            }
+                        });
+                    }, 5000);
+                    //$('#divSpinUploadFile').hide();
+                    //console.log(response);
+                    //if (response.info.codError != null) {
+                    //    if (response.info.codError != 0) {
+                    //        menErrorEdi(response.info.mensaje, 'Error en el proceso');
+                    //        return;
+                    //    }
+                    //}
+                    //if (response.length == 0)
+                    //    menErrorEdi('Error al subir el archivo', 'Error');
+                    //else {
+                    //    if (response.info.codError == 0)
+                    //        menErrorEdi('Archivo cargado', 'Información');
+                    //}
                 },
                 error: function (resp) {
-                    $('#divSpinUploadFile').hide();
-                    if (resp.statusText != null)
-                        menErrorEdi(resp.statusText, 'Error');
-                    menErrorEdi(resp.info.mensaje);
+                    setInterval(function () {
+                        $.ajax({
+                            url: '@this.Url.Action("GetAsyncState0", "HomeExtern")',
+                            type: 'GET',
+                            dataType: 'JSON',
+                            success: function (json) {                                
+                                if (json.info.codError != 0) {
+                                    menErrorEdi(json.info.mensaje);
+                                    return json.data;
+                                }
+                                if (json.data) {
+                                    $('#spanCont').text(json.data[0].val + ' / ' + json.data[0].maximum);
+                                    if (json.data[0].mess != '') {
+                                        $('#divSpinUploadFile').hide();
+                                        menErrorEdi(json.data[0].mess, 'Información');
+                                    }
+                                }
+                            },
+                            error: function (xhr, ajaxOptions, thrownError) {
+                                menErrorEdi(xhr.status, '');
+                                menErrorEdi(thrownError, '');
+                            }
+                        });
+                    }, 5000);
+                    //$('#divSpinUploadFile').hide();
+                    //if (resp.statusText != null)
+                    //    menErrorEdi(resp.statusText, 'Error');
+                    //menErrorEdi(resp.info.mensaje);
                 }
             });
         });

@@ -15,6 +15,7 @@ namespace EdiApi.Models.EdiDB
         {
         }
 
+        public virtual DbSet<AsyncStates> AsyncStates { get; set; }
         public virtual DbSet<EdiComs> EdiComs { get; set; }
         public virtual DbSet<EdiRepSent> EdiRepSent { get; set; }
         public virtual DbSet<EdiSegName> EdiSegName { get; set; }
@@ -83,6 +84,13 @@ namespace EdiApi.Models.EdiDB
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<AsyncStates>(entity =>
+            {
+                entity.Property(e => e.Mess)
+                    .HasMaxLength(2048)
+                    .IsUnicode(false);
+            });
+
             modelBuilder.Entity<EdiComs>(entity =>
             {
                 entity.Property(e => e.Freg)
@@ -1427,6 +1435,10 @@ namespace EdiApi.Models.EdiDB
                 entity.Property(e => e.FechaPedido).HasMaxLength(16);
 
                 entity.Property(e => e.FechaUltActualizacion).HasMaxLength(10);
+
+                entity.Property(e => e.InvType)
+                    .HasMaxLength(4)
+                    .IsUnicode(false);
 
                 entity.Property(e => e.Periodo).HasMaxLength(10);
             });

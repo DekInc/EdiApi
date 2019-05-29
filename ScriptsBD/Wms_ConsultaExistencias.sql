@@ -69,7 +69,10 @@ LEFT OUTER JOIN
             Sy.CodProducto) AS Sy_1 ON Sy_1.InventarioID = I.InventarioID
 AND Sy_1.ItemInventarioID = II.ItemInventarioID
 AND Sy_1.CodProducto = II.CodProducto
-WHERE II.existencia>0.01
-  AND T.IDTipoTransaccion IN ('IN')
-  AND p.CodProducto = '1967856448'
+WHERE 
+--II.existencia>0.01
+  --AND 
+  T.IDTipoTransaccion IN ('IN')
+  AND C.ClienteID = 1432
+  AND p.CodProducto like '7368%'
 ORDER BY t.fechatransaccion
