@@ -87,17 +87,17 @@
                 },
                 searches: [
                     { field: "id", caption: "Id orden", type: 'text' },
-                    //{ field: "periodo", caption: "Periodo", type: 'text' },
+                    { field: "tiendaId", caption: "Tienda", type: 'text' },
                     { field: "fechaCreacion", caption: "Fecha de creación", type: 'text' },
                     { field: "fechaPedido", caption: "Fecha y hora esperada", type: 'text' }
                 ],
                 colShowResponsive: [
                     { field: 'id' },
-                    { field: 'fechaPedido' }
+                    { field: 'tiendaId' }
                 ],
                 columns: [
                     { field: "id", caption: "Id orden", sortable: true },
-                    //{ field: "periodo", caption: "Periodo", sortable: true },
+                    { field: "tiendaId", caption: "Tienda", sortable: true },
                     { field: "fechaCreacion", caption: "Fecha de creación", sortable: true },
                     { field: "fechaPedido", caption: "Fecha y hora esperada", sortable: true },                    
                     { field: "cont", caption: "Cantidad total", sortable: true },                    
@@ -112,7 +112,7 @@
                         field: "periodo", caption: "", sortable: true, render: function (record) {
                             var strBtn = '<div class="w2ui-buttons"><a href="javascript:verDetalle(' + record.id + ')">Ver detalle</a>';
                             if (record.idEstado == 2 && record.changeState)
-                                strBtn += ' | <a href="javascript:ModifyDis(' + record.id + ')">Modificar</a>';
+                                strBtn += ' | <a href="javascript:regresarEstado(' + record.id + ')">Modificar</a>';
                             strBtn += '</div>';
                             return strBtn;
                         }
@@ -139,12 +139,13 @@
                 },
                 searches: [
                     { field: "barcode", caption: "Cod. caja", type: 'text' },
-                    //{ field: "producto", caption: "Lote", type: 'text' },
-                    //{ field: "talla", caption: "Talla", type: 'text' },
-                    //{ field: "lote", caption: "Estilo", type: 'text' },
-                    //{ field: "categoria", caption: "Genero", type: 'text' },
-                    //{ field: "departamento", caption: "departamento", type: 'text' },
-                    { field: "cp", caption: "cp", type: 'text' }
+                    { field: "producto", caption: "Lote", type: 'text' },
+                    { field: "talla", caption: "Talla", type: 'text' },
+                    { field: "lote", caption: "Estilo", type: 'text' },
+                    { field: "categoria", caption: "Genero", type: 'text' },
+                    { field: "departamento", caption: "departamento", type: 'text' },
+                    { field: "cp", caption: "cp", type: 'text' },
+                    { field: "transporte", caption: "Transporte", type: 'text' }
                 ],
                 colShowResponsive: [
                     { field: 'barcode' },
@@ -152,13 +153,15 @@
                 ],
                 columns: [
                     { field: "id", caption: "id", sortable: true, hidden: true },
+                    { field: "transporte", caption: "Transporte", type: 'text', sortable: true },
+                    { field: "oid", caption: "oid", type: 'text', sortable: true },
                     { field: "barcode", caption: "Cod. caja", type: 'text', sortable: true },
-                    //{ field: "producto", caption: "Lote", type: 'text', sortable: true },
-                    //{ field: "talla", caption: "talla", type: 'text', sortable: true },
-                    //{ field: "categoria", caption: "Genero", type: 'text', sortable: true },
-                    //{ field: "lote", caption: "estilo", type: 'text', sortable: true },
+                    { field: "producto", caption: "Lote", type: 'text', sortable: true },
+                    { field: "talla", caption: "talla", type: 'text', sortable: true },
+                    { field: "categoria", caption: "Genero", type: 'text', sortable: true },
+                    { field: "lote", caption: "estilo", type: 'text', sortable: true },
                     { field: "cantPedir", caption: "Cantidad a pedir", sortable: true },
-                    //{ field: "departamento", caption: "departamento", type: 'text', sortable: true },
+                    { field: "departamento", caption: "departamento", type: 'text', sortable: true },
                     { field: "cp", caption: "cp", type: 'text', sortable: true }
                 ]
             }
@@ -171,12 +174,17 @@
         ModalPopPeticionDet = $('#modalPopPeticionDet').modal();
         gridOrdenesDet.reload2('@this.Url.Action("GetPeticionDet", "Grids")?PedidoId=' + pedidoId);
     }
-    function ModifyDis(pedidoId) {
+    function regresarEstado(pedidoId) {
         $.ajax({
             method: "GET",
-            url: "@this.Url.Action("SetChangeDis", "HomeExtern")?PedidoId=" + pedidoId,
+            url: "@this.Url.Action("ChangePedidoState", "HomeExtern")?PedidoId=" + pedidoId,
             success: function (data) {
-                window.location.href = '@this.Url.Action("PedidosPayless3", "HomeExtern")';
+                if (data.info.codError != 0) {
+                    menErrorEdi(data.info.mensaje, 'Error');
+                    return;
+                }
+                menErrorEdi('El pedido ha cambiado de estado', 'Información');
+                funcbtnOkMessageBox = function () { location.href = location.href; }                
             },
             error: function (xhr, ajaxOptions, thrownError) {
                 menErrorEdi(xhr.status, 'Error throw in js');

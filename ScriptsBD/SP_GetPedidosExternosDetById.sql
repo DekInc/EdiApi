@@ -8,8 +8,8 @@ CREATE PROCEDURE [dbo].SP_GetPedidosExternosDetById
 @PedidoId int
 AS
 BEGIN
-	SELECT
-		D.Id,
+	SELECT DISTINCT
+		0 Id,
 		D.IdPAYLESS_ProdPrioriM,
 		D.OID,
 		D.Barcode,
@@ -31,17 +31,16 @@ BEGIN
 		D.IdTransporte,
 		T.Transporte,
 		Pde.CantPedir
-	FROM PAYLESS_ProdPrioriDet D WITH(NOLOCK)
-	JOIN PAYLESS_ProdPrioriM M WITH(NOLOCK)
-		ON M.Id = D.IdPAYLESS_ProdPrioriM	
+	FROM PAYLESS_ProdPrioriDet D WITH(NOLOCK)	
 	JOIN PedidosDetExternos Pde WITH(NOLOCK)
-		ON Pde.PedidoId = @PedidoId AND Pde.CodProducto = D.Barcode
+		ON Pde.PedidoId = @PedidoId 
+		AND Pde.CodProducto = D.Barcode
 	LEFT JOIN dbo.PAYLESS_Transporte T WITH(NOLOCK)
 		ON T.Id = D.IdTransporte
 END
 GO
 
-EXEC SP_GetPedidosExternosDetById 1
+EXEC SP_GetPedidosExternosDetById 4
 
 --select * from EdiDB.dbo.PedidosExternos
 --select * from EdiDB.dbo.PedidosDetExternos

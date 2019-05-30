@@ -86,6 +86,7 @@ namespace EdiViewer.Controllers
             return View();
         }
         public async Task<IActionResult> SetNewDisPayless(string dtpFechaEntrega, int txtWomanQty, int txtManQty, int txtKidQty, int txtAccQty, string radInvType) {
+            ViewBag.PedidoIdToModify = 0;
             if (string.IsNullOrEmpty(radInvType)) {
                 return View("PedidosPayless3", new ErrorModel() { ErrorMessage = "El tipo de pedido está vacío." });
             }
@@ -314,7 +315,11 @@ namespace EdiViewer.Controllers
             DateTime StartTime = DateTime.Now;
             try
             {
-                RetData<PaylessTiendas> ClienteO = await ApiClientFactory.Instance.GetClient(HttpContext.Session.GetObjSession<int>("Session.TiendaId"));                
+                if (HttpContext.Session.GetObjSession<int?>("Session.TiendaId") == null) {
+                    RetData<string> ClienteP = await ApiClientFactory.Instance.GetClientById(HttpContext.Session.GetObjSession<int>("Session.ClientId"));
+                    return ClienteP;
+                }
+                RetData<PaylessTiendas> ClienteO = await ApiClientFactory.Instance.GetClient(HttpContext.Session.GetObjSession<int>("Session.TiendaId"));
                 if (ClienteO.Info.CodError != 0) {
                     return new RetData<string>() {
                         Data = ClienteO.Info.Mensaje,
@@ -355,7 +360,7 @@ namespace EdiViewer.Controllers
                 ViewBag.DateLastDis = DateTime.Now.ToString(ApplicationSettings.DateTimeFormatT);
                 //ViewBag.PedidoId = null;
                 //HttpContext.Session.SetObjSession("PedidoId", null);
-                RetData<Tuple<IEnumerable<PedidosExternos>, IEnumerable<PedidosDetExternos>>> ListDis = await ApiClientFactory.Instance.GetPedidosExternos(HttpContext.Session.GetObjSession<int>("Session.ClientId"));
+                RetData<Tuple<IEnumerable<PedidosExternos>, IEnumerable<PedidosDetExternos>>> ListDis = await ApiClientFactory.Instance.GetPedidosExternosByTienda(HttpContext.Session.GetObjSession<int>("Session.ClientId"), HttpContext.Session.GetObjSession<int>("Session.TiendaId"));
                 if (ListDis.Info.CodError == 0) {
                     if (ListDis.Data.Item1.Count() > 0) {
                         PedidosExternos Pe = ListDis.Data.Item1.Where(O => O.IdEstado == 1).Fod();
@@ -379,7 +384,7 @@ namespace EdiViewer.Controllers
                 ViewBag.DateLastDis = DateTime.Now.ToString(ApplicationSettings.DateTimeFormatT);
                 //ViewBag.PedidoId = null;
                 //HttpContext.Session.SetObjSession("PedidoId", null);
-                RetData<Tuple<IEnumerable<PedidosExternos>, IEnumerable<PedidosDetExternos>>> ListDis = await ApiClientFactory.Instance.GetPedidosExternos(HttpContext.Session.GetObjSession<int>("Session.ClientId"));
+                RetData<Tuple<IEnumerable<PedidosExternos>, IEnumerable<PedidosDetExternos>>> ListDis = await ApiClientFactory.Instance.GetPedidosExternosByTienda(HttpContext.Session.GetObjSession<int>("Session.ClientId"), HttpContext.Session.GetObjSession<int>("Session.TiendaId"));
                 if (ListDis.Info.CodError == 0) {
                     if (ListDis.Data.Item1.Count() > 0) {
                         PedidosExternos Pe = ListDis.Data.Item1.Where(O => O.IdEstado == 1).Fod();
@@ -398,6 +403,11 @@ namespace EdiViewer.Controllers
             return View();
         }
         public IActionResult PedidosPayless3() {
+            ViewBag.PedidoIdToModify = 0;
+            if (HttpContext.Session.GetObjSession<int?>("PedidoIdToModify") != null) {
+                ViewBag.PedidoIdToModify = HttpContext.Session.GetObjSession<int?>("PedidoIdToModify");
+                HttpContext.Session.SetObjSession("PedidoIdToModify", null);                
+            }
             return View(new ErrorModel());
         }
         public async Task<IActionResult> Inventario()
@@ -409,7 +419,7 @@ namespace EdiViewer.Controllers
                 ViewBag.PedidoId = null;
                 HttpContext.Session.SetObjSession("PedidoId", null);
                 //RetData<Clientes> ClienteO = await ApiClientFactory.Instance.GetClient(HttpContext.Session.GetObjSession<int>("Session.ClientId"));
-                RetData<Tuple<IEnumerable<PedidosExternos>, IEnumerable<PedidosDetExternos>>> ListDis = await ApiClientFactory.Instance.GetPedidosExternos(HttpContext.Session.GetObjSession<int>("Session.ClientId"));
+                RetData<Tuple<IEnumerable<PedidosExternos>, IEnumerable<PedidosDetExternos>>> ListDis = await ApiClientFactory.Instance.GetPedidosExternosByTienda(HttpContext.Session.GetObjSession<int>("Session.ClientId"), HttpContext.Session.GetObjSession<int>("Session.TiendaId"));
                 if (ListDis.Data.Item1.Count() > 0)
                 {
                     if (ListDis.Data.Item1.Fod().IdEstado == 1)
@@ -1690,13 +1700,13 @@ namespace EdiViewer.Controllers
                 };
             }
         }
-        public async Task<RetData<PaylessTiendas>> GetStores() {
+        public async Task<RetData<IEnumerable<PaylessTiendas>>> GetStores() {
             DateTime StartTime = DateTime.Now;
             try {
-                RetData<PaylessTiendas> ListStores = await ApiClientFactory.Instance.GetStores();
+                RetData<IEnumerable<PaylessTiendas>> ListStores = await ApiClientFactory.Instance.GetStores();
                 return ListStores;
             } catch (Exception e2) {
-                return new RetData<PaylessTiendas>() {
+                return new RetData<IEnumerable<PaylessTiendas>>() {
                     Info = new RetInfo() {
                         CodError = -1,
                         Mensaje = e2.ToString(),
@@ -1719,6 +1729,10 @@ namespace EdiViewer.Controllers
                     }
                 };
             }
+        }
+        public bool SetChangeDis(int PedidoId) {
+            HttpContext.Session.SetObjSession("PedidoIdToModify", PedidoId);
+            return true;
         }
     }
 }

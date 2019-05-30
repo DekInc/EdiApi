@@ -1,7 +1,8 @@
 saddasdasd
 select * from wms_test_29_01_2019.dbo.Paises where NomPais like'%pana%'
 --487	TIENDAS CARRION, S.A. DE C.V.(TRANSITO A GUATEMAL)
-select * from wms_test.dbo.Clientes where nombre like '%payless%' OR ClienteID = 610 order by ClienteID asc
+select * from wms.dbo.Clientes with(nolock) where nombre like '%payless%' OR ClienteID = 610 order by ClienteID asc
+select * from edidb.dbo.IEnetUsers where Id > 4
 --PAYLESS SHOE SOURCE, HONDURAS
 --SAN PEDRO SULA, HONDURAS
 --select max(ClienteID) + 1 from wms_test.dbo.Clientes
@@ -17,7 +18,7 @@ select * from wms.dbo.usrsystem where CodUsr in (2, 4, 92)
 select * from wms.dbo.usrsystem where idusr like'%ainventariot%' or nomusr like'%ainventariot%'
 select distinct Color, CodProducto from wms.dbo.Producto where CodProducto like '7370%'
 select distinct CodProducto from wms.dbo.ItemInventario where CodProducto like '7370%' and color  = 'DRYU 961708-5'
-
+select * from EdiDB.dbo.AsyncStates
 
 
 select * from wms_test_29_01_2019.dbo.Transacciones where pais_orig = 90
@@ -33,15 +34,17 @@ select @@servicename
 exec SP_GetExistenciasExtern 618
 SELECT * FROM EdiDB.dbo.PedidosEstadosExternos
 SELECT * FROM EdiDB.dbo.PedidosExternos
---delete from EdiDB.dbo.PedidosExternos where id in (4, 5)
---delete from EdiDB.dbo.PedidosDetExternos where PedidoId in (4, 5)
+--delete from EdiDB.dbo.PedidosExternos where id in (7)
+--delete from EdiDB.dbo.PedidosDetExternos where PedidoId in (7)
 --update PedidosExternos SET FechaPedido = '08/05/2019 16:00', IdEstado = 2 where Id = 1
 --delete from EdiDB.dbo.PedidosExternos where Id > 15
 --truncate table EdiDB.dbo.PedidosExternos
 --truncate table EdiDB.dbo.PedidosDetExternos
-SELECT * FROM EdiDB.dbo.PedidosDetExternos 
+SELECT * FROM EdiDB.dbo.PedidosDetExternos where PedidoId = 4
+SELECT * FROM EdiDB.dbo.PedidosDetExternos where CodProducto = '7375888505'
 order by CodProducto, CantPedir
---delete from EdiDB.dbo.PedidosDetExternos where PedidoId > 15
+select * from EdiDB.dbo.PAYLESS_ProdPrioriDet where barcode = '7375888505'
+--delete from EdiDB.dbo.PedidosDetExternos where PedidoId = 5
 --truncate table EdiDB.dbo.PedidosDetExternos
 SELECT * FROM wms_test_29_01_2019.dbo.VInformacionPedidosWeb WHERE ClienteID = 618 ORDER BY CodProducto
 SELECT * FROM wms_test_29_01_2019.dbo.InventarioExistencias WHERE ClienteID = 618
@@ -151,9 +154,10 @@ select * from EdiDB.dbo.PAYLESS_ProdPrioriDet where IdTransporte = 7
 select barcode, count(*) from PAYLESS_ProdPrioriArchDet where IdM = 1 and barcode like'1967%' group by barcode
 insert into PAYLESS_ProdPrioriArchDet(IdM, barcode)
 VALUES(1, '1983832691')
-select * from PedidosExternos 
-select * from PedidosDetExternos where PedidoId = 1022
-
+select * from EdiDb.dbo.PedidosExternos 
+select * from EdiDb.dbo.PedidosDetExternos where PedidoId = 1022
+--delete from EdiDb.dbo.PedidosExternos where Id in (2, 3) 
+--delete from EdiDb.dbo.PedidosDetExternos where PedidoId in (2, 3) 
 exec SP_GetExistenciasExtern 1345
 select top 10 * from wms_test_29_01_2019.dbo.Inventario where ClienteId = 1345 and InventarioID = 1675373
 select top 10 * from wms.dbo.ItemInventario where CodProducto = '1967856448'
@@ -499,7 +503,7 @@ wms.dbo.DetalleTransacciones Dt
 join wms.dbo.ItemInventario Ii on Ii.InventarioID = Dt.InventarioID
 join wms.dbo.Transacciones t
 on t.TransaccionID = Dt.TransaccionID
-where Ii.CodProducto = '7365822070'
+where Ii.CodProducto = '7368865833'
 --7381831861 tiene dos entradas pero no la salida...
 select * from wms.dbo.Racks where Rack = 11759
 select * from wms.dbo.Transacciones where usuarioCrea = 'RPERDOMO' and IDTipoTransaccion = 'IN' and ClienteID = 1432 order by FechaCrea DESC

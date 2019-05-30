@@ -63,6 +63,7 @@
                             <thead>
                                 <tr>
                                     <th>Id orden</th>
+                                    <th>Tienda</th>
                                     <th>Fecha de creación</th>
                                     <th>Fecha y hora esperada</th>
                                     <th>Estado</th>
@@ -82,6 +83,7 @@
                     <th>Fecha de creación</th>
                     <th>Fecha y hora esperada</th>
                     <th>ClienteId</th>
+                    <th>Tienda</th>
                     <th>Cliente</th>
                     <th>Cod producto</th>
                     <th>Cantidad pedida</th>
@@ -131,7 +133,7 @@
                 "emptyTable": "No hay información"
             },
             "ajax": {
-                "url": "@this.Url.Action("GetPeticionesAdmin")?ClienteId=" + $('#cbClient').val() + '&dtp1=' + $('#dtp1').val() + '&chkPending=' + $('#chkPending').prop('checked'),
+                "url": "@this.Url.Action("GetPeticionesAdmin", "Home")?ClienteId=" + $('#cbClient').val() + '&dtp1=' + $('#dtp1').val() + '&chkPending=' + $('#chkPending').prop('checked'),
                 "type": "POST",
                 "datatype": "json",
                 "dataSrc": function (json) {
@@ -142,6 +144,7 @@
             "order": [[1, "desc"]],
             "columns": [
                 { "data": "id", "name": "id", "autoWidth": true, "defaultContent": "" },
+                { "data": "tiendaId", "name": "tiendaId", "autoWidth": true, "defaultContent": "" },
                 { "data": "fechaCreacion", "name": "fechaCreacion", "autoWidth": true, "defaultContent": "" },
                 { "data": "fechaPedido", "name": "fechaPedido", "autoWidth": true, "defaultContent": "" },
                 {
@@ -161,6 +164,7 @@
         });
     }
     function fillPeticionDet(pedidoId) {
+        //console.log(pedidoId);
         domtblPeticionDet = $("#tblPeticionDet").DataTable({
             select: true,
             responsive: false,
@@ -237,7 +241,7 @@
                     $(this).addClass('selected');
                 }
                 $('#exampleModalLabel3').html('Detalle de peticiones');
-                fillPeticionDet($($(this).closest("tr").find('td:eq(3)').find('span')[0]).attr('alt'));
+                fillPeticionDet($($(this).closest("tr").find('td:eq(4)').find('span')[0]).attr('alt'));
                 ModalPopPeticionDet = $('#modalPopPeticionDet').modal();
             });
         });
@@ -249,7 +253,7 @@
             var arrayPedidosNorep = [];
             $.ajax({
                 method: "GET",
-                url: "@this.Url.Action("GetPedidosExternosPendientesAdmin")",
+                url: '@this.Url.Action("GetPedidosExternosPendientesAdmin", "Home")',
                 success: function (data) {
                     if (data.codError != 0) {
                         menErrorEdi(data.errorMessage, 'Error');
@@ -270,12 +274,15 @@
                                         .append($('<td>')
                                             .append(pedido.clienteId))
                                         .append($('<td>')
+                                            .append(pedido.tiendaId))
+                                        .append($('<td>')
                                             .append(cliente.nombre))
                                 );
                                 arrayPedidosNorep.push(pedido.id);
                                 $.each(data.data.item2.filter(Producto => Producto.pedidoId == pedido.id), function (z, producto) {
                                     $("#tblExport1").find('tbody')
                                         .append($('<tr>')
+                                            .append($('<td>'))
                                             .append($('<td>'))
                                             .append($('<td>'))
                                             .append($('<td>'))

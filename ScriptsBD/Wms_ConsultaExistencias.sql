@@ -75,4 +75,4 @@ WHERE
   T.IDTipoTransaccion IN ('IN')
   AND C.ClienteID = 1432
   AND p.CodProducto like '7368%'
-ORDER BY t.fechatransaccion
+ORDER BY p.CodProducto

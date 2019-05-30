@@ -221,6 +221,52 @@ namespace EdiApi.Models
             }
             return ListExists;
         }
+        public static IEnumerable<PedidosDetExternos> SP_GetPedidosDetExternosByTienda(ref Models.EdiDB.EdiDBContext _DbO, int ClienteId, int TiendaId) {
+            List<PedidosDetExternos> ListExists = new List<PedidosDetExternos>();
+            using (DbCommand Cmd = _DbO.Database.GetDbConnection().CreateCommand()) {
+                Cmd.CommandText = $"[dbo].[SP_GetPedidosDetExternosByTienda] {ClienteId}, {TiendaId}";
+                _DbO.Database.OpenConnection();
+                DbDataReader Dr = Cmd.ExecuteReader();
+                if (Dr.HasRows) {
+                    while (Dr.Read()) {
+                        ListExists.Add(new PedidosDetExternos() {
+                            Id = Convert.ToInt32(Dr.GetValue(0)),
+                            PedidoId = Convert.ToInt32(Dr.GetValue(1)),
+                            CodProducto = Convert.ToString(Dr.GetValue(2)),
+                            CantPedir = Convert.ToDouble(Dr.GetValue(3)),
+                            Producto = Convert.ToString(Dr.GetValue(4))
+                        });
+                    }
+                }
+                _DbO.Database.CloseConnection();
+                if (!Dr.IsClosed)
+                    Dr.Close();
+            }
+            return ListExists;
+        }
+        public static IEnumerable<PedidosDetExternos> SP_GetPedidosDetExternosPendientesByTienda(ref Models.EdiDB.EdiDBContext _DbO, int ClienteId, int TiendaId) {
+            List<PedidosDetExternos> ListExists = new List<PedidosDetExternos>();
+            using (DbCommand Cmd = _DbO.Database.GetDbConnection().CreateCommand()) {
+                Cmd.CommandText = $"dbo.SP_GetPedidosDetExternosPendientesByTienda {ClienteId}, {TiendaId}";
+                _DbO.Database.OpenConnection();
+                DbDataReader Dr = Cmd.ExecuteReader();
+                if (Dr.HasRows) {
+                    while (Dr.Read()) {
+                        ListExists.Add(new PedidosDetExternos() {
+                            Id = Convert.ToInt32(Dr.GetValue(0)),
+                            PedidoId = Convert.ToInt32(Dr.GetValue(1)),
+                            CodProducto = Convert.ToString(Dr.GetValue(2)),
+                            CantPedir = Convert.ToDouble(Dr.GetValue(3)),
+                            Producto = Convert.ToString(Dr.GetValue(4))
+                        });
+                    }
+                }
+                _DbO.Database.CloseConnection();
+                if (!Dr.IsClosed)
+                    Dr.Close();
+            }
+            return ListExists;
+        }
         public static IEnumerable<PaylessProdPrioriDetModel> SP_GetPedidosExternosDetById(ref Models.EdiDB.EdiDBContext _DbO, int PedidoId) {
             List<PaylessProdPrioriDetModel> List = new List<PaylessProdPrioriDetModel>();
             using (DbCommand Cmd = _DbO.Database.GetDbConnection().CreateCommand()) {
@@ -558,6 +604,50 @@ namespace EdiApi.Models
                             Peso = Convert.ToDouble(Dr.GetValue(18)),
                             IdTransporte = Convert.ToInt32(Dr.GetValue(19)),
                             Transporte = Convert.ToString(Dr.GetValue(20))
+                        });
+                    }
+                }
+                _DbO.Database.CloseConnection();
+                if (!Dr.IsClosed)
+                    Dr.Close();
+            }
+            return ListProdDet;
+        }
+        public static IEnumerable<FE830DataAux> SP_GetExistenciasByTienda(ref Models.EdiDB.EdiDBContext _DbO, int ClienteId, int TiendaId) {
+            List<FE830DataAux> ListProdDet = new List<FE830DataAux>();
+            using (DbCommand Cmd = _DbO.Database.GetDbConnection().CreateCommand()) {
+                Cmd.CommandText = $"[dbo].[SP_GetExistenciasByTienda] {ClienteId}, '{TiendaId}'";
+                _DbO.Database.OpenConnection();
+                DbDataReader Dr = Cmd.ExecuteReader();
+                if (Dr.HasRows) {
+                    while (Dr.Read()) {
+                        ListProdDet.Add(new FE830DataAux() {
+                            CodProductoLear = Convert.ToString(Dr.GetValue(0)),
+                            CodProducto = Convert.ToString(Dr.GetValue(1)),
+                            Existencia = Convert.ToDouble(Dr.GetValue(2))
+                        });
+                    }
+                }
+                _DbO.Database.CloseConnection();
+                if (!Dr.IsClosed)
+                    Dr.Close();
+            }
+            return ListProdDet;
+        }
+        public static List<PaylessProdPrioriDetModel> SP_GetPaylessProdSinPedido(ref Models.EdiDB.EdiDBContext _DbO, int ClienteId, int TiendaId) {
+            List<PaylessProdPrioriDetModel> ListProdDet = new List<PaylessProdPrioriDetModel>();
+            using (DbCommand Cmd = _DbO.Database.GetDbConnection().CreateCommand()) {
+                Cmd.CommandText = $"dbo.SP_GetPaylessProdSinPedido {ClienteId}, '{TiendaId}'";
+                _DbO.Database.OpenConnection();
+                DbDataReader Dr = Cmd.ExecuteReader();
+                if (Dr.HasRows) {
+                    while (Dr.Read()) {
+                        ListProdDet.Add(new PaylessProdPrioriDetModel() {
+                            Barcode = Convert.ToString(Dr.GetValue(0)),
+                            Cp = Convert.ToString(Dr.GetValue(1)),
+                            Categoria = Convert.ToString(Dr.GetValue(2)),
+                            IdPaylessProdPrioriM = Convert.ToInt32(Dr.GetValue(3)),
+                            Departamento = Convert.ToString(Dr.GetValue(4)),
                         });
                     }
                 }

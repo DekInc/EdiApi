@@ -175,7 +175,7 @@ namespace EdiViewer.Controllers
                 int recordsTotal = 0;
 
                 // Getting all Customer data  
-                RetData<Tuple<IEnumerable<PedidosExternos>, IEnumerable<PedidosDetExternos>>> ListPe = await ApiClientFactory.Instance.GetPedidosExternos(ClienteId);
+                RetData<Tuple<IEnumerable<PedidosExternos>, IEnumerable<PedidosDetExternos>>> ListPe = await ApiClientFactory.Instance.GetPedidosExternosMDetAdmin(ClienteId);
                 if (ListPe.Info.CodError != 0)
                     return Json(new { draw = 0, recordsFiltered = 0, recordsTotal = 0, errorMessage = ListPe.Info.Mensaje, data = "" });
                 if (ListPe.Data.Item1.Count() == 0)

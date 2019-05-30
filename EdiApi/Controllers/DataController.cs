@@ -791,6 +791,29 @@ namespace EdiApi.Controllers
             }
             return RetDataO;
         }
+        [HttpGet]
+        public RetData<IEnumerable<FE830DataAux>> GetStockByTienda(int ClienteId, int TiendaId) {
+            DateTime StartTime = DateTime.Now;
+            IEnumerable<FE830DataAux> ListStock = ManualDB.SP_GetExistenciasByTienda(ref DbO, ClienteId, TiendaId);
+            try {
+                return new RetData<IEnumerable<FE830DataAux>> {
+                    Data = ListStock,
+                    Info = new RetInfo() {
+                        CodError = 0,
+                        Mensaje = "ok",
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            } catch (Exception exm1) {
+                return new RetData<IEnumerable<FE830DataAux>> {
+                    Info = new RetInfo() {
+                        CodError = -1,
+                        Mensaje = exm1.ToString(),
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            }
+        }
         [HttpPost]
         public string LoginExtern(UserModel UserEnc)
         {
@@ -851,19 +874,19 @@ namespace EdiApi.Controllers
                 };
             }
         }
-        [HttpPost]
-        public RetData<Tuple<IEnumerable<PedidosExternos>, IEnumerable<PedidosDetExternos>>> GetPedidosExternos(object ClienteId)
+        [HttpGet]
+        public RetData<Tuple<IEnumerable<PedidosExternos>, IEnumerable<PedidosDetExternos>>> GetPedidosExternos(int ClienteId)
         {
             DateTime StartTime = DateTime.Now;
             try
             {
                 IEnumerable<PedidosExternos> ListPe = (
                     from Pe in DbO.PedidosExternos
-                    where Pe.ClienteId == Convert.ToInt32(ClienteId)
+                    where Pe.ClienteId == ClienteId
                     orderby Pe.Id descending
                     select Pe
                     );
-                IEnumerable<PedidosDetExternos> ListDePe = ManualDB.SP_GetPedidosDetExternos(ref DbO, Convert.ToInt32(ClienteId));                
+                IEnumerable<PedidosDetExternos> ListDePe = ManualDB.SP_GetPedidosDetExternos(ref DbO, ClienteId);                
                 return new RetData<Tuple<IEnumerable<PedidosExternos>, IEnumerable<PedidosDetExternos>>>
                 {
                     Data = new Tuple<IEnumerable<PedidosExternos>, IEnumerable<PedidosDetExternos>>(ListPe, ListDePe),
@@ -881,6 +904,36 @@ namespace EdiApi.Controllers
                 {
                     Info = new RetInfo()
                     {
+                        CodError = -1,
+                        Mensaje = e1.ToString(),
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            }
+        }
+        [HttpGet]
+        public RetData<Tuple<IEnumerable<PedidosExternos>, IEnumerable<PedidosDetExternos>>> GetPedidosExternosByTienda(int ClienteId, int TiendaId) {
+            DateTime StartTime = DateTime.Now;
+            try {
+                IEnumerable<PedidosExternos> ListPe = (
+                    from Pe in DbO.PedidosExternos
+                    where Pe.ClienteId == ClienteId
+                    && Pe.TiendaId == TiendaId
+                    orderby Pe.Id descending
+                    select Pe
+                    );
+                IEnumerable<PedidosDetExternos> ListDePe = ManualDB.SP_GetPedidosDetExternos(ref DbO, ClienteId);
+                return new RetData<Tuple<IEnumerable<PedidosExternos>, IEnumerable<PedidosDetExternos>>> {
+                    Data = new Tuple<IEnumerable<PedidosExternos>, IEnumerable<PedidosDetExternos>>(ListPe, ListDePe),
+                    Info = new RetInfo() {
+                        CodError = 0,
+                        Mensaje = "ok",
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            } catch (Exception e1) {
+                return new RetData<Tuple<IEnumerable<PedidosExternos>, IEnumerable<PedidosDetExternos>>> {
+                    Info = new RetInfo() {
                         CodError = -1,
                         Mensaje = e1.ToString(),
                         ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
@@ -965,6 +1018,37 @@ namespace EdiApi.Controllers
                     where Dp.PedidoId == Pe.Id
                     select Dp
                     );
+                return new RetData<Tuple<IEnumerable<PedidosExternos>, IEnumerable<PedidosDetExternos>>> {
+                    Data = new Tuple<IEnumerable<PedidosExternos>, IEnumerable<PedidosDetExternos>>(ListPe, ListDePe),
+                    Info = new RetInfo() {
+                        CodError = 0,
+                        Mensaje = "ok",
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            } catch (Exception e1) {
+                return new RetData<Tuple<IEnumerable<PedidosExternos>, IEnumerable<PedidosDetExternos>>> {
+                    Info = new RetInfo() {
+                        CodError = -1,
+                        Mensaje = e1.ToString(),
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            }
+        }
+        [HttpGet]
+        public RetData<Tuple<IEnumerable<PedidosExternos>, IEnumerable<PedidosDetExternos>>> GetPedidosExternosPendientesByTienda(int ClienteId, int TiendaId) {
+            DateTime StartTime = DateTime.Now;
+            try {
+                IEnumerable<PedidosExternos> ListPe = (
+                    from Pe in DbO.PedidosExternos
+                    where Pe.ClienteId == ClienteId
+                    && Pe.TiendaId == TiendaId
+                    && Pe.IdEstado == 2
+                    orderby Pe.Id descending
+                    select Pe
+                    );
+                List<PedidosDetExternos> ListDePe = ManualDB.SP_GetPedidosDetExternosPendientesByTienda(ref DbO, ClienteId, TiendaId).ToList();
                 return new RetData<Tuple<IEnumerable<PedidosExternos>, IEnumerable<PedidosDetExternos>>> {
                     Data = new Tuple<IEnumerable<PedidosExternos>, IEnumerable<PedidosDetExternos>>(ListPe, ListDePe),
                     Info = new RetInfo() {
@@ -3051,20 +3135,9 @@ SET XACT_ABORT OFF
                     AccQty = txtAccQty,
                     InvType = radInvType
                 };
-                List<PaylessProdPrioriDetModel> ListProdTienda = (
-                    from D in DbO.PaylessProdPrioriDet
-                    from M in DbO.PaylessProdPrioriM
-                    where D.Barcode.StartsWith(TiendaId.ToString())
-                    && M.Id == D.IdPaylessProdPrioriM
-                    select new PaylessProdPrioriDetModel() {
-                        Barcode = D.Barcode,
-                        Cp = D.Cp,
-                        Categoria = D.Categoria,
-                        IdPaylessProdPrioriM = D.IdPaylessProdPrioriM,
-                        Departamento = M.Periodo
-                    }).Distinct().ToList();
+                List<PaylessProdPrioriDetModel> ListProdTienda = ManualDB.SP_GetPaylessProdSinPedido(ref DbO, ClienteId, TiendaId);                
                 List<PaylessProdPrioriDetModel> ListProdWithStock = new List<PaylessProdPrioriDetModel>();
-                IEnumerable<ExistenciasExternModel> ListStock = ManualDB.SP_GetExistenciasExtern(ref DbO, ClienteId);
+                IEnumerable<FE830DataAux> ListStock = ManualDB.SP_GetExistenciasByTienda(ref DbO, ClienteId, TiendaId);
                 if (ListStock.Count() == 0)
                     return new RetData<string> {
                         Info = new RetInfo() {
@@ -3073,10 +3146,9 @@ SET XACT_ABORT OFF
                             ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
                         }
                     };
-                foreach (ExistenciasExternModel Stock in ListStock) {
+                foreach (FE830DataAux Stock in ListStock) {
                     foreach (PaylessProdPrioriDetModel Product in ListProdTienda.Where(P => P.Barcode == Stock.CodProducto)) {
                         Product.Existencia = Convert.ToInt32(Stock.Existencia);
-                        Product.Reservado = Convert.ToInt32(Stock.Reservado);
                         if (Product.Existencia > 0 && ListProdWithStock.Where(Ws => Ws.Barcode == Product.Barcode).Count() == 0)
                             ListProdWithStock.Add(Product);
                     }
@@ -3151,6 +3223,15 @@ SET XACT_ABORT OFF
                     default:
                         break;
                 }
+                if (ListProdPedido.Count == 0) {
+                    return new RetData<string> {
+                        Info = new RetInfo() {
+                            CodError = -1,
+                            Mensaje = "No hay productos seleccionados y no hay CP en existencia.",
+                            ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                        }
+                    };
+                }
                 DbO.PedidosExternos.Add(NewPe);
                 DbO.SaveChanges();
                 List<PedidosDetExternos> ListPed = ListProdPedido.Select(Pp => new PedidosDetExternos() {
@@ -3193,6 +3274,52 @@ SET XACT_ABORT OFF
                 };
             } catch (Exception e1) {
                 return new RetData<IEnumerable<AsyncStates>> {
+                    Info = new RetInfo() {
+                        CodError = -1,
+                        Mensaje = e1.ToString(),
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            }
+        }
+        [HttpGet]
+        public RetData<IEnumerable<PaylessTiendas>> GetStores() {
+            DateTime StartTime = DateTime.Now;
+            try {
+                IEnumerable<PaylessTiendas> List = (from A in DbO.PaylessTiendas select A);
+                return new RetData<IEnumerable<PaylessTiendas>> {
+                    Data = List,
+                    Info = new RetInfo() {
+                        CodError = 0,
+                        Mensaje = "ok",
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            } catch (Exception e1) {
+                return new RetData<IEnumerable<PaylessTiendas>> {
+                    Info = new RetInfo() {
+                        CodError = -1,
+                        Mensaje = e1.ToString(),
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            }
+        }
+        [HttpGet]
+        public RetData<string> GetClientById(int ClienteId) {
+            DateTime StartTime = DateTime.Now;
+            try {
+                string Ret = (from C in WmsDbO.Clientes where C.ClienteId == ClienteId select C.Nombre).Fod();
+                return new RetData<string> {
+                    Data = Ret,
+                    Info = new RetInfo() {
+                        CodError = 0,
+                        Mensaje = "ok",
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            } catch (Exception e1) {
+                return new RetData<string> {
                     Info = new RetInfo() {
                         CodError = -1,
                         Mensaje = e1.ToString(),

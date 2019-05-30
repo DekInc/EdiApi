@@ -41,10 +41,10 @@
                                         <input class="form-check-input" id="radFifo" name="radInvType" type="radio" checked="checked" value="fifo" />
                                         <label class="form-check-label" for="radFifo">FIFO</label>
                                     </div>
-                                    <div class="form-check margin5">
+                                    @*<div class="form-check margin5">
                                         <input class="form-check-input" id="radLifo" name="radInvType" type="radio" value="lifo" />
                                         <label class="form-check-label" for="radLifo">LIFO</label>
-                                    </div>
+                                    </div>*@
                                 </div>
                             </div>
                             <br />
@@ -181,7 +181,7 @@
             return null;
         }
         return decodeURI(results[1]) || 0;
-    }
+    }    
     function reDrawObjects() {
         $('#spanClientName').css('display', 'block');
         if (window.mobileAndTabletcheck()) {
@@ -229,6 +229,9 @@
     function refreshGrid(auto) {
         w2ui.grid.autoLoad = auto;
         w2ui.grid.skip(0);
+    }
+    function loadPedido(pedidoId) {
+        alert(pedidoId);
     }
     function showQtys() {
         $('.divSpinQty').show();
@@ -288,6 +291,10 @@
                         parseInt($('#spanWomanCpQty').text()) + parseInt($('#spanManCpQty').text())
                         + parseInt($('#spanKidCpQty').text());
                     $('#spanTotal').text('Total en inventario con existencia ' + total);
+                    @if(ViewBag.PedidoIdToModify != 0)
+                    {
+                        @: loadPedido(@(ViewBag.PedidoIdToModify));
+                    }
                 }
             },
             error: function (xhr, ajaxOptions, thrownError) {
@@ -322,10 +329,10 @@
         });
         $('.btnTodos').on('click', function (Event) {
             $($(this).closest('div').find('.txtCantPedir')[0]).val($($(this).closest('div').find('.qty')[0]).text());
-        });
+        });        
         @if (!string.IsNullOrEmpty(Model.ErrorMessage))
         {
             @: menErrorEdi('@Html.Raw(Model.ErrorMessage.Replace(Environment.NewLine, "<br />"))');
-        }
+        }        
     });
 </script>
