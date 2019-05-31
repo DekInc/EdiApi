@@ -44,6 +44,7 @@ namespace EdiApi.Controllers
             WmsDbO = _WmsDbO;            
             WmsDbOLong = _WmsDbOLong;            
             Config = _Config;
+            DbO.Database.SetCommandTimeout(TimeSpan.FromMinutes(2));
             WmsDbO.Database.SetCommandTimeout(TimeSpan.FromMinutes(4));
             WmsDbOLong.Database.SetCommandTimeout(TimeSpan.FromMinutes(10));
         }
@@ -3135,6 +3136,22 @@ SET XACT_ABORT OFF
                     AccQty = txtAccQty,
                     InvType = radInvType
                 };
+                IEnumerable<int> ListExistPedido = (
+                    from Pe in DbO.PedidosExternos
+                    where Pe.FechaPedido.Substring(0, 10) == dtpFechaEntrega.Substring(0, 10)
+                    && Pe.ClienteId == ClienteId
+                    && Pe.TiendaId == TiendaId
+                    select Pe.Id
+                    );
+                if (ListExistPedido.Count() > 0) {
+                    return new RetData<string> {
+                        Info = new RetInfo() {
+                            CodError = -1,
+                            Mensaje = "Error, Ya existe un pedido para la misma fecha.",
+                            ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                        }
+                    };
+                }
                 List<PaylessProdPrioriDetModel> ListProdTienda = ManualDB.SP_GetPaylessProdSinPedido(ref DbO, ClienteId, TiendaId);                
                 List<PaylessProdPrioriDetModel> ListProdWithStock = new List<PaylessProdPrioriDetModel>();
                 IEnumerable<FE830DataAux> ListStock = ManualDB.SP_GetExistenciasByTienda(ref DbO, ClienteId, TiendaId);
@@ -3159,6 +3176,7 @@ SET XACT_ABORT OFF
                     where !string.IsNullOrEmpty(P1.Cp)
                     select P1
                     ).ToList();
+                int NContCp = ListProdPedido.Count;
                 switch (radInvType) {
                     case "fifo":
                         ListProdPedido.AddRange((
@@ -3242,10 +3260,10 @@ SET XACT_ABORT OFF
                 DbO.PedidosDetExternos.AddRange(ListPed);
                 DbO.SaveChanges();
                 return new RetData<string> {
-                    Data = NewPe.Id.ToString(),
+                    Data = $"Se realizo el pedido, para la categoria mujeres: {txtWomanQty}, hombres: {txtManQty}, niñ@s: {txtKidQty}, Accesorios: {txtAccQty}, CP: {NContCp}. Número de pedido: {NewPe.Id}",
                     Info = new RetInfo() {
                         CodError = 0,
-                        Mensaje = "ok",
+                        Mensaje = $"Se realizo el pedido, para la categoria mujeres: {txtWomanQty}, hombres: {txtManQty}, niñ@s: {txtKidQty}, Accesorios: {txtAccQty}, CP: {NContCp}. Número de pedido: {NewPe.Id}",
                         ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
                     }
                 };
@@ -3320,6 +3338,29 @@ SET XACT_ABORT OFF
                 };
             } catch (Exception e1) {
                 return new RetData<string> {
+                    Info = new RetInfo() {
+                        CodError = -1,
+                        Mensaje = e1.ToString(),
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            }
+        }
+        [HttpGet]
+        public RetData<List<PedidosPendientesAdmin>> GetPedidosPendientesAdmin() {
+            DateTime StartTime = DateTime.Now;
+            try {
+                List<PedidosPendientesAdmin> Ret = ManualDB.SP_GetPedidosPendientesAdmin(ref DbO);
+                return new RetData<List<PedidosPendientesAdmin>> {
+                    Data = Ret,
+                    Info = new RetInfo() {
+                        CodError = 0,
+                        Mensaje = "ok",
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            } catch (Exception e1) {
+                return new RetData<List<PedidosPendientesAdmin>> {
                     Info = new RetInfo() {
                         CodError = -1,
                         Mensaje = e1.ToString(),

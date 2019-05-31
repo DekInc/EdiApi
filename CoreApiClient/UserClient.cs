@@ -280,6 +280,9 @@ namespace CoreApiClient
         public async Task<RetData<IEnumerable<FE830DataAux>>> GetStockByTienda(int ClienteId, int TiendaId) {
             return await GetAsync<RetData<IEnumerable<FE830DataAux>>>(CreateRequestUri(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Data/GetStockByTienda"), $"?ClienteId={ClienteId}&TiendaId={TiendaId}"));
         }
+        public async Task<RetData<List<PedidosPendientesAdmin>>> GetPedidosPendientesAdmin() {
+            return await GetAsync<RetData<List<PedidosPendientesAdmin>>>(CreateRequestUri(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Data/GetPedidosPendientesAdmin")));
+        }
         /////////////////////////////////////////
         //public async Task<List<UsersModel>> GetUsers()
         //{

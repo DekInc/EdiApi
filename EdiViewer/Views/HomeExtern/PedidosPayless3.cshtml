@@ -233,6 +233,9 @@
     function loadPedido(pedidoId) {
         alert(pedidoId);
     }
+    @if (Model.Typ == 1) {
+        @:function funcbtnOkMessageBox() { window.location.href = '/HomeExtern/Peticiones'; }
+    }
     function showQtys() {
         $('.divSpinQty').show();
         $.ajax({
@@ -331,7 +334,7 @@
             $($(this).closest('div').find('.txtCantPedir')[0]).val($($(this).closest('div').find('.qty')[0]).text());
         });        
         @if (!string.IsNullOrEmpty(Model.ErrorMessage))
-        {
+        {            
             @: menErrorEdi('@Html.Raw(Model.ErrorMessage.Replace(Environment.NewLine, "<br />"))');
         }        
     });

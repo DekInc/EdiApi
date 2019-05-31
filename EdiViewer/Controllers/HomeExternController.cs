@@ -56,7 +56,10 @@ namespace EdiViewer.Controllers
         public IActionResult Peticiones()
         {
             return View();
-        }        
+        }
+        public IActionResult PeticionesAdmin() {
+            return View();
+        }
         public IActionResult PeticionDet(int PedidoId)
         {
             HttpContext.Session.SetObjSession("PedidoId", PedidoId);
@@ -102,7 +105,7 @@ namespace EdiViewer.Controllers
             }
             RetData<string> Ret = await ApiClientFactory.Instance.SetNewDisPayless(dtpFechaEntrega, txtWomanQty, txtManQty, txtKidQty, txtAccQty, radInvType, HttpContext.Session.GetObjSession<int>("Session.ClientId"), HttpContext.Session.GetObjSession<int>("Session.TiendaId"));
             if (Ret.Info.CodError == 0) {
-                return View("PedidosPayless3", new ErrorModel() { ErrorMessage = $"Se ha creado el pedido # {Ret.Data}" });
+                return View("PedidosPayless3", new ErrorModel() { Typ = 1, ErrorMessage = Ret.Data });
             } else {
                 return View("PedidosPayless3", new ErrorModel() { ErrorMessage = Ret.Info.Mensaje });
             }

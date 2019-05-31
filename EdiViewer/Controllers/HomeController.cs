@@ -279,7 +279,7 @@ namespace EdiViewer.Controllers
         {
             try
             {
-                RetData<Tuple<IEnumerable<PedidosExternos>, IEnumerable<PedidosDetExternos>, IEnumerable<Clientes>>> ListDis = await ApiClientFactory.Instance.GetPedidosExternosPendientesAdmin();
+                RetData<List<PedidosPendientesAdmin>> ListDis = await ApiClientFactory.Instance.GetPedidosPendientesAdmin();
                 return Json(new { codError = ListDis.Info.CodError, errorMessage = ListDis.Info.Mensaje, data = ListDis.Data });
             }
             catch (Exception e1)

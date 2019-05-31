@@ -439,6 +439,7 @@ namespace EdiApi.Models
             int Res = 0;
             using (DbCommand Cmd = _Wms.Database.GetDbConnection().CreateCommand()) {
                 Cmd.CommandText = Batch;
+                Cmd.CommandTimeout = 600;
                 _Wms.Database.OpenConnection();
                  Res = Cmd.ExecuteNonQuery();
                 _Wms.Database.CloseConnection();
@@ -449,6 +450,7 @@ namespace EdiApi.Models
             DataTable Dt = new DataTable();
             using (DbCommand Cmd = _Wms.Database.GetDbConnection().CreateCommand()) {
                 Cmd.CommandText = $"[dbo].[spGeneraSalida] '{FechaSalida}', '{CodProducto}', {BodegaId}, {RegimenId}, {ClienteId}, {LocationId}, {RackId} ";
+                Cmd.CommandTimeout = 600;
                 _Wms.Database.OpenConnection();
                 DbDataReader Dr = Cmd.ExecuteReader();
                 Dt.Load(Dr);
@@ -648,6 +650,35 @@ namespace EdiApi.Models
                             Categoria = Convert.ToString(Dr.GetValue(2)),
                             IdPaylessProdPrioriM = Convert.ToInt32(Dr.GetValue(3)),
                             Departamento = Convert.ToString(Dr.GetValue(4)),
+                        });
+                    }
+                }
+                _DbO.Database.CloseConnection();
+                if (!Dr.IsClosed)
+                    Dr.Close();
+            }
+            return ListProdDet;
+        }
+        public static List<PedidosPendientesAdmin> SP_GetPedidosPendientesAdmin(ref Models.EdiDB.EdiDBContext _DbO) {
+            List<PedidosPendientesAdmin> ListProdDet = new List<PedidosPendientesAdmin>();
+            using (DbCommand Cmd = _DbO.Database.GetDbConnection().CreateCommand()) {
+                Cmd.CommandText = $"dbo.SP_GetPedidosPendientesAdmin";
+                Cmd.CommandTimeout = 600;
+                _DbO.Database.OpenConnection();
+                DbDataReader Dr = Cmd.ExecuteReader();
+                if (Dr.HasRows) {
+                    while (Dr.Read()) {
+                        ListProdDet.Add(new PedidosPendientesAdmin() {
+                            PedidoId = Convert.ToInt32(Dr.GetValue(0)),
+                            Bodega = Convert.ToString(Dr.GetValue(1)),
+                            TiendaId = Convert.ToInt32(Dr.GetValue(2)),
+                            FechaPedido = Convert.ToString(Dr.GetValue(3)),
+                            Periodo = Convert.ToString(Dr.GetValue(4)),
+                            Categoria = Convert.ToString(Dr.GetValue(5)),
+                            CP = Convert.ToString(Dr.GetValue(6)),
+                            Barcode = Convert.ToString(Dr.GetValue(7)),
+                            IdRack = Convert.ToInt32(Dr.GetValue(8)),
+                            NombreRack = Convert.ToString(Dr.GetValue(9))
                         });
                     }
                 }

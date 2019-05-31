@@ -14,5 +14,9 @@ namespace ComModels
         {
             throw new NotImplementedException();
         }
+
+        public static implicit operator RetData<T>(RetData<Tuple<IEnumerable<PedidosExternos>, IEnumerable<PedidosDetExternos>, IEnumerable<Clientes>>> v) {
+            throw new NotImplementedException();
+        }
     }
 }

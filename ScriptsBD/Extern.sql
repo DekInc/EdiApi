@@ -1,7 +1,7 @@
 saddasdasd
 select * from wms_test_29_01_2019.dbo.Paises where NomPais like'%pana%'
 --487	TIENDAS CARRION, S.A. DE C.V.(TRANSITO A GUATEMAL)
-select * from wms.dbo.Clientes with(nolock) where nombre like '%payless%' OR ClienteID = 610 order by ClienteID asc
+select * from wms.dbo.Clientes with(nolock) where nombre like '%jack%' OR ClienteID = 610 order by ClienteID asc
 select * from edidb.dbo.IEnetUsers where Id > 4
 --PAYLESS SHOE SOURCE, HONDURAS
 --SAN PEDRO SULA, HONDURAS
@@ -33,19 +33,84 @@ select @@servicename
 --1967856447
 exec SP_GetExistenciasExtern 618
 SELECT * FROM EdiDB.dbo.PedidosEstadosExternos
-SELECT * FROM EdiDB.dbo.PedidosExternos
---delete from EdiDB.dbo.PedidosExternos where id in (7)
---delete from EdiDB.dbo.PedidosDetExternos where PedidoId in (7)
+SELECT * FROM EdiDB.dbo.PedidosExternos order by TiendaId
+--16	1432	7384	04/06/2019 08:00	2	31/05/2019 11:45	NULL	NULL	100	19	0	0	fifo
+SELECT FechaPedido, REPLACE(FechaPedido, '03/06', '04/06') FROM EdiDB.dbo.PedidosExternos
+--update EdiDB.dbo.PedidosExternos SET FechaPedido = REPLACE(FechaPedido, '03/06', '04/06')
+--delete from EdiDB.dbo.PedidosExternos where id in (24)
+--delete from EdiDB.dbo.PedidosDetExternos where PedidoId in (24)
 --update PedidosExternos SET FechaPedido = '08/05/2019 16:00', IdEstado = 2 where Id = 1
 --delete from EdiDB.dbo.PedidosExternos where Id > 15
 --truncate table EdiDB.dbo.PedidosExternos
 --truncate table EdiDB.dbo.PedidosDetExternos
-SELECT * FROM EdiDB.dbo.PedidosDetExternos where PedidoId = 4
+SELECT * FROM EdiDB.dbo.PedidosDetExternos where PedidoId = 12
 SELECT * FROM EdiDB.dbo.PedidosDetExternos where CodProducto = '7375888505'
 order by CodProducto, CantPedir
 select * from EdiDB.dbo.PAYLESS_ProdPrioriDet where barcode = '7375888505'
---delete from EdiDB.dbo.PedidosDetExternos where PedidoId = 5
+update EdiDB.dbo.PedidosDetExternos SET PedidoId =  16 where PedidoId = 12
+--delete from EdiDB.dbo.PedidosExternos where Id = 16
 --truncate table EdiDB.dbo.PedidosDetExternos
+select * from wms.dbo.Racks where Rack = 11977
+select * from wms.dbo.Racks order by Rack DESC
+SELECT DISTINCT
+	Pe.Id,
+	(
+	select top 1 B.NomBodega
+	from wms.dbo.ItemInventario Ii WITH(NOLOCK)
+	JOIN wms.dbo.Inventario I WITH(NOLOCK)
+		ON I.InventarioID = Ii.InventarioID
+	JOIN wms.dbo.Racks R WITH(NOLOCK)
+		ON R.Rack = I.Rack
+	JOIN wms.dbo.Bodegas B WITH(NOLOCK)
+		ON B.BodegaID = R.BodegaID
+	where Ii.CodProducto = PeD.CodProducto order by ItemInventarioID desc
+	) Bodega,
+	Pe.TiendaId,
+	Pe.FechaPedido,
+	M.Periodo,
+	D.Categoria,
+	D.CP,
+	D.Barcode,
+	(
+	select top 1 R.Rack 
+	from wms.dbo.ItemInventario Ii WITH(NOLOCK)
+	JOIN wms.dbo.Inventario I WITH(NOLOCK)
+		ON I.InventarioID = Ii.InventarioID
+	JOIN wms.dbo.Racks R WITH(NOLOCK)
+		ON R.Rack = I.Rack
+	where Ii.CodProducto = PeD.CodProducto order by ItemInventarioID desc
+	) IdRack,
+	(
+	select top 1 R.NombreRack 
+	from wms.dbo.ItemInventario Ii WITH(NOLOCK)
+	JOIN wms.dbo.Inventario I WITH(NOLOCK)
+		ON I.InventarioID = Ii.InventarioID
+	JOIN wms.dbo.Racks R WITH(NOLOCK)
+		ON R.Rack = I.Rack
+	where Ii.CodProducto = PeD.CodProducto order by ItemInventarioID desc
+	) NombreRack
+FROM EdiDB.dbo.PedidosExternos Pe WITH(NOLOCK)
+JOIN EdiDB.dbo.PedidosDetExternos PeD WITH(NOLOCK)
+	ON PeD.PedidoId = Pe.Id
+JOIN EdiDB.dbo.PAYLESS_ProdPrioriDet D WITH(NOLOCK)
+	ON D.Barcode = PeD.CodProducto
+JOIN EdiDB.dbo.PAYLESS_ProdPrioriM M WITH(NOLOCK)
+	ON M.Id = D.IdPAYLESS_ProdPrioriM
+--WHERE Pe.Id = 9
+ORDER BY Pe.Id, Pe.TiendaId, M.Periodo, D.Categoria, D.Barcode
+
+select top 1000 R.* 
+from wms.dbo.ItemInventario Ii
+JOIN wms.dbo.Inventario I
+	ON I.InventarioID = Ii.InventarioID
+JOIN wms.dbo.Racks R
+	ON R.Rack = I.Rack
+where Ii.CodProducto like '7374%' 
+and Ii.Descripcion = 'CABALLEROS'
+order by CodProducto, ItemInventarioID desc
+select * from wms.dbo.Bodegas
+select * from EdiDb.dbo.PAYLESS_ProdPrioriDet where Barcode = '7373823622'
+
 SELECT * FROM wms_test_29_01_2019.dbo.VInformacionPedidosWeb WHERE ClienteID = 618 ORDER BY CodProducto
 SELECT * FROM wms_test_29_01_2019.dbo.InventarioExistencias WHERE ClienteID = 618
 SELECT * FROM ListaPedidosWeb Where ClienteID = 618 Order by fecha DESC
@@ -511,7 +576,7 @@ select * from wms.dbo.Transacciones WITH(NOLOCK) where usuarioCrea = 'Hilmer' or
 select * from wms.dbo.Transacciones WITH(NOLOCK) where IDTipoTransaccion = 'SA' and ClienteID = 1432 order by PedidoId DESC
 --Salidas ultimo es 116661 y está ok
 EXEC SP_WHO2
-select * from wms.dbo.DocumentosxTransaccion where TransaccionID = 116834
+select * from wms.dbo.DocumentosxTransaccion where TransaccionID = 116883
 select * from wms.dbo.DocumentosxTransaccion where TransaccionID in (
 select TransaccionID from wms.dbo.Transacciones WITH(NOLOCK) where ClienteID = 1432
 )
