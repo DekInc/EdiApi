@@ -34,6 +34,9 @@ namespace EdiViewer.Controllers
         {
             return View();
         }
+        public IActionResult InvPaylessTienda() {
+            return View();
+        }        
         public IActionResult PaylessReportes() {
             return View();
         }        
@@ -58,6 +61,9 @@ namespace EdiViewer.Controllers
             return View();
         }
         public IActionResult PeticionesAdmin() {
+            return View();
+        }
+        public IActionResult PeticionesAdminB() {
             return View();
         }
         public IActionResult PeticionDet(int PedidoId)
@@ -832,17 +838,17 @@ namespace EdiViewer.Controllers
                 };
             }
         }
-        public async Task<RetData<IEnumerable<IenetUsers>>> GetClients()
+        public async Task<RetData<IEnumerable<Clientes>>> GetClients()
         {
             DateTime StartTime = DateTime.Now;
             try
             {
-                RetData<IEnumerable<IenetUsers>> ListClients = await ApiClientFactory.Instance.GetClients();
+                RetData<IEnumerable<Clientes>> ListClients = await ApiClientFactory.Instance.GetClients();
                 return ListClients;
             }
             catch (Exception e1)
             {
-                return new RetData<IEnumerable<IenetUsers>>
+                return new RetData<IEnumerable<Clientes>>
                 {
                     Info = new RetInfo()
                     {
@@ -1736,6 +1742,36 @@ namespace EdiViewer.Controllers
         public bool SetChangeDis(int PedidoId) {
             HttpContext.Session.SetObjSession("PedidoIdToModify", PedidoId);
             return true;
+        }
+        public async Task<RetData<string>> ChangeUserClient(int IdUser, int ClienteId) {
+            DateTime StartTime = DateTime.Now;
+            try {
+                RetData<string> List = await ApiClientFactory.Instance.ChangeUserClient(IdUser, ClienteId);
+                return List;
+            } catch (Exception e2) {
+                return new RetData<string> {
+                    Info = new RetInfo() {
+                        CodError = -1,
+                        Mensaje = e2.ToString(),
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            }
+        }
+        public async Task<RetData<string>> ChangeUserTienda(int IdUser, int TiendaId) {
+            DateTime StartTime = DateTime.Now;
+            try {
+                RetData<string> List = await ApiClientFactory.Instance.ChangeUserTienda(IdUser, TiendaId);
+                return List;
+            } catch (Exception e2) {
+                return new RetData<string> {
+                    Info = new RetInfo() {
+                        CodError = -1,
+                        Mensaje = e2.ToString(),
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            }
         }
     }
 }

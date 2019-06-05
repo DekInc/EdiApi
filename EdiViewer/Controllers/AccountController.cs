@@ -63,22 +63,36 @@ namespace EdiViewer.Controllers
                 RetData<IEnumerable<Clientes>> ListClients = await ApiClientFactory.Instance.GetAllClients(ApiClientFactory.Instance.Encrypt($"Fun|{HttpContext.Session.GetObjSession<string>("Session.HashId")}"));                
                 List<IenetUsersModel> Records = new List<IenetUsersModel>();
                 List<IenetUsersModel> AllRecords = new List<IenetUsersModel>();
-                foreach (IenetUsers UserO in ListUsers.Data)
-                {
-                    Records.Add(new IenetUsersModel() {
-                        Id = UserO.Id,
-                        CodUsr = UserO.CodUsr,
-                        IdIenetGroup = UserO.IdIenetGroup,
-                        NomUsr = UserO.NomUsr,
-                        ClienteId = UserO.ClienteId,
-                        Cliente = (UserO.ClienteId.HasValue && ListClients.Data.Where(C => C.ClienteId == UserO.ClienteId).Count() > 0 ? ListClients.Data.Where(C => C.ClienteId == UserO.ClienteId).Fod().Nombre : ""),
-                        IenetGroup = ListGroups.Where(G => G.Id == UserO.IdIenetGroup).Fod().Descr
-                    });
+                if (ListUsers.Data == null) {
+                    return Json(new { total = 0, records = "", errorMessage = "Otra persona está usando el admin, por favor vuelva a logearse." });
+                } else { 
+                    foreach (IenetUsers UserO in ListUsers.Data) {
+                        Records.Add(new IenetUsersModel() {
+                            Id = UserO.Id,
+                            CodUsr = UserO.CodUsr,
+                            IdIenetGroup = UserO.IdIenetGroup,
+                            NomUsr = UserO.NomUsr,
+                            ClienteId = UserO.ClienteId,
+                            Cliente = (UserO.ClienteId.HasValue && ListClients.Data.Where(C => C.ClienteId == UserO.ClienteId).Count() > 0 ? ListClients.Data.Where(C => C.ClienteId == UserO.ClienteId).Fod().Nombre : ""),
+                            IenetGroup = ListGroups.Where(G => G.Id == UserO.IdIenetGroup).Fod().Descr,
+                            TiendaId = UserO.TiendaId
+                        });
+                    }
                 }
                 int Total = 0;
                 if (Records.Count > 0) {
-                    AllRecords = Utility.ExpressionBuilderHelper.W2uiSearchNoSkip<IenetUsersModel>(Records, Request.Form);
-                    Records = Utility.ExpressionBuilderHelper.W2uiSearch<IenetUsersModel>(Records, Request.Form);
+                    bool HaveForm = true;
+                    try {
+                        if (Request.Form != null) {
+                            IFormCollection GridForm = Request.Form;
+                        }
+                    } catch {
+                        HaveForm = false;
+                    }
+                    if (HaveForm) {
+                        AllRecords = Utility.ExpressionBuilderHelper.W2uiSearchNoSkip<IenetUsersModel>(Records, Request.Form);
+                        Records = Utility.ExpressionBuilderHelper.W2uiSearch<IenetUsersModel>(Records, Request.Form);
+                    }
                     Total = Records.Count;
                 }
                 return Json(new { Total, Records, errorMessage = "", AllRecords });
@@ -209,7 +223,9 @@ namespace EdiViewer.Controllers
         public async Task<IActionResult> LoginIe(string TxtUser, string TxtPassword)
         {
             try
-            {                
+            {
+                if (string.IsNullOrEmpty(TxtPassword))
+                    return LocalRedirect("/Account/?error=USER_INCORRECT");
                 string UserEncrypted = ApiClientFactory.Instance.Encrypt(TxtUser);
                 string PasswordEncrypted = ApiClientFactory.Instance.Encrypt(TxtPassword);
                 string HashId = await ApiClientFactory.Instance.LoginIe(UserEncrypted, PasswordEncrypted);

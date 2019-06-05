@@ -343,10 +343,7 @@ namespace EdiApi.Models.WmsDB
                     .HasMaxLength(15)
                     .IsUnicode(false);
 
-                entity.HasOne(d => d.Estatus)
-                    .WithMany(p => p.Clientes)
-                    .HasForeignKey(d => d.EstatusId)
-                    .HasConstraintName("FK_Clientes_Estatus");
+                
             });
 
             modelBuilder.Entity<ConfigFrmBusqueda>(entity =>
@@ -1095,10 +1092,7 @@ namespace EdiApi.Models.WmsDB
                     .HasMaxLength(250)
                     .IsUnicode(false);
 
-                entity.HasOne(d => d.Cliente)
-                    .WithMany(p => p.Inventario)
-                    .HasForeignKey(d => d.ClienteId)
-                    .HasConstraintName("FK_Inventario_Clientes");
+               
 
                 entity.HasOne(d => d.RackNavigation)
                     .WithMany(p => p.Inventario)
@@ -1388,12 +1382,7 @@ namespace EdiApi.Models.WmsDB
 
                 entity.Property(e => e.TipoPedido)
                     .HasMaxLength(2)
-                    .IsUnicode(false);
-
-                entity.HasOne(d => d.Cliente)
-                    .WithMany(p => p.Pedido)
-                    .HasForeignKey(d => d.ClienteId)
-                    .HasConstraintName("FK_Pedido_Clientes");
+                    .IsUnicode(false);               
 
                 entity.HasOne(d => d.Destino)
                     .WithMany(p => p.Pedido)

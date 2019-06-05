@@ -30,6 +30,7 @@ namespace EdiApi
         {
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
             services.AddDbContext<EdiDBContext>(options => options.UseSqlServer(Configuration.GetConnectionString("EdiDB")));
+            services.AddDbContext<EdiDBContext>(options => options.UseSqlServer(Configuration.GetConnectionString("EdiDBLong")));
             services.AddDbContext<WmsContext>(options => options.UseSqlServer(Configuration.GetConnectionString("wmsdb")));
             services.AddDbContext<WmsContext>(options => 
                 options.UseSqlServer(Configuration.GetConnectionString("wmsdbLong")));

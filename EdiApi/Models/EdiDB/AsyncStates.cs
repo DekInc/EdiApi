@@ -10,5 +10,6 @@ namespace EdiApi.Models.EdiDB
         public int? Val { get; set; }
         public int? Maximum { get; set; }
         public string Mess { get; set; }
+        public string Fecha { get; set; }
     }
 }

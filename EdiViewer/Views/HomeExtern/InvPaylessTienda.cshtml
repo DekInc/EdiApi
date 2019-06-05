@@ -1,0 +1,157 @@
+﻿@using ComModels
+@{
+    ViewData["Title"] = "Payless - Inventario por tienda";
+    Layout = "_Layout";
+}
+<div id="mainDiv">
+    <div class="container">
+        <div class="card-deck cardMain">
+            <div class="card box-shadow">
+                <div class="card-header">
+                    <h4 class="my-0 font-weight-normal">Payless - Inventario por tienda&nbsp;<img class="imgHeaderHelp" src="~/images/help.png" title="Pantalla que muestra el inventario por tienda" alt="Pantalla que muestra el inventario por tienda"></h4>
+                </div>
+                <div class="card-body">
+                    <div style="font-weight: bold;">
+                        La columna 3 a 7 muestra los productos según inventario del wms sin descontar las cantidades pedidas. 
+                        Total CP solo toma en cuenta A y H. 
+                        Las columnas de CP totales por categoria están ocultas pero se pueden activar.
+                    </div>
+                    <div id="gridInv" style="min-height: 460px; width: 100%;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>    
+    var HashId = '';
+    var gridInv = null;
+    var foo = function () {
+    };
+    $.urlParam = function (name) {
+        var results = new RegExp('[\?&]' + name + '=([^&#]*)').exec(window.location.href);
+        if (results == null) {
+            return null;
+        }
+        return decodeURI(results[1]) || 0;
+    }
+    function refreshGrid(auto) {
+        w2ui.grid.autoLoad = auto;
+        w2ui.grid.skip(0);
+    }
+    function crearGrid() {
+        var config = {
+            grid: {
+                name: 'gridInv',
+                selectType: 'cell',
+                bResponsive: true,
+                bMobile: window.mobileAndTabletcheck(),
+                url: '@this.Url.Action("GetInvByStore", "Grids")',
+                show: {
+                    footer: true,
+                    toolbar: true,
+                    expandColumn: window.mobileAndTabletcheck()                    
+                },
+                searches: [
+                    { field: "tienda", caption: "Tienda", type: 'text' }
+                ],
+                colShowResponsive: [
+                    { field: 'tiendaId' },
+                    { field: 'total' }
+                ],
+                columns: [
+                    { field: "tiendaId", caption: "TiendaId", sortable: true, size: '80px' },
+                    { field: "tienda", caption: "Tienda", sortable: true },
+                    { field: "womanQty", caption: "Mujeres", sortable: true, size: '100px' },
+                    { field: "manQty", caption: "Hombres", sortable: true, size: '100px' },
+                    { field: "kidsQty", caption: "Niñ@s", sortable: true, size: '100px' },
+                    { field: "accQty", caption: "Accesorios", sortable: true, size: '100px' },
+                    { field: "totalSCp", caption: "Total sin CP", sortable: true, size: '100px' },
+                    { field: "womanCpQty", caption: "Mujeres CP", sortable: true, size: '100px', hidden: true },
+                    { field: "manCpQty", caption: "Hombres CP", sortable: true, size: '100px', hidden: true },
+                    { field: "kidsCpQty", caption: "Niñ@s CP", sortable: true, size: '100px', hidden: true },
+                    { field: "accCpQty", caption: "Accesorios CP", sortable: true, size: '100px', hidden: true },
+                    { field: "totalCp", caption: "Total CP", sortable: true, size: '100px' },
+                    { field: "total", caption: "Total", sortable: true, size: '100px' },
+                    { field: "requested", caption: "Solicitado", sortable: true, size: '100px' },
+                    { field: "available", caption: "Disponible", sortable: true, size: '100px' }
+                    //{
+                    //    field: "periodo", caption: "", sortable: true, render: function (record) {
+                    //        var strBtn = '<div class="w2ui-buttons"><a href="javascript:verDetalle(' + record.id + ')">Ver detalle</a>';
+                    //        if (record.idEstado == 2 && record.changeState)
+                    //            strBtn += ' | <a href="javascript:ModifyDis(' + record.id + ')">Modificar</a>';
+                    //        strBtn += '</div>';
+                    //        return strBtn;
+                    //    }
+                    //}
+                ]
+            }
+        };
+        gridInv = $('#gridInv').w2grid(config.grid);
+        arrayGrids['gridInv'] = gridInv;
+    }
+    function crearGridDet(pedidoId) {
+        var config = {
+            grid: {
+                name: 'gridOrdenesDet',
+                selectType: 'cell',
+                bResponsive: true,
+                bMobile: window.mobileAndTabletcheck(),
+                url: '@this.Url.Action("GetPeticionDet", "Grids")?PedidoId=' + pedidoId,
+                show: {
+                    footer: true,
+                    toolbar: true,
+                    expandColumn: window.mobileAndTabletcheck(),
+                    toolbarInput: false
+                },
+                searches: [
+                    { field: "barcode", caption: "Cod. caja", type: 'text' },
+                    //{ field: "producto", caption: "Lote", type: 'text' },
+                    //{ field: "talla", caption: "Talla", type: 'text' },
+                    //{ field: "lote", caption: "Estilo", type: 'text' },
+                    //{ field: "categoria", caption: "Genero", type: 'text' },
+                    //{ field: "departamento", caption: "departamento", type: 'text' },
+                    { field: "cp", caption: "cp", type: 'text' }
+                ],
+                colShowResponsive: [
+                    { field: 'barcode' },
+                    { field: 'cantPedir' }
+                ],
+                columns: [
+                    { field: "id", caption: "id", sortable: true, hidden: true },
+                    { field: "barcode", caption: "Cod. caja", type: 'text', sortable: true },
+                    //{ field: "producto", caption: "Lote", type: 'text', sortable: true },
+                    //{ field: "talla", caption: "talla", type: 'text', sortable: true },
+                    //{ field: "categoria", caption: "Genero", type: 'text', sortable: true },
+                    //{ field: "lote", caption: "estilo", type: 'text', sortable: true },
+                    { field: "cantPedir", caption: "Cantidad a pedir", sortable: true },
+                    //{ field: "departamento", caption: "departamento", type: 'text', sortable: true },
+                    { field: "cp", caption: "cp", type: 'text', sortable: true }
+                ]
+            }
+        };
+        gridOrdenesDet = $('#gridOrdenesDet').w2grid(config.grid);
+        arrayGrids['gridOrdenesDet'] = gridOrdenesDet;
+    }
+    function verDetalle(pedidoId) {
+        $('#exampleModalLabel3').html('Detalle de orden');        
+        ModalPopPeticionDet = $('#modalPopPeticionDet').modal();
+        gridOrdenesDet.reload2('@this.Url.Action("GetPeticionDet", "Grids")?PedidoId=' + pedidoId);
+    }
+    function ModifyDis(pedidoId) {
+        $.ajax({
+            method: "GET",
+            url: "@this.Url.Action("SetChangeDis", "HomeExtern")?PedidoId=" + pedidoId,
+            success: function (data) {
+                window.location.href = '@this.Url.Action("PedidosPayless3", "HomeExtern")';
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                menErrorEdi(xhr.status, 'Error throw in js');
+                menErrorEdi(thrownError, 'Error throw in js');
+            }
+        });
+    }
+    $(document).ready(function () {
+        crearGrid();
+    });
+</script>

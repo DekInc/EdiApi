@@ -159,6 +159,9 @@ namespace CoreApiClient
         public async Task<RetData<IEnumerable<PaylessProdPrioriDetModel>>> GetPaylessProdPrioriAll(string TiendaId) {
             return await PostGetAsyncJson<RetData<IEnumerable<PaylessProdPrioriDetModel>>>(CreateRequestUri(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Data/GetPaylessProdPrioriAll"), $"?TiendaId={TiendaId}"), "");
         }
+        public async Task<RetData<IEnumerable<PaylessProdPrioriDetModel>>> GetPaylessProdPrioriAll() {
+            return await GetAsync<RetData<IEnumerable<PaylessProdPrioriDetModel>>>(CreateRequestUri(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Data/GetPaylessProdPrioriAll")));
+        }
         public async Task<RetData<string>> SetPaylessProdPriori(IEnumerable<PaylessUploadFileModel> ListUpload, int ClienteId, string Periodo, string codUsr, string transporte, bool ChkUpDelete)
         {
             string JsonParams = JsonConvert.SerializeObject(ListUpload);
@@ -181,9 +184,9 @@ namespace CoreApiClient
         {            
             return await PostGetAsyncJson<RetData<Tuple<IEnumerable<PaylessProdPrioriArchMModel>, IEnumerable<PaylessProdPrioriArchDet>>>>(CreateRequestUri(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Data/GetPaylessPeriodPrioriFile")), "");
         }
-        public async Task<RetData<IEnumerable<IenetUsers>>> GetClients()
+        public async Task<RetData<IEnumerable<Clientes>>> GetClients()
         {
-            return await GetAsync<RetData<IEnumerable<IenetUsers>>>(CreateRequestUri(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Data/GetClients")));
+            return await GetAsync<RetData<IEnumerable<Clientes>>>(CreateRequestUri(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Data/GetClients")));
         }
         public async Task<RetData<string>> GetClientById(int ClienteId) {
             return await GetAsync<RetData<string>>(CreateRequestUri(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Data/GetClientById"), $"?ClienteId={ClienteId}"));
@@ -280,8 +283,17 @@ namespace CoreApiClient
         public async Task<RetData<IEnumerable<FE830DataAux>>> GetStockByTienda(int ClienteId, int TiendaId) {
             return await GetAsync<RetData<IEnumerable<FE830DataAux>>>(CreateRequestUri(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Data/GetStockByTienda"), $"?ClienteId={ClienteId}&TiendaId={TiendaId}"));
         }
+        public async Task<RetData<IEnumerable<FE830DataAux>>> GetStockByCliente(int ClienteId) {
+            return await GetAsync<RetData<IEnumerable<FE830DataAux>>>(CreateRequestUri(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Data/GetStockByClient"), $"?ClienteId={ClienteId}"));
+        }
         public async Task<RetData<List<PedidosPendientesAdmin>>> GetPedidosPendientesAdmin() {
             return await GetAsync<RetData<List<PedidosPendientesAdmin>>>(CreateRequestUri(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Data/GetPedidosPendientesAdmin")));
+        }
+        public async Task<RetData<string>> ChangeUserClient(int IdUser, int ClienteId) {
+            return await GetAsync<RetData<string>>(CreateRequestUri(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Data/ChangeUserClient"), $"?IdUser={IdUser}&ClienteId={ClienteId}"));
+        }
+        public async Task<RetData<string>> ChangeUserTienda(int IdUser, int TiendaId) {
+            return await GetAsync<RetData<string>>(CreateRequestUri(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Data/ChangeUserTienda"), $"?IdUser={IdUser}&TiendaId={TiendaId}"));
         }
         /////////////////////////////////////////
         //public async Task<List<UsersModel>> GetUsers()

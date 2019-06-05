@@ -86,6 +86,10 @@ namespace EdiApi.Models.EdiDB
         {
             modelBuilder.Entity<AsyncStates>(entity =>
             {
+                entity.Property(e => e.Fecha)
+                    .HasMaxLength(24)
+                    .IsUnicode(false);
+
                 entity.Property(e => e.Mess)
                     .HasMaxLength(2048)
                     .IsUnicode(false);

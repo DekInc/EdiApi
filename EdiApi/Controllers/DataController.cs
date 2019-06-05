@@ -19,6 +19,7 @@ namespace EdiApi.Controllers
     public class DataController : ControllerBase
     {
         public EdiDBContext DbO;
+        public EdiDBContext DbOLong;
         public WmsContext WmsDbO;
         public WmsContext WmsDbOLong;
         public static readonly string G1;
@@ -39,12 +40,14 @@ namespace EdiApi.Controllers
         string FtpDirOut => (string)IEdiFtpConfig.GetValue(typeof(string), "DirOut");
         string FtpDirChecked => (string)IEdiFtpConfig.GetValue(typeof(string), "DirChecked");
         object MaxEdiComs => Config.GetSection("MaxEdiComs").GetValue(typeof(object), "Value");
-        public DataController(EdiDBContext _DbO, WmsContext _WmsDbO, WmsContext _WmsDbOLong, IConfiguration _Config) {
+        public DataController(EdiDBContext _DbO, EdiDBContext _DbOL, WmsContext _WmsDbO, WmsContext _WmsDbOLong, IConfiguration _Config) {
             DbO = _DbO;
+            DbOLong = _DbOL;
             WmsDbO = _WmsDbO;            
             WmsDbOLong = _WmsDbOLong;            
             Config = _Config;
             DbO.Database.SetCommandTimeout(TimeSpan.FromMinutes(2));
+            DbOLong.Database.SetCommandTimeout(TimeSpan.FromMinutes(10));
             WmsDbO.Database.SetCommandTimeout(TimeSpan.FromMinutes(4));
             WmsDbOLong.Database.SetCommandTimeout(TimeSpan.FromMinutes(10));
         }
@@ -793,6 +796,29 @@ namespace EdiApi.Controllers
             return RetDataO;
         }
         [HttpGet]
+        public RetData<IEnumerable<FE830DataAux>> GetStockByClient(int ClienteId) {
+            DateTime StartTime = DateTime.Now;
+            RetData<IEnumerable<FE830DataAux>> RetDataO = new RetData<IEnumerable<FE830DataAux>>();
+            try {
+               return new RetData<IEnumerable<FE830DataAux>> {
+                    Data = ManualDB.SP_GetExistenciasByCliente(ref DbO, ClienteId),
+                    Info = new RetInfo() {
+                        CodError = 0,
+                        Mensaje = "ok",
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            } catch (Exception exm1) {
+                return new RetData<IEnumerable<FE830DataAux>> {
+                    Info = new RetInfo() {
+                        CodError = -1,
+                        Mensaje = exm1.ToString(),
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            }
+        }
+        [HttpGet]
         public RetData<IEnumerable<FE830DataAux>> GetStockByTienda(int ClienteId, int TiendaId) {
             DateTime StartTime = DateTime.Now;
             IEnumerable<FE830DataAux> ListStock = ManualDB.SP_GetExistenciasByTienda(ref DbO, ClienteId, TiendaId);
@@ -1436,6 +1462,39 @@ namespace EdiApi.Controllers
                 };
             }
         }
+        [HttpGet]
+        public RetData<IEnumerable<PaylessProdPrioriDetModel>> GetPaylessProdPrioriAll() {
+            DateTime StartTime = DateTime.Now;
+            try {
+                IEnumerable<PaylessProdPrioriDetModel> ListPaylessProdPrioriDet = (
+                    from D in DbO.PaylessProdPrioriDet
+                    from T in DbO.PaylessTransporte
+                    where T.Id == D.IdTransporte
+                    select new PaylessProdPrioriDetModel {
+                        Id = D.Id,
+                        Barcode = D.Barcode,
+                        Categoria = D.Categoria,
+                        Cp = D.Cp,
+                        Transporte = T.Transporte
+                    });
+                return new RetData<IEnumerable<PaylessProdPrioriDetModel>>() {
+                    Data = ListPaylessProdPrioriDet,
+                    Info = new RetInfo() {
+                        CodError = 0,
+                        Mensaje = "ok",
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            } catch (Exception e1) {
+                return new RetData<IEnumerable<PaylessProdPrioriDetModel>>() {
+                    Info = new RetInfo() {
+                        CodError = -1,
+                        Mensaje = e1.ToString(),
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            }
+        }
         [HttpPost]
         public RetData<string> SetPaylessProdPriori(IEnumerable<PaylessUploadFileModel> ListUpload, int ClienteId, string Periodo, string codUsr, string transporte, bool ChkUpDelete)
         {
@@ -1910,24 +1969,13 @@ namespace EdiApi.Controllers
             }
         }
         [HttpGet]
-        public RetData<IEnumerable<IenetUsers>> GetClients()
+        public RetData<IEnumerable<Clientes>> GetClients()
         {
             DateTime StartTime = DateTime.Now;
             try
             {
-                List<IenetUsers> ListUsers = DbO.IenetUsers.ToList();
-                if (ListUsers.Count() > 0)
-                {
-                    foreach (IenetUsers Ue in ListUsers)
-                    {
-                        Ue.UsrPassword = string.Empty;
-                        IEnumerable<Clientes> ListClients = from C in WmsDbO.Clientes where C.ClienteId == Ue.ClienteId select C;
-                        if (ListClients.Count() > 0)
-                            Ue.NomUsr = ListClients.Fod().Nombre;
-                    }
-                }
-                ListUsers = (from Lu in ListUsers select new IenetUsers() { ClienteId = Lu.ClienteId, NomUsr = Lu.NomUsr }).ToList();
-                return new RetData<IEnumerable<IenetUsers>>
+                IEnumerable<Clientes> ListUsers = WmsDbO.Clientes.Select(C => new Clientes() { ClienteId = C.ClienteId, Nombre = C.Nombre }).OrderBy(C2 => C2.Nombre);
+                return new RetData<IEnumerable<Clientes>>
                 {
                     Data = ListUsers,
                     Info = new RetInfo()
@@ -1940,7 +1988,7 @@ namespace EdiApi.Controllers
             }
             catch (Exception e1)
             {
-                return new RetData<IEnumerable<IenetUsers>>
+                return new RetData<IEnumerable<Clientes>>
                 {
                     Info = new RetInfo()
                     {
@@ -3174,6 +3222,8 @@ SET XACT_ABORT OFF
                 ListProdPedido = (
                     from P1 in ListProdWithStock
                     where !string.IsNullOrEmpty(P1.Cp)
+                    && (P1.Cp.Contains("A", StringComparison.InvariantCultureIgnoreCase) 
+                    || P1.Cp.Contains("H", StringComparison.InvariantCultureIgnoreCase))
                     select P1
                     ).ToList();
                 int NContCp = ListProdPedido.Count;
@@ -3350,7 +3400,7 @@ SET XACT_ABORT OFF
         public RetData<List<PedidosPendientesAdmin>> GetPedidosPendientesAdmin() {
             DateTime StartTime = DateTime.Now;
             try {
-                List<PedidosPendientesAdmin> Ret = ManualDB.SP_GetPedidosPendientesAdmin(ref DbO);
+                List<PedidosPendientesAdmin> Ret = ManualDB.SP_GetPedidosPendientesAdmin(ref DbOLong);
                 return new RetData<List<PedidosPendientesAdmin>> {
                     Data = Ret,
                     Info = new RetInfo() {
@@ -3361,6 +3411,83 @@ SET XACT_ABORT OFF
                 };
             } catch (Exception e1) {
                 return new RetData<List<PedidosPendientesAdmin>> {
+                    Info = new RetInfo() {
+                        CodError = -1,
+                        Mensaje = e1.ToString(),
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            }
+        }
+        [HttpGet]
+        public RetData<string> ChangeUserClient(int IdUser, int ClienteId) { 
+            DateTime StartTime = DateTime.Now;
+            try {
+                IEnumerable<IenetUsers> ListUsers = (from U in DbO.IenetUsers where U.Id == IdUser select U);
+                if (ListUsers.Count() > 0) {
+                    IenetUsers UserO = ListUsers.Fod();
+                    UserO.ClienteId = ClienteId;
+                    DbO.IenetUsers.Update(UserO);
+                    DbO.SaveChanges();
+                    return new RetData<string> {
+                        Data = "Se ha cambiado el cliente",
+                        Info = new RetInfo() {
+                            CodError = 0,
+                            Mensaje = "ok",
+                            ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                        }
+                    };
+                } else {
+                    return new RetData<string> {
+                        Info = new RetInfo() {
+                            CodError = -1,
+                            Mensaje = "Error desconocido al cambiar el cliente al usuario",
+                            ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                        }
+                    };
+                }               
+            } catch (Exception e1) {
+                return new RetData<string> {
+                    Info = new RetInfo() {
+                        CodError = -1,
+                        Mensaje = e1.ToString(),
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            }
+        }
+        [HttpGet]
+        public RetData<string> ChangeUserTienda(int IdUser, int TiendaId) {
+            DateTime StartTime = DateTime.Now;
+            try {
+                IEnumerable<IenetUsers> ListUsers = (from U in DbO.IenetUsers where U.Id == IdUser select U);
+                if (ListUsers.Count() > 0) {
+                    IenetUsers UserO = ListUsers.Fod();
+                    if (TiendaId != 0)
+                        UserO.TiendaId = TiendaId;
+                    else
+                        UserO.TiendaId = null;
+                    DbO.IenetUsers.Update(UserO);
+                    DbO.SaveChanges();
+                    return new RetData<string> {
+                        Data = "Se ha cambiado la tienda",
+                        Info = new RetInfo() {
+                            CodError = 0,
+                            Mensaje = "ok",
+                            ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                        }
+                    };
+                } else {
+                    return new RetData<string> {
+                        Info = new RetInfo() {
+                            CodError = -1,
+                            Mensaje = "Error desconocido al cambiar el cliente al usuario",
+                            ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                        }
+                    };
+                }
+            } catch (Exception e1) {
+                return new RetData<string> {
                     Info = new RetInfo() {
                         CodError = -1,
                         Mensaje = e1.ToString(),

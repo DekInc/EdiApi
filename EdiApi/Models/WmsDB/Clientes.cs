@@ -4,13 +4,7 @@ using System.Collections.Generic;
 namespace EdiApi.Models.WmsDB
 {
     public partial class Clientes
-    {
-        public Clientes()
-        {
-            Inventario = new HashSet<Inventario>();
-            Pedido = new HashSet<Pedido>();
-        }
-
+    {        
         public int ClienteId { get; set; }
         public string Nombre { get; set; }
         public string Nit { get; set; }
@@ -25,9 +19,5 @@ namespace EdiApi.Models.WmsDB
         public string TelefonoContacto { get; set; }
         public string EmailContacto { get; set; }
         public string OrderEmailNotifica { get; set; }
-
-        public Estatus Estatus { get; set; }
-        public ICollection<Inventario> Inventario { get; set; }
-        public ICollection<Pedido> Pedido { get; set; }
     }
 }

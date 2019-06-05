@@ -598,6 +598,7 @@ table.dataTable.dtr-inline.collapsed > tbody > tr[role="row"] > td:first-child:b
     display: inline-block;
     margin: 0 auto;
     box-sizing: border-box;
+    cursor: pointer;
 }
 #spanClientName{
     font-size: 16pt !important;

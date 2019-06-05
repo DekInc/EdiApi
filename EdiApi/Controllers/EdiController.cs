@@ -95,6 +95,36 @@ namespace EdiApi.Controllers
             //Sw2.WriteLine("TranslateForms830 init" + DateTime.Now.ToString() + Environment.NewLine);
             //Sw2.Close();
             DateTime StartTime = DateTime.Now;
+            AsyncStates As = new AsyncStates();
+            IEnumerable<AsyncStates> ListAsync = DbO.AsyncStates.Where(A => A.Typ == 1);
+            if (ListAsync.Count() > 0) {
+                As = ListAsync.Fod();
+                DateTime DateLastAsync = As.Fecha.ToDateEsp();
+                if ((StartTime - DateLastAsync).TotalMinutes < 28) {
+                    As.Mess = "Async truncation detected, returning.";
+                    DbO.AsyncStates.Update(As);
+                    DbO.SaveChanges();
+                    return new RetReporte() {
+                        Info = new RetInfo() {
+                            CodError = -1,
+                            Mensaje = $"Warning, Async truncation detected, returning.",
+                            ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                        }
+                    };
+                }
+                As.Fecha = StartTime.ToString(ApplicationSettings.DateTimeFormat);
+                DbO.AsyncStates.Update(As);
+            } else {
+                As = new AsyncStates() {
+                    Typ = 1,
+                    Val = 0,
+                    Maximum = 1,
+                    Mess = "Edi 830 translation",
+                    Fecha = StartTime.ToString(ApplicationSettings.DateTimeFormat)
+                };
+                DbO.AsyncStates.Add(As);
+            }
+            DbO.SaveChanges();
             LearRep830 LearRep830O = new LearRep830(ref DbO);
             try
             {   

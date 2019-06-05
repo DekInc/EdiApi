@@ -64,9 +64,15 @@
                                 <tr>
                                     <th>Id orden</th>
                                     <th>Tienda</th>
+                                    <th>Mujeres</th>
+                                    <th>Hombres</th>
+                                    <th>Niñ@s</th>
+                                    <th>Accesorios</th>
+                                    <th>CP</th>
                                     <th>Fecha de creación</th>
                                     <th>Fecha y hora esperada</th>
                                     <th>Estado</th>
+                                    <th></th>
                                 </tr>
                             </thead>
                         </table>
@@ -89,7 +95,7 @@
                     <th>Barcode</th>
                     <th>IdRack</th>
                     <th>Nombre rack</th>
-                    <th>Cantidad pedida</th>
+                    <th>Cantidad pedida</th>                    
                 </tr>
             </thead>
             <tbody></tbody>
@@ -147,6 +153,11 @@
             "order": [[1, "desc"]],
             "columns": [
                 { "data": "id", "name": "id", "autoWidth": true, "defaultContent": "" },
+                { "data": "tiendaId", "name": "tiendaId", "autoWidth": true, "defaultContent": "" },
+                { "data": "tiendaId", "name": "tiendaId", "autoWidth": true, "defaultContent": "" },
+                { "data": "tiendaId", "name": "tiendaId", "autoWidth": true, "defaultContent": "" },
+                { "data": "tiendaId", "name": "tiendaId", "autoWidth": true, "defaultContent": "" },
+                { "data": "tiendaId", "name": "tiendaId", "autoWidth": true, "defaultContent": "" },
                 { "data": "tiendaId", "name": "tiendaId", "autoWidth": true, "defaultContent": "" },
                 { "data": "fechaCreacion", "name": "fechaCreacion", "autoWidth": true, "defaultContent": "" },
                 { "data": "fechaPedido", "name": "fechaPedido", "autoWidth": true, "defaultContent": "" },
@@ -257,6 +268,7 @@
             $.ajax({
                 method: "GET",
                 url: '@this.Url.Action("GetPedidosExternosPendientesAdmin", "Home")',
+                timeout: 600000,
                 success: function (data) {
                     if (data.codError != 0) {
                         menErrorEdi(data.errorMessage, 'Error');

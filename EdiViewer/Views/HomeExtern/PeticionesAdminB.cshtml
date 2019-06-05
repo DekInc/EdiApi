@@ -1,0 +1,199 @@
+﻿@using ComModels
+@{
+    ViewData["Title"] = "Ordenes pendientes";
+    Layout = "_Layout";
+}
+<div id="mainDiv">
+    <div class="container">
+        <div class="card-deck cardMain">
+            <div class="card box-shadow">
+                <div class="card-header">
+                    <h4 class="my-0 font-weight-normal">Ordenes pendientes&nbsp;<img class="imgHeaderHelp" src="~/images/help.png" title="Pantalla que muestra las ordenes pendientes de despachar de Payless" alt="Pantalla que muestra las ordenes pendientes de despachar de Payless"></h4>
+                </div>
+                <div class="card-body">
+                    <form id="formSearch">
+                        <div class="container">
+                            <div class="row">
+                                <div class="col-sm">
+                                    <label>Cliente</label><br />
+                                    <select class="form-control" id="cbClient" name="cbClient"></select>
+                                    <div class="form-check margin5">
+                                        <input class="form-check-input" id="chkPending" name="chkPending" type="checkbox" checked="checked" />
+                                        <label class="form-check-label" for="chkPending">Mostrar solo pendientes</label>
+                                    </div>
+                                </div>
+                                <div class="col-sm">
+                                    <label class="label" for="dtp1">Fecha esperada de envió</label><br />
+                                    <input class="form-control datepicker dtp3" data-date-format="dd/mm/yyyy" id="dtp1" maxlength="10" autocorrect="off" autocapitalize="off" autocomplete="off" />
+                                </div>
+                            </div>
+                            <div class="row margin5">
+                                <div class="col-sm">
+                                    <button id="btnFiltrar" class="btn btn-primary" type="button">
+                                        &nbsp;&nbsp;&nbsp;Mostrar&nbsp;&nbsp;&nbsp;
+                                        <div id="divSpinFiltrar" class="spinner-border spinner-border-sm text-danger" style="display: none" role="status">
+                                            <span class="sr-only">Loading...</span>
+                                        </div>
+                                    </button>
+                                    <button id="btnLimpiar" class="btn btn-primary" type="button">
+                                        &nbsp;&nbsp;&nbsp;Limpiar&nbsp;&nbsp;&nbsp;
+                                        <div id="divSpinLimpiar" class="spinner-border spinner-border-sm text-danger" style="display: none" role="status">
+                                            <span class="sr-only">Loading...</span>
+                                        </div>
+                                    </button>
+                                    <button id="btnPrintAll" class="btn btn-primary" type="button">
+                                        &nbsp;&nbsp;<img src="/images/excel.png" class="imgButton" /> &nbsp;Ordenes pendientes&nbsp;&nbsp;&nbsp;
+                                        <div id="divSpinPrintAll" class="spinner-border spinner-border-sm text-danger" style="display: none" role="status">
+                                            <span class="sr-only">Loading...</span>
+                                        </div>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                    <div class="clearfix"></div>
+                    <br />
+                    <div id="gridOrdenes" style="min-height: 460px; width: 100%;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@await Html.PartialAsync("_PopPeticionDet")
+<script>
+    var ModalPopPeticionDet = null;
+    var domtblReportes = null;
+    var domtblPeticionDet = null;
+    var HashId = '';
+    var gridOrdenes = null;
+    var gridOrdenesDet = null;
+    var foo = function () {
+    };
+    $.urlParam = function (name) {
+        var results = new RegExp('[\?&]' + name + '=([^&#]*)').exec(window.location.href);
+        if (results == null) {
+            return null;
+        }
+        return decodeURI(results[1]) || 0;
+    }    
+    function refreshGrid(auto) {
+        w2ui.grid.autoLoad = auto;
+        w2ui.grid.skip(0);
+    }
+    function crearGrid() {
+        var config = {
+            grid: {
+                name: 'gridOrdenes',
+                selectType: 'cell',
+                bResponsive: true,
+                bMobile: window.mobileAndTabletcheck(),
+                url: '@this.Url.Action("GetPeticiones", "Grids")',
+                show: {
+                    footer: true,
+                    toolbar: true,
+                    expandColumn: window.mobileAndTabletcheck()                    
+                },
+                searches: [
+                    { field: "id", caption: "Id orden", type: 'text' },
+                    //{ field: "periodo", caption: "Periodo", type: 'text' },
+                    { field: "fechaCreacion", caption: "Fecha de creación", type: 'text' },
+                    { field: "fechaPedido", caption: "Fecha y hora esperada", type: 'text' }
+                ],
+                colShowResponsive: [
+                    { field: 'id' },
+                    { field: 'fechaPedido' }
+                ],
+                columns: [
+                    { field: "id", caption: "Id orden", sortable: true },
+                    //{ field: "periodo", caption: "Periodo", sortable: true },
+                    { field: "fechaCreacion", caption: "Fecha de creación", sortable: true },
+                    { field: "fechaPedido", caption: "Fecha y hora esperada", sortable: true },                    
+                    { field: "cont", caption: "Cantidad total", sortable: true },                    
+                    {
+                        field: "idEstado", caption: "Estado", sortable: false, render: function (record) {
+                            if (record.idEstado == 1) return '<span class="thisSpan" alt="' + record.id + '">Guardado</span>';
+                            if (record.idEstado == 2) return '<span class="thisSpan" alt="' + record.id + '">Pendiente</span>';
+                            if (record.idEstado == 3) return '<span class="thisSpan" alt="' + record.id + '">Despachado</span>';
+                        }
+                    },
+                    {
+                        field: "periodo", caption: "", sortable: true, render: function (record) {
+                            var strBtn = '<div class="w2ui-buttons"><a href="javascript:verDetalle(' + record.id + ')">Ver detalle</a>';
+                            if (record.idEstado == 2 && record.changeState)
+                                strBtn += ' | <a href="javascript:ModifyDis(' + record.id + ')">Modificar</a>';
+                            strBtn += '</div>';
+                            return strBtn;
+                        }
+                    }
+                ]
+            }
+        };
+        gridOrdenes = $('#gridOrdenes').w2grid(config.grid);
+        arrayGrids['gridOrdenes'] = gridOrdenes;
+    }
+    function crearGridDet(pedidoId) {
+        var config = {
+            grid: {
+                name: 'gridOrdenesDet',
+                selectType: 'cell',
+                bResponsive: true,
+                bMobile: window.mobileAndTabletcheck(),
+                url: '@this.Url.Action("GetPeticionDet", "Grids")?PedidoId=' + pedidoId,
+                show: {
+                    footer: true,
+                    toolbar: true,
+                    expandColumn: window.mobileAndTabletcheck(),
+                    toolbarInput: false
+                },
+                searches: [
+                    { field: "barcode", caption: "Cod. caja", type: 'text' },
+                    //{ field: "producto", caption: "Lote", type: 'text' },
+                    //{ field: "talla", caption: "Talla", type: 'text' },
+                    //{ field: "lote", caption: "Estilo", type: 'text' },
+                    //{ field: "categoria", caption: "Genero", type: 'text' },
+                    //{ field: "departamento", caption: "departamento", type: 'text' },
+                    { field: "cp", caption: "cp", type: 'text' }
+                ],
+                colShowResponsive: [
+                    { field: 'barcode' },
+                    { field: 'cantPedir' }
+                ],
+                columns: [
+                    { field: "id", caption: "id", sortable: true, hidden: true },
+                    { field: "barcode", caption: "Cod. caja", type: 'text', sortable: true },
+                    //{ field: "producto", caption: "Lote", type: 'text', sortable: true },
+                    //{ field: "talla", caption: "talla", type: 'text', sortable: true },
+                    //{ field: "categoria", caption: "Genero", type: 'text', sortable: true },
+                    //{ field: "lote", caption: "estilo", type: 'text', sortable: true },
+                    { field: "cantPedir", caption: "Cantidad a pedir", sortable: true },
+                    //{ field: "departamento", caption: "departamento", type: 'text', sortable: true },
+                    { field: "cp", caption: "cp", type: 'text', sortable: true }
+                ]
+            }
+        };
+        gridOrdenesDet = $('#gridOrdenesDet').w2grid(config.grid);
+        arrayGrids['gridOrdenesDet'] = gridOrdenesDet;
+    }
+    function verDetalle(pedidoId) {
+        $('#exampleModalLabel3').html('Detalle de orden');        
+        ModalPopPeticionDet = $('#modalPopPeticionDet').modal();
+        gridOrdenesDet.reload2('@this.Url.Action("GetPeticionDet", "Grids")?PedidoId=' + pedidoId);
+    }
+    function ModifyDis(pedidoId) {
+        $.ajax({
+            method: "GET",
+            url: "@this.Url.Action("SetChangeDis", "HomeExtern")?PedidoId=" + pedidoId,
+            success: function (data) {
+                window.location.href = '@this.Url.Action("PedidosPayless3", "HomeExtern")';
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                menErrorEdi(xhr.status, 'Error throw in js');
+                menErrorEdi(thrownError, 'Error throw in js');
+            }
+        });
+    }
+    $(document).ready(function () {
+        crearGrid();
+        //crearGridDet(1);
+    });
+</script>

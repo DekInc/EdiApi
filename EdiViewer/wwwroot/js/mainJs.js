@@ -53,3 +53,45 @@ function miAlive() {
     });
 }
 function sleepMs(ms) { const start = performance.now(); while (performance.now() - start < ms); }
+
+function fillCombobox(divSpin, serverUrl, comboName, valueName, textName, valueDef) {
+    $(divSpin).show();
+    $.ajax({
+        method: "GET",
+        url: serverUrl,
+        success: function (data) {
+            if (data.info.codError != 0) {
+                menErrorEdi(data.info.mensaje, 'Error');
+                return;
+            }
+            $(comboName).empty();
+            if (data.data != null) {                
+                $.each(data.data, function (indexI, storeO) {
+                    $(comboName).append($('<option>', {
+                        value: this[valueName],
+                        text: this[textName],
+                        selected: false
+                    }));
+                });
+                $(comboName).val(valueDef);
+            }
+            $(divSpin).hide();
+        },
+        error: function (xhr, ajaxOptions, thrownError) {
+            menErrorEdi(xhr.status, 'Error throw in js');
+            menErrorEdi(thrownError, 'Error throw in js');
+        }
+    });
+}
+
+function makeAjaxPost(serverUrl, successFunc) {
+    $.ajax({
+        method: "POST",
+        url: serverUrl,
+        success: successFunc,
+        error: function (xhr, ajaxOptions, thrownError) {
+            menErrorEdi(xhr.status, 'Error throw in js');
+            menErrorEdi(thrownError, 'Error throw in js');
+        }
+    });
+}

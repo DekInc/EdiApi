@@ -12,5 +12,6 @@ namespace ComModels
         public string UsrPassword { get; set; }
         public int? ClienteId { get; set; }
         public string HashId { get; set; }
+        public int? TiendaId { get; set; }
     }
 }

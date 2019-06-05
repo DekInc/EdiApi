@@ -1,5 +1,5 @@
 ﻿<div class="modal fade2" id="modalPopChangeStore" tabindex="-1" role="dialog" aria-labelledby="modalPopChangeStoreLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal" role="document">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
         <div class="modal-content modal-content-normal">
             <div class="modal-header">
                 <h5 class="modal-title" id="modalPopChangeStoreLabel">Cambio de tienda</h5>                
@@ -9,9 +9,12 @@
                     <form method="post" enctype="multipart/form-data">
                         <div class="row">
                             <div class="col">
-                                Seleccione la tienda
+                                Seleccione de la lista &nbsp;
+                                <div id="divSpinList" class="spinner-border spinner-border-sm text-danger" style="display: none" role="status">
+                                    <span class="sr-only">Loading...</span>
+                                </div>
                                 <br />
-                                <select class="form-control" id="cboStore" name="cboStore"></select>
+                                <select class="form-control" id="cboList" name="cboList"></select>
                             </div>
                         </div>
                     </form>
@@ -24,33 +27,8 @@
         </div>
     </div>
 </div>
-<script>
-    function getStores() {
-        $('#divSpinClientName').show();
-        $.ajax({
-            method: "GET",
-            url: "@this.Url.Action("GetStores", "HomeExtern")",
-            success: function (data) {
-                if (data.info.codError != 0) {
-                    menErrorEdi(data.info.mensaje, 'Error');
-                    return;
-                }
-                //$('#spanClientName').html(data.data);
-                //$('#divSpinClientName').hide();
-            },
-            error: function (xhr, ajaxOptions, thrownError) {
-                menErrorEdi(xhr.status, 'Error throw in js');
-                menErrorEdi(thrownError, 'Error throw in js');
-            }
-        });
-    }
-    $(document).ready(function () {
-        getStores();        
-    });
+<script>        
     $('#modalPopChangeStore').on("shown.bs.modal", function () {        
-        $('#cboStore').focus();
-    });
-    $('#btnPopChangeStoreLabelOk').on('click', function () {
-        
-    });
+        $('#cboList').focus();
+    });    
 </script>

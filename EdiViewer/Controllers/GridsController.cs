@@ -657,5 +657,200 @@ namespace EdiViewer.Controllers
                 return Json(new { draw = 0, recordsFiltered = 0, recordsTotal = 0, errorMessage = e1.ToString(), data = "" });
             }
         }
+        public async Task<IActionResult> GetInvByStore() {
+            try {
+                string ClienteId = HttpContext.Session.GetObjSession<string>("Session.ClientId");
+                RetData<IEnumerable<PaylessProdPrioriDetModel>> ListProd = await ApiLongClientFactory.Instance.GetPaylessProdPrioriAll();
+                RetData<IEnumerable<PaylessTiendas>> ListStores2 = await ApiClientFactory.Instance.GetStores();                
+                if (ListProd.Info.CodError != 0)
+                    return Json(new { total = 0, records = "", errorMessage = ListProd.Info.Mensaje });
+                if (ListProd.Data == null)
+                    return Json(new { total = 0, records = "", errorMessage = (ListProd.Info.CodError != 0 ? ListProd.Info.Mensaje : string.Empty) });
+                if (ListProd.Data.Count() == 0)
+                    return Json(new { total = 0, records = "", errorMessage = (ListProd.Info.CodError != 0 ? ListProd.Info.Mensaje : string.Empty) });
+                if (ListStores2.Info.CodError != 0)
+                    return Json(new { total = 0, records = "", errorMessage = ListStores2.Info.Mensaje });
+                if (ListStores2.Data == null)
+                    return Json(new { total = 0, records = "", errorMessage = (ListStores2.Info.CodError != 0 ? ListStores2.Info.Mensaje : string.Empty) });
+                List<PaylessTiendas> ListStores = ListStores2.Data.Where(S => S.ClienteId == Convert.ToInt32(ClienteId)).ToList();
+                List<PaylessProdPrioriDetModel> Records = ListProd.Data.Select(O => Utility.Funcs.Reflect(O, new PaylessProdPrioriDetModel())).ToList();
+                List<StoreCatQty> GroupRecords = new List<StoreCatQty>();
+                string[] ListCpReal = { "A", "H" };
+                Records = (
+                    from Pp in Records
+                    group Pp by new { Pp.Tienda, Pp.Barcode, Pp.Categoria, Pp.Cp }
+                    into Grp
+                    select new PaylessProdPrioriDetModel {                        
+                        Barcode = Grp.Fod().Barcode,
+                        Categoria = Grp.Fod().Categoria,
+                        Cp = ListCpReal.Contains(Grp.Fod().Cp.Trim().ToUpper())? "1" : string.Empty,
+                        Id = Grp.Fod().Id,
+                        Lote = Grp.Fod().Tienda
+                    }).ToList();
+                List<StoreCatQty> AllRecords = new List<StoreCatQty>();
+                List<PaylessProdPrioriDetModel> ListProdWithStock = new List<PaylessProdPrioriDetModel>();
+                List<StoreCatQty> FilteredRecords = new List<StoreCatQty>();
+                RetData<Tuple<IEnumerable<PedidosExternos>, IEnumerable<PedidosDetExternos>, IEnumerable<Clientes>>> TupleListPendientes = await ApiClientFactory.Instance.GetPedidosExternosPendientesAdmin();
+                if (TupleListPendientes.Info.CodError != 0)
+                    return Json(new { total = 0, records = "", errorMessage = TupleListPendientes.Info.Mensaje });
+                List<PedidosDetExternos> ListPendientes = (
+                    from Pd in TupleListPendientes.Data.Item2
+                    from P in TupleListPendientes.Data.Item1
+                    where Pd.PedidoId == P.Id
+                    select Pd
+                    ).ToList();
+                int Total = Records.Count;
+                List<string> ListBodegas = new List<string>();
+                string CodProductoFuera = string.Empty;
+                if (Records.Count() > 0) {
+                    RetData<IEnumerable<FE830DataAux>> StockData = await ApiLongClientFactory.Instance.GetStockByCliente(HttpContext.Session.GetObjSession<int>("Session.ClientId"));
+                    if (StockData.Info.CodError != 0)
+                        return Json(new { total = 0, records = "", errorMessage = StockData.Info.Mensaje });
+                    foreach (FE830DataAux Stock in StockData.Data) {
+                        foreach (PaylessProdPrioriDetModel Product in Records.Where(P => P.Barcode == Stock.CodProducto)) {
+                            if (!ListBodegas.Contains(Stock.CodProductoLear)) {
+                                ListBodegas.Add(Stock.CodProductoLear);
+                                if (ListBodegas.Count > 1)
+                                    CodProductoFuera = Product.Barcode;
+                            }
+                            Product.Existencia = Convert.ToInt32(Stock.Existencia);
+                            if (Product.Existencia > 1) Product.Existencia = 1;
+                            if (ListProdWithStock.Where(Ws => Ws.Barcode == Product.Barcode).Count() == 0
+                                && Product.Existencia > 0) {
+                                ListProdWithStock.Add(Product);
+                            }
+                        }
+                    }                    
+                    Records.ForEach(R => {
+                        if (R.CantPedir < 0)
+                            R.CantPedir = 0;
+                    });
+                    bool HaveForm = true;
+                    try {
+                        if (Request.Form != null) {
+                            IFormCollection GridForm = Request.Form;
+                        }
+                    } catch {
+                        HaveForm = false;
+                    }
+                    int NRow = 0;
+                    Records = (
+                        from R in ListProdWithStock
+                        group R by new { R.Lote, R.Categoria, R.Cp }
+                        into Grp
+                        select new PaylessProdPrioriDetModel {
+                            Id = NRow++,
+                            Categoria = Grp.Fod().Categoria,
+                            Lote = Grp.Fod().Lote,
+                            Existencia = Grp.Sum(O1 => O1.Existencia > 2? 1 : O1.Existencia),
+                            Reservado = Grp.Sum(O1 => O1.Reservado),
+                            CantPedir = Grp.Sum(O1 => O1.CantPedir),
+                            Cp = Grp.Fod().Cp
+                        }).ToList();
+                    NRow = 0;
+                    StoreCatQty TotalRow = new StoreCatQty() { TiendaId = null, Tienda = "TOTAL" };
+                    string[] ArraTiendas = Records.Select(O => O.Lote).Distinct().ToArray();
+                    for (int J = 0; J < Records.Count; J++) {
+                        if (GroupRecords.Where(Gr => Gr.TiendaId == Convert.ToInt32(Records[J].Lote)).Count() == 0) {
+                            GroupRecords.Add(new StoreCatQty {
+                                TiendaId = Convert.ToInt32(Records[J].Lote),
+                                Tienda = ListStores.Where(Ls => Ls.TiendaId == Convert.ToInt32(Records[J].Lote)).Fod().Descr
+                            });
+                            foreach (PaylessProdPrioriDetModel R in Records.Where(R2 => R2.Lote == Records[J].Lote)) {
+                                switch (R.Categoria.ToUpper().Trim()) {
+                                    case "DAMAS":
+                                        if (string.IsNullOrEmpty(R.Cp)) {
+                                            GroupRecords.LastOrDefault().WomanQty = R.Existencia;
+                                            TotalRow.WomanQty += R.Existencia;
+                                            GroupRecords.LastOrDefault().TotalSCp += R.Existencia;
+                                        } else {
+                                            GroupRecords.LastOrDefault().WomanCpQty = R.Existencia;
+                                            TotalRow.WomanCpQty += R.Existencia;
+                                            GroupRecords.LastOrDefault().TotalCp += R.Existencia;
+                                        }                                        
+                                        break;
+                                    case "CABALLEROS":
+                                        if (string.IsNullOrEmpty(R.Cp)) {
+                                            GroupRecords.LastOrDefault().ManQty = R.Existencia;
+                                            TotalRow.ManQty += R.Existencia;
+                                            GroupRecords.LastOrDefault().TotalSCp += R.Existencia;
+                                        } else {
+                                            GroupRecords.LastOrDefault().ManCpQty = R.Existencia;
+                                            TotalRow.ManCpQty += R.Existencia;
+                                            GroupRecords.LastOrDefault().TotalCp += R.Existencia;
+                                        }
+                                        break;
+                                    case "NIÑOS / AS":
+                                        if (string.IsNullOrEmpty(R.Cp)) {
+                                            GroupRecords.LastOrDefault().KidsQty = R.Existencia;
+                                            TotalRow.KidsQty += R.Existencia;
+                                            GroupRecords.LastOrDefault().TotalSCp += R.Existencia;
+                                        } else {
+                                            GroupRecords.LastOrDefault().KidsCpQty = R.Existencia;
+                                            TotalRow.KidsCpQty += R.Existencia;
+                                            GroupRecords.LastOrDefault().TotalCp += R.Existencia;
+                                        }
+                                        break;
+                                    case "ACCESORIOS":
+                                        if (string.IsNullOrEmpty(R.Cp)) {
+                                            GroupRecords.LastOrDefault().AccQty = R.Existencia;
+                                            TotalRow.AccQty += R.Existencia;
+                                            GroupRecords.LastOrDefault().TotalSCp += R.Existencia;
+                                        } else {
+                                            GroupRecords.LastOrDefault().AccCpQty = R.Existencia;
+                                            TotalRow.AccCpQty += R.Existencia;
+                                            GroupRecords.LastOrDefault().TotalCp += R.Existencia;
+                                        }
+                                        break;
+                                    default:
+                                        break;
+                                }
+                            }
+                        }
+                    }
+                    if (GroupRecords.Select(Gr => Gr.TiendaId).Distinct().Count() != ListStores.Count()) {
+                        List<PaylessTiendas> ListStoresExcept = new List<PaylessTiendas>();
+                        ListStores.ToList().ForEach(S => {
+                            if (GroupRecords.Where(Gr2 => Gr2.TiendaId == S.TiendaId).Count() == 0)
+                                ListStoresExcept.Add(S);
+                        });
+                        ListStoresExcept.ForEach(Se => {
+                            GroupRecords.Add(new StoreCatQty() {
+                                TiendaId = Se.TiendaId ?? 0,
+                                Tienda = Se.Descr
+                            });
+                        });
+                    }
+                    GroupRecords.ForEach(Ge => {
+                        Ge.Total = Ge.TotalSCp + Ge.TotalCp;
+
+                        if (Ge.TiendaId != null) {
+                            //string[] Lista1 = ListPendientes.Where(P2 => P2.CodProducto.Substring(0, 4).Equals(Ge.TiendaId)).Select(P => P.CodProducto).Distinct().ToArray();
+                            Ge.Requested = ListPendientes.Where(P2 => P2.CodProducto.Substring(0, 4) == Ge.TiendaId.ToString()).Select(P => P.CodProducto).Distinct().Count();
+                        }
+                        Ge.Available = Ge.Total - Ge.Requested;
+                    });
+                    TotalRow.TotalSCp = TotalRow.WomanQty + TotalRow.ManQty + TotalRow.KidsQty + TotalRow.AccQty;
+                    TotalRow.TotalCp = TotalRow.WomanCpQty + TotalRow.ManCpQty + TotalRow.KidsCpQty + TotalRow.AccCpQty;
+                    TotalRow.Total = TotalRow.TotalSCp + TotalRow.TotalCp;
+                    TotalRow.Requested = ListPendientes.Select(P => P.CodProducto).Distinct().Count();
+                    TotalRow.Available = TotalRow.Total - TotalRow.Requested;
+                    GroupRecords.Add(TotalRow);
+                    Total = GroupRecords.Count;
+                    FilteredRecords = GroupRecords;
+                    AllRecords = GroupRecords;
+                    if (HaveForm) {
+                        FilteredRecords = Utility.ExpressionBuilderHelper.W2uiSearchNoSkip<StoreCatQty>(GroupRecords, Request.Form);
+                        GroupRecords = Utility.ExpressionBuilderHelper.W2uiSearch<StoreCatQty>(GroupRecords, Request.Form);
+                    }
+                }                
+                if (TupleListPendientes.Data.Item1.Count() > 0)
+                    return Json(new { Total, Records = GroupRecords, errorMessage = "", AllRecords, FilteredRecords, pedidosPendientes = TupleListPendientes.Data.Item1 });
+                else
+                    return Json(new { Total, Records = GroupRecords, errorMessage = "", AllRecords, FilteredRecords });
+            } catch (Exception e1) {
+                return Json(new { draw = 0, recordsFiltered = 0, recordsTotal = 0, errorMessage = e1.ToString(), data = "" });
+            }
+        }
     }
 }

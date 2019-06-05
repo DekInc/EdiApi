@@ -636,6 +636,27 @@ namespace EdiApi.Models
             }
             return ListProdDet;
         }
+        public static IEnumerable<FE830DataAux> SP_GetExistenciasByCliente(ref Models.EdiDB.EdiDBContext _DbO, int ClienteId) {
+            List<FE830DataAux> ListProdDet = new List<FE830DataAux>();
+            using (DbCommand Cmd = _DbO.Database.GetDbConnection().CreateCommand()) {
+                Cmd.CommandText = $"dbo.SP_GetExistenciasByCliente {ClienteId}";
+                _DbO.Database.OpenConnection();
+                DbDataReader Dr = Cmd.ExecuteReader();
+                if (Dr.HasRows) {
+                    while (Dr.Read()) {
+                        ListProdDet.Add(new FE830DataAux() {
+                            CodProductoLear = Convert.ToString(Dr.GetValue(0)),
+                            CodProducto = Convert.ToString(Dr.GetValue(1)),
+                            Existencia = Convert.ToDouble(Dr.GetValue(2))
+                        });
+                    }
+                }
+                _DbO.Database.CloseConnection();
+                if (!Dr.IsClosed)
+                    Dr.Close();
+            }
+            return ListProdDet;
+        }
         public static List<PaylessProdPrioriDetModel> SP_GetPaylessProdSinPedido(ref Models.EdiDB.EdiDBContext _DbO, int ClienteId, int TiendaId) {
             List<PaylessProdPrioriDetModel> ListProdDet = new List<PaylessProdPrioriDetModel>();
             using (DbCommand Cmd = _DbO.Database.GetDbConnection().CreateCommand()) {

@@ -13,8 +13,8 @@
     <link rel="stylesheet" href="~/lib/bootstrap421/css/bootstrap-datepicker.min.css" />
     <link rel="stylesheet" href="~/lib/datetimepicker/bootstrap-datetimepicker.min.css" />
     <link rel="stylesheet" href="~/lib/DataTables/Buttons-1.5.6/css/buttons.dataTables.min.css" />
-    <link rel="stylesheet" href="~/lib/w2ui/w2ui.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/lib/w2ui/w2ui.min.css" />
+    <link rel="stylesheet" href="~/css/mainCss.css" asp-append-version="true" />
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap431dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/lib/DataTables/datatables.js"></script>
@@ -24,13 +24,13 @@
     <script src="~/lib/bootstrap421/js/bootstrap-datepicker.min.js"></script>
     <script src="~/lib/datetimepicker/bootstrap-datetimepicker.min.js"></script>
     <script src="~/lib/DataTables/Buttons-1.5.6/js/buttons.html5.min.js"></script>
-    <script src="~/lib/w2ui/w2ui.js" asp-append-version="true"></script>
+    <script src="~/lib/w2ui/w2ui.min.js"></script>
     <script src="~/js/jszip.min.js"></script>
     <script src="~/js/pdfmake.min.js"></script>
     <script src="~/js/vfs_fonts.js"></script>
     <script src="~/js/push.min.js"></script>
     <script src="~/js/jquery.tableToExcel.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="~/js/mainJS.js" asp-append-version="true"></script>
     <!--[if IE]>
           <style>
             .tblReportes thead {
@@ -135,6 +135,9 @@
                                 Reportes
                             </a>
                             <div class="dropdown-menu mr-auto" aria-labelledby="navbarDropdown2">
+                                @if (Context.Session.GetObjSession<List<string>>("ListPermits").Where(O => O == "Usuario_Inv_Payless_Tiendas").Count() > 0) {
+                                    <a class="dropdown-item" asp-area="" asp-controller="HomeExtern" asp-action="InvPaylessTienda">Inventario por tienda</a>
+                                }
                                 @if (Context.Session.GetObjSession<List<string>>("ListPermits").Where(O => O == "Usuario_Ordenes_Payless").Count() > 0) {
                                     <a class="dropdown-item" asp-area="" asp-controller="HomeExtern" asp-action="Peticiones">Ordenes pendientes</a>
                                     <div class="dropdown-divider"></div>
