@@ -690,16 +690,46 @@ namespace EdiApi.Models
                 if (Dr.HasRows) {
                     while (Dr.Read()) {
                         ListProdDet.Add(new PedidosPendientesAdmin() {
-                            PedidoId = Convert.ToInt32(Dr.GetValue(0)),
-                            Bodega = Convert.ToString(Dr.GetValue(1)),
-                            TiendaId = Convert.ToInt32(Dr.GetValue(2)),
-                            FechaPedido = Convert.ToString(Dr.GetValue(3)),
-                            Periodo = Convert.ToString(Dr.GetValue(4)),
-                            Categoria = Convert.ToString(Dr.GetValue(5)),
-                            CP = Convert.ToString(Dr.GetValue(6)),
-                            Barcode = Convert.ToString(Dr.GetValue(7)),
-                            IdRack = Convert.ToInt32(Dr.GetValue(8)),
-                            NombreRack = Convert.ToString(Dr.GetValue(9))
+                            PedidoId = Dr.Gr<int>(0),
+                            Bodega = Dr.Gr<string>(1),
+                            TiendaId = Dr.Gr<int>(2),
+                            FechaPedido = Dr.Gr<string>(3),
+                            Periodo = Dr.Gr<string>(4),
+                            Categoria = Dr.Gr<string>(5),
+                            CP = Dr.Gr<string>(6),
+                            Barcode = Dr.Gr<string>(7),
+                            IdRack = Dr.Gr<int>(8),
+                            NombreRack = Dr.Gr<string>(9),
+                        });
+                    }
+                }
+                _DbO.Database.CloseConnection();
+                if (!Dr.IsClosed)
+                    Dr.Close();
+            }
+            return ListProdDet;
+        }
+        public static List<PeticionesAdminBGModel> SP_GetPeticionesAdminB(ref Models.EdiDB.EdiDBContext _DbO) {
+            List<PeticionesAdminBGModel> ListProdDet = new List<PeticionesAdminBGModel>();
+            using (DbCommand Cmd = _DbO.Database.GetDbConnection().CreateCommand()) {
+                Cmd.CommandText = $"dbo.SP_GetPeticionesAdminB";
+                Cmd.CommandTimeout = 600;
+                _DbO.Database.OpenConnection();
+                DbDataReader Dr = Cmd.ExecuteReader();
+                if (Dr.HasRows) {
+                    while (Dr.Read()) {
+                        ListProdDet.Add(new PeticionesAdminBGModel() {
+
+                            //PedidoId = Convert.ToInt32(Dr.GetValue(0)),
+                            //Bodega = Convert.ToString(Dr.GetValue(1)),
+                            //TiendaId = Convert.ToInt32(Dr.GetValue(2)),
+                            //FechaPedido = Convert.ToString(Dr.GetValue(3)),
+                            //Periodo = Convert.ToString(Dr.GetValue(4)),
+                            //Categoria = Convert.ToString(Dr.GetValue(5)),
+                            //CP = Convert.ToString(Dr.GetValue(6)),
+                            //Barcode = Convert.ToString(Dr.GetValue(7)),
+                            //IdRack = Convert.ToInt32(Dr.GetValue(8)),
+                            //NombreRack = Convert.ToString(Dr.GetValue(9))
                         });
                     }
                 }

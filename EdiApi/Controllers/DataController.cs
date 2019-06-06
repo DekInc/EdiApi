@@ -3400,7 +3400,24 @@ SET XACT_ABORT OFF
         public RetData<List<PedidosPendientesAdmin>> GetPedidosPendientesAdmin() {
             DateTime StartTime = DateTime.Now;
             try {
+                AsyncStates ThisProc = new AsyncStates();
+                IEnumerable<AsyncStates> ListAsyncs = (from A in DbO.AsyncStates where A.Typ == 2 select A);
+                if (ListAsyncs.Count() == 0) {
+                    ThisProc = new AsyncStates() { Typ = 2, Val = 0, Maximum = 2 };
+                    DbO.AsyncStates.Add(ThisProc);
+                    DbO.SaveChanges();
+                } else {
+                    return new RetData<List<PedidosPendientesAdmin>> {
+                        Info = new RetInfo() {
+                            CodError = -1,
+                            Mensaje = "El proceso ya se está ejecutando desde otra PC, por favor intentelo en 2 minutos.",
+                            ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                        }
+                    };
+                }
                 List<PedidosPendientesAdmin> Ret = ManualDB.SP_GetPedidosPendientesAdmin(ref DbOLong);
+                DbO.AsyncStates.Remove(ThisProc);
+                DbO.SaveChanges();
                 return new RetData<List<PedidosPendientesAdmin>> {
                     Data = Ret,
                     Info = new RetInfo() {
@@ -3488,6 +3505,29 @@ SET XACT_ABORT OFF
                 }
             } catch (Exception e1) {
                 return new RetData<string> {
+                    Info = new RetInfo() {
+                        CodError = -1,
+                        Mensaje = e1.ToString(),
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            }
+        }
+        [HttpGet]
+        public RetData<IEnumerable<PeticionesAdminBGModel>> GetPeticionesAdminB(int ClienteId) {
+            DateTime StartTime = DateTime.Now;
+            try {
+                IEnumerable<PeticionesAdminBGModel> ListOrders = ManualDB.SP_GetPeticionesAdminB(ref DbOLong);
+                return new RetData<IEnumerable<PeticionesAdminBGModel>> {
+                    Data = ListOrders,
+                    Info = new RetInfo() {
+                        CodError = 0,
+                        Mensaje = "ok",
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            } catch (Exception e1) {
+                return new RetData<IEnumerable<PeticionesAdminBGModel>> {
                     Info = new RetInfo() {
                         CodError = -1,
                         Mensaje = e1.ToString(),

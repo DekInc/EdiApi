@@ -2,7 +2,7 @@
 saddasdasd
 select * from wms_test_29_01_2019.dbo.Paises where NomPais like'%pana%'
 --487	TIENDAS CARRION, S.A. DE C.V.(TRANSITO A GUATEMAL)
-select * from wms.dbo.Clientes with(nolock) where nombre like '%jack%' OR ClienteID = 610 order by ClienteID asc
+select * from wms.dbo.Clientes with(nolock) where nombre like '%payl%' OR ClienteID = 610 order by ClienteID asc
 select * from edidb.dbo.IEnetUsers where Id > 4 order by CodUsr
 select * from edidb.dbo.IEnetGroupsAccesses
 delete from edidb.dbo.IEnetGroupsAccesses where Id = 37
@@ -23,7 +23,7 @@ select * from wms.dbo.usrsystem where CodUsr in (2, 4, 92)
 select * from wms.dbo.usrsystem where idusr like'%ainventariot%' or nomusr like'%ainventariot%'
 select distinct Color, CodProducto from wms.dbo.Producto where CodProducto like '7370%'
 select top 10 * from wms.dbo.Producto P where ClienteID = 251
-select distinct CodProducto from wms.dbo.ItemInventario where CodProducto like '7370%' and color  = 'DRYU 961708-5'
+select * from wms.dbo.ItemInventario where CodProducto like '7365822071' and color  = 'DRYU 961708-5'
 select * from EdiDB.dbo.AsyncStates
 --delete from EdiDB.dbo.AsyncStates where Id = 2
 select * from EdiDB.dbo.EdiComs order by Id DESC
@@ -54,9 +54,45 @@ SELECT FechaPedido, REPLACE(FechaPedido, '03/06', '04/06') FROM EdiDB.dbo.Pedido
 
 --SELECT * INTO PedidosDetExternos2 from EdiDb.dbo.PedidosDetExternos
 SELECT * FROM EdiDB.dbo.PedidosDetExternos where PedidoId = 12
-SELECT * FROM EdiDB.dbo.PedidosDetExternos where CodProducto = '7375888505'
+SELECT * FROM EdiDB.dbo.PedidosDetExternos where CodProducto = '7372854892'
 order by CodProducto, CantPedir
-select * from EdiDB.dbo.PAYLESS_ProdPrioriDet where barcode like '7370%'
+select * from EdiDB.dbo.PAYLESS_ProdPrioriDet where barcode like '7384817053'
+select * from EdiDB.dbo.PAYLESS_ProdPrioriDet WHERE iDpA
+select * from EdiDB.dbo.PAYLESS_ProdPrioriM where Id = 4
+select * from EdiDb.dbo.Payless_Transporte
+
+7372854892 -- MAYO 2019 SPS
+
+7372854892 -- SEPT 2019 SPS
+
+--repetidos payless original
+select distinct
+M.Periodo, 
+T.Transporte,
+D.Categoria, 
+SB2.Barcode
+FROM EdiDB.dbo.PAYLESS_ProdPrioriDet D
+JOIN (
+	SELECT SB1.barcode, COUNT(*) C
+	FROM (
+		SELECT DISTINCT CATEGORIA, D.barcode
+		FROM EdiDB.dbo.PAYLESS_ProdPrioriDet D
+		where D.Categoria != 'ACCESORIOS'
+		--and D.Barcode = '7372854892'
+	) SB1
+	GROUP BY SB1.barcode
+	HAVING COUNT(*) > 1
+) SB2
+	ON SB2.Barcode = D.Barcode
+JOIN EdiDB.dbo.PAYLESS_ProdPriorim M
+	ON M.Id = D.IdPayless_ProdPrioriM
+JOIN EdiDB.dbo.PAYLESS_Transporte T
+	ON D.IdTransporte = T.Id
+ORDER BY M.Periodo, SB2.Barcode
+	
+
+
+
 --update EdiDB.dbo.PedidosDetExternos SET PedidoId =  16 where PedidoId = 12
 --delete from EdiDB.dbo.PedidosExternos where Id = 16
 --truncate table EdiDB.dbo.PedidosDetExternos
@@ -120,6 +156,7 @@ and Ii.Descripcion = 'CABALLEROS'
 order by CodProducto, ItemInventarioID desc
 select * from wms.dbo.Bodegas
 select * from EdiDb.dbo.PAYLESS_ProdPrioriDet where Barcode = '7373823622'
+select distinct BarCode from EdiDb.dbo.PAYLESS_ProdPrioriDet
 --2559 - 554 CP + 293 CP = 2298
 --delete from  EdiDB.dbo.PedidosDetExternos WHERE CodProducto in (
 --SELECT distinct D.BarCode
@@ -179,7 +216,7 @@ SELECT TOP 200 * FROM wms_test_29_01_2019.dbo.Transacciones WHERE TransaccionID 
 
 ---
 SELECT TOP 200 * FROM [wms_test_29_01_2019].dbo.Inventario WHERE InventarioID IN (1663770, 1663779)
-SELECT TOP 200 * FROM [wms_test_29_01_2019].dbo.ItemInventario WHERE CodProducto = 'E11084800'
+SELECT TOP 200 * FROM wms.dbo.ItemInventario WHERE CodProducto = '7365821972'
 SELECT TOP 200 * FROM wms_test_29_01_2019.dbo.DetalleTransacciones WHERE InventarioID IN (1663770, 1663779)
 SELECT TOP 200 * FROM wms_test_29_01_2019.dbo.Transacciones WHERE TransaccionID = 105001
 ----
@@ -456,8 +493,8 @@ select top 10 * from wms.dbo.Regimen
 select top 10 * from wms.dbo.Producto where CodProducto = '7380872774'
 select top 10 * from wms.dbo.Producto where Descripcion = '19003833B PORTA ANILLOS MANOS GRD'
 --delete from wms.dbo.Producto where Descripcion = '19003833B PORTA ANILLOS MANOS GRD'
-select top 1 * from wms.dbo.Inventario where CodProducto = '7380872774'
-select top 1 * from wms.dbo.ItemInventario where CodProducto = '7380872774'
+select top 1 * from wms.dbo.Inventario where CodProducto = '7365822071'
+select top 1 * from wms.dbo.ItemInventario where CodProducto = '7365822071'
 --update wms.dbo.Producto SET CodProducto = '19003833B' where Descripcion = '19003833B PORTA ANILLOS MANOS GRD'
 select top 10 * from wms.dbo.Inventario where InventarioID in (
 1837157)
@@ -586,7 +623,9 @@ wms.dbo.DetalleTransacciones Dt
 join wms.dbo.ItemInventario Ii on Ii.InventarioID = Dt.InventarioID
 join wms.dbo.Transacciones t
 on t.TransaccionID = Dt.TransaccionID
-where Ii.CodProducto = '7368865833'
+where Ii.CodProducto = '7373823174'
+order by Dt.TransaccionID DESC
+--7365821972
 --7381831861 tiene dos entradas pero no la salida...
 select * from wms.dbo.Racks where Rack = 11759
 select * from wms.dbo.Transacciones where usuarioCrea = 'RPERDOMO' and IDTipoTransaccion = 'IN' and ClienteID = 1432 order by FechaCrea DESC
@@ -607,7 +646,7 @@ select TransaccionID from wms.dbo.Transacciones WITH(NOLOCK) where ClienteID = 1
 --update wms.dbo.Transacciones Set Observacion = '' where TransaccionID = 116395
 --delete from wms.dbo.Transacciones where TransaccionID in (116389, 116368, 116367)
 -- 7370872774 es la que viene duplicada, la 7380 vino junto
-select top 2 * from wms.dbo.SysTempSalidas where CodProducto = '7380872774'
+select top 2 * from wms.dbo.SysTempSalidas where CodProducto = '7373823174'
 --7369829033 duplicado en archivos de escaners ?
 select * from wms.dbo.Producto where CodProducto = '7380872774'
 select * from wms.dbo.Transacciones where TransaccionId in (115884,
@@ -633,8 +672,8 @@ select * from EdiDb.dbo.PAYLESS_ProdPrioriArchDet where IdM = 1
 
 exec [spGeneraSalida]
 '10-05-2019',
-'7380872774',
-81,
+'7365821972',
+82,
 2,
 1432,
 7,
@@ -698,5 +737,17 @@ ORDER BY B.NomBodega, T.NoTransaccion, Ii.color, Ii.CodProducto
 
 
 
+SELECT DISTINCT Ii.CodProducto, B.NomBodega, R.Rack, R.NombreRack
+		from wms.dbo.ItemInventario Ii WITH(NOLOCK)
+		JOIN wms.dbo.DetalleTransacciones Dt WITH(NOLOCK)
+			ON Dt.InventarioID = Ii.InventarioID		
+		JOIN wms.dbo.Inventario I WITH(NOLOCK)
+			ON I.InventarioID = Ii.InventarioID
+		JOIN wms.dbo.Racks R WITH(NOLOCK)
+			ON R.Rack = I.Rack
+		JOIN wms.dbo.Bodegas B WITH(NOLOCK)
+			ON B.BodegaID = R.BodegaID
+		where I.ClienteID = 1432
+		AND Ii.Existencia > 0		
 
 

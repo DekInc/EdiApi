@@ -31,6 +31,7 @@ namespace EdiViewer.Controllers
         }        
         public IActionResult PeticionesAdmin()
         {
+            ViewBag.Url2 = ApplicationSettings.ApiUri + "Data/GetPedidosPendientesAdmin";
             return View();
         }
         public IActionResult Exit()

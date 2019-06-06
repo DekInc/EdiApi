@@ -414,43 +414,31 @@ namespace EdiViewer.Controllers
                 return Json(new { total = 0, records = "", errorMessage = e1.ToString() });
             }
         }
-        public async Task<IActionResult> GetPeticionesAdmin() {
+        public async Task<IActionResult> GetPeticionesAdminB(int ClienteId) {
             try {
-                RetData<Tuple<IEnumerable<PedidosExternos>, IEnumerable<PedidosDetExternos>>> ListPe = await ApiClientFactory.Instance.GetPedidosExternosByTienda(HttpContext.Session.GetObjSession<int>("Session.ClientId"), HttpContext.Session.GetObjSession<int>("Session.TiendaId"));
+                RetData<IEnumerable<PeticionesAdminBGModel>> ListPe = await ApiClientFactory.Instance.GetPeticionesAdminB(ClienteId);
                 if (ListPe.Info.CodError != 0)
                     return Json(new { total = 0, records = "", errorMessage = ListPe.Info.Mensaje });
                 if (ListPe.Data == null)
                     return Json(new { total = 0, records = "", errorMessage = (ListPe.Info.CodError != 0 ? ListPe.Info.Mensaje : string.Empty) });
-                if (ListPe.Data.Item2.Count() == 0)
+                if (ListPe.Data.Count() == 0)
                     return Json(new { total = 0, records = "", errorMessage = (ListPe.Info.CodError != 0 ? ListPe.Info.Mensaje : string.Empty) });
-                List<PedidosExternosGModel> Records = ListPe.Data.Item1.Select(O => Utility.Funcs.Reflect(O, new PedidosExternosGModel())).ToList();
-                Records.ForEach(R => {
-                    if ((DateTime.Now - R.FechaPedido.ToDateFromEspDate()).TotalHours < 24)
-                        R.ChangeState = true;
-                });
-                List<PedidosExternosGModel> AllRecords = new List<PedidosExternosGModel>();
+                List<PeticionesAdminBGModel> Records = ListPe.Data.ToList();                
+                List<PeticionesAdminBGModel> AllRecords = new List<PeticionesAdminBGModel>();
                 int Total = Records.Count;
                 if (Records.Count() > 0) {
-                    AllRecords = Utility.ExpressionBuilderHelper.W2uiSearchNoSkip(Records, Request.Form);
-                    Records = Utility.ExpressionBuilderHelper.W2uiSearch(Records, Request.Form);
-                }
-                List<PedidosDetExternos> ListCant = new List<PedidosDetExternos>();
-                foreach (PedidosExternosGModel R in Records) {
-                    List<PedidosDetExternos> ListDet = ListPe.Data.Item2.Where(O3 => O3.PedidoId == R.Id).ToList();
-                    foreach (PedidosDetExternos Pde in ListDet) {
-                        if (ListCant.Where(Lc => Lc.PedidoId == Pde.PedidoId).Count() == 0)
-                            ListCant.Add(new PedidosDetExternos() { Id = 1, PedidoId = Pde.PedidoId });
-                        else {
-                            for (int i = 0; i < ListCant.Count; i++) {
-                                if (ListCant[i].PedidoId == Pde.PedidoId) {
-                                    ListCant[i].Id++;
-                                }
-                            }
+                    bool HaveForm = true;
+                    try {
+                        if (Request.Form != null) {
+                            IFormCollection GridForm = Request.Form;
                         }
+                    } catch {
+                        HaveForm = false;
                     }
-                }
-                for (int i = 0; i < Records.Count; i++) {
-                    Records[i].Cont = ListCant.Where(O => O.PedidoId == Records[i].Id).Fod().Id;
+                    if (HaveForm) {
+                        AllRecords = Utility.ExpressionBuilderHelper.W2uiSearchNoSkip(Records, Request.Form);
+                        Records = Utility.ExpressionBuilderHelper.W2uiSearch(Records, Request.Form);
+                    }
                 }
                 return Json(new { Total, Records, errorMessage = "", AllRecords });
             } catch (Exception e1) {
@@ -674,7 +662,7 @@ namespace EdiViewer.Controllers
                     return Json(new { total = 0, records = "", errorMessage = (ListStores2.Info.CodError != 0 ? ListStores2.Info.Mensaje : string.Empty) });
                 List<PaylessTiendas> ListStores = ListStores2.Data.Where(S => S.ClienteId == Convert.ToInt32(ClienteId)).ToList();
                 List<PaylessProdPrioriDetModel> Records = ListProd.Data.Select(O => Utility.Funcs.Reflect(O, new PaylessProdPrioriDetModel())).ToList();
-                List<StoreCatQty> GroupRecords = new List<StoreCatQty>();
+                List<StoreCatQtyGModel> GroupRecords = new List<StoreCatQtyGModel>();
                 string[] ListCpReal = { "A", "H" };
                 Records = (
                     from Pp in Records
@@ -687,9 +675,9 @@ namespace EdiViewer.Controllers
                         Id = Grp.Fod().Id,
                         Lote = Grp.Fod().Tienda
                     }).ToList();
-                List<StoreCatQty> AllRecords = new List<StoreCatQty>();
+                List<StoreCatQtyGModel> AllRecords = new List<StoreCatQtyGModel>();
                 List<PaylessProdPrioriDetModel> ListProdWithStock = new List<PaylessProdPrioriDetModel>();
-                List<StoreCatQty> FilteredRecords = new List<StoreCatQty>();
+                List<StoreCatQtyGModel> FilteredRecords = new List<StoreCatQtyGModel>();
                 RetData<Tuple<IEnumerable<PedidosExternos>, IEnumerable<PedidosDetExternos>, IEnumerable<Clientes>>> TupleListPendientes = await ApiClientFactory.Instance.GetPedidosExternosPendientesAdmin();
                 if (TupleListPendientes.Info.CodError != 0)
                     return Json(new { total = 0, records = "", errorMessage = TupleListPendientes.Info.Mensaje });
@@ -748,11 +736,11 @@ namespace EdiViewer.Controllers
                             Cp = Grp.Fod().Cp
                         }).ToList();
                     NRow = 0;
-                    StoreCatQty TotalRow = new StoreCatQty() { TiendaId = null, Tienda = "TOTAL" };
+                    StoreCatQtyGModel TotalRow = new StoreCatQtyGModel() { TiendaId = null, Tienda = "TOTAL" };
                     string[] ArraTiendas = Records.Select(O => O.Lote).Distinct().ToArray();
                     for (int J = 0; J < Records.Count; J++) {
                         if (GroupRecords.Where(Gr => Gr.TiendaId == Convert.ToInt32(Records[J].Lote)).Count() == 0) {
-                            GroupRecords.Add(new StoreCatQty {
+                            GroupRecords.Add(new StoreCatQtyGModel {
                                 TiendaId = Convert.ToInt32(Records[J].Lote),
                                 Tienda = ListStores.Where(Ls => Ls.TiendaId == Convert.ToInt32(Records[J].Lote)).Fod().Descr
                             });
@@ -815,7 +803,7 @@ namespace EdiViewer.Controllers
                                 ListStoresExcept.Add(S);
                         });
                         ListStoresExcept.ForEach(Se => {
-                            GroupRecords.Add(new StoreCatQty() {
+                            GroupRecords.Add(new StoreCatQtyGModel() {
                                 TiendaId = Se.TiendaId ?? 0,
                                 Tienda = Se.Descr
                             });
@@ -829,6 +817,8 @@ namespace EdiViewer.Controllers
                             Ge.Requested = ListPendientes.Where(P2 => P2.CodProducto.Substring(0, 4) == Ge.TiendaId.ToString()).Select(P => P.CodProducto).Distinct().Count();
                         }
                         Ge.Available = Ge.Total - Ge.Requested;
+                        if (Ge.Available < 0)
+                            Ge.Available = Ge.Total;
                     });
                     TotalRow.TotalSCp = TotalRow.WomanQty + TotalRow.ManQty + TotalRow.KidsQty + TotalRow.AccQty;
                     TotalRow.TotalCp = TotalRow.WomanCpQty + TotalRow.ManCpQty + TotalRow.KidsCpQty + TotalRow.AccCpQty;
@@ -840,8 +830,8 @@ namespace EdiViewer.Controllers
                     FilteredRecords = GroupRecords;
                     AllRecords = GroupRecords;
                     if (HaveForm) {
-                        FilteredRecords = Utility.ExpressionBuilderHelper.W2uiSearchNoSkip<StoreCatQty>(GroupRecords, Request.Form);
-                        GroupRecords = Utility.ExpressionBuilderHelper.W2uiSearch<StoreCatQty>(GroupRecords, Request.Form);
+                        FilteredRecords = Utility.ExpressionBuilderHelper.W2uiSearchNoSkip<StoreCatQtyGModel>(GroupRecords, Request.Form);
+                        GroupRecords = Utility.ExpressionBuilderHelper.W2uiSearch<StoreCatQtyGModel>(GroupRecords, Request.Form);
                     }
                 }                
                 if (TupleListPendientes.Data.Item1.Count() > 0)

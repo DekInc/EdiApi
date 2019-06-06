@@ -44,4 +44,4 @@ BEGIN
 	ORDER BY t.BodegaId, ii.CodProducto
 END
 
-EXEC EdiDb.dbo.SP_GetExistenciasByCliente 251
+EXEC EdiDb.dbo.SP_GetExistenciasByCliente 1432

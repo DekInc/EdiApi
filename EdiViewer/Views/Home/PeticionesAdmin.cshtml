@@ -267,9 +267,13 @@
             var arrayPedidosNorep = [];
             $.ajax({
                 method: "GET",
-                url: '@this.Url.Action("GetPedidosExternosPendientesAdmin", "Home")',
-                timeout: 600000,
+                dataType: 'json',
+                contentType: 'application/x-www-form-urlencoded',
+                xhrFields: { withCredentials: true }, 
+                url: '@this.Url.Action("GetPedidosExternosPendientesAdmin", "Home")', //'ViewBag.Url2',
+                timeout: 1200000,
                 success: function (data) {
+                    $('#divSpinPrintAll').hide();
                     if (data.codError != 0) {
                         menErrorEdi(data.errorMessage, 'Error');
                         return;
@@ -302,8 +306,7 @@
                                 .append(1))
                         );                      
                     });
-                    $("#tblExport1").tblToExcel();
-                    $('#divSpinPrintAll').hide();
+                    $("#tblExport1").tblToExcel();                    
                 },
                 error: function (xhr, ajaxOptions, thrownError) {
                     $('#divSpinPrintAll').hide();
