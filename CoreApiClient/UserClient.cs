@@ -298,6 +298,12 @@ namespace CoreApiClient
         public async Task<RetData<IEnumerable<PeticionesAdminBGModel>>> GetPeticionesAdminB(int ClienteId) {
             return await GetAsync<RetData<IEnumerable<PeticionesAdminBGModel>>>(CreateRequestUri(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Data/GetPeticionesAdminB"), $"?ClienteId={ClienteId}"));
         }
+        public async Task<RetData<IEnumerable<PedidosWmsModel>>> GetPedidosMWmsByTienda(int ClienteId, int TiendaId) {
+            return await GetAsync<RetData<IEnumerable<PedidosWmsModel>>>(CreateRequestUri(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Data/GetPedidosMWmsByTienda"), $"?ClienteId={ClienteId}&TiendaId={TiendaId}"));
+        }
+        public async Task<RetData<string>> ChangePedidoExternoIdWMS(int PedidoId, int PedidoIdWms) {
+            return await GetAsync<RetData<string>>(CreateRequestUri(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Data/ChangePedidoExternoIdWMS"), $"?PedidoId={PedidoId}&PedidoIdWms={PedidoIdWms}"));
+        }
         /////////////////////////////////////////
         //public async Task<List<UsersModel>> GetUsers()
         //{

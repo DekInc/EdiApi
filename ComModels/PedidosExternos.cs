@@ -18,5 +18,6 @@ namespace ComModels
         public int? KidQty { get; set; }
         public int? AccQty { get; set; }
         public string InvType { get; set; }
+        public int? PedidoWms { get; set; }
     }
 }

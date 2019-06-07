@@ -739,5 +739,32 @@ namespace EdiApi.Models
             }
             return ListProdDet;
         }
+        public static IEnumerable<PedidosWmsModel> SP_GetPedidosMWmsByTienda(ref Models.EdiDB.EdiDBContext _DbO, int IdClient, int TiendaId) {
+            List<PedidosWmsModel> ListExists = new List<PedidosWmsModel>();
+            using (DbCommand Cmd = _DbO.Database.GetDbConnection().CreateCommand()) {
+                Cmd.CommandText = $"[dbo].[SP_GetPedidosMWmsByTienda] {IdClient}, '{TiendaId}'";
+                _DbO.Database.OpenConnection();
+                DbDataReader Dr = Cmd.ExecuteReader();
+                if (Dr.HasRows) {
+                    while (Dr.Read()) {
+                        ListExists.Add(new PedidosWmsModel() {
+                            ClienteId = Dr.Gr<int>(0),
+                            PedidoBarcode = Dr.Gr<string>(1),
+                            FechaPedido = Dr.Gr<string>(2),
+                            Estatus = Dr.Gr<string>(4),
+                            NomBodega = Dr.Gr<string>(5),
+                            Regimen = Dr.Gr<string>(6),
+                            Observacion = Dr.Gr<string>(7),
+                            PedidoId = Dr.Gr<int>(8),
+                            Total = Dr.Gr<int>(9)
+                        });
+                    }
+                }
+                _DbO.Database.CloseConnection();
+                if (!Dr.IsClosed)
+                    Dr.Close();
+            }
+            return ListExists;
+        }
     }
 }

@@ -219,7 +219,7 @@
     function fillCbClients() {
         $.ajax({
             method: "GET",
-            url: "@this.Url.Action("GetClientsOrders")",
+            url: "@this.Url.Action("GetClientsOrders", "Home")",
             success: function (data) {
                 if (data.codError != 0) {
                     menErrorEdi(data.errorMessage, 'Error');

@@ -56,6 +56,7 @@ function sleepMs(ms) { const start = performance.now(); while (performance.now()
 
 function fillCombobox(divSpin, serverUrl, comboName, valueName, textName, valueDef) {
     $(divSpin).show();
+    $(comboName).empty();
     $.ajax({
         method: "GET",
         url: serverUrl,
@@ -63,17 +64,16 @@ function fillCombobox(divSpin, serverUrl, comboName, valueName, textName, valueD
             if (data.info.codError != 0) {
                 menErrorEdi(data.info.mensaje, 'Error');
                 return;
-            }
-            $(comboName).empty();
+            }            
             if (data.data != null) {                
                 $.each(data.data, function (indexI, storeO) {
                     $(comboName).append($('<option>', {
                         value: this[valueName],
                         text: this[textName],
-                        selected: false
+                        selected: this[valueName] == valueDef? true : false
                     }));
                 });
-                $(comboName).val(valueDef);
+                //$(comboName).val(valueDef);
             }
             $(divSpin).hide();
         },

@@ -41,6 +41,7 @@ select @@servicename
 exec SP_GetExistenciasExtern 618
 	
 SELECT * FROM EdiDB.dbo.PedidosExternos order by TiendaId, FechaPedido
+--update EdiDB.dbo.PedidosExternos SET PedidoWMS = null, IdEstado = 2
 select * from edidb.dbo.IEnetUsers where Id > 4
 --16	1432	7384	04/06/2019 08:00	2	31/05/2019 11:45	NULL	NULL	100	19	0	0	fifo
 SELECT FechaPedido, REPLACE(FechaPedido, '03/06', '04/06') FROM EdiDB.dbo.PedidosExternos
@@ -56,7 +57,17 @@ SELECT FechaPedido, REPLACE(FechaPedido, '03/06', '04/06') FROM EdiDB.dbo.Pedido
 SELECT * FROM EdiDB.dbo.PedidosDetExternos where PedidoId = 12
 SELECT * FROM EdiDB.dbo.PedidosDetExternos where CodProducto = '7372854892'
 order by CodProducto, CantPedir
-select * from EdiDB.dbo.PAYLESS_ProdPrioriDet where barcode like '7384817053'
+select * from EdiDB.dbo.PAYLESS_ProdPrioriDet where barcode like '7385876330'
+--7372854892
+--7377821116
+--7379885086
+--7385876677
+--7368865732
+--7378888592
+--7383810289
+--7384817053
+--7385876330
+select * from wms.dbo.DtllPedido where CodProducto = '7377821116'
 select * from EdiDB.dbo.PAYLESS_ProdPrioriDet WHERE iDpA
 select * from EdiDB.dbo.PAYLESS_ProdPrioriM where Id = 4
 select * from EdiDb.dbo.Payless_Transporte
@@ -71,6 +82,7 @@ M.Periodo,
 T.Transporte,
 D.Categoria, 
 SB2.Barcode
+--D2.CP
 FROM EdiDB.dbo.PAYLESS_ProdPrioriDet D
 JOIN (
 	SELECT SB1.barcode, COUNT(*) C
@@ -86,6 +98,8 @@ JOIN (
 	ON SB2.Barcode = D.Barcode
 JOIN EdiDB.dbo.PAYLESS_ProdPriorim M
 	ON M.Id = D.IdPayless_ProdPrioriM
+--JOIN EdiDB.dbo.PAYLESS_ProdPrioriDet D2
+--	ON M.Id = D2.IdPayless_ProdPrioriM
 JOIN EdiDB.dbo.PAYLESS_Transporte T
 	ON D.IdTransporte = T.Id
 ORDER BY M.Periodo, SB2.Barcode
@@ -191,7 +205,7 @@ SELECT TOP 200 * FROM wms_test_29_01_2019.dbo.ItemInventario
 SELECT * FROM LEAR_EQUIVALENCIAS 
 
 EXEC GetSNDet 63386
-select * from wms.dbo.Pedido where PedidoID = 63386
+select * from wms.dbo.Pedido where ClienteId = 1432
 
 EXEC sp_spaceused;
 
@@ -530,7 +544,7 @@ select top 10 * from wms.dbo.Pedido where ClienteId = 1432 or PedidoId = 69334
 select top 10 * from wms.dbo.Estatus
 select top 10000 * from wms.dbo.SysTempSalidas where PedidoId = 69335
 --delete from  wms.dbo.SysTempSalidas where PedidoId in (69160)
-select top 10000 * from wms.dbo.DtllPedido where PedidoId = 69334
+select distinct CodProducto from wms.dbo.DtllPedido where PedidoId = 70113
 --delete from wms.dbo.DtllPedido where PedidoId in (69160)
 select top 100000 * from wms.dbo.DetalleTransacciones where TransaccionID = 116524
 --delete from wms.dbo.DetalleTransacciones where TransaccionID = 116137

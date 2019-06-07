@@ -75,6 +75,8 @@ namespace EdiApi.Models.EdiDB
         public virtual DbSet<PedidosExternos> PedidosExternos { get; set; }
         public virtual DbSet<UsuariosExternos> UsuariosExternos { get; set; }
 
+        // Unable to generate entity type for table 'dbo.ProductoUbicacion'. Please see the warning messages.
+
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             if (!optionsBuilder.IsConfigured)
@@ -1443,6 +1445,8 @@ namespace EdiApi.Models.EdiDB
                 entity.Property(e => e.InvType)
                     .HasMaxLength(4)
                     .IsUnicode(false);
+
+                entity.Property(e => e.PedidoWms).HasColumnName("PedidoWMS");
 
                 entity.Property(e => e.Periodo).HasMaxLength(10);
             });

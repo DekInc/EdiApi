@@ -153,70 +153,70 @@ namespace EdiViewer.Controllers
             return View(null);
         }
         #endregion
-        public async Task<IActionResult> GetPeticionesAdmin(int ClienteId, string dtp1 = "", string chkPending = "")
-        {
-            try
-            {
-                //var dict = Request.Form.ToDictionary(x => x.Key, x => x.Value.ToString());
-                var draw = HttpContext.Request.Form["draw"].Fod();
-                // Skiping number of Rows count  
-                var start = Request.Form["start"].Fod();
-                // Paging Length 10,20  
-                var length = Request.Form["length"].Fod();
-                // Sort Column Name  
-                var sortColumn = Request.Form["columns[" + Request.Form["order[0][column]"].Fod() + "][name]"].Fod();
-                // Sort Column Direction ( asc ,desc)  
-                var sortColumnDirection = Request.Form["order[0][dir]"].Fod();
-                // Search Value from (Search box)  
-                var searchValue = Request.Form["search[value]"].Fod();
+        //public async Task<IActionResult> GetPeticionesAdmin(int ClienteId, string dtp1 = "", string chkPending = "")
+        //{
+        //    try
+        //    {
+        //        //var dict = Request.Form.ToDictionary(x => x.Key, x => x.Value.ToString());
+        //        var draw = HttpContext.Request.Form["draw"].Fod();
+        //        // Skiping number of Rows count  
+        //        var start = Request.Form["start"].Fod();
+        //        // Paging Length 10,20  
+        //        var length = Request.Form["length"].Fod();
+        //        // Sort Column Name  
+        //        var sortColumn = Request.Form["columns[" + Request.Form["order[0][column]"].Fod() + "][name]"].Fod();
+        //        // Sort Column Direction ( asc ,desc)  
+        //        var sortColumnDirection = Request.Form["order[0][dir]"].Fod();
+        //        // Search Value from (Search box)  
+        //        var searchValue = Request.Form["search[value]"].Fod();
 
-                //Paging Size (10,20,50,100)  
-                int pageSize = length != null ? Convert.ToInt32(length) : 0;
-                int skip = start != null ? Convert.ToInt32(start) : 0;
-                int recordsTotal = 0;
+        //        //Paging Size (10,20,50,100)  
+        //        int pageSize = length != null ? Convert.ToInt32(length) : 0;
+        //        int skip = start != null ? Convert.ToInt32(start) : 0;
+        //        int recordsTotal = 0;
 
-                // Getting all Customer data  
-                RetData<Tuple<IEnumerable<PedidosExternos>, IEnumerable<PedidosDetExternos>>> ListPe = await ApiClientFactory.Instance.GetPedidosExternosMDetAdmin(ClienteId);
-                if (ListPe.Info.CodError != 0)
-                    return Json(new { draw = 0, recordsFiltered = 0, recordsTotal = 0, errorMessage = ListPe.Info.Mensaje, data = "" });
-                if (ListPe.Data.Item1.Count() == 0)
-                {
-                    return Json(new { draw = 0, recordsFiltered = 0, recordsTotal = 0, errorMessage = (ListPe.Info.CodError != 0 ? ListPe.Info.Mensaje : string.Empty), data = "" });
-                }
-                IEnumerable<PedidosExternos> ListPed = ListPe.Data.Item1.Where(Pe => Pe.IdEstado != 1);
-                if (!string.IsNullOrEmpty(dtp1))
-                {
-                    ListPed = ListPe.Data.Item1.Where(Pe => Pe.FechaCreacion.StartsWith(dtp1));
-                }
-                if (!string.IsNullOrEmpty(chkPending))
-                {
-                    if (chkPending.ToLower() == "true")
-                        ListPed = ListPe.Data.Item1.Where(Pe => Pe.IdEstado == 2);
-                }
-                if (!(string.IsNullOrEmpty(sortColumn) && string.IsNullOrEmpty(sortColumnDirection) && !string.IsNullOrEmpty(sortColumn)))
-                {
-                    if (sortColumn == "fechaPedido")
-                    {
-                        if (sortColumnDirection == "desc")
-                            ListPed = ListPed.OrderByDescending(O => O.FechaPedido.ToDateFromEspDate());
-                        else
-                            ListPed = ListPed.OrderBy(O => O.FechaPedido.ToDateFromEspDate());
-                    }
-                    else
-                        ListPed = ListPed.AsQueryable().OrderBy(sortColumn + " " + sortColumnDirection);
-                }
-                //total number of rows count
-                recordsTotal = ListPed.Count();
-                //Paging
-                ListPed = ListPed.Skip(skip).Take(pageSize);
-                //Returning Json Data
-                return Json(new { draw, recordsFiltered = recordsTotal, recordsTotal, data = ListPed, errorMessage = "" });
-            }
-            catch (Exception e1)
-            {
-                return Json(new { draw = 0, recordsFiltered = 0, recordsTotal = 0, errorMessage = e1.ToString(), data = "" });
-            }
-        }
+        //        // Getting all Customer data  
+        //        RetData<Tuple<IEnumerable<PedidosExternos>, IEnumerable<PedidosDetExternos>>> ListPe = await ApiClientFactory.Instance.GetPedidosExternosMDetAdmin(ClienteId);
+        //        if (ListPe.Info.CodError != 0)
+        //            return Json(new { draw = 0, recordsFiltered = 0, recordsTotal = 0, errorMessage = ListPe.Info.Mensaje, data = "" });
+        //        if (ListPe.Data.Item1.Count() == 0)
+        //        {
+        //            return Json(new { draw = 0, recordsFiltered = 0, recordsTotal = 0, errorMessage = (ListPe.Info.CodError != 0 ? ListPe.Info.Mensaje : string.Empty), data = "" });
+        //        }
+        //        IEnumerable<PedidosExternos> ListPed = ListPe.Data.Item1.Where(Pe => Pe.IdEstado != 1);
+        //        if (!string.IsNullOrEmpty(dtp1))
+        //        {
+        //            ListPed = ListPe.Data.Item1.Where(Pe => Pe.FechaCreacion.StartsWith(dtp1));
+        //        }
+        //        if (!string.IsNullOrEmpty(chkPending))
+        //        {
+        //            if (chkPending.ToLower() == "true")
+        //                ListPed = ListPe.Data.Item1.Where(Pe => Pe.IdEstado == 2);
+        //        }
+        //        if (!(string.IsNullOrEmpty(sortColumn) && string.IsNullOrEmpty(sortColumnDirection) && !string.IsNullOrEmpty(sortColumn)))
+        //        {
+        //            if (sortColumn == "fechaPedido")
+        //            {
+        //                if (sortColumnDirection == "desc")
+        //                    ListPed = ListPed.OrderByDescending(O => O.FechaPedido.ToDateFromEspDate());
+        //                else
+        //                    ListPed = ListPed.OrderBy(O => O.FechaPedido.ToDateFromEspDate());
+        //            }
+        //            else
+        //                ListPed = ListPed.AsQueryable().OrderBy(sortColumn + " " + sortColumnDirection);
+        //        }
+        //        //total number of rows count
+        //        recordsTotal = ListPed.Count();
+        //        //Paging
+        //        ListPed = ListPed.Skip(skip).Take(pageSize);
+        //        //Returning Json Data
+        //        return Json(new { draw, recordsFiltered = recordsTotal, recordsTotal, data = ListPed, errorMessage = "" });
+        //    }
+        //    catch (Exception e1)
+        //    {
+        //        return Json(new { draw = 0, recordsFiltered = 0, recordsTotal = 0, errorMessage = e1.ToString(), data = "" });
+        //    }
+        //}
         public async Task<IActionResult> GetPeticionDetAdmin(int PedidoId)
         {
             try
@@ -264,16 +264,23 @@ namespace EdiViewer.Controllers
                 return Json(new { draw = 0, recordsFiltered = 0, recordsTotal = 0, errorMessage = e1.ToString(), data = "" });
             }
         }
-        public async Task<IActionResult> GetClientsOrders()
+        public async Task<RetData<IEnumerable<ClientesModel>>> GetClientsOrders()
         {
+            DateTime StartTime = DateTime.Now;
             try
             {
                 RetData<IEnumerable<ClientesModel>> ListClientOrders = await ApiClientFactory.Instance.GetClientsOrders();
-                return Json(new { codError = ListClientOrders.Info.CodError, errorMessage = ListClientOrders.Info.Mensaje, data = ListClientOrders.Data });
+                return ListClientOrders;
             }
             catch (Exception e1)
             {
-                return Json(new { codError = -1, errorMessage = e1.ToString() });
+                return new RetData<IEnumerable<ClientesModel>> {
+                    Info = new RetInfo {
+                        CodError = -1,
+                        Mensaje = e1.ToString(),
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
             }
         }
         public async Task<IActionResult> GetPedidosExternosPendientesAdmin()

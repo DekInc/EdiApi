@@ -842,5 +842,78 @@ namespace EdiViewer.Controllers
                 return Json(new { draw = 0, recordsFiltered = 0, recordsTotal = 0, errorMessage = e1.ToString(), data = "" });
             }
         }
+        public async Task<IActionResult> GetPeticionesAdmin(int ClienteId, string Dtp1 = "", string ChkPending = "") {
+            if (ClienteId == 0)
+                return Json(new { total = 0, records = "", errorMessage = "" });
+            DateTime StartTime = DateTime.Now;
+            try {
+                RetData<Tuple<IEnumerable<PedidosExternos>, IEnumerable<PedidosDetExternos>>> ListPe = await ApiClientFactory.Instance.GetPedidosExternosMDetAdmin(ClienteId);
+                if (ListPe.Info.CodError != 0)
+                    return Json(new { total = 0, records = "", errorMessage = ListPe.Info.Mensaje });
+                if (ListPe.Data.Item1.Count() == 0) {
+                    return Json(new { total = 0, records = "", errorMessage = ListPe.Info.Mensaje });
+                }
+                List<PedidosExternosGModel> Records = ListPe.Data.Item1.Where(Pe => Pe.IdEstado != 1).Select(O => Utility.Funcs.Reflect(O, new PedidosExternosGModel())).ToList();
+                if (!string.IsNullOrEmpty(Dtp1)) {
+                    Records = Records.Where(Pe => Pe.FechaPedido.StartsWith(Dtp1)).ToList();
+                }
+                if (!string.IsNullOrEmpty(ChkPending))
+                    if (ChkPending.ToLower() == "true")
+                        Records = Records.Where(Pe => Pe.IdEstado == 2).ToList();
+                List<PedidosExternosGModel> AllRecords = new List<PedidosExternosGModel>();
+                int Total = Records.Count;
+                bool HaveForm = true;
+                try {
+                    if (Request.Form != null) {
+                        IFormCollection GridForm = Request.Form;
+                    }
+                } catch {
+                    HaveForm = false;
+                }
+                if (Records.Count() > 0 && HaveForm) {
+                    AllRecords = Utility.ExpressionBuilderHelper.W2uiSearchNoSkip(Records, Request.Form);
+                    Records = Utility.ExpressionBuilderHelper.W2uiSearch(Records, Request.Form);
+                }
+                Records.ForEach(R => {
+                    R.Cont = ListPe.Data.Item2.Where(Ped => Ped.PedidoId == R.Id).Count();
+                });
+                return Json(new { Total, Records, errorMessage = "", AllRecords });
+            } catch (Exception e1) {
+                return Json(new { total = 0, records = "", errorMessage = e1.ToString() });
+            }
+
+        }
+        public async Task<IActionResult> GetPedidosWmsByStore(int ClienteId, int TiendaId) {
+            if (ClienteId == 0 || TiendaId == 0)
+                return Json(new { total = 0, records = "", errorMessage = "" });
+            DateTime StartTime = DateTime.Now;
+            try {
+                RetData<IEnumerable<PedidosWmsModel>> ListDis = await ApiClientFactory.Instance.GetPedidosMWmsByTienda(ClienteId, TiendaId);
+                if (ListDis.Info.CodError != 0)
+                    return Json(new { total = 0, records = "", errorMessage = ListDis.Info.Mensaje });
+                if (ListDis.Data.Count() == 0) {
+                    return Json(new { total = 0, records = "", errorMessage = "" });
+                }
+                List<PedidosWmsModel> Records = ListDis.Data.ToList();                
+                List<PedidosWmsModel> AllRecords = new List<PedidosWmsModel>();
+                int Total = Records.Count;
+                bool HaveForm = true;
+                try {
+                    if (Request.Form != null) {
+                        IFormCollection GridForm = Request.Form;
+                    }
+                } catch {
+                    HaveForm = false;
+                }
+                if (Records.Count() > 0 && HaveForm) {
+                    AllRecords = Utility.ExpressionBuilderHelper.W2uiSearchNoSkip(Records, Request.Form);
+                    Records = Utility.ExpressionBuilderHelper.W2uiSearch(Records, Request.Form);
+                }
+                return Json(new { Total, Records, errorMessage = "", AllRecords });
+            } catch (Exception e1) {
+                return Json(new { total = 0, records = "", errorMessage = e1.ToString() });
+            }
+
+        }
     }
 }

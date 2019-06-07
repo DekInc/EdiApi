@@ -727,16 +727,10 @@ namespace EdiApi.Controllers
         {
             DateTime StartTime = DateTime.Now;
             try
-            {
-                IEnumerable<int?> ListIdClients = (
-                    from Pe in DbO.PedidosExternos
-                    orderby Pe.ClienteId
-                    select Pe.ClienteId
-                    ).Distinct();
+            {  
                 IEnumerable<ClientesModel> ListClients = (
-                    from Lc in ListIdClients
-                    from C in WmsDbO.Clientes
-                    where C.ClienteId == Lc
+                    from C in WmsDbO.Clientes                    
+                    where C.ClienteId == 1432
                     select new ClientesModel() { ClienteId = C.ClienteId, Nombre = C.Nombre }
                     );
                 return new RetData<IEnumerable<ClientesModel>>
@@ -1337,6 +1331,45 @@ namespace EdiApi.Controllers
                 {
                     Info = new RetInfo()
                     {
+                        CodError = -1,
+                        Mensaje = e1.ToString(),
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            }
+        }
+        [HttpGet]
+        public RetData<IEnumerable<PedidosWmsModel>> GetPedidosMWmsByTienda(int ClienteId, int TiendaId) {
+            DateTime StartTime = DateTime.Now;
+            try {
+                IEnumerable<PedidosWmsModel> ListDis = ManualDB.SP_GetPedidosMWmsByTienda(ref DbO, ClienteId, TiendaId);
+                ListDis = (
+                    from Ld in ListDis
+                    group Ld by Ld.PedidoId into G
+                    select new PedidosWmsModel() {
+                        Cantidad = 0,
+                        ClienteId = G.Fod().ClienteId,
+                        Estatus = G.Fod().Estatus,
+                        FechaPedido = G.Fod().FechaPedido,
+                        NomBodega = G.Fod().NomBodega,
+                        Observacion = G.Fod().Observacion,
+                        PedidoBarcode = G.Fod().PedidoBarcode,
+                        PedidoId = G.Fod().PedidoId,
+                        Regimen = G.Fod().Regimen,
+                        Total = G.Fod().Total
+                    }
+                ).Distinct();
+                return new RetData<IEnumerable<PedidosWmsModel>> {
+                    Data = ListDis,
+                    Info = new RetInfo() {
+                        CodError = 0,
+                        Mensaje = "ok",
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            } catch (Exception e1) {
+                return new RetData<IEnumerable<PedidosWmsModel>> {
+                    Info = new RetInfo() {
                         CodError = -1,
                         Mensaje = e1.ToString(),
                         ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
@@ -3528,6 +3561,55 @@ SET XACT_ABORT OFF
                 };
             } catch (Exception e1) {
                 return new RetData<IEnumerable<PeticionesAdminBGModel>> {
+                    Info = new RetInfo() {
+                        CodError = -1,
+                        Mensaje = e1.ToString(),
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            }
+        }
+        [HttpGet]
+        public RetData<string> ChangePedidoExternoIdWMS(int PedidoId, int PedidoIdWms) {
+            DateTime StartTime = DateTime.Now;
+            if (PedidoId == 0 || PedidoIdWms == 0)
+                return new RetData<string> {
+                    Info = new RetInfo() {
+                        CodError = -1,
+                        Mensaje = "Error desconocido, no se enviaron parámetros.",
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };            
+            try {
+                IEnumerable<PedidosExternos> ListPed = (from P in DbO.PedidosExternos where P.Id == PedidoId select P);
+                if (ListPed.Count() > 0) {
+                    PedidosExternos Pedido = ListPed.Fod();
+                    if (PedidoIdWms != 0)
+                        Pedido.PedidoWms = PedidoIdWms;
+                    else
+                        Pedido.PedidoWms = null;
+                    Pedido.IdEstado = 3;
+                    DbO.PedidosExternos.Update(Pedido);
+                    DbO.SaveChanges();
+                    return new RetData<string> {
+                        Data = "Se ha cambiado el despacho relacionado",
+                        Info = new RetInfo() {
+                            CodError = 0,
+                            Mensaje = "ok",
+                            ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                        }
+                    };
+                } else {
+                    return new RetData<string> {
+                        Info = new RetInfo() {
+                            CodError = -1,
+                            Mensaje = "Error desconocido al cambiar el despacho del pedido web",
+                            ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                        }
+                    };
+                }
+            } catch (Exception e1) {
+                return new RetData<string> {
                     Info = new RetInfo() {
                         CodError = -1,
                         Mensaje = e1.ToString(),

@@ -1773,5 +1773,35 @@ namespace EdiViewer.Controllers
                 };
             }
         }
+        public async Task<RetData<IEnumerable<PedidosWmsModel>>> GetPedidosWmsByStore(int ClienteId, int TiendaId) {
+            DateTime StartTime = DateTime.Now;
+            try {
+                RetData<IEnumerable<PedidosWmsModel>> ListDis = await ApiClientFactory.Instance.GetPedidosMWmsByTienda(ClienteId, TiendaId);
+                return ListDis;
+            } catch (Exception e2) {
+                return new RetData<IEnumerable<PedidosWmsModel>>() {
+                    Info = new RetInfo() {
+                        CodError = -1,
+                        Mensaje = e2.ToString(),
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            }
+        }
+        public async Task<RetData<string>> ChangePedidoExternoIdWMS(int PedidoId, int PedidoIdWms) {
+            DateTime StartTime = DateTime.Now;
+            try {
+                RetData<string> List = await ApiClientFactory.Instance.ChangePedidoExternoIdWMS(PedidoId, PedidoIdWms);
+                return List;
+            } catch (Exception e2) {
+                return new RetData<string> {
+                    Info = new RetInfo() {
+                        CodError = -1,
+                        Mensaje = e2.ToString(),
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            }
+        }
     }
 }

@@ -7,6 +7,7 @@ namespace ComModels
 {
     public class PedidosWmsModel
     {
+        public int Recid { get { return PedidoId; } }
         public int ClienteId { get; set; }
         public string PedidoBarcode { get; set; }
         public string FechaPedido { get; set; }
@@ -17,5 +18,6 @@ namespace ComModels
         public string Cantidad { get; set; }
         public string Observacion { get; set; }
         public int PedidoId { get; set; }
+        public int Total { get; set; }
     }
 }

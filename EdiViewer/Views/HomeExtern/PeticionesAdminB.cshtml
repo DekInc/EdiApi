@@ -15,7 +15,11 @@
                         <div class="container">
                             <div class="row">
                                 <div class="col-sm">
-                                    <label>Cliente</label><br />
+                                    <label>Cliente</label>
+                                    <div id="divSpinCliente" class="spinner-border spinner-border-sm text-danger" style="display: none" role="status">
+                                        <span class="sr-only">Loading...</span>
+                                    </div>
+                                    <br />
                                     <select class="form-control" id="cbClient" name="cbClient"></select>
                                     <div class="form-check margin5">
                                         <input class="form-check-input" id="chkPending" name="chkPending" type="checkbox" checked="checked" />
@@ -31,9 +35,6 @@
                                 <div class="col-sm">
                                     <button id="btnFiltrar" class="btn btn-primary" type="button">
                                         &nbsp;&nbsp;&nbsp;Mostrar&nbsp;&nbsp;&nbsp;
-                                        <div id="divSpinFiltrar" class="spinner-border spinner-border-sm text-danger" style="display: none" role="status">
-                                            <span class="sr-only">Loading...</span>
-                                        </div>
                                     </button>
                                     <button id="btnLimpiar" class="btn btn-primary" type="button">
                                         &nbsp;&nbsp;&nbsp;Limpiar&nbsp;&nbsp;&nbsp;
@@ -57,9 +58,27 @@
                 </div>
             </div>
         </div>
+        <table id="tblExport1" class="noShow" style="width: 100%; border: 1px solid #000;">
+            <thead>
+                <tr>
+                    <th>PedidoId</th>
+                    <th>Bodega</th>
+                    <th>Tienda</th>
+                    <th>Fecha de entrega</th>
+                    <th>Periodo</th>
+                    <th>Categoria</th>
+                    <th>CP</th>
+                    <th>Barcode</th>
+                    <th>IdRack</th>
+                    <th>Nombre rack</th>
+                    <th>Cantidad pedida</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
     </div>
 </div>
-@await Html.PartialAsync("_PopPeticionDet")
+@await Html.PartialAsync("_PopChangePedido")
 <script>
     var ModalPopPeticionDet = null;
     var domtblReportes = null;
@@ -75,10 +94,31 @@
             return null;
         }
         return decodeURI(results[1]) || 0;
-    }    
+    }
     function refreshGrid(auto) {
         w2ui.grid.autoLoad = auto;
         w2ui.grid.skip(0);
+    }
+    function assignDis(clienteId, tiendaId, pedidoId) {
+        $('#modalPopChangeStoreLabel').html('Cambio de despacho');
+        $('#modalPopChangeStore').modal();
+        fillCombobox('#divSpinList', '@this.Url.Action("GetPedidosWmsByStore", "HomeExtern")?ClienteId=' + clienteId + '&TiendaId=' + tiendaId, '#cboList', 'pedidoId', 'pedidoBarcode', 0);
+        if (gridOrdenesDet == null)
+            crearGridDet(clienteId, tiendaId);
+        else
+            gridOrdenesDet.reload2('@this.Url.Action("GetPedidosWmsByStore", "Grids")?ClienteId=' + clienteId + '&tiendaId=' + tiendaId);
+        $('#btnPopChangeStoreLabelOk').off('click');
+        $('#btnPopChangeStoreLabelOk').on('click', function () {
+            makeAjaxPost('@this.Url.Action("ChangePedidoExternoIdWMS", "HomeExtern")?PedidoId=' + pedidoId + '&PedidoIdWms=' + $('#cboList').val(), function (data) {
+                if (data.info.codError != 0) {
+                    menErrorEdi(data.info.mensaje);
+                    return;
+                } else {
+                    menErrorEdi(data.data, 'Información');
+                    gridOrdenes.reload2('@this.Url.Action("GetPeticionesAdmin", "Grids")?ClienteId=' + $('#cbClient').val() + '&dtp1=' + $('#dtp1').val() + '&chkPending=' + $('#chkPending').prop('checked'));
+                }
+            });
+        });
     }
     function crearGrid() {
         var config = {
@@ -87,11 +127,11 @@
                 selectType: 'cell',
                 bResponsive: true,
                 bMobile: window.mobileAndTabletcheck(),
-                url: '@this.Url.Action("GetPeticiones", "Grids")',
+                url: '@this.Url.Action("GetPeticionesAdmin", "Grids")?ClienteId=' + $('#cbClient').val() + '&dtp1=' + $('#dtp1').val() + '&chkPending=' + $('#chkPending').prop('checked'),
                 show: {
                     footer: true,
                     toolbar: true,
-                    expandColumn: window.mobileAndTabletcheck()                    
+                    expandColumn: window.mobileAndTabletcheck()
                 },
                 searches: [
                     { field: "id", caption: "Id orden", type: 'text' },
@@ -104,11 +144,15 @@
                     { field: 'fechaPedido' }
                 ],
                 columns: [
-                    { field: "id", caption: "Id orden", sortable: true },
-                    //{ field: "periodo", caption: "Periodo", sortable: true },
+                    { field: "id", caption: "Id orden", sortable: true, hidden: false },
+                    { field: "tiendaId", caption: "Tienda", sortable: true, hidden: false },
+                    { field: "womanQty", caption: "Mujeres", sortable: true, hidden: false },
+                    { field: "manQty", caption: "Hombres", sortable: true, hidden: false },
+                    { field: "kidQty", caption: "Niñ@s", sortable: true, hidden: false },
+                    { field: "accQty", caption: "Accesorios", sortable: true, hidden: false },
+                    { field: "cont", caption: "Cantidad total", sortable: true },
                     { field: "fechaCreacion", caption: "Fecha de creación", sortable: true },
-                    { field: "fechaPedido", caption: "Fecha y hora esperada", sortable: true },                    
-                    { field: "cont", caption: "Cantidad total", sortable: true },                    
+                    { field: "fechaPedido", caption: "Fecha y hora esperada", sortable: true },
                     {
                         field: "idEstado", caption: "Estado", sortable: false, render: function (record) {
                             if (record.idEstado == 1) return '<span class="thisSpan" alt="' + record.id + '">Guardado</span>';
@@ -117,12 +161,14 @@
                         }
                     },
                     {
-                        field: "periodo", caption: "", sortable: true, render: function (record) {
-                            var strBtn = '<div class="w2ui-buttons"><a href="javascript:verDetalle(' + record.id + ')">Ver detalle</a>';
-                            if (record.idEstado == 2 && record.changeState)
-                                strBtn += ' | <a href="javascript:ModifyDis(' + record.id + ')">Modificar</a>';
-                            strBtn += '</div>';
-                            return strBtn;
+                        field: "periodo", caption: "Despacho WMS", sortable: true, render: function (record) {
+                            var l1 = '', l2 = '';
+                            if (record.pedidoWms != null) {
+                                l2 = '<a target="_new" href="@this.Url.Action("PedidosDet", "HomeExtern")?PedidoId=' + record.pedidoWms + '">' + record.pedidoWms + '</a>';
+                                l1 = ' | ';
+                            }                            
+                            l1 = l1 + '<span class="w2ui-buttons"><a href="javascript:assignDis(' + $('#cbClient').val() + ', ' + record.tiendaId + ', ' + record.id + ')">Asignar</a></span>';                            
+                            return l2 + l1;
                         }
                     }
                 ]
@@ -131,14 +177,14 @@
         gridOrdenes = $('#gridOrdenes').w2grid(config.grid);
         arrayGrids['gridOrdenes'] = gridOrdenes;
     }
-    function crearGridDet(pedidoId) {
+    function crearGridDet(clienteId, tiendaId) {
         var config = {
             grid: {
                 name: 'gridOrdenesDet',
                 selectType: 'cell',
                 bResponsive: true,
                 bMobile: window.mobileAndTabletcheck(),
-                url: '@this.Url.Action("GetPeticionDet", "Grids")?PedidoId=' + pedidoId,
+                url: '@this.Url.Action("GetPedidosWmsByStore", "Grids")?ClienteId=' + clienteId + '&tiendaId=' + tiendaId,
                 show: {
                     footer: true,
                     toolbar: true,
@@ -146,54 +192,93 @@
                     toolbarInput: false
                 },
                 searches: [
-                    { field: "barcode", caption: "Cod. caja", type: 'text' },
-                    //{ field: "producto", caption: "Lote", type: 'text' },
-                    //{ field: "talla", caption: "Talla", type: 'text' },
-                    //{ field: "lote", caption: "Estilo", type: 'text' },
-                    //{ field: "categoria", caption: "Genero", type: 'text' },
-                    //{ field: "departamento", caption: "departamento", type: 'text' },
-                    { field: "cp", caption: "cp", type: 'text' }
+                    { field: "pedidoId", caption: "Id Pedido WMS", type: 'text' },
+                    { field: "fechaPedido", caption: "Fecha pedido", type: 'text' },
+                    { field: "estatus", caption: "Estado", type: 'text' },
+                    { field: "bodega", caption: "Bodega", type: 'text' },
+                    { field: "regimen", caption: "Regimen", type: 'text' }
                 ],
                 colShowResponsive: [
                     { field: 'barcode' },
                     { field: 'cantPedir' }
                 ],
                 columns: [
-                    { field: "id", caption: "id", sortable: true, hidden: true },
-                    { field: "barcode", caption: "Cod. caja", type: 'text', sortable: true },
-                    //{ field: "producto", caption: "Lote", type: 'text', sortable: true },
-                    //{ field: "talla", caption: "talla", type: 'text', sortable: true },
-                    //{ field: "categoria", caption: "Genero", type: 'text', sortable: true },
-                    //{ field: "lote", caption: "estilo", type: 'text', sortable: true },
-                    { field: "cantPedir", caption: "Cantidad a pedir", sortable: true },
-                    //{ field: "departamento", caption: "departamento", type: 'text', sortable: true },
-                    { field: "cp", caption: "cp", type: 'text', sortable: true }
+                    { field: "pedidoId", caption: "Id Pedido WMS", sortable: true, hidden: true },
+                    { field: "nomBodega", caption: "Bodega", type: 'text', sortable: true },                    
+                    { field: "pedidoBarcode", caption: "Pedido", type: 'text', sortable: true },
+                    { field: "fechaPedido", caption: "Fecha pedido", type: 'text', sortable: true },
+                    { field: "total", caption: "Total", type: 'text', sortable: true },
+                    { field: "estatus", caption: "Estado", type: 'text', sortable: true },                    
+                    { field: "regimen", caption: "Regimen", type: 'text', sortable: true },
+                    { field: "observacion", caption: "Observación", sortable: true }
                 ]
             }
         };
         gridOrdenesDet = $('#gridOrdenesDet').w2grid(config.grid);
         arrayGrids['gridOrdenesDet'] = gridOrdenesDet;
     }
-    function verDetalle(pedidoId) {
-        $('#exampleModalLabel3').html('Detalle de orden');        
-        ModalPopPeticionDet = $('#modalPopPeticionDet').modal();
-        gridOrdenesDet.reload2('@this.Url.Action("GetPeticionDet", "Grids")?PedidoId=' + pedidoId);
-    }
-    function ModifyDis(pedidoId) {
-        $.ajax({
-            method: "GET",
-            url: "@this.Url.Action("SetChangeDis", "HomeExtern")?PedidoId=" + pedidoId,
-            success: function (data) {
-                window.location.href = '@this.Url.Action("PedidosPayless3", "HomeExtern")';
-            },
-            error: function (xhr, ajaxOptions, thrownError) {
-                menErrorEdi(xhr.status, 'Error throw in js');
-                menErrorEdi(thrownError, 'Error throw in js');
-            }
-        });
-    }
     $(document).ready(function () {
-        crearGrid();
-        //crearGridDet(1);
+        fillCombobox('#divSpinCliente', '@this.Url.Action("GetClientsOrders", "Home")', '#cbClient', 'clienteId', 'nombre', 1432);
+        $('#dtp1').datepicker();
+        crearGrid();        
+        $('#btnFiltrar').on("click", function () {
+            gridOrdenes.reload2('@this.Url.Action("GetPeticionesAdmin", "Grids")?ClienteId=' + $('#cbClient').val() + '&dtp1=' + $('#dtp1').val() + '&chkPending=' + $('#chkPending').prop('checked'));
+        });
+        $('#btnLimpiar').on("click", function () {
+            window.location.href = window.location.href;
+        });
+        $('#btnPrintAll').on("click", function () {
+            $('#divSpinPrintAll').show();
+            var arrayPedidosNorep = [];
+            $.ajax({
+                method: "GET",
+                dataType: 'json',
+                contentType: 'application/x-www-form-urlencoded',
+                xhrFields: { withCredentials: true },
+                url: '@this.Url.Action("GetPedidosExternosPendientesAdmin", "Home")',
+                timeout: 1200000,
+                success: function (data) {
+                    $('#divSpinPrintAll').hide();
+                    if (data.codError != 0) {
+                        menErrorEdi(data.errorMessage, 'Error');
+                        return;
+                    }
+                    $($("#tblExport1").find('tbody')).html('');
+                    $.each(data.data, function (i, pedido) {
+                        $("#tblExport1").find('tbody')
+                            .append($('<tr>')
+                            .append($('<td>')
+                                .append(pedido.pedidoId))
+                            .append($('<td>')
+                                .append(pedido.bodega))
+                            .append($('<td>')
+                                .append(pedido.tiendaId))
+                            .append($('<td>')
+                                .append(pedido.fechaPedido))
+                            .append($('<td>')
+                                .append(pedido.periodo))
+                            .append($('<td>')
+                                .append(pedido.categoria))
+                            .append($('<td>')
+                                .append(pedido.cp))
+                            .append($('<td>')
+                                .append(pedido.barcode))
+                            .append($('<td>')
+                                .append(pedido.idRack))
+                            .append($('<td>')
+                                .append(pedido.nombreRack))
+                            .append($('<td>')
+                                .append(1))
+                        );
+                    });
+                    $("#tblExport1").tblToExcel();
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    $('#divSpinPrintAll').hide();
+                    menErrorEdi(xhr.status, 'Error throw in js');
+                    menErrorEdi(thrownError, 'Error throw in js');
+                }
+            });
+        });
     });
 </script>
