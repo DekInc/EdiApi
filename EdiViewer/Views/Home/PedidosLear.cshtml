@@ -230,11 +230,11 @@
         if (HashId == null) {
             $.ajax({
                 method: "GET",
-                url: "@this.Url.Action("TranslateForms830")"
+                url: '@this.Url.Action("TranslateForms830", "Home")'
             });
             $.ajax({
                 method: "GET",
-                url: "@this.Url.Action("AutoSendInventary830")"
+                url: '@this.Url.Action("AutoSendInventary830", "Home")'
             });
         }
     });

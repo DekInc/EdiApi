@@ -41,6 +41,8 @@ select @@servicename
 exec SP_GetExistenciasExtern 618
 	
 SELECT * FROM EdiDB.dbo.PedidosExternos order by TiendaId, FechaPedido
+SELECT * FROM EdiDB.dbo.PedidosExternos where Id = 40
+SELECT * FROM EdiDB.dbo.PedidosDetExternos where PedidoId = 40
 --update EdiDB.dbo.PedidosExternos SET PedidoWMS = null, IdEstado = 2
 select * from edidb.dbo.IEnetUsers where Id > 4
 --16	1432	7384	04/06/2019 08:00	2	31/05/2019 11:45	NULL	NULL	100	19	0	0	fifo
@@ -204,18 +206,95 @@ SELECT TOP 200 * FROM wms_test_29_01_2019.dbo.ItemInventario
 
 SELECT * FROM LEAR_EQUIVALENCIAS 
 
-EXEC GetSNDet 63386
+--70246
+EXEC GetSNDet 70246
 select * from wms.dbo.Pedido where ClienteId = 1432
+select * from wms.dbo.Pedido where PedidoId = 70309
+select * from wms.dbo.Pedido where PedidoId = 70266
+select * from wms.dbo.DtllPedido where PedidoId = 70246
+--70246, despacho 51633
+select top 20 * from wms.dbo.Despachos where DocumentoFiscal = 'SA117689' order by DespachoID DESC
+select top 20 * from wms.dbo.DtllDespacho Dd where Dd.DespachoID = 51642
+SELECT TOP 200 * FROM wms.dbo.Transacciones WHERE TransaccionID = 117689
+SELECT * FROM wms.dbo.SysTempSalidas S WHERE S.DtllPedidoID in (
+	select DtllPedidoID from wms.dbo.DtllPedido where PedidoId = 70310
+) 
+AND S.CodProducto IN (
+	SELECT CodProducto FROM EdiDB.dbo.PedidosDetExternos where PedidoId = 40
+)
+select * from wms.dbo.Inventario where InventarioID in (
+	SELECT InventarioID FROM wms.dbo.SysTempSalidas WHERE DtllPedidoID in (
+	select DtllPedidoID from wms.dbo.DtllPedido where PedidoId = 70041
+	)
+)
+--facturas por salidas
+SELECT TOP 200 
+T.*,
+(
+SELECT COUNT(*)
+FROM wms.dbo.SysTempSalidas S
+WHERE S.TransaccionID = T.TransaccionID
+) Total
+FROM wms.dbo.Transacciones T
+WHERE T.ClienteID = 1432 
+AND T.IDTipoTransaccion = 'SA'
+
+select top 20 * from wms.dbo.DocumentosxTransaccion
+select top 20 * from wms.dbo.Inventario
+select top 20 * from wms.dbo.Transacciones where TransaccionID = 19060
+select * from wms.dbo.SysTempSalidas where PedidoID = 69104
+select * from EdiDb.dbo.PAYLESS_ProdPrioriDet D where D.Barcode in (
+	SELECT CodProducto FROM wms.dbo.SysTempSalidas S WHERE S.DtllPedidoID in (
+		select DtllPedidoID from wms.dbo.DtllPedido where PedidoId = 70310
+	)
+)
+--7388882724
+--7388882839
+--7366830856
+select top 100 
+	MIN(ItemInventarioID) OVER(PARTITION BY Ii.CodProducto) MinItemInventarioId, 
+	Ii.CodProducto,
+	Ii.ItemInventarioID,
+	T.TransaccionID,
+	DxT.FACT_COMERCIAL
+from wms.dbo.ItemInventario Ii,
+wms.dbo.DetalleTransacciones Dt,
+wms.dbo.Transacciones T,
+wms.dbo.DocumentosxTransaccion DxT
+where Ii.CodProducto IN (
+SELECT DISTINCT Dp.CodProducto from wms.dbo.DtllPedido Dp where Dp.PedidoID = 70266
+) AND 
+Dt.InventarioID = Ii.InventarioID
+AND T.TransaccionID = Dt.TransaccionID
+AND T.IDTipoTransaccion = 'IN'
+AND DxT.TransaccionID = T.TransaccionID
+AND T.ClienteID = 1432
+AND DxT.FACT_COMERCIAL != ''
+--AND Ii.Existencia = 0
+GROUP BY Ii.CodProducto,
+Ii.ItemInventarioID,
+T.TransaccionID,
+DxT.FACT_COMERCIAL
+ORDER BY Ii.CodProducto
 
 EXEC sp_spaceused;
 
-1,315,952 KB
-548,120 KB
-[wms_test_15012019]
-[wms_test_29_01_2019]
-SELECT TOP 200 * FROM [wms_test_29_01_2019].dbo.Inventario WHERE InventarioID IN (1663770,
-1663779)
-SELECT TOP 200 * FROM wms.dbo.ItemInventario WHERE CodProducto = '26-4412-BC'
+
+SELECT TOP 200 DxT.*, I.InventarioID, Ii.ItemInventarioID
+FROM wms.dbo.Inventario I, 
+wms.dbo.DocumentosxTransaccion DxT, 
+wms.dbo.Transacciones T,
+wms.dbo.DetalleTransacciones Dt,
+wms.dbo.ItemInventario Ii
+WHERE I.InventarioID IN (
+SELECT InventarioID FROM wms.dbo.ItemInventario WHERE CodProducto = '7388882839'
+)
+AND Dt.InventarioID = I.InventarioID
+AND Dt.TransaccionID = T.TransaccionID
+AND T.TransaccionID = DxT.TransaccionID
+AND Ii.InventarioID = I.InventarioID
+
+SELECT TOP 200 * FROM wms.dbo.ItemInventario WHERE CodProducto = '7373823361'
 SELECT TOP 200 * FROM wms.dbo.SysTempSalidas WHERE ItemInventarioID IN (1699577)
 SELECT TOP 200 * FROM wms_test_29_01_2019.dbo.SysTempSalidas WHERE TransaccionID = 104745
 SELECT TOP 200 * FROM wms.dbo.Transacciones WHERE TransaccionID = 113707

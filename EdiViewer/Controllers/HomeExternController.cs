@@ -34,6 +34,9 @@ namespace EdiViewer.Controllers
         {
             return View();
         }
+        public IActionResult PedidosFacturas() {
+            return View();
+        }
         public IActionResult InvPaylessTienda() {
             return View();
         }        
@@ -288,7 +291,7 @@ namespace EdiViewer.Controllers
                 int recordsTotal = 0;
 
                 // Getting all Customer data  
-                RetData<IEnumerable<PedidosWmsModel>> ListPe = await ApiClientFactory.Instance.GetPedidosWms(HttpContext.Session.GetObjSession<int>("Session.ClientId"));
+                RetData<IEnumerable<PedidosWmsModel>> ListPe = await ApiClientFactory.Instance.GetWmsGroupDispatchs(HttpContext.Session.GetObjSession<int>("Session.ClientId"));
                 if (ListPe.Info.CodError != 0)
                     return Json(new { draw = 0, recordsFiltered = 0, recordsTotal = 0, errorMessage = ListPe.Info.Mensaje, data = "" });
                 if (ListPe.Data.Count() == 0)
@@ -318,7 +321,53 @@ namespace EdiViewer.Controllers
             {
                 return Json(new { draw = 0, recordsFiltered = 0, recordsTotal = 0, errorMessage = e1.ToString(), data = "" });
             }
-        }        
+        }
+        public async Task<IActionResult> GetPedidosFacturas() {
+            try {
+                //var dict = Request.Form.ToDictionary(x => x.Key, x => x.Value.ToString());
+                var draw = HttpContext.Request.Form["draw"].Fod();
+                // Skiping number of Rows count  
+                var start = Request.Form["start"].Fod();
+                // Paging Length 10,20  
+                var length = Request.Form["length"].Fod();
+                // Sort Column Name  
+                var sortColumn = Request.Form["columns[" + Request.Form["order[0][column]"].Fod() + "][name]"].Fod();
+                // Sort Column Direction ( asc ,desc)  
+                var sortColumnDirection = Request.Form["order[0][dir]"].Fod();
+                // Search Value from (Search box)  
+                var searchValue = Request.Form["search[value]"].Fod();
+
+                //Paging Size (10,20,50,100)  
+                int pageSize = length != null ? Convert.ToInt32(length) : 0;
+                int skip = start != null ? Convert.ToInt32(start) : 0;
+                int recordsTotal = 0;
+
+                // Getting all Customer data  
+                RetData<IEnumerable<PedidosWmsModel>> ListPe = await ApiClientFactory.Instance.GetWmsGroupDispatchsBills(HttpContext.Session.GetObjSession<int>("Session.ClientId"));
+                if (ListPe.Info.CodError != 0)
+                    return Json(new { draw = 0, recordsFiltered = 0, recordsTotal = 0, errorMessage = ListPe.Info.Mensaje, data = "" });
+                if (ListPe.Data.Count() == 0) {
+                    return Json(new { draw = 0, recordsFiltered = 0, recordsTotal = 0, errorMessage = (ListPe.Info.CodError != 0 ? ListPe.Info.Mensaje : string.Empty), data = "" });
+                }
+                if (!(string.IsNullOrEmpty(sortColumn) && string.IsNullOrEmpty(sortColumnDirection))) {
+                    if (sortColumn == "fechaPedido") {
+                        if (sortColumnDirection == "desc")
+                            ListPe.Data = ListPe.Data.OrderByDescending(O => O.FechaPedido.ToDateFromEspDate());
+                        else
+                            ListPe.Data = ListPe.Data.OrderBy(O => O.FechaPedido.ToDateFromEspDate());
+                    } else
+                        ListPe.Data = ListPe.Data.AsQueryable().OrderBy(sortColumn + " " + sortColumnDirection);
+                }
+                //total number of rows count
+                recordsTotal = ListPe.Data.Count();
+                //Paging
+                ListPe.Data = ListPe.Data.Skip(skip).Take(pageSize);
+                //Returning Json Data
+                return Json(new { draw, recordsFiltered = recordsTotal, recordsTotal, data = ListPe.Data, errorMessage = "" });
+            } catch (Exception e1) {
+                return Json(new { draw = 0, recordsFiltered = 0, recordsTotal = 0, errorMessage = e1.ToString(), data = "" });
+            }
+        }
         public async Task<RetData<string>> GetClientName()
         {            
             DateTime StartTime = DateTime.Now;
@@ -1801,6 +1850,86 @@ namespace EdiViewer.Controllers
                         ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
                     }
                 };
+            }
+        }
+        public async Task<RetData<IEnumerable<PedidosWmsModel>>> GetWmsDetDispatchsBills() {
+            DateTime StartTime = DateTime.Now;
+            try {
+                RetData<IEnumerable<PedidosWmsModel>> ListDis = await ApiClientFactory.Instance.GetWmsDetDispatchsBills(HttpContext.Session.GetObjSession<int>("Session.ClientId"));
+                return ListDis;
+            } catch (Exception e2) {
+                return new RetData<IEnumerable<PedidosWmsModel>>() {
+                    Info = new RetInfo() {
+                        CodError = -1,
+                        Mensaje = e2.ToString(),
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            }
+        }
+        public async Task<IActionResult> MakeWmsDetDispatchsBills() {
+            DateTime StartTime = DateTime.Now;
+            try {
+                RetData<IEnumerable<PedidosWmsModel>> ListInfo = await ApiClientFactory.Instance.GetWmsDetDispatchsBills(HttpContext.Session.GetObjSession<int>("Session.ClientId"));
+                if (ListInfo.Info.CodError != 0)
+                    return Json(ListInfo.Info);
+                Utility.ExceL ExcelO = new Utility.ExceL();                
+                using (FileStream FilePlantilla = new FileStream("plantillaWms3.xls", FileMode.Open, FileAccess.Read, FileShare.ReadWrite)) {
+                    MemoryStream Ms = new MemoryStream();
+                    FilePlantilla.CopyTo(Ms);
+                    try {
+                        ExcelO.ExcelWorkBook = new HSSFWorkbook(Ms);
+                        ExcelO.CurrentSheet = ExcelO.ExcelWorkBook.GetSheetAt(0);
+                    } catch (Exception e2) {
+                        throw new Exception("El archivo no es de Excel. Utilice un formato propio de Microsoft Excel. " + e2.ToString());
+                    }                    
+                    ExcelO.CurrentRow = 1;
+                    foreach (PedidosWmsModel RowO in ListInfo.Data) {
+                        try {
+                            ExcelO.CreateRow();
+                            for (int Z = 0; Z < 8; Z++) {
+                                ExcelO.CurrentCol = Z;
+                                ExcelO.CreateCell(CellType.String);
+                                switch (Z) {
+                                    case 0:
+                                        ExcelO.SetCellValue(RowO.PedidoBarcode);
+                                        break;
+                                    case 1:
+                                        ExcelO.SetCellValue(RowO.FechaPedido);
+                                        break;
+                                    case 2:
+                                        ExcelO.SetCellValue(RowO.Estatus);
+                                        break;
+                                    case 3:
+                                        ExcelO.SetCellValue(RowO.NomBodega);
+                                        break;
+                                    case 4:
+                                        ExcelO.SetCellValue(RowO.Regimen);
+                                        break;
+                                    case 5:
+                                        ExcelO.SetCellValue(string.IsNullOrEmpty(RowO.Observacion)? "" : RowO.Observacion);
+                                        break;
+                                    case 6:
+                                        ExcelO.SetCellValue(RowO.CodProducto);
+                                        break;
+                                    case 7:
+                                        ExcelO.SetCellValue(RowO.FactComercial);
+                                        break;
+                                    default:
+                                        break;
+                                }
+                            }
+                            ExcelO.CurrentRow++;
+                        } catch (Exception e2) {
+                            throw e2;
+                        }                        
+                    }
+                    MemoryStream Ms2 = new MemoryStream();
+                    ExcelO.ExcelWorkBook.Write(Ms2);
+                    return File(Ms2.ToArray(), "application/octet-stream", "PedidosFacturas_WMS_" + DateTime.Now.ToString("ddMMyyyy") + ".xls");
+                }
+            } catch (Exception e1) {
+                return Json(JsonConvert.SerializeObject(e1));
             }
         }
     }

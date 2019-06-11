@@ -1339,6 +1339,110 @@ namespace EdiApi.Controllers
             }
         }
         [HttpGet]
+        public RetData<IEnumerable<PedidosWmsModel>> GetWmsGroupDispatchs(int ClienteId) {
+            DateTime StartTime = DateTime.Now;
+            try {
+                IEnumerable<PedidosWmsModel> ListDis = ManualDB.GetWmsGroupDispatchs(ref DbO, ClienteId);
+                ListDis = (
+                    from Ld in ListDis
+                    group Ld by new { Ld.PedidoId } into G
+                    select new PedidosWmsModel() {
+                        ClienteId = G.Fod().ClienteId,
+                        PedidoBarcode = G.Fod().PedidoBarcode,
+                        FechaPedido = G.Fod().FechaPedido,
+                        Estatus = G.Fod().Estatus,
+                        NomBodega = G.Fod().NomBodega,
+                        Regimen = G.Fod().Regimen,
+                        Bultos = G.Sum(O1 => O1.Bultos),
+                        Cantidad = G.Sum(O1 => O1.Cantidad),
+                        Observacion = G.Fod().Observacion,                        
+                        PedidoId = G.Fod().PedidoId,
+                        TiendaId = string.Join(", ", G.Select(O2 => O2.TiendaId))
+                    }
+                ).Distinct();
+                return new RetData<IEnumerable<PedidosWmsModel>> {
+                    Data = ListDis,
+                    Info = new RetInfo() {
+                        CodError = 0,
+                        Mensaje = "ok",
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            } catch (Exception e1) {
+                return new RetData<IEnumerable<PedidosWmsModel>> {
+                    Info = new RetInfo() {
+                        CodError = -1,
+                        Mensaje = e1.ToString(),
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            }
+        }
+        [HttpGet]
+        public RetData<IEnumerable<PedidosWmsModel>> GetWmsGroupDispatchsBills(int ClienteId) {
+            DateTime StartTime = DateTime.Now;
+            try {
+                IEnumerable<PedidosWmsModel> ListDis = ManualDB.GetWmsGroupDispatchsBills(ref DbO, ClienteId);
+                ListDis = (
+                    from Ld in ListDis
+                    group Ld by new { Ld.PedidoId } into G
+                    select new PedidosWmsModel() {
+                        ClienteId = G.Fod().ClienteId,
+                        PedidoBarcode = G.Fod().PedidoBarcode,
+                        FechaPedido = G.Fod().FechaPedido,
+                        Estatus = G.Fod().Estatus,
+                        NomBodega = G.Fod().NomBodega,
+                        Regimen = G.Fod().Regimen,
+                        Bultos = G.Sum(O1 => O1.Bultos),
+                        Cantidad = G.Sum(O1 => O1.Cantidad),
+                        Observacion = G.Fod().Observacion,
+                        PedidoId = G.Fod().PedidoId,
+                        TiendaId = string.Join(", ", G.Select(O2 => O2.TiendaId).Distinct()),
+                        FactComercial = string.Join(", ", G.Select(O2 => O2.FactComercial).Distinct())
+                    }
+                ).Distinct();
+                return new RetData<IEnumerable<PedidosWmsModel>> {
+                    Data = ListDis,
+                    Info = new RetInfo() {
+                        CodError = 0,
+                        Mensaje = "ok",
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            } catch (Exception e1) {
+                return new RetData<IEnumerable<PedidosWmsModel>> {
+                    Info = new RetInfo() {
+                        CodError = -1,
+                        Mensaje = e1.ToString(),
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            }
+        }
+        [HttpGet]
+        public RetData<IEnumerable<PedidosWmsModel>> GetWmsDetDispatchsBills(int ClienteId) {
+            DateTime StartTime = DateTime.Now;
+            try {
+                IEnumerable<PedidosWmsModel> ListDis = ManualDB.GetWmsDetDispatchsBills(ref DbO, ClienteId);                
+                return new RetData<IEnumerable<PedidosWmsModel>> {
+                    Data = ListDis,
+                    Info = new RetInfo() {
+                        CodError = 0,
+                        Mensaje = "ok",
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            } catch (Exception e1) {
+                return new RetData<IEnumerable<PedidosWmsModel>> {
+                    Info = new RetInfo() {
+                        CodError = -1,
+                        Mensaje = e1.ToString(),
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            }
+        }
+        [HttpGet]
         public RetData<IEnumerable<PedidosWmsModel>> GetPedidosMWmsByTienda(int ClienteId, int TiendaId) {
             DateTime StartTime = DateTime.Now;
             try {
@@ -3572,7 +3676,7 @@ SET XACT_ABORT OFF
         [HttpGet]
         public RetData<string> ChangePedidoExternoIdWMS(int PedidoId, int PedidoIdWms) {
             DateTime StartTime = DateTime.Now;
-            if (PedidoId == 0 || PedidoIdWms == 0)
+            if (PedidoId == 0)
                 return new RetData<string> {
                     Info = new RetInfo() {
                         CodError = -1,
@@ -3584,11 +3688,13 @@ SET XACT_ABORT OFF
                 IEnumerable<PedidosExternos> ListPed = (from P in DbO.PedidosExternos where P.Id == PedidoId select P);
                 if (ListPed.Count() > 0) {
                     PedidosExternos Pedido = ListPed.Fod();
-                    if (PedidoIdWms != 0)
+                    if (PedidoIdWms != 0) {
                         Pedido.PedidoWms = PedidoIdWms;
-                    else
+                        Pedido.IdEstado = 3;
+                    } else {
                         Pedido.PedidoWms = null;
-                    Pedido.IdEstado = 3;
+                        Pedido.IdEstado = 2;
+                    }                    
                     DbO.PedidosExternos.Update(Pedido);
                     DbO.SaveChanges();
                     return new RetData<string> {

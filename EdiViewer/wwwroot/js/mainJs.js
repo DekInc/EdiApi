@@ -73,7 +73,8 @@ function fillCombobox(divSpin, serverUrl, comboName, valueName, textName, valueD
                         selected: this[valueName] == valueDef? true : false
                     }));
                 });
-                //$(comboName).val(valueDef);
+                if (afterFillCombobox != null)
+                    afterFillCombobox();
             }
             $(divSpin).hide();
         },

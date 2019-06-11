@@ -25,6 +25,7 @@ BEGIN
 		ON D.Barcode = Ped.CodProducto
 	WHERE Ped.CodProducto like @TiendaId + '%'
 	AND D.CP != ''
+	AND Pe.PedidoWMS IS NULL
 
 	IF (@Cont > 0)
 	BEGIN
@@ -98,4 +99,3 @@ END
 GO
 
 --EXEC SP_GetPedidosMWmsByTienda 1432, '7372'
-

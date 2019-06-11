@@ -193,6 +193,93 @@ namespace EdiApi.Models
             }
             return ListExists;
         }
+        public static IEnumerable<PedidosWmsModel> GetWmsGroupDispatchs(ref Models.EdiDB.EdiDBContext _DbO, int ClienteId) {
+            List<PedidosWmsModel> ListExists = new List<PedidosWmsModel>();
+            using (DbCommand Cmd = _DbO.Database.GetDbConnection().CreateCommand()) {
+                Cmd.CommandText = $"[dbo].[SP_GetWmsGroupDispatchs] {ClienteId}";
+                _DbO.Database.OpenConnection();
+                DbDataReader Dr = Cmd.ExecuteReader();
+                if (Dr.HasRows) {
+                    while (Dr.Read()) {
+                        ListExists.Add(new PedidosWmsModel() {
+                            ClienteId = Dr.Gr<int>(0),
+                            PedidoBarcode = Dr.Gr<string>(1),
+                            FechaPedido = Dr.Gr<string>(2),
+                            Estatus = Dr.Gr<string>(3),
+                            NomBodega = Dr.Gr<string>(4),
+                            Regimen = Dr.Gr<string>(5),
+                            Bultos = (double)Dr.Gr<decimal>(6),
+                            Cantidad = Dr.Gr<double>(7),
+                            Observacion = Dr.Gr<string>(8),
+                            PedidoId = Dr.Gr<int>(9),
+                            TiendaId = Dr.Gr<string>(10)
+                        });
+                    }
+                }
+                _DbO.Database.CloseConnection();
+                if (!Dr.IsClosed)
+                    Dr.Close();
+            }
+            return ListExists;
+        }
+        public static IEnumerable<PedidosWmsModel> GetWmsGroupDispatchsBills(ref Models.EdiDB.EdiDBContext _DbO, int ClienteId) {
+            List<PedidosWmsModel> ListExists = new List<PedidosWmsModel>();
+            using (DbCommand Cmd = _DbO.Database.GetDbConnection().CreateCommand()) {
+                Cmd.CommandText = $"[dbo].[SP_GetWmsGroupDispatchsBills] {ClienteId}";
+                _DbO.Database.OpenConnection();
+                DbDataReader Dr = Cmd.ExecuteReader();                
+                if (Dr.HasRows) {
+                    while (Dr.Read()) {
+                        ListExists.Add(new PedidosWmsModel() {
+                            ClienteId = Dr.Gr<int>(0),
+                            PedidoBarcode = Dr.Gr<string>(1),
+                            FechaPedido = Dr.Gr<string>(2),
+                            Estatus = Dr.Gr<string>(3),
+                            NomBodega = Dr.Gr<string>(4),
+                            Regimen = Dr.Gr<string>(5),
+                            Bultos = (double)Dr.Gr<decimal>(6),
+                            Cantidad = Dr.Gr<double>(7),
+                            Observacion = Dr.Gr<string>(8),
+                            PedidoId = Dr.Gr<int>(9),
+                            TiendaId = Dr.Gr<string>(10),
+                            FactComercial = Dr.Gr<string>(11)
+                        });
+                    }
+                }
+                _DbO.Database.CloseConnection();
+                if (!Dr.IsClosed)
+                    Dr.Close();
+            }
+            return ListExists;
+        }
+        public static IEnumerable<PedidosWmsModel> GetWmsDetDispatchsBills(ref Models.EdiDB.EdiDBContext _DbO, int ClienteId) {
+            List<PedidosWmsModel> ListExists = new List<PedidosWmsModel>();
+            using (DbCommand Cmd = _DbO.Database.GetDbConnection().CreateCommand()) {
+                Cmd.CommandText = $"[dbo].[SP_GetWmsDetDispatchsBills] {ClienteId}";
+                _DbO.Database.OpenConnection();
+                DbDataReader Dr = Cmd.ExecuteReader();
+                if (Dr.HasRows) {
+                    while (Dr.Read()) {
+                        ListExists.Add(new PedidosWmsModel() {
+                            ClienteId = Dr.Gr<int>(0),
+                            PedidoBarcode = Dr.Gr<string>(1),
+                            FechaPedido = Dr.Gr<string>(2),
+                            Estatus = Dr.Gr<string>(3),
+                            NomBodega = Dr.Gr<string>(4),
+                            Regimen = Dr.Gr<string>(5),
+                            CodProducto = Dr.Gr<string>(6),
+                            PedidoId = Dr.Gr<int>(7),
+                            FactComercial = Dr.Gr<string>(8),
+                            Observacion = Dr.Gr<string>(9)
+                        });
+                    }
+                }
+                _DbO.Database.CloseConnection();
+                if (!Dr.IsClosed)
+                    Dr.Close();
+            }
+            return ListExists;
+        }
         public static IEnumerable<PedidosDetExternos> SP_GetPedidosDetExternos(ref Models.EdiDB.EdiDBContext _DbO, int _IdClient)
         {
             List<PedidosDetExternos> ListExists = new List<PedidosDetExternos>();

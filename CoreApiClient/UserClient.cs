@@ -142,6 +142,12 @@ namespace CoreApiClient
             string JsonParams = JsonConvert.SerializeObject(ClienteId);
             return await PostGetAsyncJson<RetData<IEnumerable<PedidosWmsModel>>>(CreateRequestUri(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Data/GetPedidosWms")), JsonParams);
         }
+        public async Task<RetData<IEnumerable<PedidosWmsModel>>> GetWmsGroupDispatchs(int ClienteId) {
+            return await GetAsync<RetData<IEnumerable<PedidosWmsModel>>>(CreateRequestUri(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Data/GetWmsGroupDispatchs"), $"?ClienteId={ClienteId}"));
+        }
+        public async Task<RetData<IEnumerable<PedidosWmsModel>>> GetWmsGroupDispatchsBills(int ClienteId) {
+            return await GetAsync<RetData<IEnumerable<PedidosWmsModel>>>(CreateRequestUri(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Data/GetWmsGroupDispatchsBills"), $"?ClienteId={ClienteId}"));
+        }
         public async Task<RetData<IEnumerable<ClientesModel>>> GetClientsOrders()
         {
             return await GetAsync<RetData<IEnumerable<ClientesModel>>>(CreateRequestUri(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Data/GetClientsOrders")));
@@ -303,6 +309,9 @@ namespace CoreApiClient
         }
         public async Task<RetData<string>> ChangePedidoExternoIdWMS(int PedidoId, int PedidoIdWms) {
             return await GetAsync<RetData<string>>(CreateRequestUri(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Data/ChangePedidoExternoIdWMS"), $"?PedidoId={PedidoId}&PedidoIdWms={PedidoIdWms}"));
+        }
+        public async Task<RetData<IEnumerable<PedidosWmsModel>>> GetWmsDetDispatchsBills(int ClienteId) {
+            return await GetAsync<RetData<IEnumerable<PedidosWmsModel>>>(CreateRequestUri(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Data/GetWmsDetDispatchsBills"), $"?ClienteId={ClienteId}"));
         }
         /////////////////////////////////////////
         //public async Task<List<UsersModel>> GetUsers()

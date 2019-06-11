@@ -99,6 +99,12 @@
         w2ui.grid.autoLoad = auto;
         w2ui.grid.skip(0);
     }
+    function afterFillCombobox() {
+        $('#cboList').append($('<option>', {
+            value: 0,
+            text: 'Ninguno'
+        }));
+    }
     function assignDis(clienteId, tiendaId, pedidoId) {
         $('#modalPopChangeStoreLabel').html('Cambio de despacho');
         $('#modalPopChangeStore').modal();
@@ -151,7 +157,7 @@
                     { field: "kidQty", caption: "Niñ@s", sortable: true, hidden: false },
                     { field: "accQty", caption: "Accesorios", sortable: true, hidden: false },
                     { field: "cont", caption: "Cantidad total", sortable: true },
-                    { field: "fechaCreacion", caption: "Fecha de creación", sortable: true },
+                    { field: "fechaCreacion", caption: "Fecha de creación", sortable: true, hidden: true },
                     { field: "fechaPedido", caption: "Fecha y hora esperada", sortable: true },
                     {
                         field: "idEstado", caption: "Estado", sortable: false, render: function (record) {
