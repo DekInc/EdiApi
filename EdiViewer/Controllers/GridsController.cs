@@ -414,16 +414,30 @@ namespace EdiViewer.Controllers
                 return Json(new { total = 0, records = "", errorMessage = e1.ToString() });
             }
         }
-        public async Task<IActionResult> GetPeticionesAdminB(int ClienteId) {
+        public async Task<IActionResult> GetPeticionesAdminB(string Dtp1 = "", string ChkPending = "") {
             try {
-                RetData<IEnumerable<PeticionesAdminBGModel>> ListPe = await ApiClientFactory.Instance.GetPeticionesAdminB(ClienteId);
+                RetData<IEnumerable<PeticionesAdminBGModel>> ListPe = await ApiClientFactory.Instance.GetPeticionesAdminB();
                 if (ListPe.Info.CodError != 0)
                     return Json(new { total = 0, records = "", errorMessage = ListPe.Info.Mensaje });
                 if (ListPe.Data == null)
                     return Json(new { total = 0, records = "", errorMessage = (ListPe.Info.CodError != 0 ? ListPe.Info.Mensaje : string.Empty) });
                 if (ListPe.Data.Count() == 0)
                     return Json(new { total = 0, records = "", errorMessage = (ListPe.Info.CodError != 0 ? ListPe.Info.Mensaje : string.Empty) });
-                List<PeticionesAdminBGModel> Records = ListPe.Data.ToList();                
+                List<PeticionesAdminBGModel> Records = new List<PeticionesAdminBGModel>();
+                foreach (PeticionesAdminBGModel Pe in ListPe.Data) {
+                    Pe.Total = Pe.WomanQty + Pe.ManQty + Pe.KidQty + Pe.AccQty + Pe.TotalCp;
+                    Pe.TotalEnv = Pe.WomanQtyEnv + Pe.ManQtyEnv + Pe.KidQtyEnv + Pe.AccQtyEnv + Pe.TotalCpEnv;
+                    if (Pe.TotalEnv != 0)
+                        Pe.PorcValid = Math.Round((1.0 - (double)(Math.Abs((double)Pe.Total - (double)Pe.TotalEnv)/(double)Pe.Total)) * 100.0, 2);
+                    Records.Add(Pe);
+                }
+                if (!string.IsNullOrEmpty(Dtp1)) {
+                    Records = Records.Where(Pe => Pe.FechaPedido.StartsWith(Dtp1)).ToList();
+                }
+                if (!string.IsNullOrEmpty(ChkPending))
+                    if (ChkPending.ToLower() == "true")
+                        Records = Records.Where(Pe => Pe.IdEstado == 2).ToList();
+                Records = Records.OrderByDescending(O => O.FechaPedido.ToDate()).ToList();
                 List<PeticionesAdminBGModel> AllRecords = new List<PeticionesAdminBGModel>();
                 int Total = Records.Count;
                 if (Records.Count() > 0) {

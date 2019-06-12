@@ -212,7 +212,8 @@ namespace EdiApi.Models
                             Cantidad = Dr.Gr<double>(7),
                             Observacion = Dr.Gr<string>(8),
                             PedidoId = Dr.Gr<int>(9),
-                            TiendaId = Dr.Gr<string>(10)
+                            TiendaId = Dr.Gr<string>(10),
+                            Total = Dr.Gr<int>(11)
                         });
                     }
                 }
@@ -806,17 +807,23 @@ namespace EdiApi.Models
                 if (Dr.HasRows) {
                     while (Dr.Read()) {
                         ListProdDet.Add(new PeticionesAdminBGModel() {
-
-                            //PedidoId = Convert.ToInt32(Dr.GetValue(0)),
-                            //Bodega = Convert.ToString(Dr.GetValue(1)),
-                            //TiendaId = Convert.ToInt32(Dr.GetValue(2)),
-                            //FechaPedido = Convert.ToString(Dr.GetValue(3)),
-                            //Periodo = Convert.ToString(Dr.GetValue(4)),
-                            //Categoria = Convert.ToString(Dr.GetValue(5)),
-                            //CP = Convert.ToString(Dr.GetValue(6)),
-                            //Barcode = Convert.ToString(Dr.GetValue(7)),
-                            //IdRack = Convert.ToInt32(Dr.GetValue(8)),
-                            //NombreRack = Convert.ToString(Dr.GetValue(9))
+                            Id = Dr.Gr<int>(0),
+                            TiendaId = Dr.Gr<int>(1),
+                            Tienda = Dr.Gr<string>(2),
+                            WomanQty = Dr.Gr<int>(3),
+                            ManQty = Dr.Gr<int>(4),
+                            KidQty = Dr.Gr<int>(5),
+                            AccQty = Dr.Gr<int>(6),
+                            FechaCreacion = Dr.Gr<string>(7),
+                            FechaPedido = Dr.Gr<string>(8),
+                            TotalCp = Dr.Gr<int>(9),
+                            PedidoWMS = Dr.Gr<int?>(10),
+                            IdEstado = Dr.Gr<int>(11),
+                            WomanQtyEnv = Dr.Gr<int>(12),
+                            ManQtyEnv = Dr.Gr<int>(13),
+                            KidQtyEnv = Dr.Gr<int>(14),
+                            AccQtyEnv = Dr.Gr<int>(15),
+                            TotalCpEnv = Dr.Gr<int>(16)
                         });
                     }
                 }

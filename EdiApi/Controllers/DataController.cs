@@ -1357,7 +1357,8 @@ namespace EdiApi.Controllers
                         Cantidad = G.Sum(O1 => O1.Cantidad),
                         Observacion = G.Fod().Observacion,                        
                         PedidoId = G.Fod().PedidoId,
-                        TiendaId = string.Join(", ", G.Select(O2 => O2.TiendaId))
+                        TiendaId = string.Join(", ", G.Select(O2 => O2.TiendaId)),
+                        Total = G.Fod().Total
                     }
                 ).Distinct();
                 return new RetData<IEnumerable<PedidosWmsModel>> {
@@ -3651,7 +3652,7 @@ SET XACT_ABORT OFF
             }
         }
         [HttpGet]
-        public RetData<IEnumerable<PeticionesAdminBGModel>> GetPeticionesAdminB(int ClienteId) {
+        public RetData<IEnumerable<PeticionesAdminBGModel>> GetPeticionesAdminB() {
             DateTime StartTime = DateTime.Now;
             try {
                 IEnumerable<PeticionesAdminBGModel> ListOrders = ManualDB.SP_GetPeticionesAdminB(ref DbOLong);
@@ -3714,6 +3715,46 @@ SET XACT_ABORT OFF
                         }
                     };
                 }
+            } catch (Exception e1) {
+                return new RetData<string> {
+                    Info = new RetInfo() {
+                        CodError = -1,
+                        Mensaje = e1.ToString(),
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            }
+        }
+        [HttpGet]
+        public RetData<string> MakeAutoReportsPayless() {
+            DateTime StartTime = DateTime.Now;
+            try {
+                List<DateTime> ListThurs = Utility.Funcs.AllThursdaysInMonth(StartTime.Year, StartTime.Month).Where(D => D < (new DateTime(StartTime.Year, StartTime.Month, StartTime.Day, 23, 59, 59))).ToList();
+                for (int I = 0; I < ListThurs.Count(); I++) {
+                    IEnumerable<PaylessReportes> ListRep = (
+                        from R in DbO.PaylessReportes
+                        where R.Periodo == ListThurs[I].AddDays(-3).ToString(ApplicationSettings.DateTimeFormatShort)
+                        && R.Tipo == "0"
+                        select R
+                        );
+                    if (ListRep.Count() == 0) {
+                        PaylessReportes NewRep = new PaylessReportes() {
+                            Periodo = ListThurs[I].AddDays(-3).ToString(ApplicationSettings.DateTimeFormatShort),
+                            FechaGen = DateTime.Now.ToString(ApplicationSettings.DateTimeFormat),
+                            Tipo = "0"
+                        };
+                        DbO.PaylessReportes.Add(NewRep);
+                        DbO.SaveChanges();
+                    }
+                }
+                return new RetData<string> {
+                    Data = "ok",
+                    Info = new RetInfo() {
+                        CodError = 0,
+                        Mensaje = "ok",
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
             } catch (Exception e1) {
                 return new RetData<string> {
                     Info = new RetInfo() {

@@ -149,9 +149,11 @@ label {
 
 .card-header {
     background-color: unset;
-    background: linear-gradient(35deg, rgb(65, 111, 170), rgb(122, 175, 243));  
-    font-size: 13pt;
-    font-weight: bold;
+    background: linear-gradient(35deg, rgb(65, 111, 170), rgb(122, 175, 243));
+    font-size: 16pt;
+    font-weight: bold !important;
+    color: #FFF !important;
+    text-shadow: 2px 2px #222;
 }
 .cardHeaderTable {
     background-color: unset;
@@ -484,6 +486,9 @@ table.dataTable thead th, table.dataTable thead td {
     border-right: 1px dashed #fcd280;
 }
 .navbar-brand {
+    font-size: 20pt;
+    font-weight: bold;
+    text-shadow: 2px 2px #222;
 }
 .divMainExtern {
     margin-top: 20px;

@@ -6,21 +6,34 @@
 
   <ItemGroup>
     <None Remove="plantillaOrdenes.xls" />
+    <None Remove="plantillaOrdenes3.xls" />
+    <None Remove="plantillaOrdenes4.xls" />
+    <None Remove="plantillaOrdenes5.xls" />
+    <None Remove="plantillaOrdenes6.xls" />
     <None Remove="plantillaWms1.xls" />
     <None Remove="plantillaWms2.xls" />
     <None Remove="plantillaWms3.xls" />
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="plantillaOrdenes3.xls">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="plantillaOrdenes4.xls">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="plantillaOrdenes5.xls">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="plantillaOrdenes6.xls">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="plantillaWms1.xls">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="plantillaOrdenes.xls">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
     <Content Include="plantillaWms2.xls">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

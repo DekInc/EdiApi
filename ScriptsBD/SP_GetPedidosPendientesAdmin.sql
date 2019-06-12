@@ -45,7 +45,7 @@ BEGIN
 		ON M.Id = D.IdPAYLESS_ProdPrioriM
 	LEFT JOIN EdiDB.dbo.ProductoUbicacion Pu
 		ON Pu.CodProducto = PeD.CodProducto AND Pu.Typ = 1
-	--WHERE Pe.Id = 9
+	WHERE Pe.IdEstado = 2
 	ORDER BY Pe.Id, Pe.TiendaId, M.Periodo, D.Categoria, D.Barcode
 END
 

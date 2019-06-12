@@ -121,7 +121,7 @@
                     return;
                 } else {
                     menErrorEdi(data.data, 'Información');
-                    gridOrdenes.reload2('@this.Url.Action("GetPeticionesAdmin", "Grids")?ClienteId=' + $('#cbClient').val() + '&dtp1=' + $('#dtp1').val() + '&chkPending=' + $('#chkPending').prop('checked'));
+                    gridOrdenes.reload2('@this.Url.Action("GetPeticionesAdminB", "Grids")?ClienteId=' + $('#cbClient').val() + '&dtp1=' + $('#dtp1').val() + '&chkPending=' + $('#chkPending').prop('checked'));
                 }
             });
         });
@@ -133,7 +133,7 @@
                 selectType: 'cell',
                 bResponsive: true,
                 bMobile: window.mobileAndTabletcheck(),
-                url: '@this.Url.Action("GetPeticionesAdmin", "Grids")?ClienteId=' + $('#cbClient').val() + '&dtp1=' + $('#dtp1').val() + '&chkPending=' + $('#chkPending').prop('checked'),
+                url: '@this.Url.Action("GetPeticionesAdminB", "Grids")?dtp1=' + $('#dtp1').val() + '&chkPending=' + $('#chkPending').prop('checked'),
                 show: {
                     footer: true,
                     toolbar: true,
@@ -141,22 +141,31 @@
                 },
                 searches: [
                     { field: "id", caption: "Id orden", type: 'text' },
-                    //{ field: "periodo", caption: "Periodo", type: 'text' },
-                    { field: "fechaCreacion", caption: "Fecha de creación", type: 'text' },
+                    { field: "tiendaId", caption: "Tienda", type: 'text' },
                     { field: "fechaPedido", caption: "Fecha y hora esperada", type: 'text' }
                 ],
                 colShowResponsive: [
                     { field: 'id' },
-                    { field: 'fechaPedido' }
+                    { field: 'tiendaId' },
+                    { field: 'cont' }
                 ],
                 columns: [
                     { field: "id", caption: "Id orden", sortable: true, hidden: false },
-                    { field: "tiendaId", caption: "Tienda", sortable: true, hidden: false },
+                    { field: "tiendaId", caption: "TiendaId", sortable: true, hidden: false },
+                    { field: "tienda", caption: "Tienda", sortable: true, hidden: true },
                     { field: "womanQty", caption: "Mujeres", sortable: true, hidden: false },
                     { field: "manQty", caption: "Hombres", sortable: true, hidden: false },
                     { field: "kidQty", caption: "Niñ@s", sortable: true, hidden: false },
                     { field: "accQty", caption: "Accesorios", sortable: true, hidden: false },
-                    { field: "cont", caption: "Cantidad total", sortable: true },
+                    { field: "totalCp", caption: "Total CP", sortable: true, hidden: false },
+                    { field: "total", caption: "Cantidad total", sortable: true },
+                    { field: "womanQtyEnv", caption: "Mujeres Env", sortable: true, hidden: true },
+                    { field: "manQtyEnv", caption: "Hombres Env", sortable: true, hidden: true },
+                    { field: "kidQtyEnv", caption: "Niñ@s Env", sortable: true, hidden: true },
+                    { field: "accQtyEnv", caption: "Accesorios Env", sortable: true, hidden: true },
+                    { field: "totalCpEnv", caption: "Total CP Env", sortable: true, hidden: true },
+                    { field: "totalEnv", caption: "Cantidad total Env", sortable: true },
+                    { field: "porcValid", caption: "Porc validez", sortable: true },
                     { field: "fechaCreacion", caption: "Fecha de creación", sortable: true, hidden: true },
                     { field: "fechaPedido", caption: "Fecha y hora esperada", sortable: true },
                     {
@@ -169,8 +178,8 @@
                     {
                         field: "periodo", caption: "Despacho WMS", sortable: true, render: function (record) {
                             var l1 = '', l2 = '';
-                            if (record.pedidoWms != null) {
-                                l2 = '<a target="_new" href="@this.Url.Action("PedidosDet", "HomeExtern")?PedidoId=' + record.pedidoWms + '">' + record.pedidoWms + '</a>';
+                            if (!(record.pedidoWMS == 0 || record.pedidoWMS == null)) {
+                                l2 = '<a target="_new" href="@this.Url.Action("PedidosDet", "HomeExtern")?PedidoId=' + record.pedidoWMS + '">' + record.pedidoWMS + '</a>';
                                 l1 = ' | ';
                             }                            
                             l1 = l1 + '<span class="w2ui-buttons"><a href="javascript:assignDis(' + $('#cbClient').val() + ', ' + record.tiendaId + ', ' + record.id + ')">Asignar</a></span>';                            
@@ -228,7 +237,8 @@
         $('#dtp1').datepicker();
         crearGrid();        
         $('#btnFiltrar').on("click", function () {
-            gridOrdenes.reload2('@this.Url.Action("GetPeticionesAdmin", "Grids")?ClienteId=' + $('#cbClient').val() + '&dtp1=' + $('#dtp1').val() + '&chkPending=' + $('#chkPending').prop('checked'));
+            gridOrdenes.clear();
+            gridOrdenes.reload2('@this.Url.Action("GetPeticionesAdminB", "Grids")?ClienteId=' + $('#cbClient').val() + '&dtp1=' + $('#dtp1').val() + '&chkPending=' + $('#chkPending').prop('checked'));
         });
         $('#btnLimpiar').on("click", function () {
             window.location.href = window.location.href;

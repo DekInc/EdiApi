@@ -25,6 +25,7 @@ select distinct Color, CodProducto from wms.dbo.Producto where CodProducto like 
 select top 10 * from wms.dbo.Producto P where ClienteID = 251
 select * from wms.dbo.ItemInventario where CodProducto like '7365822071' and color  = 'DRYU 961708-5'
 select * from EdiDB.dbo.AsyncStates
+select * from EdiDB.dbo.PAYLESS_Reportes
 --delete from EdiDB.dbo.AsyncStates where Id = 2
 select * from EdiDB.dbo.EdiComs order by Id DESC
 
@@ -41,8 +42,8 @@ select @@servicename
 exec SP_GetExistenciasExtern 618
 	
 SELECT * FROM EdiDB.dbo.PedidosExternos order by TiendaId, FechaPedido
-SELECT * FROM EdiDB.dbo.PedidosExternos where Id = 40
-SELECT * FROM EdiDB.dbo.PedidosDetExternos where PedidoId = 40
+SELECT * FROM EdiDB.dbo.PedidosExternos where Id = 59
+SELECT * FROM EdiDB.dbo.PedidosDetExternos where PedidoId = 59
 --update EdiDB.dbo.PedidosExternos SET PedidoWMS = null, IdEstado = 2
 select * from edidb.dbo.IEnetUsers where Id > 4
 --16	1432	7384	04/06/2019 08:00	2	31/05/2019 11:45	NULL	NULL	100	19	0	0	fifo
@@ -210,14 +211,16 @@ SELECT * FROM LEAR_EQUIVALENCIAS
 EXEC GetSNDet 70246
 select * from wms.dbo.Pedido where ClienteId = 1432
 select * from wms.dbo.Pedido where PedidoId = 70309
-select * from wms.dbo.Pedido where PedidoId = 70266
+select * from wms.dbo.Pedido where PedidoId = 70310
 select * from wms.dbo.DtllPedido where PedidoId = 70246
 --70246, despacho 51633
-select top 20 * from wms.dbo.Despachos where DocumentoFiscal = 'SA117689' order by DespachoID DESC
+select * from wms.dbo.usrsystem where idusr = 'EPALACIOS'
+select top 20 * from wms.dbo.Despachos where DocumentoFiscal = 'SA117889' order by DespachoID DESC
+select top 20 * from wms.dbo.Transacciones where NoTransaccion = 'SA117889'
 select top 20 * from wms.dbo.DtllDespacho Dd where Dd.DespachoID = 51642
-SELECT TOP 200 * FROM wms.dbo.Transacciones WHERE TransaccionID = 117689
+SELECT TOP 200 * FROM wms.dbo.Transacciones WHERE TransaccionID = 117889
 SELECT * FROM wms.dbo.SysTempSalidas S WHERE S.DtllPedidoID in (
-	select DtllPedidoID from wms.dbo.DtllPedido where PedidoId = 70310
+	select DtllPedidoID from wms.dbo.DtllPedido where PedidoId = 70369
 ) 
 AND S.CodProducto IN (
 	SELECT CodProducto FROM EdiDB.dbo.PedidosDetExternos where PedidoId = 40

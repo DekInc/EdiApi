@@ -26,7 +26,8 @@ BEGIN
 	SUM(S.Cantidad) Cantidad,
 	P.Observacion,
 	P.PedidoID,
-	SUBSTRING(Dp.CodProducto, 1, 4) TiendaId
+	SUBSTRING(Dp.CodProducto, 1, 4) TiendaId,
+	(SELECT COUNT(*) FROM EdiDB.dbo.PedidosExternos WHERE PedidoWMS = P.PedidoID) PedidoWeb
 	FROM wms.dbo.Pedido AS P WITH (NOLOCK)
 	JOIN wms.dbo.Estatus AS E WITH (NOLOCK) 
 		ON E.EstatusID = P.EstatusID
