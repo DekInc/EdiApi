@@ -3740,6 +3740,7 @@ SET XACT_ABORT OFF
                     if (ListRep.Count() == 0) {
                         PaylessReportes NewRep = new PaylessReportes() {
                             Periodo = ListThurs[I].AddDays(-3).ToString(ApplicationSettings.DateTimeFormatShort),
+                            PeriodoF = ListThurs[I].AddDays(1).ToString(ApplicationSettings.DateTimeFormatShort),
                             FechaGen = DateTime.Now.ToString(ApplicationSettings.DateTimeFormat),
                             Tipo = "0"
                         };

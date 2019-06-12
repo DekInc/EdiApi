@@ -68,6 +68,7 @@ namespace EdiApi.Models.EdiDB
         public virtual DbSet<PaylessProdPrioriDet> PaylessProdPrioriDet { get; set; }
         public virtual DbSet<PaylessProdPrioriM> PaylessProdPrioriM { get; set; }
         public virtual DbSet<PaylessReportes> PaylessReportes { get; set; }
+        public virtual DbSet<PaylessReportesDet> PaylessReportesDet { get; set; }
         public virtual DbSet<PaylessTiendas> PaylessTiendas { get; set; }
         public virtual DbSet<PaylessTransporte> PaylessTransporte { get; set; }
         public virtual DbSet<PedidosDetExternos> PedidosDetExternos { get; set; }
@@ -1383,12 +1384,46 @@ namespace EdiApi.Models.EdiDB
 
                 entity.Property(e => e.Periodo).HasMaxLength(10);
 
+                entity.Property(e => e.PeriodoF).HasMaxLength(10);
+
                 entity.Property(e => e.Tipo).HasMaxLength(1);
+            });
+
+            modelBuilder.Entity<PaylessReportesDet>(entity =>
+            {
+                entity.ToTable("PAYLESS_ReportesDet");
+
+                entity.Property(e => e.Fecha1)
+                    .HasMaxLength(20)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.Fecha2)
+                    .HasMaxLength(20)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.Fecha3)
+                    .HasMaxLength(20)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.Fecha4)
+                    .HasMaxLength(20)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.Fecha5)
+                    .HasMaxLength(20)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.Fecha6)
+                    .HasMaxLength(20)
+                    .IsUnicode(false);
             });
 
             modelBuilder.Entity<PaylessTiendas>(entity =>
             {
                 entity.ToTable("PAYLESS_Tiendas");
+
+                entity.HasIndex(e => e.TiendaId)
+                    .HasName("IndexPaylessTiendas");
 
                 entity.Property(e => e.Cel).HasMaxLength(32);
 
