@@ -10,7 +10,7 @@ GO
 CREATE PROCEDURE dbo.SP_GetPeticionesAdminB
 AS
 BEGIN
-	DELETE FROM EdiDB.dbo.ProductoUbicacion WHERE Typ = 2
+	DELETE FROM EdiDB.dbo.ProductoUbicacion WHERE Typ IN (2, 3)
 	INSERT INTO EdiDB.dbo.ProductoUbicacion (Typ, CodProducto, NomBodega, Rack, NombreRack)
 	SELECT DISTINCT 2, 
 		Dp2.CodProducto, 
@@ -26,6 +26,22 @@ BEGIN
 	FROM wms.dbo.DtllPedido Dp2 WITH(NOLOCK)			
 	JOIN EdiDB.dbo.PedidosExternos Pe WITH(NOLOCK)
 		ON Dp2.PedidoId = Pe.PedidoWMS
+
+	INSERT INTO EdiDB.dbo.ProductoUbicacion (Typ, CodProducto, NomBodega, Rack, NombreRack)
+	SELECT DISTINCT 3, 
+		Dp2.CodProducto, 
+		(SELECT TOP 1 
+			D2.Categoria
+		FROM EdiDB.dbo.PAYLESS_ProdPrioriDet D2 WITH(NOLOCK)
+		WHERE D2.Barcode = Dp2.CodProducto) Categoria,
+		Pe.Id,
+		(SELECT TOP 1 
+			D2.CP
+		FROM EdiDB.dbo.PAYLESS_ProdPrioriDet D2 WITH(NOLOCK)
+		WHERE D2.Barcode = Dp2.CodProducto) CP
+	FROM EdiDB.dbo.PedidosDetExternos Dp2 WITH(NOLOCK)			
+	JOIN EdiDB.dbo.PedidosExternos Pe WITH(NOLOCK)
+		ON Dp2.PedidoId = Pe.Id
 
 	SELECT DISTINCT
 		Pe.Id,		
@@ -43,7 +59,7 @@ BEGIN
 			JOIN EdiDB.dbo.PAYLESS_ProdPrioriDet D
 				ON D.Barcode = Pd.CodProducto
 			WHERE Pd.PedidoId = Pe.Id
-			AND D.CP != ''
+			AND D.CP IN ('A', 'H')
 		) SB1) TotalCp,
 		Pe.PedidoWMS,
 		Pe.IdEstado,
@@ -53,6 +69,7 @@ BEGIN
 			WHERE Pu1.Typ = 2
 			AND UPPER(Pu1.NomBodega) = 'DAMAS'
 			AND Pu1.Rack = Pe.PedidoWMS
+			AND Pu1.NombreRack NOT IN ('A', 'H')
 		) WomanQtyEnv,
 		(
 			SELECT COUNT(*)
@@ -60,6 +77,7 @@ BEGIN
 			WHERE Pu1.Typ = 2
 			AND UPPER(Pu1.NomBodega) = 'CABALLEROS'
 			AND Pu1.Rack = Pe.PedidoWMS
+			AND Pu1.NombreRack NOT IN ('A', 'H')
 		) ManQtyEnv,
 		(
 			SELECT COUNT(*)
@@ -67,6 +85,7 @@ BEGIN
 			WHERE Pu1.Typ = 2
 			AND UPPER(Pu1.NomBodega) = 'NIÑOS / AS'
 			AND Pu1.Rack = Pe.PedidoWMS
+			AND Pu1.NombreRack NOT IN ('A', 'H')
 		) KidQtyEnv,
 		(
 			SELECT COUNT(*)
@@ -74,20 +93,22 @@ BEGIN
 			WHERE Pu1.Typ = 2
 			AND UPPER(Pu1.NomBodega) = 'ACCESORIOS'
 			AND Pu1.Rack = Pe.PedidoWMS
+			AND Pu1.NombreRack NOT IN ('A', 'H')
 		) AccQtyEnv,
 		(
 			SELECT COUNT(*)
 			FROM EdiDB.dbo.ProductoUbicacion Pu1 WITH(NOLOCK)
 			WHERE Pu1.Typ = 2
-			AND Pu1.NombreRack != ''
+			AND Pu1.NombreRack IN ('A', 'H')
 			AND Pu1.Rack = Pe.PedidoWMS
 		) TotalCpEnv
 	FROM EdiDB.dbo.PedidosExternos Pe WITH(NOLOCK)
 	JOIN EdiDB.dbo.PAYLESS_Tiendas T WITH(NOLOCK)
 		ON T.TiendaId = Pe.TiendaId	
+	DELETE FROM EdiDB.dbo.ProductoUbicacion WHERE Typ IN (2, 3)
 END
 
-
+--truncate table EdiDB.dbo.ProductoUbicacion
 EXEC EdiDb.dbo.SP_GetPeticionesAdminB
-
-select * from EdiDB.dbo.ProductoUbicacion WHERE Typ = 2 AND Rack = '70405' ORDER BY NomBodega
+--27763
+select * from EdiDB.dbo.ProductoUbicacion WHERE Typ = 2 AND Rack = '70532' ORDER BY NomBodega

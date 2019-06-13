@@ -548,6 +548,20 @@ namespace EdiApi.Models
             }
             return Dt;
         }
+        public static DataTable SpGeneraSalidaWMS2(ref Models.EdiDB.EdiDBContext _Dbo, string FechaSalida, string CodProducto, int BodegaId, int RegimenId, int ClienteId, int LocationId, int RackId) {
+            DataTable Dt = new DataTable();
+            using (DbCommand Cmd = _Dbo.Database.GetDbConnection().CreateCommand()) {
+                Cmd.CommandText = $"[dbo].[SP_GeneraSalidaWms] '{FechaSalida}', '{CodProducto}', {BodegaId}, {RegimenId}, {ClienteId}, {LocationId}, {RackId} ";
+                Cmd.CommandTimeout = 600;
+                _Dbo.Database.OpenConnection();
+                DbDataReader Dr = Cmd.ExecuteReader();
+                Dt.Load(Dr);
+                _Dbo.Database.CloseConnection();
+                if (!Dr.IsClosed)
+                    Dr.Close();
+            }
+            return Dt;
+        }
         public static IEnumerable<Transacciones> GetTransaccionById(ref WmsContext _Wms, int TransaccionID) {
             List<Transacciones> List = new List<Transacciones>();
             using (DbCommand Cmd = _Wms.Database.GetDbConnection().CreateCommand()) {

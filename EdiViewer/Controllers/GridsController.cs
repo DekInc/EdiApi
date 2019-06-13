@@ -591,6 +591,7 @@ namespace EdiViewer.Controllers
                     from Pd in TuplePextSent.Data.Item2
                     from P in TuplePextSent.Data.Item1
                     where Pd.PedidoId == P.Id
+                    && P.PedidoWms == null
                     select Pd
                     ).ToList();
                 int Total = Records.Count;

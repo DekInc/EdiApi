@@ -144,11 +144,12 @@
                                 }
                                 @if (Context.Session.GetObjSession<List<string>>("ListPermits").Where(O => O == "Usuario_Pedidos_WMS").Count() > 0) {
                                     <a class="dropdown-item" asp-area="" asp-controller="HomeExtern" asp-action="Pedidos">Estado de despachos WMS</a>
-                                    <a class="dropdown-item" asp-area="" asp-controller="HomeExtern" asp-action="PedidosFacturas">Despachos con factura</a>
                                     <div class="dropdown-divider"></div>
                                 }
                                 @if (Context.Session.GetObjSession<List<string>>("ListPermits").Where(O => O == "Usuario_ReportesSemanales_Payless").Count() > 0) {
                                     <a class="dropdown-item" asp-area="" asp-controller="HomeExtern" asp-action="PaylessReportes">Reportes semanales</a>
+                                    <div class="dropdown-divider"></div>
+                                    <a class="dropdown-item" asp-area="" asp-controller="HomeExtern" asp-action="PedidosFacturas">Despachos con factura</a>
                                 }
                             </div>
                         </li>

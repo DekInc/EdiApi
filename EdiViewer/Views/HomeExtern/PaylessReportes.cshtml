@@ -47,7 +47,8 @@
                     expandColumn: window.mobileAndTabletcheck()
                 },
                 searches: [
-                    { field: "periodo", caption: "Periodo", type: 'text' },
+                    { field: "periodo", caption: "Desde", type: 'text' },
+                    { field: "periodoF", caption: "Hasta", type: 'text' },
                     { field: "fechaGen", caption: "Fecha generación", type: 'text' }                    
                 ],
                 colShowResponsive: [
@@ -56,14 +57,14 @@
                 ],
                 columns: [
                     { field: "id", caption: "id", sortable: true, hidden: true },
-                    { field: "periodo", caption: "Periodo", sortable: true },
+                    { field: "periodo", caption: "Desde", sortable: true },
+                    { field: "periodoF", caption: "Hasta", sortable: true },
                     { field: "fechaGen", caption: "Fecha generación", sortable: true },
                     {
                         field: "tipo", caption: "", sortable: true, render: function (record) {                            
                             return '<div class="w2ui-buttons"><a href="javascript:descargarRepThursday(' + record.id + ')">Jueves</a> | <a href="javascript:descargarRepSunday(' + record.id + ')">Domingo</a></div>';
                         }
                     }
-                    //{ field: "tipo", caption: "Tipo", sortable: true }
                 ]
             }
         };
@@ -74,8 +75,7 @@
         window.open('@this.Url.Action("MakeExcelJue", "HomeExtern")?IdM=' + idReporte);
     }
     function descargarRepSunday(idReporte) {
-        alert('Todavía no implementado');
-        //window.open('@this.Url.Action("MakeExcel", "HomeExtern")?IdM=' + idReporte);
+        window.open('@this.Url.Action("MakeExcelSun", "HomeExtern")?IdM=' + idReporte);
     }
     $(document).ready(function () {        
         $('.imgHeaderHelp').tooltip();

@@ -74,9 +74,8 @@ namespace EdiApi.Models.EdiDB
         public virtual DbSet<PedidosDetExternos> PedidosDetExternos { get; set; }
         public virtual DbSet<PedidosEstadosExternos> PedidosEstadosExternos { get; set; }
         public virtual DbSet<PedidosExternos> PedidosExternos { get; set; }
+        public virtual DbSet<ProductoUbicacion> ProductoUbicacion { get; set; }
         public virtual DbSet<UsuariosExternos> UsuariosExternos { get; set; }
-
-        // Unable to generate entity type for table 'dbo.ProductoUbicacion'. Please see the warning messages.
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -1484,6 +1483,21 @@ namespace EdiApi.Models.EdiDB
                 entity.Property(e => e.PedidoWms).HasColumnName("PedidoWMS");
 
                 entity.Property(e => e.Periodo).HasMaxLength(10);
+            });
+
+            modelBuilder.Entity<ProductoUbicacion>(entity =>
+            {
+                entity.Property(e => e.CodProducto)
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.NomBodega)
+                    .HasMaxLength(150)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.NombreRack)
+                    .HasMaxLength(150)
+                    .IsUnicode(false);
             });
 
             modelBuilder.Entity<UsuariosExternos>(entity =>

@@ -27,8 +27,17 @@ namespace EdiViewer.Utility {
             CurrentSheet = ExcelWorkBook.CreateSheet(SheetName);
         }
         public void CreateRow() {
+            CurrentIRow = CurrentSheet.CreateRow(CurrentRow);            
+            CurrentIRow.Height = NormalHeight;
+        }
+        public void CreateRow(int Cr) {
+            CurrentRow = Cr;
             CurrentIRow = CurrentSheet.CreateRow(CurrentRow);
             CurrentIRow.Height = NormalHeight;
+        }
+        public void SetRow(int Cr) {
+            CurrentRow = Cr;
+            CurrentIRow = CurrentSheet.GetRow(CurrentRow);
         }
         public void CreateCell(CellType TypeO, FillPattern FillBackPat, short FillBackColor) {
             ICellStyle StyleO = ExcelWorkBook.CreateCellStyle();            
@@ -39,6 +48,14 @@ namespace EdiViewer.Utility {
         }
         public void CreateCell(CellType TypeO) {
             CurrentCell = CurrentIRow.CreateCell(CurrentCol);
+        }
+        public void CreateCell(int Cc, CellType TypeO) {
+            CurrentCol = Cc;
+            CurrentCell = CurrentIRow.CreateCell(CurrentCol);
+        }
+        public void SetCell(int Cc) {
+            CurrentCol = Cc;
+            CurrentCell = CurrentIRow.GetCell(CurrentCol);
         }
         public void SetCellValue(object Val) {
             switch (Val.GetType().Name) {

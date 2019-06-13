@@ -7,6 +7,7 @@ namespace ComModels
     {
         public int Id { get; set; }
         public string Periodo { get; set; }
+        public string PeriodoF { get; set; }
         public string FechaGen { get; set; }
         public string Tipo { get; set; }
     }

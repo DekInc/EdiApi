@@ -1153,16 +1153,7 @@ namespace EdiViewer.Controllers
                         ExcelO.CurrentSheet = ExcelO.ExcelWorkBook.GetSheetAt(0);
                     } catch (Exception e2) {
                         throw new Exception("El archivo no es de Excel. Utilice un formato propio de Microsoft Excel. " + e2.ToString());
-                    }
-                    //ExcelO.CreateSheet("WmsCarga");
-                    //ExcelO.CurrentRow = 0;
-                    //ExcelO.CurrentCol = 0;
-                    //ExcelO.CreateRow();
-                    //foreach (string Col in ExcelColumns) {
-                    //    ExcelO.CreateCell(CellType.String, FillPattern.FineDots, HSSFColor.LightYellow.Index);
-                    //    ExcelO.SetCellValue(Col);
-                    //    ExcelO.CurrentCol++;
-                    //}
+                    }                    
                     ExcelO.CurrentRow = 1;                    
                     foreach (WmsFileModel RowO in ListInfo.Data) {
                         ExcelO.CreateRow();
@@ -1245,21 +1236,27 @@ namespace EdiViewer.Controllers
                 return Json(JsonConvert.SerializeObject(e1));
             }            
         }
-        public async Task<IActionResult> MakeExcelJue(string IdM) {
+        public async Task<IActionResult> MakeExcelJue(int IdM) {
             DateTime StartTime = DateTime.Now;
             try {
-                RetData<IEnumerable<WmsFileModel>> ListInfo = await ApiClientFactory.Instance.GetWmsFile("", 0);
+                RetData<Tuple<PaylessReportes, IEnumerable<PaylessReportesDet>, IEnumerable<PaylessTiendas>>> ListInfo = await ApiClientFactory.Instance.GetWeekReport(IdM, "0");
                 if (ListInfo.Info.CodError != 0)
                     return Json(ListInfo.Info);
-                Utility.ExceL ExcelO = new Utility.ExceL();
-                string HashId = HttpContext.Session.GetObjSession<string>("Session.HashId") + ".xls";
-                string[] ExcelColumns = new string[] {
-                    "Identificador", "Fecha", "Recibo de Almacén", "Codigo", "Modelo", "Descripción", "Piezas", "Unidad",
-                    "Cantidad", "Código de la Localización", "Peso (Kg)", "Volumen (m³)", "Valor Unitario", "Valor",
-                    "Número de Entrada", "Observaciones", "Oden de Compra", "Lote", "Número de Factura", "CLIENTE",
-                    "RACKID", "fecha_im5", "EMBALAJE", "UOM", "exportador", "destino", "estilo", "cod_equivale", "pais_orig", "COLOR"
-                };
-                using (FileStream FilePlantilla = new FileStream("plantillaOrdenes.xls", FileMode.Open, FileAccess.Read, FileShare.ReadWrite)) {
+                if (ListInfo.Data.Item1 == null)
+                    return Json("ERROR. No existe información del reporte.");                
+                if (ListInfo.Data.Item2 == null)
+                    return Json("ERROR. No existe información del detalle del reporte 1.");
+                if (ListInfo.Data.Item2.Count() == 0)
+                    return Json("ERROR. No existe información del detalle del reporte 2.");
+                string Plantilla = "plantillaOrdenes3.xls";
+                if (ListInfo.Data.Item2.Where(O1 => !string.IsNullOrEmpty(O1.Fecha4)).Count() > 0)
+                    Plantilla = "plantillaOrdenes4.xls";
+                if (ListInfo.Data.Item2.Where(O1 => !string.IsNullOrEmpty(O1.Fecha5)).Count() > 0)
+                    Plantilla = "plantillaOrdenes5.xls";
+                if (ListInfo.Data.Item2.Where(O1 => !string.IsNullOrEmpty(O1.Fecha6)).Count() > 0)
+                    Plantilla = "plantillaOrdenes6.xls";
+                Utility.ExceL ExcelO = new Utility.ExceL();                
+                using (FileStream FilePlantilla = new FileStream(Plantilla, FileMode.Open, FileAccess.Read, FileShare.ReadWrite)) {
                     MemoryStream Ms = new MemoryStream();
                     FilePlantilla.CopyTo(Ms);
                     try {
@@ -1268,15 +1265,60 @@ namespace EdiViewer.Controllers
                     } catch (Exception e2) {
                         throw new Exception("El archivo no es de Excel. Utilice un formato propio de Microsoft Excel. " + e2.ToString());
                     }
-                    //ExcelO.CreateSheet("WmsCarga");
-                    //ExcelO.CurrentRow = 0;
-                    //ExcelO.CurrentCol = 0;
-                    //ExcelO.CreateRow();
-                    //foreach (string Col in ExcelColumns) {
-                    //    ExcelO.CreateCell(CellType.String, FillPattern.FineDots, HSSFColor.LightYellow.Index);
-                    //    ExcelO.SetCellValue(Col);
-                    //    ExcelO.CurrentCol++;
-                    //}                    
+                    ExcelO.SetRow(1);
+                    ExcelO.SetCell(4);
+                    ExcelO.SetCellValue(ListInfo.Data.Item1.Periodo);
+                    ExcelO.SetRow(2);
+                    ExcelO.SetCell(4);
+                    ExcelO.SetCellValue(ListInfo.Data.Item1.PeriodoF);
+                    for (int i = 0; i < ListInfo.Data.Item2.Count(); i++) {
+                        ExcelO.CreateRow(i + 4);
+                        ExcelO.CreateCell(1, CellType.String);
+                        ExcelO.SetCellValue(ListInfo.Data.Item2.ElementAt(i).TiendaId);
+                        ExcelO.CreateCell(2, CellType.String);
+                        ExcelO.SetCellValue(ListInfo.Data.Item3.Where(T => T.TiendaId == ListInfo.Data.Item2.ElementAt(i).TiendaId).Fod().Direc);
+                        ExcelO.CreateCell(3, CellType.String);
+                        ExcelO.SetCellValue(ListInfo.Data.Item3.Where(T => T.TiendaId == ListInfo.Data.Item2.ElementAt(i).TiendaId).Fod().Lider);
+                        ExcelO.CreateCell(4, CellType.String);
+                        ExcelO.SetCellValue(ListInfo.Data.Item3.Where(T => T.TiendaId == ListInfo.Data.Item2.ElementAt(i).TiendaId).Fod().Tel);
+
+                        ExcelO.CreateCell(5, CellType.String);
+                        ExcelO.SetCellValue(ListInfo.Data.Item2.ElementAt(i).Total);
+                        ExcelO.CreateCell(11, CellType.String);
+                        ExcelO.SetCellValue(ListInfo.Data.Item2.ElementAt(i).TotalAccQty);
+                        ExcelO.CreateCell(12, CellType.String);
+                        ExcelO.SetCellValue(ListInfo.Data.Item2.ElementAt(i).TotalKidQty);
+                        ExcelO.CreateCell(13, CellType.String);
+                        ExcelO.SetCellValue(ListInfo.Data.Item2.ElementAt(i).TotalManQty);
+                        ExcelO.CreateCell(14, CellType.String);
+                        ExcelO.SetCellValue(ListInfo.Data.Item2.ElementAt(i).TotalWomanQty);
+                        ExcelO.CreateCell(15, CellType.String);
+                        ExcelO.SetCellValue(ListInfo.Data.Item2.ElementAt(i).Total);
+                        if (!string.IsNullOrEmpty(ListInfo.Data.Item2.ElementAt(i).Fecha1)) {
+                            ExcelO.CreateCell(16, CellType.String);
+                            ExcelO.SetCellValue(ListInfo.Data.Item2.ElementAt(i).Fecha1.Substring(0, 10));
+                            ExcelO.CreateCell(17, CellType.String);
+                            ExcelO.SetCellValue(ListInfo.Data.Item2.ElementAt(i).Cant1);
+                            ExcelO.CreateCell(18, CellType.String);
+                            ExcelO.SetCellValue(ListInfo.Data.Item2.ElementAt(i).Fecha1.Substring(12));
+                        }
+                        if (!string.IsNullOrEmpty(ListInfo.Data.Item2.ElementAt(i).Fecha2)) {
+                            ExcelO.CreateCell(19, CellType.String);
+                            ExcelO.SetCellValue(ListInfo.Data.Item2.ElementAt(i).Fecha2.Substring(0, 10));
+                            ExcelO.CreateCell(20, CellType.String);
+                            ExcelO.SetCellValue(ListInfo.Data.Item2.ElementAt(i).Cant2);
+                            ExcelO.CreateCell(21, CellType.String);
+                            ExcelO.SetCellValue(ListInfo.Data.Item2.ElementAt(i).Fecha2.Substring(12));
+                        }
+                        if (!string.IsNullOrEmpty(ListInfo.Data.Item2.ElementAt(i).Fecha3)) {
+                            ExcelO.CreateCell(22, CellType.String);
+                            ExcelO.SetCellValue(ListInfo.Data.Item2.ElementAt(i).Fecha3.Substring(0, 10));
+                            ExcelO.CreateCell(23, CellType.String);
+                            ExcelO.SetCellValue(ListInfo.Data.Item2.ElementAt(i).Cant3);
+                            ExcelO.CreateCell(24, CellType.String);
+                            ExcelO.SetCellValue(ListInfo.Data.Item2.ElementAt(i).Fecha3.Substring(12));
+                        }
+                    }
                     MemoryStream Ms2 = new MemoryStream();
                     ExcelO.ExcelWorkBook.Write(Ms2);
                     return File(Ms2.ToArray(), "application/octet-stream", "Archivo_RepJuevesPedidos_" + DateTime.Now.ToString("ddMMyyyy") + ".xls");

@@ -313,6 +313,9 @@ namespace CoreApiClient
         public async Task<RetData<IEnumerable<PedidosWmsModel>>> GetWmsDetDispatchsBills(int ClienteId) {
             return await GetAsync<RetData<IEnumerable<PedidosWmsModel>>>(CreateRequestUri(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Data/GetWmsDetDispatchsBills"), $"?ClienteId={ClienteId}"));
         }
+        public async Task<RetData<Tuple<PaylessReportes, IEnumerable<PaylessReportesDet>, IEnumerable<PaylessTiendas>>>> GetWeekReport(int Id, string Typ) {
+            return await GetAsync<RetData<Tuple<PaylessReportes, IEnumerable<PaylessReportesDet>, IEnumerable<PaylessTiendas>>>>(CreateRequestUri(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Data/GetWeekReport"), $"?Id={Id}&Typ={Typ}"));
+        }
         /////////////////////////////////////////
         //public async Task<List<UsersModel>> GetUsers()
         //{

@@ -5,7 +5,7 @@ select * from wms_test_29_01_2019.dbo.Paises where NomPais like'%pana%'
 select * from wms.dbo.Clientes with(nolock) where nombre like '%payl%' OR ClienteID = 610 order by ClienteID asc
 select * from edidb.dbo.IEnetUsers where Id > 4 order by CodUsr
 select * from edidb.dbo.IEnetGroupsAccesses
-delete from edidb.dbo.IEnetGroupsAccesses where Id = 37
+--delete from edidb.dbo.IEnetGroupsAccesses where Id = 37
 --37	4	19
 --Hbbb2fdd1866c4212a9f99a0d040620190936
 --PAYLESS SHOE SOURCE, HONDURAS
@@ -23,9 +23,13 @@ select * from wms.dbo.usrsystem where CodUsr in (2, 4, 92)
 select * from wms.dbo.usrsystem where idusr like'%ainventariot%' or nomusr like'%ainventariot%'
 select distinct Color, CodProducto from wms.dbo.Producto where CodProducto like '7370%'
 select top 10 * from wms.dbo.Producto P where ClienteID = 251
-select * from wms.dbo.ItemInventario where CodProducto like '7365822071' and color  = 'DRYU 961708-5'
+select * from wms.dbo.ItemInventario where CodProducto like '7376840999' and color  = 'DRYU 961708-5'
 select * from EdiDB.dbo.AsyncStates
 select * from EdiDB.dbo.PAYLESS_Reportes
+select * from EdiDB.dbo.PAYLESS_ReportesDet where TiendaId = 7373
+SELECT * FROM EdiDB.dbo.PedidosExternos where TiendaId = 7384
+--truncate table EdiDB.dbo.PAYLESS_Reportes
+--truncate table EdiDB.dbo.PAYLESS_ReportesDet
 --delete from EdiDB.dbo.AsyncStates where Id = 2
 select * from EdiDB.dbo.EdiComs order by Id DESC
 
@@ -60,7 +64,7 @@ SELECT FechaPedido, REPLACE(FechaPedido, '03/06', '04/06') FROM EdiDB.dbo.Pedido
 SELECT * FROM EdiDB.dbo.PedidosDetExternos where PedidoId = 12
 SELECT * FROM EdiDB.dbo.PedidosDetExternos where CodProducto = '7372854892'
 order by CodProducto, CantPedir
-select * from EdiDB.dbo.PAYLESS_ProdPrioriDet where barcode like '7385876330'
+select * from EdiDB.dbo.PAYLESS_ProdPrioriDet where barcode like '7376840999'
 --7372854892
 --7377821116
 --7379885086
@@ -282,15 +286,17 @@ ORDER BY Ii.CodProducto
 
 EXEC sp_spaceused;
 
+select * from wms.dbo.Bodegas where BodegaId = 81
+select * from wms.dbo.Racks where Rack = 11977
 
-SELECT TOP 200 DxT.*, I.InventarioID, Ii.ItemInventarioID
+SELECT TOP 200 T.*
 FROM wms.dbo.Inventario I, 
 wms.dbo.DocumentosxTransaccion DxT, 
 wms.dbo.Transacciones T,
 wms.dbo.DetalleTransacciones Dt,
 wms.dbo.ItemInventario Ii
 WHERE I.InventarioID IN (
-SELECT InventarioID FROM wms.dbo.ItemInventario WHERE CodProducto = '7388882839'
+SELECT InventarioID FROM wms.dbo.ItemInventario WHERE CodProducto like '7376841272'
 )
 AND Dt.InventarioID = I.InventarioID
 AND Dt.TransaccionID = T.TransaccionID
@@ -727,7 +733,7 @@ select * from wms.dbo.Racks where Rack = 11759
 select * from wms.dbo.Transacciones where usuarioCrea = 'RPERDOMO' and IDTipoTransaccion = 'IN' and ClienteID = 1432 order by FechaCrea DESC
 select * from wms.dbo.Transacciones WITH(NOLOCK) where usuarioCrea = 'Hilmer' order by FechaCrea DESC
 select * from wms.dbo.Transacciones WITH(NOLOCK) where IDTipoTransaccion = 'IN' and ClienteID = 1432 order by FechaCrea DESC
-select top 40 * from wms.dbo.Transacciones WITH(NOLOCK) where IDTipoTransaccion = 'IN' and ClienteID = 1432 order by TransaccionID DESC
+select top 40 * from wms.dbo.Transacciones WITH(NOLOCK) where IDTipoTransaccion = 'SA' and ClienteID = 1432 order by TransaccionID DESC
 
 --Salidas ultimo es 116661 y está ok
 EXEC SP_WHO2
@@ -742,12 +748,11 @@ select TransaccionID from wms.dbo.Transacciones WITH(NOLOCK) where ClienteID = 1
 --update wms.dbo.Transacciones Set Observacion = '' where TransaccionID = 116395
 --delete from wms.dbo.Transacciones where TransaccionID in (116389, 116368, 116367)
 -- 7370872774 es la que viene duplicada, la 7380 vino junto
-select top 2 * from wms.dbo.SysTempSalidas where CodProducto = '7373823174'
+select top 2 * from wms.dbo.SysTempSalidas where CodProducto = '7376841272'
+select count(*) from wms.dbo.SysTempSalidas where TransaccionID = 118198
 --7369829033 duplicado en archivos de escaners ?
 select * from wms.dbo.Producto where CodProducto = '7380872774'
-select * from wms.dbo.Transacciones where TransaccionId in (115884,
-116074,
-116272)
+select * from wms.dbo.Transacciones where TransaccionId in (118198)
 --update wms.dbo.Transacciones SET FechaTransaccion = '16-05-2019' where TransaccionID = 116081
 --7366831282 no se escaneo, falta cargar en WMS
 --update EdiDb.dbo.PAYLESS_Tiendas SET ClienteID = 1432
