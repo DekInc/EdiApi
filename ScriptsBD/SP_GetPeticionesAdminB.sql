@@ -101,7 +101,10 @@ BEGIN
 			WHERE Pu1.Typ = 2
 			AND Pu1.NombreRack IN ('A', 'H')
 			AND Pu1.Rack = Pe.PedidoWMS
-		) TotalCpEnv
+		) TotalCpEnv,
+		Pe.FullPed,
+		Pe.Divert,
+		Pe.TiendaIdDestino
 	FROM EdiDB.dbo.PedidosExternos Pe WITH(NOLOCK)
 	JOIN EdiDB.dbo.PAYLESS_Tiendas T WITH(NOLOCK)
 		ON T.TiendaId = Pe.TiendaId	

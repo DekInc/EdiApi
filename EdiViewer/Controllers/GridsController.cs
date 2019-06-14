@@ -652,6 +652,7 @@ namespace EdiViewer.Controllers
                     }
                 }                
                 AllRecords = Records;
+                HttpContext.Session.SetObjSession("Session.StoreQtys", Records);
                 if (TuplePextSent.Data.Item1.Count() > 0)
                     return Json(new { Total, Records, errorMessage = "", AllRecords, FilteredRecords, pedidosPendientes = TuplePextSent.Data.Item1 });
                 else

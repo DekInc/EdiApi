@@ -11,6 +11,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.EntityFrameworkCore;
 using System.Data.Common;
 using System.Text;
+using System.Net.Mail;
+using System.Net;
 
 namespace EdiApi.Controllers
 {
@@ -3318,7 +3320,7 @@ SET XACT_ABORT OFF
             }
         }
         [HttpPost]
-        public RetData<string> SetNewDisPayless(string dtpFechaEntrega, int txtWomanQty, int txtManQty, int txtKidQty, int txtAccQty, string radInvType, int ClienteId, int TiendaId) {
+        public RetData<string> SetNewDisPayless(string dtpFechaEntrega, int txtWomanQty, int txtManQty, int txtKidQty, int txtAccQty, string radInvType, int ClienteId, int TiendaId, bool? Divert, bool? FullPed, int? TiendaIdDestino) {
             DateTime StartTime = DateTime.Now;
             try {
                 PedidosExternos NewPe = new PedidosExternos() {
@@ -3331,7 +3333,10 @@ SET XACT_ABORT OFF
                     ManQty = txtManQty,
                     KidQty = txtKidQty,
                     AccQty = txtAccQty,
-                    InvType = radInvType
+                    InvType = radInvType,
+                    FullPed = FullPed,
+                    Divert = Divert,
+                    TiendaIdDestino = TiendaIdDestino
                 };
                 IEnumerable<int> ListExistPedido = (
                     from Pe in DbO.PedidosExternos
@@ -3740,6 +3745,7 @@ SET XACT_ABORT OFF
         public RetData<string> MakeAutoReportsPayless() {
             DateTime StartTime = DateTime.Now;
             try {
+                //Jueves
                 List<DateTime> ListThurs = Utility.Funcs.AllThursdaysInMonth(StartTime.Year, StartTime.Month).Where(D => D <= (new DateTime(StartTime.Year, StartTime.Month, StartTime.Day, 23, 59, 59)).AddDays(7)).ToList();
                 for (int I = 0; I < ListThurs.Count(); I++) {
                     IEnumerable<PaylessReportes> ListRep = (
@@ -3857,9 +3863,33 @@ SET XACT_ABORT OFF
                             }
                             DbO.PaylessReportesDet.Add(NewRepDet);
                             DbO.SaveChanges();
-                        }                        
+                        }
+                    } else {
+                        if (I == ListThurs.Count() - 1) {
+                            bool TheSame = true;
+                            IEnumerable<PeticionesAdminBGModel> ListOrders = ManualDB.SP_GetPeticionesAdminB(ref DbOLong);
+                            ListOrders = ListOrders.Where(Pe => Pe.FechaPedido.ToDateEsp() >= ListThurs[I].AddDays(-4)
+                                && Pe.FechaPedido.ToDateEsp() <= ListThurs[I].AddDays(3)).OrderByDescending(Pe2 => Pe2.FechaPedido.ToDateEsp());
+                            IEnumerable<PaylessReportesDet> ListRepDet = (from Rd in DbO.PaylessReportesDet where Rd.IdM == ListRep.Fod().Id select Rd);
+                            foreach (PeticionesAdminBGModel PedNuevo in ListOrders) {
+                                if (ListRepDet.Where(O1 => 
+                                    O1.Fecha1 == PedNuevo.FechaPedido
+                                    || O1.Fecha2 == PedNuevo.FechaPedido
+                                    || O1.Fecha3 == PedNuevo.FechaPedido
+                                    || O1.Fecha4 == PedNuevo.FechaPedido
+                                    || O1.Fecha5 == PedNuevo.FechaPedido
+                                    || O1.Fecha6 == PedNuevo.FechaPedido).Count() == 0)
+                                    TheSame = false;
+                            }
+                            if (!TheSame) {
+                                DbO.PaylessReportesDet.RemoveRange(DbO.PaylessReportesDet.Where(R1 => R1.IdM == ListRep.Fod().Id));
+                                DbO.PaylessReportes.Remove(ListRep.Fod());
+                                DbO.SaveChanges();
+                            }
+                        }
                     }
                 }
+                //Fin jueves
                 return new RetData<string> {
                     Data = "ok",
                     Info = new RetInfo() {
@@ -3894,6 +3924,50 @@ SET XACT_ABORT OFF
                 };
             } catch (Exception e1) {
                 return new RetData<Tuple<PaylessReportes, IEnumerable<PaylessReportesDet>, IEnumerable<PaylessTiendas>>> {
+                    Info = new RetInfo() {
+                        CodError = -1,
+                        Mensaje = e1.ToString(),
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            }
+        }
+        [HttpGet]
+        public RetData<string> SendMail() {
+            DateTime StartTime = DateTime.Now;            
+            try {
+                using (SmtpClient client = new SmtpClient("10.240.34.119")) {
+                    client.UseDefaultCredentials = false;
+                    client.Credentials = new NetworkCredential("hilmer.campos@glcweb.ddns.net", "HilmerServer2019");
+                    MailMessage mailMessage = new MailMessage {
+                        From = new MailAddress("hilmer.campos@glcweb.ddns.net")
+                    };
+                    mailMessage.To.Add("hilmer.campos@glcamerica.com");
+                    mailMessage.Body = @"
+Cordial Saludo, GLC 
+
+Por la presente le informamos que la empresa está siendo contactada por el área de propiedad intelectual de Microsoft para el proceso de relevamiento de licenciamiento de software.
+Como parte de este proceso, estamos enviando adjunto una carta que le explica los detalles de esta auditoría y el formulario que donde debe reportar las licencias Microsoft en uso por la compañía.
+En el transcurso de la próxima semana, me estaré comunicando con ustedes para aclarar detalles y cualquier inquietud que se le presente acerca de este proceso de relevamiento
+Tenga presente que la información que debe enviar para este proceso es el formulario de declaración de licencias de software en uso y los comprobantes de adquisición de dichas licencias. Quedamos a su disposición, para cualquier duda o aclaración al respecto.
+Por favor notificar el recibido de este correo por este mismo medio. Atentamente,
+Sr. Hilmer Campos | TeleSAM Consultant Microsoft
+";
+                    mailMessage.Subject = "Citación";
+                    System.Net.Mail.Attachment attachment;
+                    attachment = new System.Net.Mail.Attachment("830_ejemplo.txt");
+                    mailMessage.Attachments.Add(attachment);
+                    client.Send(mailMessage);
+                }
+                return new RetData<string> {
+                    Info = new RetInfo() {
+                        CodError = 0,
+                        Mensaje = "ok",
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            } catch (Exception e1) {
+                return new RetData<string> {
                     Info = new RetInfo() {
                         CodError = -1,
                         Mensaje = e1.ToString(),

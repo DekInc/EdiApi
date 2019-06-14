@@ -26,5 +26,8 @@ namespace ComModels {
         public int TotalCpEnv { get; set; }
         public int TotalEnv { get; set; }
         public double PorcValid { get; set; }
+        public bool? FullPed { get; set; }
+        public bool? Divert { get; set; }
+        public int? TiendaIdDestino { get; set; }
     }
 }

@@ -26,7 +26,8 @@ select top 10 * from wms.dbo.Producto P where ClienteID = 251
 select * from wms.dbo.ItemInventario where CodProducto like '7376840999' and color  = 'DRYU 961708-5'
 select * from EdiDB.dbo.AsyncStates
 select * from EdiDB.dbo.PAYLESS_Reportes
-select * from EdiDB.dbo.PAYLESS_ReportesDet where TiendaId = 7373
+select * from EdiDB.dbo.PAYLESS_ReportesDet where IdM = 3
+SELECT * FROM EdiDB.dbo.PedidosExternos order by FechaCreacion DESC
 SELECT * FROM EdiDB.dbo.PedidosExternos where TiendaId = 7384
 --truncate table EdiDB.dbo.PAYLESS_Reportes
 --truncate table EdiDB.dbo.PAYLESS_ReportesDet
@@ -46,15 +47,15 @@ select @@servicename
 exec SP_GetExistenciasExtern 618
 	
 SELECT * FROM EdiDB.dbo.PedidosExternos order by TiendaId, FechaPedido
-SELECT * FROM EdiDB.dbo.PedidosExternos where Id = 59
+SELECT * FROM EdiDB.dbo.PedidosExternos where Id = 60
 SELECT * FROM EdiDB.dbo.PedidosDetExternos where PedidoId = 59
 --update EdiDB.dbo.PedidosExternos SET PedidoWMS = null, IdEstado = 2
 select * from edidb.dbo.IEnetUsers where Id > 4
 --16	1432	7384	04/06/2019 08:00	2	31/05/2019 11:45	NULL	NULL	100	19	0	0	fifo
 SELECT FechaPedido, REPLACE(FechaPedido, '03/06', '04/06') FROM EdiDB.dbo.PedidosExternos
 --update EdiDB.dbo.PedidosExternos SET FechaPedido = REPLACE(FechaPedido, '04/06', '05/06')
---delete from EdiDB.dbo.PedidosExternos where id in (35)
---delete from EdiDB.dbo.PedidosDetExternos where PedidoId in (35)
+--delete from EdiDB.dbo.PedidosExternos where id in (79)
+--delete from EdiDB.dbo.PedidosDetExternos where PedidoId in (79)
 --update PedidosExternos SET FechaPedido = '08/05/2019 16:00', IdEstado = 2 where Id = 1
 --delete from EdiDB.dbo.PedidosExternos where Id > 15
 --truncate table EdiDB.dbo.PedidosExternos
@@ -74,7 +75,7 @@ select * from EdiDB.dbo.PAYLESS_ProdPrioriDet where barcode like '7376840999'
 --7383810289
 --7384817053
 --7385876330
-select * from wms.dbo.DtllPedido where CodProducto = '7377821116'
+select * from wms.dbo.DtllPedido where CodProducto = '7376840999'
 select * from EdiDB.dbo.PAYLESS_ProdPrioriDet WHERE iDpA
 select * from EdiDB.dbo.PAYLESS_ProdPrioriM where Id = 4
 select * from EdiDb.dbo.Payless_Transporte
@@ -117,8 +118,11 @@ ORDER BY M.Periodo, SB2.Barcode
 --update EdiDB.dbo.PedidosDetExternos SET PedidoId =  16 where PedidoId = 12
 --delete from EdiDB.dbo.PedidosExternos where Id = 16
 --truncate table EdiDB.dbo.PedidosDetExternos
+
 select * from wms.dbo.Racks where Rack = 11977
+select * from wms.dbo.Racks where NombreRack = 'StageTGU'
 select * from wms.dbo.Racks order by Rack DESC
+select DISTINCT I.* from wms.dbo.Inventario I where I.Rack = 11977
 SELECT DISTINCT
 	Pe.Id,
 	(
@@ -166,13 +170,13 @@ JOIN EdiDB.dbo.PAYLESS_ProdPrioriM M WITH(NOLOCK)
 --WHERE Pe.Id = 9
 ORDER BY Pe.Id, Pe.TiendaId, M.Periodo, D.Categoria, D.Barcode
 
-select top 1000 R.* 
+select top 1000 *
 from wms.dbo.ItemInventario Ii
 JOIN wms.dbo.Inventario I
 	ON I.InventarioID = Ii.InventarioID
 JOIN wms.dbo.Racks R
 	ON R.Rack = I.Rack
-where Ii.CodProducto like '7374%' 
+where Ii.CodProducto like '7376840999%' 
 and Ii.Descripcion = 'CABALLEROS'
 order by CodProducto, ItemInventarioID desc
 select * from wms.dbo.Bodegas
@@ -219,16 +223,17 @@ select * from wms.dbo.Pedido where PedidoId = 70310
 select * from wms.dbo.DtllPedido where PedidoId = 70246
 --70246, despacho 51633
 select * from wms.dbo.usrsystem where idusr = 'EPALACIOS'
-select top 20 * from wms.dbo.Despachos where DocumentoFiscal = 'SA117889' order by DespachoID DESC
-select top 20 * from wms.dbo.Transacciones where NoTransaccion = 'SA117889'
-select top 20 * from wms.dbo.DtllDespacho Dd where Dd.DespachoID = 51642
-SELECT TOP 200 * FROM wms.dbo.Transacciones WHERE TransaccionID = 117889
+select top 20 * from wms.dbo.Despachos where DocumentoFiscal = 'SA118246' order by DespachoID DESC
+select top 20 * from wms.dbo.Transacciones where NoTransaccion = 'SA118246'
+select top 20 * from wms.dbo.DtllDespacho Dd where Dd.DespachoID = 51953
+SELECT TOP 200 * FROM wms.dbo.Transacciones WHERE TransaccionID = 118246
 SELECT * FROM wms.dbo.SysTempSalidas S WHERE S.DtllPedidoID in (
-	select DtllPedidoID from wms.dbo.DtllPedido where PedidoId = 70369
+	select DtllPedidoID from wms.dbo.DtllPedido where PedidoId = 70648
 ) 
 AND S.CodProducto IN (
 	SELECT CodProducto FROM EdiDB.dbo.PedidosDetExternos where PedidoId = 40
 )
+select * from EdiDB.dbo.PedidosExternos where PedidoWMS = 70648
 select * from wms.dbo.Inventario where InventarioID in (
 	SELECT InventarioID FROM wms.dbo.SysTempSalidas WHERE DtllPedidoID in (
 	select DtllPedidoID from wms.dbo.DtllPedido where PedidoId = 70041

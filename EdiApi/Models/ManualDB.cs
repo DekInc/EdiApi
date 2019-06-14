@@ -837,7 +837,10 @@ namespace EdiApi.Models
                             ManQtyEnv = Dr.Gr<int>(13),
                             KidQtyEnv = Dr.Gr<int>(14),
                             AccQtyEnv = Dr.Gr<int>(15),
-                            TotalCpEnv = Dr.Gr<int>(16)
+                            TotalCpEnv = Dr.Gr<int>(16),
+                            FullPed = Dr.Gr<bool?>(17),
+                            Divert = Dr.Gr<bool?>(18),
+                            TiendaIdDestino = Dr.Gr<int?>(19)
                         });
                     }
                 }

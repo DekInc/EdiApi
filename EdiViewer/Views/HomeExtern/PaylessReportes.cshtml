@@ -61,8 +61,11 @@
                     { field: "periodoF", caption: "Hasta", sortable: true },
                     { field: "fechaGen", caption: "Fecha generación", sortable: true },
                     {
-                        field: "tipo", caption: "", sortable: true, render: function (record) {                            
-                            return '<div class="w2ui-buttons"><a href="javascript:descargarRepThursday(' + record.id + ')">Jueves</a> | <a href="javascript:descargarRepSunday(' + record.id + ')">Domingo</a></div>';
+                        field: "tipo", caption: "", sortable: true, render: function (record) {
+                            if (record.tipo == '0')
+                                return '<div class="w2ui-buttons"><a href="javascript:descargarRepThursday(' + record.id + ')">Descargar rep jueves</a></div>';
+                            else
+                                return '<div class="w2ui-buttons"><a href="javascript:descargarRepSunday(' + record.id + ')">Descargar rep domingo</a></div>';
                         }
                     }
                 ]

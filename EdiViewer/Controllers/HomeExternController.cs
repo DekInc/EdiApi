@@ -112,7 +112,15 @@ namespace EdiViewer.Controllers
             if ((DateDis - DateTime.Now).TotalHours < 24) {
                 return View("PedidosPayless3", new ErrorModel() { ErrorMessage = "La fecha y hora del pedido debe ser con más de 24 horas de anticipación." });
             }
-            RetData<string> Ret = await ApiClientFactory.Instance.SetNewDisPayless(dtpFechaEntrega, txtWomanQty, txtManQty, txtKidQty, txtAccQty, radInvType, HttpContext.Session.GetObjSession<int>("Session.ClientId"), HttpContext.Session.GetObjSession<int>("Session.TiendaId"));
+            List<PaylessProdPrioriDetModel> ListQtys = HttpContext.Session.GetObjSession<List<PaylessProdPrioriDetModel>>("Session.StoreQtys");
+            bool? FullPed = null;
+            FullPed = (
+                ListQtys.Where(O => O.Cp == "No" && O.Categoria.ToUpper() == "DAMAS").Fod().Existencia == txtWomanQty
+                && ListQtys.Where(O => O.Cp == "No" && O.Categoria.ToUpper() == "CABALLEROS").Fod().Existencia == txtManQty
+                && ListQtys.Where(O => O.Cp == "No" && O.Categoria.ToUpper() == "NIÑOS / AS").Fod().Existencia == txtKidQty
+                && ListQtys.Where(O => O.Cp == "No" && O.Categoria.ToUpper() == "ACCESORIOS").Fod().Existencia == txtAccQty
+                );
+            RetData<string> Ret = await ApiClientFactory.Instance.SetNewDisPayless(dtpFechaEntrega, txtWomanQty, txtManQty, txtKidQty, txtAccQty, radInvType, HttpContext.Session.GetObjSession<int>("Session.ClientId"), HttpContext.Session.GetObjSession<int>("Session.TiendaId"), null, (FullPed == false? null : FullPed), null);
             if (Ret.Info.CodError == 0) {
                 return View("PedidosPayless3", new ErrorModel() { Typ = 1, ErrorMessage = Ret.Data });
             } else {

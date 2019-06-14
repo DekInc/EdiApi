@@ -19,5 +19,8 @@ namespace ComModels
         public int? AccQty { get; set; }
         public string InvType { get; set; }
         public int? PedidoWms { get; set; }
+        public bool? FullPed { get; set; }
+        public bool? Divert { get; set; }
+        public int? TiendaIdDestino { get; set; }
     }
 }
