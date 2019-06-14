@@ -13,6 +13,9 @@ using System.Data.Common;
 using System.Text;
 using System.Net.Mail;
 using System.Net;
+using System.IO;
+using NPOI.HSSF.UserModel;
+using NPOI.SS.UserModel;
 
 namespace EdiApi.Controllers
 {
@@ -3742,6 +3745,102 @@ SET XACT_ABORT OFF
             }
         }
         [HttpGet]
+        private void CreateExcelThrusdayAndSendByMail(PaylessReportes NewRep) {
+            RetData<Tuple<PaylessReportes, IEnumerable<PaylessReportesDet>, IEnumerable<PaylessTiendas>>> ListInfo = GetWeekReport(NewRep.Id, "0");
+            string Plantilla = "plantillaOrdenes3.xls";
+            if (ListInfo.Data.Item2.Where(O1 => !string.IsNullOrEmpty(O1.Fecha4)).Count() > 0)
+                Plantilla = "plantillaOrdenes4.xls";
+            if (ListInfo.Data.Item2.Where(O1 => !string.IsNullOrEmpty(O1.Fecha5)).Count() > 0)
+                Plantilla = "plantillaOrdenes5.xls";
+            if (ListInfo.Data.Item2.Where(O1 => !string.IsNullOrEmpty(O1.Fecha6)).Count() > 0)
+                Plantilla = "plantillaOrdenes6.xls";
+            Utility.ExceL ExcelO = new Utility.ExceL();
+            using (FileStream FilePlantilla = new FileStream(Plantilla, FileMode.Open, FileAccess.Read, FileShare.ReadWrite)) {
+                MemoryStream Ms = new MemoryStream();
+                FilePlantilla.CopyTo(Ms);
+                try {
+                    ExcelO.ExcelWorkBook = new HSSFWorkbook(Ms);
+                    ExcelO.CurrentSheet = ExcelO.ExcelWorkBook.GetSheetAt(0);
+                } catch (Exception e2) {
+                    throw new Exception("El archivo no es de Excel. Utilice un formato propio de Microsoft Excel. " + e2.ToString());
+                }
+                ExcelO.SetRow(1);
+                ExcelO.SetCell(4);
+                ExcelO.SetCellValue(ListInfo.Data.Item1.Periodo);
+                ExcelO.SetRow(2);
+                ExcelO.SetCell(4);
+                ExcelO.SetCellValue(ListInfo.Data.Item1.PeriodoF);
+                for (int i = 0; i < ListInfo.Data.Item2.Count(); i++) {
+                    ExcelO.CreateRow(i + 4);
+                    ExcelO.CreateCell(1, CellType.String);
+                    ExcelO.SetCellValue(ListInfo.Data.Item2.ElementAt(i).TiendaId);
+                    ExcelO.CreateCell(2, CellType.String);
+                    ExcelO.SetCellValue(ListInfo.Data.Item3.Where(T => T.TiendaId == ListInfo.Data.Item2.ElementAt(i).TiendaId).Fod().Direc);
+                    ExcelO.CreateCell(3, CellType.String);
+                    ExcelO.SetCellValue(ListInfo.Data.Item3.Where(T => T.TiendaId == ListInfo.Data.Item2.ElementAt(i).TiendaId).Fod().Lider);
+                    ExcelO.CreateCell(4, CellType.String);
+                    ExcelO.SetCellValue(ListInfo.Data.Item3.Where(T => T.TiendaId == ListInfo.Data.Item2.ElementAt(i).TiendaId).Fod().Tel);
+
+                    ExcelO.CreateCell(5, CellType.String);
+                    ExcelO.SetCellValue(ListInfo.Data.Item2.ElementAt(i).Total);
+                    ExcelO.CreateCell(11, CellType.String);
+                    ExcelO.SetCellValue(ListInfo.Data.Item2.ElementAt(i).TotalAccQty);
+                    ExcelO.CreateCell(12, CellType.String);
+                    ExcelO.SetCellValue(ListInfo.Data.Item2.ElementAt(i).TotalKidQty);
+                    ExcelO.CreateCell(13, CellType.String);
+                    ExcelO.SetCellValue(ListInfo.Data.Item2.ElementAt(i).TotalManQty);
+                    ExcelO.CreateCell(14, CellType.String);
+                    ExcelO.SetCellValue(ListInfo.Data.Item2.ElementAt(i).TotalWomanQty);
+                    ExcelO.CreateCell(15, CellType.String);
+                    ExcelO.SetCellValue(ListInfo.Data.Item2.ElementAt(i).Total);
+                    if (!string.IsNullOrEmpty(ListInfo.Data.Item2.ElementAt(i).Fecha1)) {
+                        ExcelO.CreateCell(16, CellType.String);
+                        ExcelO.SetCellValue(ListInfo.Data.Item2.ElementAt(i).Fecha1.Substring(0, 10));
+                        ExcelO.CreateCell(17, CellType.String);
+                        ExcelO.SetCellValue(ListInfo.Data.Item2.ElementAt(i).Cant1);
+                        ExcelO.CreateCell(18, CellType.String);
+                        ExcelO.SetCellValue(ListInfo.Data.Item2.ElementAt(i).Fecha1.Substring(12));
+                    }
+                    if (!string.IsNullOrEmpty(ListInfo.Data.Item2.ElementAt(i).Fecha2)) {
+                        ExcelO.CreateCell(19, CellType.String);
+                        ExcelO.SetCellValue(ListInfo.Data.Item2.ElementAt(i).Fecha2.Substring(0, 10));
+                        ExcelO.CreateCell(20, CellType.String);
+                        ExcelO.SetCellValue(ListInfo.Data.Item2.ElementAt(i).Cant2);
+                        ExcelO.CreateCell(21, CellType.String);
+                        ExcelO.SetCellValue(ListInfo.Data.Item2.ElementAt(i).Fecha2.Substring(12));
+                    }
+                    if (!string.IsNullOrEmpty(ListInfo.Data.Item2.ElementAt(i).Fecha3)) {
+                        ExcelO.CreateCell(22, CellType.String);
+                        ExcelO.SetCellValue(ListInfo.Data.Item2.ElementAt(i).Fecha3.Substring(0, 10));
+                        ExcelO.CreateCell(23, CellType.String);
+                        ExcelO.SetCellValue(ListInfo.Data.Item2.ElementAt(i).Cant3);
+                        ExcelO.CreateCell(24, CellType.String);
+                        ExcelO.SetCellValue(ListInfo.Data.Item2.ElementAt(i).Fecha3.Substring(12));
+                    }
+                }
+                MemoryStream Ms2 = new MemoryStream();
+                ExcelO.ExcelWorkBook.Write(Ms2);
+                using (SmtpClient client = new SmtpClient("10.240.34.119")) {
+                    client.UseDefaultCredentials = false;
+                    client.Credentials = new NetworkCredential("hilmer.campos@glcweb.ddns.net", "HilmerServer2019");
+                    MailMessage mailMessage = new MailMessage {
+                        From = new MailAddress("hilmer.campos@glcweb.ddns.net")
+                    };
+                    mailMessage.To.Add("hilmer.campos@glcamerica.com");
+                    mailMessage.Body = @"";
+                    mailMessage.Subject = "GLC - " + "Archivo_RepJuevesPedidos_" + DateTime.Now.ToString("ddMMyyyy_HHmm");
+                    System.Net.Mail.Attachment attachment;
+                    //System.Net.Mime.ContentType ct = new System.Net.Mime.ContentType(System.Net.Mime.MediaTypeNames.Application.Xml);
+                    Ms2.Position = 0;
+                    attachment = new System.Net.Mail.Attachment(Ms2, "Archivo_RepJuevesPedidos_" + DateTime.Now.ToString("ddMMyyyy_HHmm") + ".xls");
+                    mailMessage.Attachments.Add(attachment);
+                    client.Send(mailMessage);
+                }
+                //Ms2.Close();
+                //return File(Ms2.ToArray(), "application/octet-stream", "Archivo_RepJuevesPedidos_" + DateTime.Now.ToString("ddMMyyyy") + ".xls");
+            }
+        }
+        [HttpGet]
         public RetData<string> MakeAutoReportsPayless() {
             DateTime StartTime = DateTime.Now;
             try {
@@ -3862,8 +3961,9 @@ SET XACT_ABORT OFF
                                 }
                             }
                             DbO.PaylessReportesDet.Add(NewRepDet);
-                            DbO.SaveChanges();
+                            DbO.SaveChanges();                            
                         }
+                        CreateExcelThrusdayAndSendByMail(NewRep);
                     } else {
                         if (I == ListThurs.Count() - 1) {
                             bool TheSame = true;
@@ -3907,7 +4007,8 @@ SET XACT_ABORT OFF
                     }
                 };
             }
-        }
+        }        
+
         [HttpGet]
         public RetData<Tuple<PaylessReportes, IEnumerable<PaylessReportesDet>, IEnumerable<PaylessTiendas>>> GetWeekReport(int Id, string Typ) {
             DateTime StartTime = DateTime.Now;
@@ -3943,16 +4044,7 @@ SET XACT_ABORT OFF
                         From = new MailAddress("hilmer.campos@glcweb.ddns.net")
                     };
                     mailMessage.To.Add("hilmer.campos@glcamerica.com");
-                    mailMessage.Body = @"
-Cordial Saludo, GLC 
-
-Por la presente le informamos que la empresa está siendo contactada por el área de propiedad intelectual de Microsoft para el proceso de relevamiento de licenciamiento de software.
-Como parte de este proceso, estamos enviando adjunto una carta que le explica los detalles de esta auditoría y el formulario que donde debe reportar las licencias Microsoft en uso por la compañía.
-En el transcurso de la próxima semana, me estaré comunicando con ustedes para aclarar detalles y cualquier inquietud que se le presente acerca de este proceso de relevamiento
-Tenga presente que la información que debe enviar para este proceso es el formulario de declaración de licencias de software en uso y los comprobantes de adquisición de dichas licencias. Quedamos a su disposición, para cualquier duda o aclaración al respecto.
-Por favor notificar el recibido de este correo por este mismo medio. Atentamente,
-Sr. Hilmer Campos | TeleSAM Consultant Microsoft
-";
+                    mailMessage.Body = @"";
                     mailMessage.Subject = "Citación";
                     System.Net.Mail.Attachment attachment;
                     attachment = new System.Net.Mail.Attachment("830_ejemplo.txt");

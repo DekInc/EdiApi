@@ -69,6 +69,7 @@ namespace EdiApi.Models.EdiDB
         public virtual DbSet<PaylessProdPrioriM> PaylessProdPrioriM { get; set; }
         public virtual DbSet<PaylessReportes> PaylessReportes { get; set; }
         public virtual DbSet<PaylessReportesDet> PaylessReportesDet { get; set; }
+        public virtual DbSet<PaylessReportesMails> PaylessReportesMails { get; set; }
         public virtual DbSet<PaylessTiendas> PaylessTiendas { get; set; }
         public virtual DbSet<PaylessTransporte> PaylessTransporte { get; set; }
         public virtual DbSet<PedidosDetExternos> PedidosDetExternos { get; set; }
@@ -1415,6 +1416,13 @@ namespace EdiApi.Models.EdiDB
                 entity.Property(e => e.Fecha6)
                     .HasMaxLength(20)
                     .IsUnicode(false);
+            });
+
+            modelBuilder.Entity<PaylessReportesMails>(entity =>
+            {
+                entity.ToTable("PAYLESS_ReportesMails");
+
+                entity.Property(e => e.MailDir).HasMaxLength(256);
             });
 
             modelBuilder.Entity<PaylessTiendas>(entity =>

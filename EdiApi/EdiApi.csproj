@@ -5,20 +5,24 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="830_avanzado.txt" />
-    <None Remove="830_ejemplo.txt" />
-    <None Remove="F856_048700342.txt" />
+    <None Remove="plantillaOrdenes3.xls" />
+    <None Remove="plantillaOrdenes4.xls" />
+    <None Remove="plantillaOrdenes5.xls" />
+    <None Remove="plantillaOrdenes6.xls" />
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="830_avanzado.txt">
+    <Content Include="plantillaOrdenes3.xls">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="830_ejemplo.txt">
+    <Content Include="plantillaOrdenes4.xls">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="F856_048700342.txt">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    <Content Include="plantillaOrdenes5.xls">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="plantillaOrdenes6.xls">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
 
@@ -27,6 +31,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="DotNetCore.NPOI" Version="1.2.1" />
     <PackageReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.1.2" PrivateAssets="All" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="2.1.11" />

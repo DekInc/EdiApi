@@ -23,15 +23,19 @@ select * from wms.dbo.usrsystem where CodUsr in (2, 4, 92)
 select * from wms.dbo.usrsystem where idusr like'%ainventariot%' or nomusr like'%ainventariot%'
 select distinct Color, CodProducto from wms.dbo.Producto where CodProducto like '7370%'
 select top 10 * from wms.dbo.Producto P where ClienteID = 251
-select * from wms.dbo.ItemInventario where CodProducto like '7376840999' and color  = 'DRYU 961708-5'
+select * from wms.dbo.ItemInventario where CodProducto like '1902347' and color  = 'DRYU 961708-5'
+--Did: 52004, Cd 1902347
+select * from EdiDB.dbo.PAYLESS_ReportesMails
 select * from EdiDB.dbo.AsyncStates
 select * from EdiDB.dbo.PAYLESS_Reportes
-select * from EdiDB.dbo.PAYLESS_ReportesDet where IdM = 3
+select * from EdiDB.dbo.PAYLESS_ReportesDet where IdM = 10
 SELECT * FROM EdiDB.dbo.PedidosExternos order by FechaCreacion DESC
 SELECT * FROM EdiDB.dbo.PedidosExternos where TiendaId = 7384
 --truncate table EdiDB.dbo.PAYLESS_Reportes
 --truncate table EdiDB.dbo.PAYLESS_ReportesDet
 --delete from EdiDB.dbo.AsyncStates where Id = 2
+--delete from EdiDB.dbo.PAYLESS_Reportes where Id = 14
+--delete from EdiDB.dbo.PAYLESS_ReportesDet where IdM = 14
 select * from EdiDB.dbo.EdiComs order by Id DESC
 
 select * from wms_test_29_01_2019.dbo.Transacciones where pais_orig = 90
@@ -75,7 +79,7 @@ select * from EdiDB.dbo.PAYLESS_ProdPrioriDet where barcode like '7376840999'
 --7383810289
 --7384817053
 --7385876330
-select * from wms.dbo.DtllPedido where CodProducto = '7376840999'
+select * from wms.dbo.DtllPedido where CodProducto = '7383810131'
 select * from EdiDB.dbo.PAYLESS_ProdPrioriDet WHERE iDpA
 select * from EdiDB.dbo.PAYLESS_ProdPrioriM where Id = 4
 select * from EdiDb.dbo.Payless_Transporte
@@ -218,7 +222,7 @@ SELECT * FROM LEAR_EQUIVALENCIAS
 --70246
 EXEC GetSNDet 70246
 select * from wms.dbo.Pedido where ClienteId = 1432
-select * from wms.dbo.Pedido where PedidoId = 70309
+select * from wms.dbo.Pedido where PedidoId = 69104
 select * from wms.dbo.Pedido where PedidoId = 70310
 select * from wms.dbo.DtllPedido where PedidoId = 70246
 --70246, despacho 51633
@@ -292,26 +296,38 @@ ORDER BY Ii.CodProducto
 EXEC sp_spaceused;
 
 select * from wms.dbo.Bodegas where BodegaId = 81
-select * from wms.dbo.Racks where Rack = 11977
+select * from wms.dbo.Racks where Rack in (
+11789,
+11808,
+11928,
+11951
+)
 
-SELECT TOP 200 T.*
+--problema de CodProducto en bodegas de SPS
+select * from wms.dbo.Racks where Rack in (
+SELECT  distinct DxT.INFORME_ALMACEN
 FROM wms.dbo.Inventario I, 
 wms.dbo.DocumentosxTransaccion DxT, 
 wms.dbo.Transacciones T,
 wms.dbo.DetalleTransacciones Dt,
 wms.dbo.ItemInventario Ii
 WHERE I.InventarioID IN (
-SELECT InventarioID FROM wms.dbo.ItemInventario WHERE CodProducto like '7376841272'
+SELECT InventarioID FROM wms.dbo.ItemInventario WHERE CodProducto like '7383%'
 )
 AND Dt.InventarioID = I.InventarioID
 AND Dt.TransaccionID = T.TransaccionID
 AND T.TransaccionID = DxT.TransaccionID
 AND Ii.InventarioID = I.InventarioID
-
-SELECT TOP 200 * FROM wms.dbo.ItemInventario WHERE CodProducto = '7373823361'
+)
+select * from wms.dbo.DocumentosxTransaccion order by IDDocxTransaccion DESC
+SELECT TOP 200 * FROM wms.dbo.ItemInventario WHERE CodProducto = '1902347'
+SELECT TOP 200 * FROM wms.dbo.DetalleTransacciones WHERE InventarioID
 SELECT TOP 200 * FROM wms.dbo.SysTempSalidas WHERE ItemInventarioID IN (1699577)
-SELECT TOP 200 * FROM wms_test_29_01_2019.dbo.SysTempSalidas WHERE TransaccionID = 104745
-SELECT TOP 200 * FROM wms.dbo.Transacciones WHERE TransaccionID = 113707
+SELECT TOP 200 * FROM wms.dbo.SysTempSalidas where CodProducto = '7383810131'
+--TId: 115914	Pid: 69104	IId: 1831824
+SELECT TOP 200 * FROM wms.dbo.SysTempSalidas WHERE TransaccionID = 118331 order by IdTempSalida
+--Transaccion que se mezclo 2 usuarios 118331
+SELECT TOP 200 * FROM wms.dbo.Transacciones WHERE TransaccionID = 118331
 SELECT TOP 200 * FROM wms_test_29_01_2019.dbo.Transacciones WHERE IDTipoTransaccion = 'IN' AND year(FechaTransaccion) = 2019
 SELECT TOP 200 * FROM wms_test_29_01_2019.dbo.Transacciones WHERE --IDTipoTransaccion = 'IN' 
  year(FechaTransaccion) = 2019 AND ClienteID = 1134 order by ClienteID
