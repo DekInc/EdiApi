@@ -616,9 +616,9 @@ namespace EdiViewer.Controllers
                             }
                         }
                     }
-                    if (ListBodegas.Count == 2) {
-                        return Json(new { total = 0, records = "", errorMessage = $"Hay un problema con los productos a pedir, el código de producto {CodProductoFuera} está en una bodega diferente." });
-                    }                    
+                    //if (ListBodegas.Count == 2) {
+                    //    return Json(new { total = 0, records = "", errorMessage = $"Hay un problema con los productos a pedir, el código de producto {CodProductoFuera} está en una bodega diferente." });
+                    //}                    
                     Records.ForEach(R => {
                         if (R.CantPedir < 0)
                             R.CantPedir = 0;
