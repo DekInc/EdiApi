@@ -1279,52 +1279,53 @@ namespace EdiViewer.Controllers
                     ExcelO.SetRow(2);
                     ExcelO.SetCell(4);
                     ExcelO.SetCellValue(ListInfo.Data.Item1.PeriodoF);
-                    for (int i = 0; i < ListInfo.Data.Item2.Count(); i++) {
+                    IEnumerable<PaylessReportesDet> ListDetOrd = ListInfo.Data.Item2.OrderByDescending(O1 => O1.Fecha1.ToDate());
+                    for (int i = 0; i < ListDetOrd.Count(); i++) {
                         ExcelO.CreateRow(i + 4);
                         ExcelO.CreateCell(1, CellType.String);
-                        ExcelO.SetCellValue(ListInfo.Data.Item2.ElementAt(i).TiendaId);
+                        ExcelO.SetCellValue(ListDetOrd.ElementAt(i).TiendaId);
                         ExcelO.CreateCell(2, CellType.String);
-                        ExcelO.SetCellValue(ListInfo.Data.Item3.Where(T => T.TiendaId == ListInfo.Data.Item2.ElementAt(i).TiendaId).Fod().Direc);
+                        ExcelO.SetCellValue(ListInfo.Data.Item3.Where(T => T.TiendaId == ListDetOrd.ElementAt(i).TiendaId).Fod().Direc);
                         ExcelO.CreateCell(3, CellType.String);
-                        ExcelO.SetCellValue(ListInfo.Data.Item3.Where(T => T.TiendaId == ListInfo.Data.Item2.ElementAt(i).TiendaId).Fod().Lider);
+                        ExcelO.SetCellValue(ListInfo.Data.Item3.Where(T => T.TiendaId == ListDetOrd.ElementAt(i).TiendaId).Fod().Lider);
                         ExcelO.CreateCell(4, CellType.String);
-                        ExcelO.SetCellValue(ListInfo.Data.Item3.Where(T => T.TiendaId == ListInfo.Data.Item2.ElementAt(i).TiendaId).Fod().Tel);
+                        ExcelO.SetCellValue(ListInfo.Data.Item3.Where(T => T.TiendaId == ListDetOrd.ElementAt(i).TiendaId).Fod().Tel);
 
                         ExcelO.CreateCell(5, CellType.String);
-                        ExcelO.SetCellValue(ListInfo.Data.Item2.ElementAt(i).Total);
+                        ExcelO.SetCellValue(ListDetOrd.ElementAt(i).Total);
                         ExcelO.CreateCell(11, CellType.String);
-                        ExcelO.SetCellValue(ListInfo.Data.Item2.ElementAt(i).TotalAccQty);
+                        ExcelO.SetCellValue(ListDetOrd.ElementAt(i).TotalAccQty);
                         ExcelO.CreateCell(12, CellType.String);
-                        ExcelO.SetCellValue(ListInfo.Data.Item2.ElementAt(i).TotalKidQty);
+                        ExcelO.SetCellValue(ListDetOrd.ElementAt(i).TotalKidQty);
                         ExcelO.CreateCell(13, CellType.String);
-                        ExcelO.SetCellValue(ListInfo.Data.Item2.ElementAt(i).TotalManQty);
+                        ExcelO.SetCellValue(ListDetOrd.ElementAt(i).TotalManQty);
                         ExcelO.CreateCell(14, CellType.String);
-                        ExcelO.SetCellValue(ListInfo.Data.Item2.ElementAt(i).TotalWomanQty);
+                        ExcelO.SetCellValue(ListDetOrd.ElementAt(i).TotalWomanQty);
                         ExcelO.CreateCell(15, CellType.String);
-                        ExcelO.SetCellValue(ListInfo.Data.Item2.ElementAt(i).Total);
-                        if (!string.IsNullOrEmpty(ListInfo.Data.Item2.ElementAt(i).Fecha1)) {
+                        ExcelO.SetCellValue(ListDetOrd.ElementAt(i).Total);
+                        if (!string.IsNullOrEmpty(ListDetOrd.ElementAt(i).Fecha1)) {
                             ExcelO.CreateCell(16, CellType.String);
-                            ExcelO.SetCellValue(ListInfo.Data.Item2.ElementAt(i).Fecha1.Substring(0, 10));
+                            ExcelO.SetCellValue(ListDetOrd.ElementAt(i).Fecha1.Substring(0, 10));
                             ExcelO.CreateCell(17, CellType.String);
-                            ExcelO.SetCellValue(ListInfo.Data.Item2.ElementAt(i).Cant1);
+                            ExcelO.SetCellValue(ListDetOrd.ElementAt(i).Cant1);
                             ExcelO.CreateCell(18, CellType.String);
-                            ExcelO.SetCellValue(ListInfo.Data.Item2.ElementAt(i).Fecha1.Substring(12));
+                            ExcelO.SetCellValue(ListDetOrd.ElementAt(i).Fecha1.Substring(12));
                         }
-                        if (!string.IsNullOrEmpty(ListInfo.Data.Item2.ElementAt(i).Fecha2)) {
+                        if (!string.IsNullOrEmpty(ListDetOrd.ElementAt(i).Fecha2)) {
                             ExcelO.CreateCell(19, CellType.String);
-                            ExcelO.SetCellValue(ListInfo.Data.Item2.ElementAt(i).Fecha2.Substring(0, 10));
+                            ExcelO.SetCellValue(ListDetOrd.ElementAt(i).Fecha2.Substring(0, 10));
                             ExcelO.CreateCell(20, CellType.String);
-                            ExcelO.SetCellValue(ListInfo.Data.Item2.ElementAt(i).Cant2);
+                            ExcelO.SetCellValue(ListDetOrd.ElementAt(i).Cant2);
                             ExcelO.CreateCell(21, CellType.String);
-                            ExcelO.SetCellValue(ListInfo.Data.Item2.ElementAt(i).Fecha2.Substring(12));
+                            ExcelO.SetCellValue(ListDetOrd.ElementAt(i).Fecha2.Substring(12));
                         }
-                        if (!string.IsNullOrEmpty(ListInfo.Data.Item2.ElementAt(i).Fecha3)) {
+                        if (!string.IsNullOrEmpty(ListDetOrd.ElementAt(i).Fecha3)) {
                             ExcelO.CreateCell(22, CellType.String);
-                            ExcelO.SetCellValue(ListInfo.Data.Item2.ElementAt(i).Fecha3.Substring(0, 10));
+                            ExcelO.SetCellValue(ListDetOrd.ElementAt(i).Fecha3.Substring(0, 10));
                             ExcelO.CreateCell(23, CellType.String);
-                            ExcelO.SetCellValue(ListInfo.Data.Item2.ElementAt(i).Cant3);
+                            ExcelO.SetCellValue(ListDetOrd.ElementAt(i).Cant3);
                             ExcelO.CreateCell(24, CellType.String);
-                            ExcelO.SetCellValue(ListInfo.Data.Item2.ElementAt(i).Fecha3.Substring(12));
+                            ExcelO.SetCellValue(ListDetOrd.ElementAt(i).Fecha3.Substring(12));
                         }
                     }
                     MemoryStream Ms2 = new MemoryStream();
@@ -1945,24 +1946,27 @@ namespace EdiViewer.Controllers
                                         ExcelO.SetCellValue(RowO.PedidoBarcode);
                                         break;
                                     case 1:
-                                        ExcelO.SetCellValue(RowO.FechaPedido);
+                                        ExcelO.SetCellValue(RowO.TransaccionId);
                                         break;
                                     case 2:
-                                        ExcelO.SetCellValue(RowO.Estatus);
+                                        ExcelO.SetCellValue(RowO.FechaPedido);
                                         break;
                                     case 3:
-                                        ExcelO.SetCellValue(RowO.NomBodega);
+                                        ExcelO.SetCellValue(RowO.Estatus);
                                         break;
                                     case 4:
-                                        ExcelO.SetCellValue(RowO.Regimen);
+                                        ExcelO.SetCellValue(RowO.NomBodega);
                                         break;
                                     case 5:
-                                        ExcelO.SetCellValue(string.IsNullOrEmpty(RowO.Observacion)? "" : RowO.Observacion);
+                                        ExcelO.SetCellValue(RowO.Regimen);
                                         break;
                                     case 6:
-                                        ExcelO.SetCellValue(RowO.CodProducto);
+                                        ExcelO.SetCellValue(string.IsNullOrEmpty(RowO.Observacion)? "" : RowO.Observacion);
                                         break;
                                     case 7:
+                                        ExcelO.SetCellValue(RowO.CodProducto);
+                                        break;
+                                    case 8:
                                         ExcelO.SetCellValue(RowO.FactComercial);
                                         break;
                                     default:

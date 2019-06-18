@@ -21,5 +21,6 @@ namespace EdiApi.Models
         public int PedidoId { get; set; }
         public int Total { get; set; }
         public string FactComercial { get; set; }
+        public int TransaccionId { get; set; }
     }
 }

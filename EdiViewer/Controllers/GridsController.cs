@@ -756,6 +756,9 @@ namespace EdiViewer.Controllers
                     string[] ArraTiendas = Records.Select(O => O.Lote).Distinct().ToArray();
                     for (int J = 0; J < Records.Count; J++) {
                         if (GroupRecords.Where(Gr => Gr.TiendaId == Convert.ToInt32(Records[J].Lote)).Count() == 0) {
+                            if (ListStores.Where(Ls => Ls.TiendaId == Convert.ToInt32(Records[J].Lote)).Count() == 0) {
+                                return Json(new { draw = 0, recordsFiltered = 0, recordsTotal = 0, errorMessage = "Existe un error en las tiendas, hay productos con una tienda que no está registrada en el sistema.", data = "" });
+                            }
                             GroupRecords.Add(new StoreCatQtyGModel {
                                 TiendaId = Convert.ToInt32(Records[J].Lote),
                                 Tienda = ListStores.Where(Ls => Ls.TiendaId == Convert.ToInt32(Records[J].Lote)).Fod().Descr

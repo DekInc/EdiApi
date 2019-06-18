@@ -22,20 +22,22 @@ select * from wms_test.dbo.Inventario where ClienteID = 610
 select * from wms.dbo.usrsystem where CodUsr in (2, 4, 92)
 select * from wms.dbo.usrsystem where idusr like'%ainventariot%' or nomusr like'%ainventariot%'
 select distinct Color, CodProducto from wms.dbo.Producto where CodProducto like '7370%'
-select top 10 * from wms.dbo.Producto P where ClienteID = 251
+select top 1000000 * from wms.dbo.Producto P where ClienteID = 385
 select * from wms.dbo.ItemInventario where CodProducto like '1902347' and color  = 'DRYU 961708-5'
 --Did: 52004, Cd 1902347
 select * from EdiDB.dbo.PAYLESS_ReportesMails
 select * from EdiDB.dbo.AsyncStates
 select * from EdiDB.dbo.PAYLESS_Reportes
-select * from EdiDB.dbo.PAYLESS_ReportesDet where IdM = 10
+select * from EdiDB.dbo.PAYLESS_ReportesDet where IdM = 34
 SELECT * FROM EdiDB.dbo.PedidosExternos order by FechaCreacion DESC
 SELECT * FROM EdiDB.dbo.PedidosExternos where TiendaId = 7384
+SELECT * FROM EdiDB.dbo.PedidosExternos where FullPed = 0
+--update EdiDB.dbo.PedidosExternos SET FullPed = null where FullPed = 0
 --truncate table EdiDB.dbo.PAYLESS_Reportes
 --truncate table EdiDB.dbo.PAYLESS_ReportesDet
 --delete from EdiDB.dbo.AsyncStates where Id = 2
---delete from EdiDB.dbo.PAYLESS_Reportes where Id = 14
---delete from EdiDB.dbo.PAYLESS_ReportesDet where IdM = 14
+--delete from EdiDB.dbo.PAYLESS_Reportes where Id = 33
+--delete from EdiDB.dbo.PAYLESS_ReportesDet where IdM = 33
 select * from EdiDB.dbo.EdiComs order by Id DESC
 
 select * from wms_test_29_01_2019.dbo.Transacciones where pais_orig = 90
@@ -232,7 +234,7 @@ select top 20 * from wms.dbo.Transacciones where NoTransaccion = 'SA118246'
 select top 20 * from wms.dbo.DtllDespacho Dd where Dd.DespachoID = 51953
 SELECT TOP 200 * FROM wms.dbo.Transacciones WHERE TransaccionID = 118246
 SELECT * FROM wms.dbo.SysTempSalidas S WHERE S.DtllPedidoID in (
-	select DtllPedidoID from wms.dbo.DtllPedido where PedidoId = 70648
+	select DtllPedidoID from wms.dbo.DtllPedido where PedidoId = 70644
 ) 
 AND S.CodProducto IN (
 	SELECT CodProducto FROM EdiDB.dbo.PedidosDetExternos where PedidoId = 40
@@ -258,7 +260,7 @@ AND T.IDTipoTransaccion = 'SA'
 select top 20 * from wms.dbo.DocumentosxTransaccion
 select top 20 * from wms.dbo.Inventario
 select top 20 * from wms.dbo.Transacciones where TransaccionID = 19060
-select * from wms.dbo.SysTempSalidas where PedidoID = 69104
+select * from wms.dbo.SysTempSalidas where TransaccionID = 118398
 select * from EdiDb.dbo.PAYLESS_ProdPrioriDet D where D.Barcode in (
 	SELECT CodProducto FROM wms.dbo.SysTempSalidas S WHERE S.DtllPedidoID in (
 		select DtllPedidoID from wms.dbo.DtllPedido where PedidoId = 70310

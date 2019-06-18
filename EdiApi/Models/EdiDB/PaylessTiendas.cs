@@ -14,5 +14,6 @@ namespace EdiApi.Models.EdiDB
         public string Tel { get; set; }
         public string Cel { get; set; }
         public string Lider { get; set; }
+        public int? BodegaId { get; set; }
     }
 }

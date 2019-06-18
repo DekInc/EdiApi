@@ -80,9 +80,7 @@ namespace EdiApi.Models.EdiDB
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            if (!optionsBuilder.IsConfigured)
-            {
-            }
+            
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -1428,9 +1426,6 @@ namespace EdiApi.Models.EdiDB
             modelBuilder.Entity<PaylessTiendas>(entity =>
             {
                 entity.ToTable("PAYLESS_Tiendas");
-
-                entity.HasIndex(e => e.TiendaId)
-                    .HasName("IndexPaylessTiendas");
 
                 entity.Property(e => e.Cel).HasMaxLength(32);
 

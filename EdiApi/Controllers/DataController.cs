@@ -66,7 +66,7 @@ namespace EdiApi.Controllers
         }
         [HttpGet]
         public string GetVersion() {
-            return "1.1.3.0";
+            return "1.1.3.1";
         }
         [HttpGet]
         public string UpdateLinComments(string LinHashId, string TxtLinComData, string ListFst) {
@@ -1362,7 +1362,7 @@ namespace EdiApi.Controllers
                         Cantidad = G.Sum(O1 => O1.Cantidad),
                         Observacion = G.Fod().Observacion,                        
                         PedidoId = G.Fod().PedidoId,
-                        TiendaId = string.Join(", ", G.Select(O2 => O2.TiendaId)),
+                        TiendaId = string.Join(", ", G.Select(O2 => O2.TiendaId).Distinct()),
                         Total = G.Fod().Total
                     }
                 ).Distinct();
@@ -1404,7 +1404,8 @@ namespace EdiApi.Controllers
                         Observacion = G.Fod().Observacion,
                         PedidoId = G.Fod().PedidoId,
                         TiendaId = string.Join(", ", G.Select(O2 => O2.TiendaId).Distinct()),
-                        FactComercial = string.Join(", ", G.Select(O2 => O2.FactComercial).Distinct())
+                        FactComercial = string.Join(", ", G.Select(O2 => O2.FactComercial).Distinct()),
+                        TransaccionId = G.Fod().TransaccionId
                     }
                 ).Distinct();
                 return new RetData<IEnumerable<PedidosWmsModel>> {
@@ -3247,7 +3248,7 @@ SET XACT_ABORT OFF
 	                PRINT '@MaxDetItemTran = ' + CONVERT(VARCHAR(16), @MaxDetItemTran)
                 END CATCH
                 SET XACT_ABORT OFF
-                " + Environment.NewLine);                
+                " + Environment.NewLine);
                 //ListSql.Add((DateTime.Now - StartTime).TotalSeconds.ToString());
                 //System.IO.StreamWriter Salida = new System.IO.StreamWriter("SetIngresoExcelWms2.sql", false);
                 //ListSql.ForEach(S => Salida.WriteLine(S));
@@ -3770,63 +3771,66 @@ SET XACT_ABORT OFF
                 ExcelO.SetRow(2);
                 ExcelO.SetCell(4);
                 ExcelO.SetCellValue(ListInfo.Data.Item1.PeriodoF);
-                for (int i = 0; i < ListInfo.Data.Item2.Count(); i++) {
+                IEnumerable<PaylessReportesDet> ListDetOrd = ListInfo.Data.Item2.OrderByDescending(O1 => O1.Fecha1.ToDateEsp());
+                for (int i = 0; i < ListDetOrd.Count(); i++) {
                     ExcelO.CreateRow(i + 4);
                     ExcelO.CreateCell(1, CellType.String);
-                    ExcelO.SetCellValue(ListInfo.Data.Item2.ElementAt(i).TiendaId);
+                    ExcelO.SetCellValue(ListDetOrd.ElementAt(i).TiendaId);
                     ExcelO.CreateCell(2, CellType.String);
-                    ExcelO.SetCellValue(ListInfo.Data.Item3.Where(T => T.TiendaId == ListInfo.Data.Item2.ElementAt(i).TiendaId).Fod().Direc);
+                    ExcelO.SetCellValue(ListInfo.Data.Item3.Where(T => T.TiendaId == ListDetOrd.ElementAt(i).TiendaId).Fod().Direc);
                     ExcelO.CreateCell(3, CellType.String);
-                    ExcelO.SetCellValue(ListInfo.Data.Item3.Where(T => T.TiendaId == ListInfo.Data.Item2.ElementAt(i).TiendaId).Fod().Lider);
+                    ExcelO.SetCellValue(ListInfo.Data.Item3.Where(T => T.TiendaId == ListDetOrd.ElementAt(i).TiendaId).Fod().Lider);
                     ExcelO.CreateCell(4, CellType.String);
-                    ExcelO.SetCellValue(ListInfo.Data.Item3.Where(T => T.TiendaId == ListInfo.Data.Item2.ElementAt(i).TiendaId).Fod().Tel);
+                    ExcelO.SetCellValue(ListInfo.Data.Item3.Where(T => T.TiendaId == ListDetOrd.ElementAt(i).TiendaId).Fod().Tel);
 
                     ExcelO.CreateCell(5, CellType.String);
-                    ExcelO.SetCellValue(ListInfo.Data.Item2.ElementAt(i).Total);
+                    ExcelO.SetCellValue(ListDetOrd.ElementAt(i).Total);
                     ExcelO.CreateCell(11, CellType.String);
-                    ExcelO.SetCellValue(ListInfo.Data.Item2.ElementAt(i).TotalAccQty);
+                    ExcelO.SetCellValue(ListDetOrd.ElementAt(i).TotalAccQty);
                     ExcelO.CreateCell(12, CellType.String);
-                    ExcelO.SetCellValue(ListInfo.Data.Item2.ElementAt(i).TotalKidQty);
+                    ExcelO.SetCellValue(ListDetOrd.ElementAt(i).TotalKidQty);
                     ExcelO.CreateCell(13, CellType.String);
-                    ExcelO.SetCellValue(ListInfo.Data.Item2.ElementAt(i).TotalManQty);
+                    ExcelO.SetCellValue(ListDetOrd.ElementAt(i).TotalManQty);
                     ExcelO.CreateCell(14, CellType.String);
-                    ExcelO.SetCellValue(ListInfo.Data.Item2.ElementAt(i).TotalWomanQty);
+                    ExcelO.SetCellValue(ListDetOrd.ElementAt(i).TotalWomanQty);
                     ExcelO.CreateCell(15, CellType.String);
-                    ExcelO.SetCellValue(ListInfo.Data.Item2.ElementAt(i).Total);
-                    if (!string.IsNullOrEmpty(ListInfo.Data.Item2.ElementAt(i).Fecha1)) {
+                    ExcelO.SetCellValue(ListDetOrd.ElementAt(i).Total);
+                    if (!string.IsNullOrEmpty(ListDetOrd.ElementAt(i).Fecha1)) {
                         ExcelO.CreateCell(16, CellType.String);
-                        ExcelO.SetCellValue(ListInfo.Data.Item2.ElementAt(i).Fecha1.Substring(0, 10));
+                        ExcelO.SetCellValue(ListDetOrd.ElementAt(i).Fecha1.Substring(0, 10));
                         ExcelO.CreateCell(17, CellType.String);
-                        ExcelO.SetCellValue(ListInfo.Data.Item2.ElementAt(i).Cant1);
+                        ExcelO.SetCellValue(ListDetOrd.ElementAt(i).Cant1);
                         ExcelO.CreateCell(18, CellType.String);
-                        ExcelO.SetCellValue(ListInfo.Data.Item2.ElementAt(i).Fecha1.Substring(12));
+                        ExcelO.SetCellValue(ListDetOrd.ElementAt(i).Fecha1.Substring(12));
                     }
-                    if (!string.IsNullOrEmpty(ListInfo.Data.Item2.ElementAt(i).Fecha2)) {
+                    if (!string.IsNullOrEmpty(ListDetOrd.ElementAt(i).Fecha2)) {
                         ExcelO.CreateCell(19, CellType.String);
-                        ExcelO.SetCellValue(ListInfo.Data.Item2.ElementAt(i).Fecha2.Substring(0, 10));
+                        ExcelO.SetCellValue(ListDetOrd.ElementAt(i).Fecha2.Substring(0, 10));
                         ExcelO.CreateCell(20, CellType.String);
-                        ExcelO.SetCellValue(ListInfo.Data.Item2.ElementAt(i).Cant2);
+                        ExcelO.SetCellValue(ListDetOrd.ElementAt(i).Cant2);
                         ExcelO.CreateCell(21, CellType.String);
-                        ExcelO.SetCellValue(ListInfo.Data.Item2.ElementAt(i).Fecha2.Substring(12));
+                        ExcelO.SetCellValue(ListDetOrd.ElementAt(i).Fecha2.Substring(12));
                     }
-                    if (!string.IsNullOrEmpty(ListInfo.Data.Item2.ElementAt(i).Fecha3)) {
+                    if (!string.IsNullOrEmpty(ListDetOrd.ElementAt(i).Fecha3)) {
                         ExcelO.CreateCell(22, CellType.String);
-                        ExcelO.SetCellValue(ListInfo.Data.Item2.ElementAt(i).Fecha3.Substring(0, 10));
+                        ExcelO.SetCellValue(ListDetOrd.ElementAt(i).Fecha3.Substring(0, 10));
                         ExcelO.CreateCell(23, CellType.String);
-                        ExcelO.SetCellValue(ListInfo.Data.Item2.ElementAt(i).Cant3);
+                        ExcelO.SetCellValue(ListDetOrd.ElementAt(i).Cant3);
                         ExcelO.CreateCell(24, CellType.String);
-                        ExcelO.SetCellValue(ListInfo.Data.Item2.ElementAt(i).Fecha3.Substring(12));
+                        ExcelO.SetCellValue(ListDetOrd.ElementAt(i).Fecha3.Substring(12));
                     }
                 }
                 MemoryStream Ms2 = new MemoryStream();
                 ExcelO.ExcelWorkBook.Write(Ms2);
+                IEnumerable<PaylessReportesMails> ListMails = DbO.PaylessReportesMails;                
                 using (SmtpClient client = new SmtpClient("10.240.34.119")) {
                     client.UseDefaultCredentials = false;
                     client.Credentials = new NetworkCredential("hilmer.campos@glcweb.ddns.net", "HilmerServer2019");
                     MailMessage mailMessage = new MailMessage {
                         From = new MailAddress("hilmer.campos@glcweb.ddns.net")
                     };
-                    mailMessage.To.Add("hilmer.campos@glcamerica.com");
+                    foreach (PaylessReportesMails MO in ListMails)
+                        mailMessage.To.Add(MO.MailDir);
                     mailMessage.Body = @"";
                     mailMessage.Subject = "GLC - " + "Archivo_RepJuevesPedidos_" + DateTime.Now.ToString("ddMMyyyy_HHmm");
                     System.Net.Mail.Attachment attachment;
@@ -3835,7 +3839,7 @@ SET XACT_ABORT OFF
                     attachment = new System.Net.Mail.Attachment(Ms2, "Archivo_RepJuevesPedidos_" + DateTime.Now.ToString("ddMMyyyy_HHmm") + ".xls");
                     mailMessage.Attachments.Add(attachment);
                     client.Send(mailMessage);
-                }
+                }            
                 //Ms2.Close();
                 //return File(Ms2.ToArray(), "application/octet-stream", "Archivo_RepJuevesPedidos_" + DateTime.Now.ToString("ddMMyyyy") + ".xls");
             }
@@ -3845,146 +3849,151 @@ SET XACT_ABORT OFF
             DateTime StartTime = DateTime.Now;
             try {
                 //Jueves
-                List<DateTime> ListThurs = Utility.Funcs.AllThursdaysInMonth(StartTime.Year, StartTime.Month).Where(D => D <= (new DateTime(StartTime.Year, StartTime.Month, StartTime.Day, 23, 59, 59)).AddDays(7)).ToList();
-                for (int I = 0; I < ListThurs.Count(); I++) {
-                    IEnumerable<PaylessReportes> ListRep = (
-                        from R in DbO.PaylessReportes
-                        where R.Periodo == ListThurs[I].AddDays(-3).ToString(ApplicationSettings.DateTimeFormatShort)
-                        && R.Tipo == "0"
-                        select R
-                        );
-                    if (ListRep.Count() == 0) {
-                        PaylessReportes NewRep = new PaylessReportes() {
-                            Periodo = ListThurs[I].AddDays(-3).ToString(ApplicationSettings.DateTimeFormatShort),
-                            PeriodoF = ListThurs[I].AddDays(1).ToString(ApplicationSettings.DateTimeFormatShort),
-                            FechaGen = DateTime.Now.ToString(ApplicationSettings.DateTimeFormat),
-                            Tipo = "0"
-                        };
-                        DbO.PaylessReportes.Add(NewRep);
-                        DbO.SaveChanges();                        
-                        IEnumerable<PeticionesAdminBGModel> ListOrders = ManualDB.SP_GetPeticionesAdminB(ref DbOLong);
-                        ListOrders = ListOrders.Where(Pe => Pe.FechaPedido.ToDateEsp() >= ListThurs[I].AddDays(-4)
-                            && Pe.FechaPedido.ToDateEsp() <= ListThurs[I].AddDays(3)).OrderByDescending(Pe2 => Pe2.FechaPedido.ToDateEsp());
-                        IEnumerable<int?> ListTiendas = ListOrders.Select(Lo => Lo.TiendaId).Distinct();
-                        List<PaylessReportesDet> ListSubOrders = new List<PaylessReportesDet>();
-                        for (int Ti = 0; Ti < ListTiendas.Count(); Ti++) {
-                            IEnumerable<PeticionesAdminBGModel> ListOrdersByTienda = ListOrders.Where(Lo => Lo.TiendaId == ListTiendas.ElementAt(Ti));
-                            int TotalWomanCp = 0, TotalManCp = 0, TotalKidsCp = 0, TotalAccCp = 0;
-                            ListSubOrders.Clear();
-                            for (int Pi = 0; Pi < ListOrdersByTienda.Count(); Pi++) {
-                                ListSubOrders.Add(new PaylessReportesDet {
-                                    TiendaId = ListTiendas.ElementAt(Ti),
-                                    Fecha1 = ListOrdersByTienda.ElementAt(Pi).FechaPedido,
-                                    TotalWomanQty = ListOrdersByTienda.ElementAt(Pi).WomanQty,
-                                    TotalManQty = ListOrdersByTienda.ElementAt(Pi).ManQty,
-                                    TotalKidQty = ListOrdersByTienda.ElementAt(Pi).KidQty,
-                                    TotalAccQty = ListOrdersByTienda.ElementAt(Pi).AccQty,
-                                    Total = ListOrdersByTienda.ElementAt(Pi).WomanQty
-                                        + ListOrdersByTienda.ElementAt(Pi).ManQty
-                                        + ListOrdersByTienda.ElementAt(Pi).KidQty
-                                        + ListOrdersByTienda.ElementAt(Pi).AccQty
-                                        + ListOrdersByTienda.ElementAt(Pi).TotalCp
-                                });
-                                if (ListOrdersByTienda.ElementAt(Pi).TotalCp > 0) {
-                                    int WomanCp = 0, ManCp = 0, KidsCp = 0, AccCp = 0;
-                                    WomanCp = (
-                                        from Pu in DbO.ProductoUbicacion
-                                        where Pu.Rack == ListOrdersByTienda.ElementAt(Pi).Id
-                                        && Pu.NomBodega.ToUpper() == "DAMAS"
-                                        && (Pu.NombreRack == "A" || Pu.NombreRack == "H")
-                                        select Pu.Id
-                                        ).Count();
-                                    ManCp = (
-                                        from Pu in DbO.ProductoUbicacion
-                                        where Pu.Rack == ListOrdersByTienda.ElementAt(Pi).Id
-                                        && Pu.NomBodega.ToUpper() == "CABALLEROS"
-                                        && (Pu.NombreRack == "A" || Pu.NombreRack == "H")
-                                        select Pu.Id
-                                        ).Count();
-                                    KidsCp = (
-                                        from Pu in DbO.ProductoUbicacion
-                                        where Pu.Rack == ListOrdersByTienda.ElementAt(Pi).Id
-                                        && Pu.NomBodega.ToUpper() == "NIÑOS / AS"
-                                        && (Pu.NombreRack == "A" || Pu.NombreRack == "H")
-                                        select Pu.Id
-                                        ).Count();
-                                    AccCp = (
-                                        from Pu in DbO.ProductoUbicacion
-                                        where Pu.Rack == ListOrdersByTienda.ElementAt(Pi).Id
-                                        && Pu.NomBodega.ToUpper() == "ACCESORIOS"
-                                        && (Pu.NombreRack == "A" || Pu.NombreRack == "H")
-                                        select Pu.Id
-                                        ).Count();
-                                    TotalWomanCp += WomanCp;
-                                    TotalManCp += ManCp;
-                                    TotalKidsCp += KidsCp;
-                                    TotalAccCp += AccCp;
-                                }                                
-                            }
-                            PaylessReportesDet NewRepDet = new PaylessReportesDet() {
-                                IdM = NewRep.Id,
-                                TiendaId = ListTiendas.ElementAt(Ti),
-                                TotalWomanQty = ListSubOrders.Sum(O1 => O1.TotalWomanQty) + TotalWomanCp,
-                                TotalManQty = ListSubOrders.Sum(O1 => O1.TotalManQty) + TotalManCp,
-                                TotalKidQty = ListSubOrders.Sum(O1 => O1.TotalKidQty) + TotalKidsCp,
-                                TotalAccQty = ListSubOrders.Sum(O1 => O1.TotalAccQty) + TotalAccCp,
-                                Total = ListSubOrders.Sum(O1 => O1.Total)
+                if ((StartTime.DayOfWeek == DayOfWeek.Thursday && StartTime.Hour > 13)
+                    || StartTime.DayOfWeek == DayOfWeek.Friday
+                    || StartTime.DayOfWeek == DayOfWeek.Saturday
+                    || StartTime.DayOfWeek == DayOfWeek.Sunday) {
+                    List<DateTime> ListThurs = Utility.Funcs.AllThursdaysInMonth(StartTime.Year, StartTime.Month).Where(D => D <= (new DateTime(StartTime.Year, StartTime.Month, StartTime.Day, 23, 59, 59)).AddDays(7)).ToList();
+                    for (int I = 0; I < ListThurs.Count(); I++) {
+                        List<PaylessReportes> ListRep = (
+                            from R in DbO.PaylessReportes
+                            where R.Periodo == ListThurs[I].AddDays(-3).ToString(ApplicationSettings.DateTimeFormatShort)
+                            && R.Tipo == "0"
+                            select R
+                            ).ToList();
+                        if (ListRep.Count() == 0) {
+                            PaylessReportes NewRep = new PaylessReportes() {
+                                Periodo = ListThurs[I].AddDays(-3).ToString(ApplicationSettings.DateTimeFormatShort),
+                                PeriodoF = ListThurs[I].AddDays(1).ToString(ApplicationSettings.DateTimeFormatShort),
+                                FechaGen = DateTime.Now.ToString(ApplicationSettings.DateTimeFormat),
+                                Tipo = "0"
                             };
-                            for (int Z = 0; Z < ListSubOrders.Count; Z++) {
-                                switch (Z) {
-                                    case 0:
-                                        NewRepDet.Fecha1 = ListSubOrders[Z].Fecha1;
-                                        NewRepDet.Cant1 = ListSubOrders[Z].Total;
-                                        break;
-                                    case 1:
-                                        NewRepDet.Fecha2 = ListSubOrders[Z].Fecha1;
-                                        NewRepDet.Cant2 = ListSubOrders[Z].Total;
-                                        break;
-                                    case 2:
-                                        NewRepDet.Fecha3 = ListSubOrders[Z].Fecha1;
-                                        NewRepDet.Cant3 = ListSubOrders[Z].Total;
-                                        break;
-                                    case 3:
-                                        NewRepDet.Fecha4 = ListSubOrders[Z].Fecha1;
-                                        NewRepDet.Cant4 = ListSubOrders[Z].Total;
-                                        break;
-                                    case 4:
-                                        NewRepDet.Fecha5 = ListSubOrders[Z].Fecha1;
-                                        NewRepDet.Cant5 = ListSubOrders[Z].Total;
-                                        break;
-                                    case 5:
-                                        NewRepDet.Fecha6 = ListSubOrders[Z].Fecha1;
-                                        NewRepDet.Cant6 = ListSubOrders[Z].Total;
-                                        break;
-                                    default:
-                                        break;
-                                }
-                            }
-                            DbO.PaylessReportesDet.Add(NewRepDet);
-                            DbO.SaveChanges();                            
-                        }
-                        CreateExcelThrusdayAndSendByMail(NewRep);
-                    } else {
-                        if (I == ListThurs.Count() - 1) {
-                            bool TheSame = true;
-                            IEnumerable<PeticionesAdminBGModel> ListOrders = ManualDB.SP_GetPeticionesAdminB(ref DbOLong);
+                            DbO.PaylessReportes.Add(NewRep);
+                            DbO.SaveChanges();
+                            List<PeticionesAdminBGModel> ListOrders = ManualDB.SP_GetPeticionesAdminB(ref DbOLong).ToList();
                             ListOrders = ListOrders.Where(Pe => Pe.FechaPedido.ToDateEsp() >= ListThurs[I].AddDays(-4)
-                                && Pe.FechaPedido.ToDateEsp() <= ListThurs[I].AddDays(3)).OrderByDescending(Pe2 => Pe2.FechaPedido.ToDateEsp());
-                            IEnumerable<PaylessReportesDet> ListRepDet = (from Rd in DbO.PaylessReportesDet where Rd.IdM == ListRep.Fod().Id select Rd);
-                            foreach (PeticionesAdminBGModel PedNuevo in ListOrders) {
-                                if (ListRepDet.Where(O1 => 
-                                    O1.Fecha1 == PedNuevo.FechaPedido
-                                    || O1.Fecha2 == PedNuevo.FechaPedido
-                                    || O1.Fecha3 == PedNuevo.FechaPedido
-                                    || O1.Fecha4 == PedNuevo.FechaPedido
-                                    || O1.Fecha5 == PedNuevo.FechaPedido
-                                    || O1.Fecha6 == PedNuevo.FechaPedido).Count() == 0)
-                                    TheSame = false;
-                            }
-                            if (!TheSame) {
-                                DbO.PaylessReportesDet.RemoveRange(DbO.PaylessReportesDet.Where(R1 => R1.IdM == ListRep.Fod().Id));
-                                DbO.PaylessReportes.Remove(ListRep.Fod());
+                                && Pe.FechaPedido.ToDateEsp() <= ListThurs[I].AddDays(3)).OrderByDescending(Pe2 => Pe2.FechaPedido.ToDateEsp()).ToList();
+                            List<int?> ListTiendas = ListOrders.OrderBy(Pe2 => Pe2.FechaPedido.ToDateEsp()).Select(Lo => Lo.TiendaId).Distinct().ToList();
+                            List<PaylessReportesDet> ListSubOrders = new List<PaylessReportesDet>();
+                            for (int Ti = 0; Ti < ListTiendas.Count(); Ti++) {
+                                List<PeticionesAdminBGModel> ListOrdersByTienda = ListOrders.Where(Lo => Lo.TiendaId == ListTiendas.ElementAt(Ti)).OrderBy(Lo => Lo.FechaPedido.ToDateEsp()).ToList();
+                                int TotalWomanCp = 0, TotalManCp = 0, TotalKidsCp = 0, TotalAccCp = 0;
+                                ListSubOrders.Clear();
+                                for (int Pi = 0; Pi < ListOrdersByTienda.Count(); Pi++) {
+                                    ListSubOrders.Add(new PaylessReportesDet {
+                                        TiendaId = ListTiendas.ElementAt(Ti),
+                                        Fecha1 = ListOrdersByTienda.ElementAt(Pi).FechaPedido,
+                                        TotalWomanQty = ListOrdersByTienda.ElementAt(Pi).WomanQty,
+                                        TotalManQty = ListOrdersByTienda.ElementAt(Pi).ManQty,
+                                        TotalKidQty = ListOrdersByTienda.ElementAt(Pi).KidQty,
+                                        TotalAccQty = ListOrdersByTienda.ElementAt(Pi).AccQty,
+                                        Total = ListOrdersByTienda.ElementAt(Pi).WomanQty
+                                            + ListOrdersByTienda.ElementAt(Pi).ManQty
+                                            + ListOrdersByTienda.ElementAt(Pi).KidQty
+                                            + ListOrdersByTienda.ElementAt(Pi).AccQty
+                                            + ListOrdersByTienda.ElementAt(Pi).TotalCp
+                                    });
+                                    if (ListOrdersByTienda.ElementAt(Pi).TotalCp > 0) {
+                                        int WomanCp = 0, ManCp = 0, KidsCp = 0, AccCp = 0;
+                                        WomanCp = (
+                                            from Pu in DbO.ProductoUbicacion
+                                            where Pu.Rack == ListOrdersByTienda.ElementAt(Pi).Id
+                                            && Pu.NomBodega.ToUpper() == "DAMAS"
+                                            && (Pu.NombreRack == "A" || Pu.NombreRack == "H")
+                                            select Pu.Id
+                                            ).Count();
+                                        ManCp = (
+                                            from Pu in DbO.ProductoUbicacion
+                                            where Pu.Rack == ListOrdersByTienda.ElementAt(Pi).Id
+                                            && Pu.NomBodega.ToUpper() == "CABALLEROS"
+                                            && (Pu.NombreRack == "A" || Pu.NombreRack == "H")
+                                            select Pu.Id
+                                            ).Count();
+                                        KidsCp = (
+                                            from Pu in DbO.ProductoUbicacion
+                                            where Pu.Rack == ListOrdersByTienda.ElementAt(Pi).Id
+                                            && Pu.NomBodega.ToUpper() == "NIÑOS / AS"
+                                            && (Pu.NombreRack == "A" || Pu.NombreRack == "H")
+                                            select Pu.Id
+                                            ).Count();
+                                        AccCp = (
+                                            from Pu in DbO.ProductoUbicacion
+                                            where Pu.Rack == ListOrdersByTienda.ElementAt(Pi).Id
+                                            && Pu.NomBodega.ToUpper() == "ACCESORIOS"
+                                            && (Pu.NombreRack == "A" || Pu.NombreRack == "H")
+                                            select Pu.Id
+                                            ).Count();
+                                        TotalWomanCp += WomanCp;
+                                        TotalManCp += ManCp;
+                                        TotalKidsCp += KidsCp;
+                                        TotalAccCp += AccCp;
+                                    }
+                                }
+                                PaylessReportesDet NewRepDet = new PaylessReportesDet() {
+                                    IdM = NewRep.Id,
+                                    TiendaId = ListTiendas.ElementAt(Ti),
+                                    TotalWomanQty = ListSubOrders.Sum(O1 => O1.TotalWomanQty) + TotalWomanCp,
+                                    TotalManQty = ListSubOrders.Sum(O1 => O1.TotalManQty) + TotalManCp,
+                                    TotalKidQty = ListSubOrders.Sum(O1 => O1.TotalKidQty) + TotalKidsCp,
+                                    TotalAccQty = ListSubOrders.Sum(O1 => O1.TotalAccQty) + TotalAccCp,
+                                    Total = ListSubOrders.Sum(O1 => O1.Total)
+                                };
+                                for (int Z = 0; Z < ListSubOrders.Count; Z++) {
+                                    switch (Z) {
+                                        case 0:
+                                            NewRepDet.Fecha1 = ListSubOrders[Z].Fecha1;
+                                            NewRepDet.Cant1 = ListSubOrders[Z].Total;
+                                            break;
+                                        case 1:
+                                            NewRepDet.Fecha2 = ListSubOrders[Z].Fecha1;
+                                            NewRepDet.Cant2 = ListSubOrders[Z].Total;
+                                            break;
+                                        case 2:
+                                            NewRepDet.Fecha3 = ListSubOrders[Z].Fecha1;
+                                            NewRepDet.Cant3 = ListSubOrders[Z].Total;
+                                            break;
+                                        case 3:
+                                            NewRepDet.Fecha4 = ListSubOrders[Z].Fecha1;
+                                            NewRepDet.Cant4 = ListSubOrders[Z].Total;
+                                            break;
+                                        case 4:
+                                            NewRepDet.Fecha5 = ListSubOrders[Z].Fecha1;
+                                            NewRepDet.Cant5 = ListSubOrders[Z].Total;
+                                            break;
+                                        case 5:
+                                            NewRepDet.Fecha6 = ListSubOrders[Z].Fecha1;
+                                            NewRepDet.Cant6 = ListSubOrders[Z].Total;
+                                            break;
+                                        default:
+                                            break;
+                                    }
+                                }
+                                DbO.PaylessReportesDet.Add(NewRepDet);
                                 DbO.SaveChanges();
+                            }
+                            CreateExcelThrusdayAndSendByMail(NewRep);
+                        } else {
+                            if (I == ListThurs.Count() - 1) {
+                                bool TheSame = true;
+                                List<PeticionesAdminBGModel> ListOrders = ManualDB.SP_GetPeticionesAdminB(ref DbOLong).ToList();
+                                ListOrders = ListOrders.Where(Pe => Pe.FechaPedido.ToDateEsp() >= ListThurs[I].AddDays(-4)
+                                    && Pe.FechaPedido.ToDateEsp() <= ListThurs[I].AddDays(3)).OrderByDescending(Pe2 => Pe2.FechaPedido.ToDateEsp()).ToList();
+                                List<PaylessReportesDet> ListRepDet = (from Rd in DbO.PaylessReportesDet where Rd.IdM == ListRep.Fod().Id select Rd).ToList();
+                                foreach (PeticionesAdminBGModel PedNuevo in ListOrders) {
+                                    if (ListRepDet.Where(O1 =>
+                                        O1.Fecha1 == PedNuevo.FechaPedido
+                                        || O1.Fecha2 == PedNuevo.FechaPedido
+                                        || O1.Fecha3 == PedNuevo.FechaPedido
+                                        || O1.Fecha4 == PedNuevo.FechaPedido
+                                        || O1.Fecha5 == PedNuevo.FechaPedido
+                                        || O1.Fecha6 == PedNuevo.FechaPedido).Count() == 0)
+                                        TheSame = false;
+                                }
+                                if (!TheSame) {
+                                    DbO.PaylessReportesDet.RemoveRange(DbO.PaylessReportesDet.Where(R1 => R1.IdM == ListRep.Fod().Id));
+                                    DbO.PaylessReportes.Remove(ListRep.Fod());
+                                    DbO.SaveChanges();
+                                }
                             }
                         }
                     }

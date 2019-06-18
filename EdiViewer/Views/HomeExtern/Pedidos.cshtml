@@ -132,7 +132,7 @@
                     data: "tiendaId",
                     name: "tiendaId",
                     render: function (data, type, row) {
-                        if (type === 'display' && (row.tiendaId[0] == 7)) {
+                        if (type === 'display' && (row.tiendaId[0] == 7 || row.tiendaId.indexOf(',') != -1)) {
                             return '<span>' + row.tiendaId + '</span>';
                         }
                         return '';

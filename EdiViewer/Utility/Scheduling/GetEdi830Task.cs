@@ -9,17 +9,27 @@ using Newtonsoft.Json.Linq;
 
 namespace EdiViewer.Utility.Scheduling
 {
-    public class MakeAutoReportsPaylessTask : Interfaces.IScheduledTask
+    public class GetEdi830Task : Interfaces.IScheduledTask
     {
         public string Schedule => "*/30 * * * *";
         public static HttpClient httpClient = new HttpClient();        
         public async Task ExecuteAsync(CancellationToken cancellationToken)
         {
-            string MakeAutoReportsPaylessTaskUri = $"{ApplicationSettings.ApiUri}Data/MakeAutoReportsPayless";
+            string Transform830Uri = $"{ApplicationSettings.ApiUri}Edi/TranslateForms830";
             try
-            {                
-                Uri Url = new Uri(MakeAutoReportsPaylessTaskUri);
+            {
+                //System.IO.StreamWriter Sw2 = new System.IO.StreamWriter(@"c:\temp\EdiLog.txt", true);
+                //Sw2.WriteLine("EdiTask init" + DateTime.Now.ToString() + Environment.NewLine);
+                //Sw2.Close();
+                Uri Url = new Uri(Transform830Uri);
                 string ResJson = await httpClient.GetStringAsync(Url);
+                //try
+                //{
+                //    System.IO.StreamWriter Sw = new System.IO.StreamWriter(@"c:\temp\EdiLog.txt", true);
+                //    Sw.WriteLine(ResJson + DateTime.Now.ToString() + Environment.NewLine);
+                //    Sw.Close();
+                //}
+                //catch { }
             }
             catch { }
         }

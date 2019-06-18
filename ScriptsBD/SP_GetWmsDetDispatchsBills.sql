@@ -27,6 +27,8 @@ BEGIN
 		SB2.FACT_COMERCIAL,
 		(SELECT top 1 D.Categoria from EdiDb.dbo.PAYLESS_ProdPrioriDet D where D.Barcode = Dp.CodProducto ) Categoria
 	FROM wms.dbo.Pedido AS P WITH (NOLOCK)
+	JOIN wms.dbo.Transacciones T3
+		ON T3.PedidoID = P.PedidoID
 	JOIN wms.dbo.Estatus AS E WITH (NOLOCK) 
 		ON E.EstatusID = P.EstatusID
 	JOIN wms.dbo.Bodegas AS B WITH (NOLOCK) 

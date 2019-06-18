@@ -27,8 +27,11 @@ BEGIN
 		P.Observacion,
 		P.PedidoID,
 		SUBSTRING(Dp.CodProducto, 1, 4) TiendaId,
-		SB2.FACT_COMERCIAL
+		SB2.FACT_COMERCIAL,
+		T3.TransaccionID
 	FROM wms.dbo.Pedido AS P WITH (NOLOCK)
+	JOIN wms.dbo.Transacciones AS T3 WITH (NOLOCK)
+		ON T3.PedidoID = P.PedidoID
 	JOIN wms.dbo.Estatus AS E WITH (NOLOCK) 
 		ON E.EstatusID = P.EstatusID
 	JOIN wms.dbo.Bodegas AS B WITH (NOLOCK) 
@@ -77,7 +80,8 @@ BEGIN
 	P.Observacion,
 	P.PedidoID,
 	SUBSTRING(Dp.CodProducto, 1, 4),
-	SB2.FACT_COMERCIAL
+	SB2.FACT_COMERCIAL,
+	T3.TransaccionID
 	ORDER BY P.PedidoID DESC
 END
 GO
