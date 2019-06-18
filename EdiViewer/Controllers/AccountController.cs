@@ -238,26 +238,21 @@ namespace EdiViewer.Controllers
                 string HashIdDecrypted = Encoding.UTF8.GetString(CryptoHelper.DecryptData(Convert.FromBase64String(HashId)));
                 if (HashIdDecrypted.Split("|").Length != 8)
                     return View("Index", new Models.ErrorModel() { ErrorMessage = "Error en el sistema de auth." });
-                HttpContext.Session.SetObjSession("Session.TiendaId", HashIdDecrypted.Split("|")[7]);
-                HttpContext.Session.SetObjSession("Session.ClientId", HashIdDecrypted.Split("|")[3]);
-                HttpContext.Session.SetObjSession("Session.HashId", HashIdDecrypted.Split("|")[5]);
-                HttpContext.Session.SetObjSession("Session.IdGroup", HashIdDecrypted.Split("|")[1]);
+                string[] HashIdDecryptedArray = HashIdDecrypted.Split("|");                
+                RetData<Tuple<IEnumerable<IenetGroups>, IEnumerable<IenetAccesses>, IEnumerable<IenetGroupsAccesses>, IEnumerable<IenetGroupsAccesses>>> LoginStruct = await ApiClientFactory.Instance.GetLoginStruct(HashIdDecryptedArray[1]);
+                if (LoginStruct.Data == null)
+                    return View("Index", new Models.ErrorModel() { ErrorMessage = "Error al obtener datos de login." });
+                if (LoginStruct.Info.CodError != 0)
+                    return View("Index", new Models.ErrorModel() { ErrorMessage = LoginStruct.Info.Mensaje });                
+                HttpContext.Session.SetObjSession("Session.TiendaId", HashIdDecryptedArray[7]);
+                HttpContext.Session.SetObjSession("Session.ClientId", HashIdDecryptedArray[3]);
+                HttpContext.Session.SetObjSession("Session.HashId", HashIdDecryptedArray[5]);
+                HttpContext.Session.SetObjSession("Session.IdGroup", HashIdDecryptedArray[1]);
                 HttpContext.Session.SetObjSession("Session.CodUsr", TxtUser);
-                RetData<IEnumerable<IenetGroups>> ListGroups = await ApiClientFactory.Instance.GetGroups(ApiClientFactory.Instance.Encrypt($"TopSecurity|{HashIdDecrypted.Split("|")[5]}"));
-                RetData<IEnumerable<IenetAccesses>> ListAccesses = await ApiClientFactory.Instance.GetIenetAccesses(ApiClientFactory.Instance.Encrypt($"TopSecurity|{HashIdDecrypted.Split("|")[5]}"));
-                RetData<IEnumerable<IenetGroupsAccesses>> ListGroupsAccesses = await ApiClientFactory.Instance.GetIEnetGroupsAccesses(ApiClientFactory.Instance.Encrypt($"TopSecurity|{HashIdDecrypted.Split("|")[5]}"));
-                HttpContext.Session.SetObjSession("ListGroups", ListGroups.Data);
-                HttpContext.Session.SetObjSession("ListAccesses", ListAccesses.Data);
-                HttpContext.Session.SetObjSession("ListGroupsAccesses", ListGroupsAccesses.Data);
-                IEnumerable<IenetGroupsAccesses> TPermit = (
-                    from Ga in ListGroupsAccesses.Data
-                    from A in ListAccesses.Data
-                    where A.Id == Ga.IdIenetAccess
-                    && Ga.IdIenetGroup == Convert.ToInt32(HashIdDecrypted.Split("|")[1])
-                    && A.Descr.Equals("Login", StringComparison.OrdinalIgnoreCase)
-                    select Ga
-                    );
-                if (TPermit.Count() > 0)
+                HttpContext.Session.SetObjSession("ListGroups", LoginStruct.Data.Item1);
+                HttpContext.Session.SetObjSession("ListAccesses", LoginStruct.Data.Item2);
+                HttpContext.Session.SetObjSession("ListGroupsAccesses", LoginStruct.Data.Item3);                
+                if (LoginStruct.Data.Item4.Count() > 0)
                     return LocalRedirect("/");
                 else
                     return View("Index", new Models.ErrorModel() { ErrorMessage = "El usuario no tiene permiso para ingresar al sistema." });

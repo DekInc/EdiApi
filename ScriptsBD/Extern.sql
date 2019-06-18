@@ -320,14 +320,18 @@ AND T.TransaccionID = DxT.TransaccionID
 AND Ii.InventarioID = I.InventarioID
 )
 select * from wms.dbo.DocumentosxTransaccion order by IDDocxTransaccion DESC
-SELECT TOP 200 * FROM wms.dbo.ItemInventario WHERE CodProducto = '1902347'
-SELECT TOP 200 * FROM wms.dbo.DetalleTransacciones WHERE InventarioID
-SELECT TOP 200 * FROM wms.dbo.SysTempSalidas WHERE ItemInventarioID IN (1699577)
+select * from wms.dbo.Racks where Rack in (11808, 11977)
+SELECT TOP 200 * FROM wms.dbo.Inventario WHERE InventarioID in (1825791,
+1831824, 1849859)
+SELECT TOP 200 * FROM wms.dbo.ItemInventario WHERE CodProducto = '7383810131'
+SELECT TOP 200 * FROM wms.dbo.DetalleTransacciones WHERE InventarioId in (1825791,
+1831824, 1849859)
+SELECT TOP 200 * FROM wms.dbo.SysTempSalidas WHERE ItemInventarioID IN (1831191)
 SELECT TOP 200 * FROM wms.dbo.SysTempSalidas where CodProducto = '7383810131'
 --TId: 115914	Pid: 69104	IId: 1831824
 SELECT TOP 200 * FROM wms.dbo.SysTempSalidas WHERE TransaccionID = 118331 order by IdTempSalida
 --Transaccion que se mezclo 2 usuarios 118331
-SELECT TOP 200 * FROM wms.dbo.Transacciones WHERE TransaccionID = 118331
+SELECT TOP 200 * FROM wms.dbo.Transacciones WHERE TransaccionID in (115868, 116081)
 SELECT TOP 200 * FROM wms_test_29_01_2019.dbo.Transacciones WHERE IDTipoTransaccion = 'IN' AND year(FechaTransaccion) = 2019
 SELECT TOP 200 * FROM wms_test_29_01_2019.dbo.Transacciones WHERE --IDTipoTransaccion = 'IN' 
  year(FechaTransaccion) = 2019 AND ClienteID = 1134 order by ClienteID
@@ -386,8 +390,9 @@ D.barcode from EdiDb.dbo.PAYLESS_ProdPrioriArchDet D where D.barcode not in(
 select barcode from  PAYLESS_ProdPrioriDet 
 ) order by D.barcode
 
-select distinct barcode from EdiDb.dbo.PAYLESS_ProdPrioriDet where barcode like '7370%' and IdTransporte = 4
+select distinct barcode from EdiDb.dbo.PAYLESS_ProdPrioriDet where barcode like '7393%' and IdTransporte = 4
 select * from EdiDb.dbo.PAYLESS_Tiendas order by TiendaID
+select * from EdiDb.dbo.PAYLESS_Tiendas where TiendaId = 7393
 --update EdiDb.dbo.IEnetUsers SET ClienteID = 1432
 -- 7379 , 7383 pasan a ser TGU, SAP
 select * from EdiDb.dbo.PayLess_Transporte
@@ -871,5 +876,41 @@ SELECT DISTINCT Ii.CodProducto, B.NomBodega, R.Rack, R.NombreRack
 			ON B.BodegaID = R.BodegaID
 		where I.ClienteID = 1432
 		AND Ii.Existencia > 0		
+
+
+
+
+SELECT 
+		t.BodegaId,
+		ii.CodProducto,
+		SUM(ii.CantidadInicial - isnull(Sy_1.reservado, 0)) AS existencia
+	FROM wms.dbo.ItemInventario AS ii WITH(NOLOCK)
+	JOIN wms.dbo.inventario AS i WITH(NOLOCK)
+		ON i.InventarioID=ii.InventarioID
+	JOIN wms.dbo.producto AS p WITH(NOLOCK) 
+		ON p.codproducto=ii.codproducto		
+	JOIN wms.dbo.DetalleTransacciones AS d1 WITH(NOLOCK)
+		ON d1.InventarioID=i.InventarioID
+	JOIN wms.dbo.transacciones AS T WITH(NOLOCK) 
+		ON t.TransaccionID=d1.TransaccionID		
+	LEFT OUTER JOIN
+	  (SELECT Sy.InventarioID,
+			  Sy.ItemInventarioID,
+			  Sy.CodProducto,
+			  SUM(ISNULL(Sy.Cantidad, 0)) AS Reservado
+	   FROM wms.dbo.SysTempSalidas AS Sy WITH(NOLOCK)
+	   INNER JOIN wms.dbo.Pedido AS Pe WITH(NOLOCK) 
+			ON Pe.PedidoID = Sy.PedidoID
+	   GROUP BY Sy.InventarioID,
+				sy.ItemInventarioID,
+				Sy.CodProducto) AS Sy_1 ON Sy_1.InventarioID = I.InventarioID
+	AND Sy_1.ItemInventarioID = II.ItemInventarioID
+	AND Sy_1.CodProducto = II.CodProducto
+	WHERE II.existencia > 0
+	  AND T.IDTipoTransaccion IN ('IN')
+	  AND T.ClienteID = 1432
+	  AND p.CodProducto like '7376%'
+	GROUP BY t.BodegaId, ii.CodProducto
+	ORDER BY t.BodegaId, ii.CodProducto
 
 

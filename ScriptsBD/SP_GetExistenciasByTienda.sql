@@ -23,8 +23,11 @@ BEGIN
 		ON p.codproducto=ii.codproducto		
 	JOIN wms.dbo.DetalleTransacciones AS d1 WITH(NOLOCK)
 		ON d1.InventarioID=i.InventarioID
+	JOIN EdiDB.dbo.PAYLESS_Tiendas Ti
+		ON Ti.TiendaId = @TiendaId
 	JOIN wms.dbo.transacciones AS T WITH(NOLOCK) 
-		ON t.TransaccionID=d1.TransaccionID		
+		ON T.TransaccionID=d1.TransaccionID
+		AND T.BodegaId = Ti.BodegaId
 	LEFT OUTER JOIN
 	  (SELECT Sy.InventarioID,
 			  Sy.ItemInventarioID,
@@ -46,4 +49,5 @@ BEGIN
 	ORDER BY t.BodegaId, ii.CodProducto
 END
 
-EXEC EdiDb.dbo.SP_GetExistenciasByTienda 1432, '7365'
+EXEC EdiDb.dbo.SP_GetExistenciasByTienda 1432, '7376'
+--657

@@ -257,7 +257,7 @@ namespace EdiApi.Controllers
                     return string.Empty;
                 UserO.HashId = EdiBase.GetHashId();
                 DbO.IenetUsers.Update(UserO);
-                DbO.SaveChanges();
+                DbO.SaveChangesAsync();
                 string Ret = $"UserO.IdIenetGroup|{UserO.IdIenetGroup}|UserO.ClientId|{UserO.ClienteId}|UserO.HashId|{UserO.HashId}|UserO.TiendaId|{UserO.TiendaId}";
                 Ret = Convert.ToBase64String(CryptoHelper.EncryptData(Encoding.UTF8.GetBytes(Ret)));
                 return Ret;
@@ -265,6 +265,39 @@ namespace EdiApi.Controllers
             catch (Exception e1)
             {
                 return "Error: " + e1.ToString();
+            }
+        }
+        [HttpGet]
+        public RetData<Tuple<IEnumerable<IenetGroups>, IEnumerable<IenetAccesses>, IEnumerable<IenetGroupsAccesses>, IEnumerable<IenetGroupsAccesses>>> GetLoginStruct(int IdGroup) {
+            DateTime StartTime = DateTime.Now;
+            try {
+                IEnumerable<IenetGroups> ListGroups = DbO.IenetGroups;
+                IEnumerable<IenetAccesses> ListAccesses = DbO.IenetAccesses;
+                IEnumerable<IenetGroupsAccesses> ListGA = DbO.IenetGroupsAccesses;
+                IEnumerable<IenetGroupsAccesses> LoginPermit = (
+                    from Ga in DbO.IenetGroupsAccesses
+                    from A in DbO.IenetAccesses
+                    where A.Id == Ga.IdIenetAccess
+                    && Ga.IdIenetGroup == IdGroup
+                    && A.Descr.Equals("Login", StringComparison.OrdinalIgnoreCase)
+                    select Ga
+                );
+                return new RetData<Tuple<IEnumerable<IenetGroups>, IEnumerable<IenetAccesses>, IEnumerable<IenetGroupsAccesses>, IEnumerable<IenetGroupsAccesses>>> {
+                    Data = new Tuple<IEnumerable<IenetGroups>, IEnumerable<IenetAccesses>, IEnumerable<IenetGroupsAccesses>, IEnumerable<IenetGroupsAccesses>>(ListGroups, ListAccesses, ListGA, LoginPermit),
+                    Info = new RetInfo() {
+                        CodError = 0,
+                        Mensaje = "ok",
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };                           
+            } catch (Exception e1) {
+                return new RetData<Tuple<IEnumerable<IenetGroups>, IEnumerable<IenetAccesses>, IEnumerable<IenetGroupsAccesses>, IEnumerable<IenetGroupsAccesses>>> {
+                    Info = new RetInfo() {
+                        CodError = -1,
+                        Mensaje = e1.ToString(),
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
             }
         }
     }

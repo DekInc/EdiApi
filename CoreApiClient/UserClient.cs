@@ -222,6 +222,9 @@ namespace CoreApiClient
             string JsonParams = JsonConvert.SerializeObject(HashId);
             return await PostGetAsyncJson<RetData<IEnumerable<IenetGroups>>>(CreateRequestUri(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Account/GetGroups")), JsonParams);
         }
+        public async Task<RetData<Tuple<IEnumerable<IenetGroups>, IEnumerable<IenetAccesses>, IEnumerable<IenetGroupsAccesses>, IEnumerable<IenetGroupsAccesses>>>> GetLoginStruct(string IdGroup) {
+            return await GetAsync<RetData<Tuple<IEnumerable<IenetGroups>, IEnumerable<IenetAccesses>, IEnumerable<IenetGroupsAccesses>, IEnumerable<IenetGroupsAccesses>>>>(CreateRequestUri(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Account/GetLoginStruct"), $"?IdGroup={IdGroup}"));
+        }
         public async Task<RetData<IEnumerable<IenetAccesses>>> GetIenetAccesses(string HashId)
         {
             string JsonParams = JsonConvert.SerializeObject(HashId);
