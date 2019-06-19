@@ -213,7 +213,8 @@ namespace EdiApi.Models
                             Observacion = Dr.Gr<string>(8),
                             PedidoId = Dr.Gr<int>(9),
                             TiendaId = Dr.Gr<string>(10),
-                            Total = Dr.Gr<int>(11)
+                            Total = Dr.Gr<int>(11),
+                            Destino = Dr.Gr<string>(12)
                         });
                     }
                 }
@@ -244,7 +245,8 @@ namespace EdiApi.Models
                             PedidoId = Dr.Gr<int>(9),
                             TiendaId = Dr.Gr<string>(10),
                             FactComercial = Dr.Gr<string>(11),
-                            TransaccionId = Dr.Gr<int>(12)
+                            TransaccionId = Dr.Gr<int>(12),
+                            Destino = Dr.Gr<string>(13)
                         });
                     }
                 }
@@ -273,7 +275,8 @@ namespace EdiApi.Models
                             PedidoId = Dr.Gr<int>(7),
                             FactComercial = Dr.Gr<string>(8),
                             Observacion = Dr.Gr<string>(9),
-                            TransaccionId = Dr.Gr<int>(10)
+                            TransaccionId = Dr.Gr<int>(10),
+                            Destino = Dr.Gr<string>(11)
                         });
                     }
                 }

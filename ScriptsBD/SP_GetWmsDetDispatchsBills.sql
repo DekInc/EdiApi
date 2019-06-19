@@ -25,10 +25,12 @@ BEGIN
 		Dp.CodProducto,
 		P.PedidoID,
 		SB2.FACT_COMERCIAL,
-		(SELECT top 1 D.Categoria from EdiDb.dbo.PAYLESS_ProdPrioriDet D where D.Barcode = Dp.CodProducto ) Categoria
+		(SELECT top 1 D.Categoria from EdiDb.dbo.PAYLESS_ProdPrioriDet D where D.Barcode = Dp.CodProducto ) Categoria,
+		T3.TransaccionID,
+		D3.Destino
 	FROM wms.dbo.Pedido AS P WITH (NOLOCK)
-	JOIN wms.dbo.Transacciones T3
-		ON T3.PedidoID = P.PedidoID
+	JOIN wms.dbo.Transacciones AS T3 WITH (NOLOCK)
+		ON T3.PedidoID = P.PedidoID	
 	JOIN wms.dbo.Estatus AS E WITH (NOLOCK) 
 		ON E.EstatusID = P.EstatusID
 	JOIN wms.dbo.Bodegas AS B WITH (NOLOCK) 
@@ -39,6 +41,10 @@ BEGIN
 		ON Dp.PedidoID = P.PedidoID
 	JOIN wms.dbo.SysTempSalidas S WITH (NOLOCK)
 		ON S.DtllPedidoID = Dp.DtllPedidoID
+	LEFT JOIN wms.dbo.DtllDespacho Dde WITH (NOLOCK)
+		ON Dde.TransaccionID = T3.TransaccionID
+	LEFT JOIN wms.dbo.Despachos D3 WITH (NOLOCK)
+		ON D3.DespachoID = Dde.DespachoID
 	LEFT JOIN (
 	SELECT SB1.CodProducto, SB1.FACT_COMERCIAL
 	FROM (
@@ -72,3 +78,4 @@ END
 GO
 
 EXEC SP_GetWmsDetDispatchsBills 1432
+--25011

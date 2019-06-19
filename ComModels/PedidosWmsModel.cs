@@ -23,5 +23,6 @@ namespace ComModels
         public int Total { get; set; }
         public string FactComercial { get; set; }
         public int TransaccionId { get; set; }
+        public string Destino { get; set; }
     }
 }

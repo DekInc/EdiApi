@@ -306,18 +306,18 @@ namespace EdiViewer.Controllers
                 {
                     return Json(new { draw = 0, recordsFiltered = 0, recordsTotal = 0, errorMessage = (ListPe.Info.CodError != 0 ? ListPe.Info.Mensaje : string.Empty), data = "" });
                 }
-                if (!(string.IsNullOrEmpty(sortColumn) && string.IsNullOrEmpty(sortColumnDirection)))
-                {
-                    if (sortColumn == "fechaPedido")
-                    {
-                        if (sortColumnDirection == "desc")
-                            ListPe.Data = ListPe.Data.OrderByDescending(O => O.FechaPedido.ToDateFromEspDate());
-                        else
-                            ListPe.Data = ListPe.Data.OrderBy(O => O.FechaPedido.ToDateFromEspDate());
-                    }
-                    else
-                        ListPe.Data = ListPe.Data.AsQueryable().OrderBy(sortColumn + " " + sortColumnDirection);
-                }
+                //if (!(string.IsNullOrEmpty(sortColumn) && string.IsNullOrEmpty(sortColumnDirection)))
+                //{
+                //    if (sortColumn == "fechaPedido")
+                //    {
+                //        if (sortColumnDirection == "desc")
+                //            ListPe.Data = ListPe.Data.OrderByDescending(O => O.FechaPedido.ToDateFromEspDate());
+                //        else
+                //            ListPe.Data = ListPe.Data.OrderBy(O => O.FechaPedido.ToDateFromEspDate());
+                //    }
+                //    else
+                //        ListPe.Data = ListPe.Data.AsQueryable().OrderBy(sortColumn + " " + sortColumnDirection);
+                //}
                 //total number of rows count
                 recordsTotal = ListPe.Data.Count();
                 //Paging
@@ -1938,7 +1938,7 @@ namespace EdiViewer.Controllers
                     foreach (PedidosWmsModel RowO in ListInfo.Data) {
                         try {
                             ExcelO.CreateRow();
-                            for (int Z = 0; Z < 8; Z++) {
+                            for (int Z = 0; Z < 10; Z++) {
                                 ExcelO.CurrentCol = Z;
                                 ExcelO.CreateCell(CellType.String);
                                 switch (Z) {
@@ -1949,24 +1949,27 @@ namespace EdiViewer.Controllers
                                         ExcelO.SetCellValue(RowO.TransaccionId);
                                         break;
                                     case 2:
-                                        ExcelO.SetCellValue(RowO.FechaPedido);
+                                        ExcelO.SetCellValue(RowO.Destino);
                                         break;
                                     case 3:
-                                        ExcelO.SetCellValue(RowO.Estatus);
+                                        ExcelO.SetCellValue(RowO.FechaPedido);
                                         break;
                                     case 4:
-                                        ExcelO.SetCellValue(RowO.NomBodega);
+                                        ExcelO.SetCellValue(RowO.Estatus);
                                         break;
                                     case 5:
-                                        ExcelO.SetCellValue(RowO.Regimen);
+                                        ExcelO.SetCellValue(RowO.NomBodega);
                                         break;
                                     case 6:
-                                        ExcelO.SetCellValue(string.IsNullOrEmpty(RowO.Observacion)? "" : RowO.Observacion);
+                                        ExcelO.SetCellValue(RowO.Regimen);
                                         break;
                                     case 7:
-                                        ExcelO.SetCellValue(RowO.CodProducto);
+                                        ExcelO.SetCellValue(string.IsNullOrEmpty(RowO.Observacion)? "" : RowO.Observacion);
                                         break;
                                     case 8:
+                                        ExcelO.SetCellValue(RowO.CodProducto);
+                                        break;
+                                    case 9:
                                         ExcelO.SetCellValue(RowO.FactComercial);
                                         break;
                                     default:

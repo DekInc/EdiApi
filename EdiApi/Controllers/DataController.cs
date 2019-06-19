@@ -1351,6 +1351,7 @@ namespace EdiApi.Controllers
                 ListDis = (
                     from Ld in ListDis
                     group Ld by new { Ld.PedidoId } into G
+                    orderby G.Fod().FechaPedido.ToDateFromEspDate() descending
                     select new PedidosWmsModel() {
                         ClienteId = G.Fod().ClienteId,
                         PedidoBarcode = G.Fod().PedidoBarcode,
@@ -1363,6 +1364,7 @@ namespace EdiApi.Controllers
                         Observacion = G.Fod().Observacion,                        
                         PedidoId = G.Fod().PedidoId,
                         TiendaId = string.Join(", ", G.Select(O2 => O2.TiendaId).Distinct()),
+                        Destino = G.Fod().Destino,
                         Total = G.Fod().Total
                     }
                 ).Distinct();
@@ -1405,7 +1407,8 @@ namespace EdiApi.Controllers
                         PedidoId = G.Fod().PedidoId,
                         TiendaId = string.Join(", ", G.Select(O2 => O2.TiendaId).Distinct()),
                         FactComercial = string.Join(", ", G.Select(O2 => O2.FactComercial).Distinct()),
-                        TransaccionId = G.Fod().TransaccionId
+                        TransaccionId = G.Fod().TransaccionId,
+                        Destino = G.Fod().Destino
                     }
                 ).Distinct();
                 return new RetData<IEnumerable<PedidosWmsModel>> {
@@ -3849,7 +3852,7 @@ SET XACT_ABORT OFF
             DateTime StartTime = DateTime.Now;
             try {
                 //Jueves
-                if ((StartTime.DayOfWeek == DayOfWeek.Thursday && StartTime.Hour > 13)
+                if ((StartTime.DayOfWeek == DayOfWeek.Thursday && StartTime.Hour >= 15)
                     || StartTime.DayOfWeek == DayOfWeek.Friday
                     || StartTime.DayOfWeek == DayOfWeek.Saturday
                     || StartTime.DayOfWeek == DayOfWeek.Sunday) {
@@ -3971,6 +3974,7 @@ SET XACT_ABORT OFF
                                 DbO.PaylessReportesDet.Add(NewRepDet);
                                 DbO.SaveChanges();
                             }
+                            DbO.ProductoUbicacion.RemoveRange(DbO.ProductoUbicacion.Where(Pu => Pu.Typ == 3));
                             CreateExcelThrusdayAndSendByMail(NewRep);
                         } else {
                             if (I == ListThurs.Count() - 1) {

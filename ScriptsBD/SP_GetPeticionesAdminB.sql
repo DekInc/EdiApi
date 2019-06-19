@@ -108,7 +108,7 @@ BEGIN
 	FROM EdiDB.dbo.PedidosExternos Pe WITH(NOLOCK)
 	JOIN EdiDB.dbo.PAYLESS_Tiendas T WITH(NOLOCK)
 		ON T.TiendaId = Pe.TiendaId	
-	DELETE FROM EdiDB.dbo.ProductoUbicacion WHERE Typ IN (2, 3)
+	DELETE FROM EdiDB.dbo.ProductoUbicacion WHERE Typ IN (2)
 END
 
 --truncate table EdiDB.dbo.ProductoUbicacion

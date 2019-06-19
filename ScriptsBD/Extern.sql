@@ -28,16 +28,18 @@ select * from wms.dbo.ItemInventario where CodProducto like '1902347' and color 
 select * from EdiDB.dbo.PAYLESS_ReportesMails
 select * from EdiDB.dbo.AsyncStates
 select * from EdiDB.dbo.PAYLESS_Reportes
-select * from EdiDB.dbo.PAYLESS_ReportesDet where IdM = 34
+select * from EdiDB.dbo.PAYLESS_ReportesDet where IdM = 34 order by IdM, TiendaId
 SELECT * FROM EdiDB.dbo.PedidosExternos order by FechaCreacion DESC
+SELECT * FROM EdiDB.dbo.PedidosExternos order by FechaPedido DESC
+SELECT * FROM EdiDB.dbo.PedidosExternos where Id = 96
 SELECT * FROM EdiDB.dbo.PedidosExternos where TiendaId = 7384
 SELECT * FROM EdiDB.dbo.PedidosExternos where FullPed = 0
 --update EdiDB.dbo.PedidosExternos SET FullPed = null where FullPed = 0
 --truncate table EdiDB.dbo.PAYLESS_Reportes
 --truncate table EdiDB.dbo.PAYLESS_ReportesDet
 --delete from EdiDB.dbo.AsyncStates where Id = 2
---delete from EdiDB.dbo.PAYLESS_Reportes where Id = 33
---delete from EdiDB.dbo.PAYLESS_ReportesDet where IdM = 33
+--delete from EdiDB.dbo.PAYLESS_Reportes where Id = 36
+--delete from EdiDB.dbo.PAYLESS_ReportesDet where IdM = 36
 select * from EdiDB.dbo.EdiComs order by Id DESC
 
 select * from wms_test_29_01_2019.dbo.Transacciones where pais_orig = 90

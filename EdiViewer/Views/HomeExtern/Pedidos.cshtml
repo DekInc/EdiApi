@@ -26,6 +26,7 @@
                                 <tr>
                                     <th>Num pedido</th>
                                     <th>Tienda</th>
+                                    <th>Destino</th>
                                     <th>Fecha de pedido</th>
                                     <th>Estado</th>
                                     <th>Bodega</th>
@@ -114,8 +115,7 @@
                 "dataSrc": function (json) {
                     return json.data;
                 }
-            },            
-            "order": [[1, "desc"]],
+            },
             "columns": [
                 {
                     data: "pedidoBarcode",
@@ -139,6 +139,7 @@
                     },
                     className: "dt-body-center"
                 },
+                { "data": "destino", "name": "destino", "autoWidth": true, "defaultContent": "" },
                 { "data": "fechaPedido", "name": "fechaPedido", "autoWidth": true, "defaultContent": "" },
                 {
                     data: "estatus",

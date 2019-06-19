@@ -45,8 +45,8 @@ namespace EdiApi
                     TermsOfService = "None",
                     Contact = new Contact
                     {
-                        Name = "my name",
-                        Email = "me@myemail.com"
+                        Name = "Hilmer Campos",
+                        Email = "Hilmer.Campos@GlcAmerica.com"
                     }
                 });
             });
@@ -68,12 +68,12 @@ namespace EdiApi
             app.UseMvc();
             app.UseSwagger(c =>
             {
-                c.RouteTemplate = "api-docs/{documentName}/swagger.json";
+                c.RouteTemplate = "api.docs/{documentName}/swagger.json";
             });
             app.UseSwaggerUI(c =>
             {
                 //Include virtual directory if site is configured so
-                c.RoutePrefix = "api-docs";
+                c.RoutePrefix = "api.docs";
                 c.SwaggerEndpoint("./v1/swagger.json", "Api v1");
             });
         }
