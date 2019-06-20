@@ -63,9 +63,9 @@
                     {
                         field: "tipo", caption: "", sortable: true, render: function (record) {
                             if (record.tipo == '0')
-                                return '<div class="w2ui-buttons"><a href="javascript:descargarRepThursday(' + record.id + ')">Descargar rep jueves</a></div>';
+                                return '<div class="w2ui-buttons"><a href="javascript:MakeExcelAutoRep(' + record.id + ', ' + record.tipo + ')">Descargar rep jueves</a></div>';
                             else
-                                return '<div class="w2ui-buttons"><a href="javascript:descargarRepSunday(' + record.id + ')">Descargar rep domingo</a></div>';
+                                return '<div class="w2ui-buttons"><a href="javascript:MakeExcelAutoRep(' + record.id + ', ' + record.tipo + ')">Descargar rep domingo</a></div>';
                         }
                     }
                 ]
@@ -74,12 +74,9 @@
         gridReportes = $('#gridReportes').w2grid(config.grid);
         arrayGrids['gridExcelFile'] = gridReportes;
     }
-    function descargarRepThursday(idReporte) {
-        window.open('@this.Url.Action("MakeExcelJue", "HomeExtern")?IdM=' + idReporte);
-    }
-    function descargarRepSunday(idReporte) {
-        window.open('@this.Url.Action("MakeExcelSun", "HomeExtern")?IdM=' + idReporte);
-    }
+    function MakeExcelAutoRep(idReporte, typ) {
+        window.open('@this.Url.Action("MakeExcelAutoRep", "HomeExtern")?IdM=' + idReporte + '&Typ=' + typ);
+    }    
     $(document).ready(function () {        
         $('.imgHeaderHelp').tooltip();
         crearGrid();

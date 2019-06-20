@@ -61,6 +61,7 @@ function fillCombobox(divSpin, serverUrl, comboName, valueName, textName, valueD
         method: "GET",
         url: serverUrl,
         success: function (data) {
+            $(divSpin).hide();
             if (data.info.codError != 0) {
                 menErrorEdi(data.info.mensaje, 'Error');
                 return;
@@ -75,8 +76,7 @@ function fillCombobox(divSpin, serverUrl, comboName, valueName, textName, valueD
                 });
                 if (afterFillCombobox != null)
                     afterFillCombobox();
-            }
-            $(divSpin).hide();
+            }            
         },
         error: function (xhr, ajaxOptions, thrownError) {
             menErrorEdi(xhr.status, 'Error throw in js');

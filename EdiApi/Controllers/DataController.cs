@@ -2351,153 +2351,153 @@ namespace EdiApi.Controllers
                 };
             }
         }
-        [HttpGet]
-        public RetData<IEnumerable<PaylessReportWeekGModel>> GetReportWeek(int Tipo) {
-            DateTime StartTime = DateTime.Now;
-            try {
-                //Jueves
-                List<PaylessReportWeekGModel> Ret = new List<PaylessReportWeekGModel>();
-                List<PaylessReportes> ListReportesExistentes = (
-                    from R in DbO.PaylessReportes
-                    orderby R.Periodo.ToDateFromEspDate() descending
-                    select R
-                    ).ToList();
-                DateTime DateInit, DateEnd, DateMid;
-                DateTime CurrentPeriod = DateTime.Now;
-                if (ListReportesExistentes != null) {
-                    if (ListReportesExistentes.Count() > 0) {
-                        CurrentPeriod = ListReportesExistentes.Fod().Periodo.ToDateFromEspDate().AddDays(7);
-                        if (CurrentPeriod.DayOfWeek == DayOfWeek.Monday) {
-                            DateInit = CurrentPeriod;
-                        } else {
-                            DateInit = (CurrentPeriod.AddDays(DayOfWeek.Monday - CurrentPeriod.DayOfWeek));
-                        }
-                    } else {
-                        DateInit = (CurrentPeriod.AddDays(DayOfWeek.Monday - CurrentPeriod.DayOfWeek));
-                    }
-                } else {
-                    DateInit = (CurrentPeriod.AddDays(DayOfWeek.Monday - CurrentPeriod.DayOfWeek));
-                }
-                DateEnd = DateInit.AddDays(DayOfWeek.Friday - DateInit.DayOfWeek);
-                DateMid = DateInit.AddDays(DayOfWeek.Wednesday - DateInit.DayOfWeek);                
-                List<PedidosExternos> ListPedidosM = (
-                    from Pe in DbO.PedidosExternos
-                    where Pe.FechaPedido.Substring(0, 10).ToDateFromEspDate() >= DateInit 
-                    && Pe.FechaPedido.Substring(0, 10).ToDateFromEspDate() <= DateEnd
-                    && Pe.IdEstado == 2
-                    orderby Pe.FechaPedido
-                    select Pe
-                    ).ToList();
-                if (ListPedidosM.Count() == 3) {
-                    DateInit = ListPedidosM[2].FechaPedido.Substring(0, 10).ToDateFromEspDate();
-                    DateMid = ListPedidosM[1].FechaPedido.Substring(0, 10).ToDateFromEspDate();
-                    DateEnd = ListPedidosM[0].FechaPedido.Substring(0, 10).ToDateFromEspDate();
-                }
-                if (ListPedidosM != null) {
-                    if (ListPedidosM.Count() > 0) {
-                        Clientes ClienteAct = (from C in WmsDbO.Clientes where C.ClienteId == ListPedidosM.Fod().ClienteId select C)?.Fod();
-                        if (ClienteAct != null) {
-                            PaylessTiendas Tienda = (from T in DbO.PaylessTiendas where T.ClienteId == ListPedidosM.Fod().ClienteId select T)?.Fod();
-                            IEnumerable<PedidosDetExternos> ListDetTotal = (
-                                from D in DbO.PedidosDetExternos
-                                from M in ListPedidosM
-                                where D.PedidoId == M.Id
-                                select D
-                                );
-                            Ret.Add(new PaylessReportWeekGModel() {
-                                TiendaId = Tienda.TiendaId ?? 0,
-                                Location = ClienteAct?.Nombre,
-                                Manager = Tienda?.Lider,
-                                Tel = Tienda?.Tel
-                            });
-                            for (int i = 0; i < 3; i++) {
-                                switch (i) {
-                                    case 0:                                            
-                                        Ret[Ret.Count - 1].TotalBox = Convert.ToInt32(Math.Round(ListDetTotal.Sum(O => O.CantPedir.Value), 0));                                        
-                                        Ret[Ret.Count - 1].Date1 = DateInit.ToString(ApplicationSettings.DateTimeFormatShort);
-                                        Ret[Ret.Count - 1].Date2 = DateMid.ToString(ApplicationSettings.DateTimeFormatShort);
-                                        Ret[Ret.Count - 1].Date3 = DateEnd.ToString(ApplicationSettings.DateTimeFormatShort);
-                                        IEnumerable<PedidosDetExternos> ListDet1 = ManualDB.SP_GetPedidosDetExternosByDate(ref DbO, DateInit, DateMid, 0);
-                                        if (ListDet1.Count() > 0) {
-                                            //Accesories = ListDet1.Where(O1 => O1.)
-                                            Ret[Ret.Count - 1].Total1 = Convert.ToInt32(Math.Round(ListDet1.Sum(O => O.CantPedir.Value), 0));
-                                            PedidosExternos PedidoMonday = ListPedidosM.Where(P => P.FechaPedido.Substring(0, 10).ToDateFromEspDate() == DateInit)?.Fod();
-                                            if (PedidoMonday != null)
-                                                Ret[Ret.Count - 1].Time1 = PedidoMonday.FechaPedido.ToDateEsp().ToString(ApplicationSettings.ToTimeFormatExcel);
-                                            else {
-                                                Ret[Ret.Count - 1].Date1 = "SIN PEDIDO";
-                                                Ret[Ret.Count - 1].Time1 = string.Empty;
-                                            }
-                                            Ret[Ret.Count - 1].Accessories += Convert.ToInt32(Math.Round(ListDet1.Where(O2 => O2.Producto.Contains("acce", StringComparison.InvariantCultureIgnoreCase)).Sum(O => O.CantPedir.Value), 0));
-                                            Ret[Ret.Count - 1].Kids += Convert.ToInt32(Math.Round(ListDet1.Where(O2 => O2.Producto.Contains("niñ", StringComparison.InvariantCultureIgnoreCase)).Sum(O => O.CantPedir.Value), 0));
-                                            Ret[Ret.Count - 1].Man += Convert.ToInt32(Math.Round(ListDet1.Where(O2 => O2.Producto.Contains("caball", StringComparison.InvariantCultureIgnoreCase)).Sum(O => O.CantPedir.Value), 0));
-                                            Ret[Ret.Count - 1].Ladies += Convert.ToInt32(Math.Round(ListDet1.Where(O2 => O2.Producto.Contains("dama", StringComparison.InvariantCultureIgnoreCase)).Sum(O => O.CantPedir.Value), 0));
-                                        } else {
-                                            Ret[Ret.Count - 1].Total1 = 0;
-                                            Ret[Ret.Count - 1].Time1 = string.Empty;
-                                        }
-                                        break;
-                                    case 1:
-                                        IEnumerable<PedidosDetExternos> ListDet2 = ManualDB.SP_GetPedidosDetExternosByDate(ref DbO, DateMid, DateEnd, 0);
-                                        if (ListDet2.Count() > 0) {
-                                            Ret[Ret.Count - 1].Total2 = Convert.ToInt32(Math.Round(ListDet2.Sum(O => O.CantPedir.Value), 0));
-                                            PedidosExternos PedidoWednesday = ListPedidosM.Where(P => P.FechaPedido.Substring(0, 10).ToDateFromEspDate() == DateMid)?.Fod();
-                                            if (PedidoWednesday != null)
-                                                Ret[Ret.Count - 1].Time2 = PedidoWednesday.FechaPedido.ToDateEsp().ToString(ApplicationSettings.ToTimeFormatExcel);
-                                            else
-                                                Ret[Ret.Count - 1].Time2 = string.Empty;
-                                            Ret[Ret.Count - 1].Accessories += Convert.ToInt32(Math.Round(ListDet2.Where(O2 => O2.Producto.Contains("acce", StringComparison.InvariantCultureIgnoreCase)).Sum(O => O.CantPedir.Value), 0));
-                                            Ret[Ret.Count - 1].Kids += Convert.ToInt32(Math.Round(ListDet2.Where(O2 => O2.Producto.Contains("niñ", StringComparison.InvariantCultureIgnoreCase)).Sum(O => O.CantPedir.Value), 0));
-                                            Ret[Ret.Count - 1].Man += Convert.ToInt32(Math.Round(ListDet2.Where(O2 => O2.Producto.Contains("caball", StringComparison.InvariantCultureIgnoreCase)).Sum(O => O.CantPedir.Value), 0));
-                                            Ret[Ret.Count - 1].Ladies += Convert.ToInt32(Math.Round(ListDet2.Where(O2 => O2.Producto.Contains("dama", StringComparison.InvariantCultureIgnoreCase)).Sum(O => O.CantPedir.Value), 0));
-                                        } else {
-                                            Ret[Ret.Count - 1].Total2 = 0;
-                                            Ret[Ret.Count - 1].Time2 = string.Empty;
-                                        }
-                                        break;
-                                    case 2:
-                                        IEnumerable<PedidosDetExternos> ListDet3 = ManualDB.SP_GetPedidosDetExternosByDate(ref DbO, DateEnd, DateEnd.AddDays(2), 0);                                        
-                                        if (ListDet3.Count() > 0) {
-                                            Ret[Ret.Count - 1].Total3 = Convert.ToInt32(Math.Round(ListDet3.Sum(O => O.CantPedir.Value), 0));
-                                            PedidosExternos PedidoFriday = ListPedidosM.Where(P => P.FechaPedido.Substring(0, 10).ToDateFromEspDate() == DateEnd)?.Fod();
-                                            if (PedidoFriday != null)
-                                                Ret[Ret.Count - 1].Time3 = PedidoFriday.FechaPedido.ToDateEsp().ToString(ApplicationSettings.ToTimeFormatExcel);
-                                            else
-                                                Ret[Ret.Count - 1].Time3 = string.Empty;
-                                            Ret[Ret.Count - 1].Accessories += Convert.ToInt32(Math.Round(ListDet3.Where(O2 => O2.Producto.Contains("acce", StringComparison.InvariantCultureIgnoreCase)).Sum(O => O.CantPedir.Value), 0));
-                                            Ret[Ret.Count - 1].Kids += Convert.ToInt32(Math.Round(ListDet3.Where(O2 => O2.Producto.Contains("niñ", StringComparison.InvariantCultureIgnoreCase)).Sum(O => O.CantPedir.Value), 0));
-                                            Ret[Ret.Count - 1].Man += Convert.ToInt32(Math.Round(ListDet3.Where(O2 => O2.Producto.Contains("caball", StringComparison.InvariantCultureIgnoreCase)).Sum(O => O.CantPedir.Value), 0));
-                                            Ret[Ret.Count - 1].Ladies += Convert.ToInt32(Math.Round(ListDet3.Where(O2 => O2.Producto.Contains("dama", StringComparison.InvariantCultureIgnoreCase)).Sum(O => O.CantPedir.Value), 0));
-                                        } else {
-                                            Ret[Ret.Count - 1].Total3 = 0;
-                                            Ret[Ret.Count - 1].Time3 = string.Empty;
-                                        }
-                                        break;
-                                    default:
-                                        break;
-                                }
-                            }
-                        }
-                    }
-                }
-                return new RetData<IEnumerable<PaylessReportWeekGModel>> {
-                    Data = Ret,
-                    Info = new RetInfo() {
-                        CodError = 0,
-                        Mensaje = "ok",
-                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
-                    }
-                };
-            } catch (Exception e1) {
-                return new RetData<IEnumerable<PaylessReportWeekGModel>> {
-                    Info = new RetInfo() {
-                        CodError = -1,
-                        Mensaje = e1.ToString(),
-                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
-                    }
-                };
-            }
-        }
+        //[HttpGet]
+        //public RetData<IEnumerable<PaylessReportWeekGModel>> GetReportWeek(int Tipo) {
+        //    DateTime StartTime = DateTime.Now;
+        //    try {
+        //        //Jueves
+        //        List<PaylessReportWeekGModel> Ret = new List<PaylessReportWeekGModel>();
+        //        List<PaylessReportes> ListReportesExistentes = (
+        //            from R in DbO.PaylessReportes
+        //            orderby R.Periodo.ToDateFromEspDate() descending
+        //            select R
+        //            ).ToList();
+        //        DateTime DateInit, DateEnd, DateMid;
+        //        DateTime CurrentPeriod = DateTime.Now;
+        //        if (ListReportesExistentes != null) {
+        //            if (ListReportesExistentes.Count() > 0) {
+        //                CurrentPeriod = ListReportesExistentes.Fod().Periodo.ToDateFromEspDate().AddDays(7);
+        //                if (CurrentPeriod.DayOfWeek == DayOfWeek.Monday) {
+        //                    DateInit = CurrentPeriod;
+        //                } else {
+        //                    DateInit = (CurrentPeriod.AddDays(DayOfWeek.Monday - CurrentPeriod.DayOfWeek));
+        //                }
+        //            } else {
+        //                DateInit = (CurrentPeriod.AddDays(DayOfWeek.Monday - CurrentPeriod.DayOfWeek));
+        //            }
+        //        } else {
+        //            DateInit = (CurrentPeriod.AddDays(DayOfWeek.Monday - CurrentPeriod.DayOfWeek));
+        //        }
+        //        DateEnd = DateInit.AddDays(DayOfWeek.Friday - DateInit.DayOfWeek);
+        //        DateMid = DateInit.AddDays(DayOfWeek.Wednesday - DateInit.DayOfWeek);                
+        //        List<PedidosExternos> ListPedidosM = (
+        //            from Pe in DbO.PedidosExternos
+        //            where Pe.FechaPedido.Substring(0, 10).ToDateFromEspDate() >= DateInit 
+        //            && Pe.FechaPedido.Substring(0, 10).ToDateFromEspDate() <= DateEnd
+        //            && Pe.IdEstado == 2
+        //            orderby Pe.FechaPedido
+        //            select Pe
+        //            ).ToList();
+        //        if (ListPedidosM.Count() == 3) {
+        //            DateInit = ListPedidosM[2].FechaPedido.Substring(0, 10).ToDateFromEspDate();
+        //            DateMid = ListPedidosM[1].FechaPedido.Substring(0, 10).ToDateFromEspDate();
+        //            DateEnd = ListPedidosM[0].FechaPedido.Substring(0, 10).ToDateFromEspDate();
+        //        }
+        //        if (ListPedidosM != null) {
+        //            if (ListPedidosM.Count() > 0) {
+        //                Clientes ClienteAct = (from C in WmsDbO.Clientes where C.ClienteId == ListPedidosM.Fod().ClienteId select C)?.Fod();
+        //                if (ClienteAct != null) {
+        //                    PaylessTiendas Tienda = (from T in DbO.PaylessTiendas where T.ClienteId == ListPedidosM.Fod().ClienteId select T)?.Fod();
+        //                    IEnumerable<PedidosDetExternos> ListDetTotal = (
+        //                        from D in DbO.PedidosDetExternos
+        //                        from M in ListPedidosM
+        //                        where D.PedidoId == M.Id
+        //                        select D
+        //                        );
+        //                    Ret.Add(new PaylessReportWeekGModel() {
+        //                        TiendaId = Tienda.TiendaId ?? 0,
+        //                        Location = ClienteAct?.Nombre,
+        //                        Manager = Tienda?.Lider,
+        //                        Tel = Tienda?.Tel
+        //                    });
+        //                    for (int i = 0; i < 3; i++) {
+        //                        switch (i) {
+        //                            case 0:                                            
+        //                                Ret[Ret.Count - 1].TotalBox = Convert.ToInt32(Math.Round(ListDetTotal.Sum(O => O.CantPedir.Value), 0));                                        
+        //                                Ret[Ret.Count - 1].Date1 = DateInit.ToString(ApplicationSettings.DateTimeFormatShort);
+        //                                Ret[Ret.Count - 1].Date2 = DateMid.ToString(ApplicationSettings.DateTimeFormatShort);
+        //                                Ret[Ret.Count - 1].Date3 = DateEnd.ToString(ApplicationSettings.DateTimeFormatShort);
+        //                                IEnumerable<PedidosDetExternos> ListDet1 = ManualDB.SP_GetPedidosDetExternosByDate(ref DbO, DateInit, DateMid, 0);
+        //                                if (ListDet1.Count() > 0) {
+        //                                    //Accesories = ListDet1.Where(O1 => O1.)
+        //                                    Ret[Ret.Count - 1].Total1 = Convert.ToInt32(Math.Round(ListDet1.Sum(O => O.CantPedir.Value), 0));
+        //                                    PedidosExternos PedidoMonday = ListPedidosM.Where(P => P.FechaPedido.Substring(0, 10).ToDateFromEspDate() == DateInit)?.Fod();
+        //                                    if (PedidoMonday != null)
+        //                                        Ret[Ret.Count - 1].Time1 = PedidoMonday.FechaPedido.ToDateEsp().ToString(ApplicationSettings.ToTimeFormatExcel);
+        //                                    else {
+        //                                        Ret[Ret.Count - 1].Date1 = "SIN PEDIDO";
+        //                                        Ret[Ret.Count - 1].Time1 = string.Empty;
+        //                                    }
+        //                                    Ret[Ret.Count - 1].Accessories += Convert.ToInt32(Math.Round(ListDet1.Where(O2 => O2.Producto.Contains("acce", StringComparison.InvariantCultureIgnoreCase)).Sum(O => O.CantPedir.Value), 0));
+        //                                    Ret[Ret.Count - 1].Kids += Convert.ToInt32(Math.Round(ListDet1.Where(O2 => O2.Producto.Contains("niñ", StringComparison.InvariantCultureIgnoreCase)).Sum(O => O.CantPedir.Value), 0));
+        //                                    Ret[Ret.Count - 1].Man += Convert.ToInt32(Math.Round(ListDet1.Where(O2 => O2.Producto.Contains("caball", StringComparison.InvariantCultureIgnoreCase)).Sum(O => O.CantPedir.Value), 0));
+        //                                    Ret[Ret.Count - 1].Ladies += Convert.ToInt32(Math.Round(ListDet1.Where(O2 => O2.Producto.Contains("dama", StringComparison.InvariantCultureIgnoreCase)).Sum(O => O.CantPedir.Value), 0));
+        //                                } else {
+        //                                    Ret[Ret.Count - 1].Total1 = 0;
+        //                                    Ret[Ret.Count - 1].Time1 = string.Empty;
+        //                                }
+        //                                break;
+        //                            case 1:
+        //                                IEnumerable<PedidosDetExternos> ListDet2 = ManualDB.SP_GetPedidosDetExternosByDate(ref DbO, DateMid, DateEnd, 0);
+        //                                if (ListDet2.Count() > 0) {
+        //                                    Ret[Ret.Count - 1].Total2 = Convert.ToInt32(Math.Round(ListDet2.Sum(O => O.CantPedir.Value), 0));
+        //                                    PedidosExternos PedidoWednesday = ListPedidosM.Where(P => P.FechaPedido.Substring(0, 10).ToDateFromEspDate() == DateMid)?.Fod();
+        //                                    if (PedidoWednesday != null)
+        //                                        Ret[Ret.Count - 1].Time2 = PedidoWednesday.FechaPedido.ToDateEsp().ToString(ApplicationSettings.ToTimeFormatExcel);
+        //                                    else
+        //                                        Ret[Ret.Count - 1].Time2 = string.Empty;
+        //                                    Ret[Ret.Count - 1].Accessories += Convert.ToInt32(Math.Round(ListDet2.Where(O2 => O2.Producto.Contains("acce", StringComparison.InvariantCultureIgnoreCase)).Sum(O => O.CantPedir.Value), 0));
+        //                                    Ret[Ret.Count - 1].Kids += Convert.ToInt32(Math.Round(ListDet2.Where(O2 => O2.Producto.Contains("niñ", StringComparison.InvariantCultureIgnoreCase)).Sum(O => O.CantPedir.Value), 0));
+        //                                    Ret[Ret.Count - 1].Man += Convert.ToInt32(Math.Round(ListDet2.Where(O2 => O2.Producto.Contains("caball", StringComparison.InvariantCultureIgnoreCase)).Sum(O => O.CantPedir.Value), 0));
+        //                                    Ret[Ret.Count - 1].Ladies += Convert.ToInt32(Math.Round(ListDet2.Where(O2 => O2.Producto.Contains("dama", StringComparison.InvariantCultureIgnoreCase)).Sum(O => O.CantPedir.Value), 0));
+        //                                } else {
+        //                                    Ret[Ret.Count - 1].Total2 = 0;
+        //                                    Ret[Ret.Count - 1].Time2 = string.Empty;
+        //                                }
+        //                                break;
+        //                            case 2:
+        //                                IEnumerable<PedidosDetExternos> ListDet3 = ManualDB.SP_GetPedidosDetExternosByDate(ref DbO, DateEnd, DateEnd.AddDays(2), 0);                                        
+        //                                if (ListDet3.Count() > 0) {
+        //                                    Ret[Ret.Count - 1].Total3 = Convert.ToInt32(Math.Round(ListDet3.Sum(O => O.CantPedir.Value), 0));
+        //                                    PedidosExternos PedidoFriday = ListPedidosM.Where(P => P.FechaPedido.Substring(0, 10).ToDateFromEspDate() == DateEnd)?.Fod();
+        //                                    if (PedidoFriday != null)
+        //                                        Ret[Ret.Count - 1].Time3 = PedidoFriday.FechaPedido.ToDateEsp().ToString(ApplicationSettings.ToTimeFormatExcel);
+        //                                    else
+        //                                        Ret[Ret.Count - 1].Time3 = string.Empty;
+        //                                    Ret[Ret.Count - 1].Accessories += Convert.ToInt32(Math.Round(ListDet3.Where(O2 => O2.Producto.Contains("acce", StringComparison.InvariantCultureIgnoreCase)).Sum(O => O.CantPedir.Value), 0));
+        //                                    Ret[Ret.Count - 1].Kids += Convert.ToInt32(Math.Round(ListDet3.Where(O2 => O2.Producto.Contains("niñ", StringComparison.InvariantCultureIgnoreCase)).Sum(O => O.CantPedir.Value), 0));
+        //                                    Ret[Ret.Count - 1].Man += Convert.ToInt32(Math.Round(ListDet3.Where(O2 => O2.Producto.Contains("caball", StringComparison.InvariantCultureIgnoreCase)).Sum(O => O.CantPedir.Value), 0));
+        //                                    Ret[Ret.Count - 1].Ladies += Convert.ToInt32(Math.Round(ListDet3.Where(O2 => O2.Producto.Contains("dama", StringComparison.InvariantCultureIgnoreCase)).Sum(O => O.CantPedir.Value), 0));
+        //                                } else {
+        //                                    Ret[Ret.Count - 1].Total3 = 0;
+        //                                    Ret[Ret.Count - 1].Time3 = string.Empty;
+        //                                }
+        //                                break;
+        //                            default:
+        //                                break;
+        //                        }
+        //                    }
+        //                }
+        //            }
+        //        }
+        //        return new RetData<IEnumerable<PaylessReportWeekGModel>> {
+        //            Data = Ret,
+        //            Info = new RetInfo() {
+        //                CodError = 0,
+        //                Mensaje = "ok",
+        //                ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+        //            }
+        //        };
+        //    } catch (Exception e1) {
+        //        return new RetData<IEnumerable<PaylessReportWeekGModel>> {
+        //            Info = new RetInfo() {
+        //                CodError = -1,
+        //                Mensaje = e1.ToString(),
+        //                ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+        //            }
+        //        };
+        //    }
+        //}
         [HttpPost]
         public RetData<string> SetGroupAccess(int IdGroup, int IdAccess) {
             DateTime StartTime = DateTime.Now;
@@ -3749,15 +3749,17 @@ SET XACT_ABORT OFF
             }
         }
         [HttpGet]
-        private void CreateExcelThrusdayAndSendByMail(PaylessReportes NewRep) {
-            RetData<Tuple<PaylessReportes, IEnumerable<PaylessReportesDet>, IEnumerable<PaylessTiendas>>> ListInfo = GetWeekReport(NewRep.Id, "0");
-            string Plantilla = "plantillaOrdenes3.xls";
-            if (ListInfo.Data.Item2.Where(O1 => !string.IsNullOrEmpty(O1.Fecha4)).Count() > 0)
-                Plantilla = "plantillaOrdenes4.xls";
-            if (ListInfo.Data.Item2.Where(O1 => !string.IsNullOrEmpty(O1.Fecha5)).Count() > 0)
-                Plantilla = "plantillaOrdenes5.xls";
-            if (ListInfo.Data.Item2.Where(O1 => !string.IsNullOrEmpty(O1.Fecha6)).Count() > 0)
-                Plantilla = "plantillaOrdenes6.xls";
+        private void CreateExcelAutoRepAndSendByMail(PaylessReportes NewRep, bool IsDisp) {
+            string PlantillaPre = IsDisp ? "" : "b";
+            string TypRep = IsDisp ? "0" : "1";
+            RetData<Tuple<PaylessReportes, IEnumerable<PaylessReportesDet>, IEnumerable<PaylessTiendas>>> ListInfo = GetWeekReport(NewRep.Id, TypRep);
+            string Plantilla = $"plantillaOrdenes3{PlantillaPre}.xls";
+            if (ListInfo.Data.Item2.Where(O1 => !string.IsNullOrEmpty(O1.Fecha4)).Count() > 0 && IsDisp)
+                Plantilla = $"plantillaOrdenes4{PlantillaPre}.xls";
+            if (ListInfo.Data.Item2.Where(O1 => !string.IsNullOrEmpty(O1.Fecha5)).Count() > 0 && IsDisp)
+                Plantilla = $"plantillaOrdenes5{PlantillaPre}.xls";
+            if (ListInfo.Data.Item2.Where(O1 => !string.IsNullOrEmpty(O1.Fecha6)).Count() > 0 && IsDisp)
+                Plantilla = $"plantillaOrdenes6{PlantillaPre}.xls";            
             Utility.ExceL ExcelO = new Utility.ExceL();
             using (FileStream FilePlantilla = new FileStream(Plantilla, FileMode.Open, FileAccess.Read, FileShare.ReadWrite)) {
                 MemoryStream Ms = new MemoryStream();
@@ -3774,7 +3776,8 @@ SET XACT_ABORT OFF
                 ExcelO.SetRow(2);
                 ExcelO.SetCell(4);
                 ExcelO.SetCellValue(ListInfo.Data.Item1.PeriodoF);
-                IEnumerable<PaylessReportesDet> ListDetOrd = ListInfo.Data.Item2.OrderByDescending(O1 => O1.Fecha1.ToDateEsp());
+                IEnumerable<PaylessReportesDet> ListDetOrd;
+                ListDetOrd = IsDisp ? ListInfo.Data.Item2.OrderByDescending(O1 => O1.Fecha1.ToDateEsp()) : ListInfo.Data.Item2.OrderByDescending(O1 => O1.Fecha1.ToDateFromEspDate());
                 for (int i = 0; i < ListDetOrd.Count(); i++) {
                     ExcelO.CreateRow(i + 4);
                     ExcelO.CreateCell(1, CellType.String);
@@ -3804,7 +3807,8 @@ SET XACT_ABORT OFF
                         ExcelO.CreateCell(17, CellType.String);
                         ExcelO.SetCellValue(ListDetOrd.ElementAt(i).Cant1);
                         ExcelO.CreateCell(18, CellType.String);
-                        ExcelO.SetCellValue(ListDetOrd.ElementAt(i).Fecha1.Substring(12));
+                        if (IsDisp)
+                            ExcelO.SetCellValue(ListDetOrd.ElementAt(i).Fecha1.Substring(12));
                     }
                     if (!string.IsNullOrEmpty(ListDetOrd.ElementAt(i).Fecha2)) {
                         ExcelO.CreateCell(19, CellType.String);
@@ -3812,7 +3816,8 @@ SET XACT_ABORT OFF
                         ExcelO.CreateCell(20, CellType.String);
                         ExcelO.SetCellValue(ListDetOrd.ElementAt(i).Cant2);
                         ExcelO.CreateCell(21, CellType.String);
-                        ExcelO.SetCellValue(ListDetOrd.ElementAt(i).Fecha2.Substring(12));
+                        if (IsDisp)
+                            ExcelO.SetCellValue(ListDetOrd.ElementAt(i).Fecha2.Substring(12));
                     }
                     if (!string.IsNullOrEmpty(ListDetOrd.ElementAt(i).Fecha3)) {
                         ExcelO.CreateCell(22, CellType.String);
@@ -3820,7 +3825,35 @@ SET XACT_ABORT OFF
                         ExcelO.CreateCell(23, CellType.String);
                         ExcelO.SetCellValue(ListDetOrd.ElementAt(i).Cant3);
                         ExcelO.CreateCell(24, CellType.String);
-                        ExcelO.SetCellValue(ListDetOrd.ElementAt(i).Fecha3.Substring(12));
+                        if (IsDisp)
+                            ExcelO.SetCellValue(ListDetOrd.ElementAt(i).Fecha3.Substring(12));
+                    }
+                    if (!string.IsNullOrEmpty(ListDetOrd.ElementAt(i).Fecha4)) {
+                        ExcelO.CreateCell(25, CellType.String);
+                        ExcelO.SetCellValue(ListDetOrd.ElementAt(i).Fecha4.Substring(0, 10));
+                        ExcelO.CreateCell(26, CellType.String);
+                        ExcelO.SetCellValue(ListDetOrd.ElementAt(i).Cant4);
+                        ExcelO.CreateCell(27, CellType.String);
+                        if (IsDisp)
+                            ExcelO.SetCellValue(ListDetOrd.ElementAt(i).Fecha4.Substring(12));
+                    }
+                    if (!string.IsNullOrEmpty(ListDetOrd.ElementAt(i).Fecha5)) {
+                        ExcelO.CreateCell(28, CellType.String);
+                        ExcelO.SetCellValue(ListDetOrd.ElementAt(i).Fecha5.Substring(0, 10));
+                        ExcelO.CreateCell(29, CellType.String);
+                        ExcelO.SetCellValue(ListDetOrd.ElementAt(i).Cant5);
+                        ExcelO.CreateCell(30, CellType.String);
+                        if (IsDisp)
+                            ExcelO.SetCellValue(ListDetOrd.ElementAt(i).Fecha5.Substring(12));
+                    }
+                    if (!string.IsNullOrEmpty(ListDetOrd.ElementAt(i).Fecha6)) {
+                        ExcelO.CreateCell(31, CellType.String);
+                        ExcelO.SetCellValue(ListDetOrd.ElementAt(i).Fecha6.Substring(0, 10));
+                        ExcelO.CreateCell(32, CellType.String);
+                        ExcelO.SetCellValue(ListDetOrd.ElementAt(i).Cant6);
+                        ExcelO.CreateCell(33, CellType.String);
+                        if (IsDisp)
+                            ExcelO.SetCellValue(ListDetOrd.ElementAt(i).Fecha6.Substring(12));
                     }
                 }
                 MemoryStream Ms2 = new MemoryStream();
@@ -3835,18 +3868,24 @@ SET XACT_ABORT OFF
                     foreach (PaylessReportesMails MO in ListMails)
                         mailMessage.To.Add(MO.MailDir);
                     mailMessage.Body = @"";
-                    mailMessage.Subject = "GLC - " + "Archivo_RepJuevesPedidos_" + DateTime.Now.ToString("ddMMyyyy_HHmm");
+                    if (IsDisp)
+                        mailMessage.Subject = "GLC - " + "Archivo_RepJuevesPedidos_" + DateTime.Now.ToString("ddMMyyyy_HHmm");
+                    else
+                        mailMessage.Subject = "GLC - " + "Archivo_RepDomingoEnvios_" + DateTime.Now.ToString("ddMMyyyy_HHmm");
                     System.Net.Mail.Attachment attachment;
                     //System.Net.Mime.ContentType ct = new System.Net.Mime.ContentType(System.Net.Mime.MediaTypeNames.Application.Xml);
                     Ms2.Position = 0;
-                    attachment = new System.Net.Mail.Attachment(Ms2, "Archivo_RepJuevesPedidos_" + DateTime.Now.ToString("ddMMyyyy_HHmm") + ".xls");
+                    if (IsDisp)
+                        attachment = new System.Net.Mail.Attachment(Ms2, "Archivo_RepJuevesPedidos_" + DateTime.Now.ToString("ddMMyyyy_HHmm") + ".xls");
+                    else
+                        attachment = new System.Net.Mail.Attachment(Ms2, "Archivo_RepDomingoEnvios_" + DateTime.Now.ToString("ddMMyyyy_HHmm") + ".xls");
                     mailMessage.Attachments.Add(attachment);
                     client.Send(mailMessage);
                 }            
                 //Ms2.Close();
                 //return File(Ms2.ToArray(), "application/octet-stream", "Archivo_RepJuevesPedidos_" + DateTime.Now.ToString("ddMMyyyy") + ".xls");
             }
-        }
+        }        
         [HttpGet]
         public RetData<string> MakeAutoReportsPayless() {
             DateTime StartTime = DateTime.Now;
@@ -3975,7 +4014,7 @@ SET XACT_ABORT OFF
                                 DbO.SaveChanges();
                             }
                             DbO.ProductoUbicacion.RemoveRange(DbO.ProductoUbicacion.Where(Pu => Pu.Typ == 3));
-                            CreateExcelThrusdayAndSendByMail(NewRep);
+                            CreateExcelAutoRepAndSendByMail(NewRep, true);
                         } else {
                             if (I == ListThurs.Count() - 1) {
                                 bool TheSame = true;
@@ -4003,6 +4042,95 @@ SET XACT_ABORT OFF
                     }
                 }
                 //Fin jueves
+                if ((StartTime.DayOfWeek == DayOfWeek.Saturday && StartTime.Hour >= 10) || 1 == 1) {
+                    List<DateTime> ListSaturdays = Utility.Funcs.AllSaturdayInMonth(StartTime.Year, StartTime.Month).Where(D => D <= (new DateTime(StartTime.Year, StartTime.Month, StartTime.Day, 23, 59, 59)).AddDays(1)).ToList();
+                    for (int i = 0; i < ListSaturdays.Count; i++) {
+                        List<PaylessReportes> ListRep = (
+                            from R in DbO.PaylessReportes
+                            where R.Periodo == ListSaturdays[i].AddDays(-6).ToString(ApplicationSettings.DateTimeFormatShort)
+                            && R.Tipo == "1"
+                            select R
+                            ).ToList();
+                        if (ListRep.Count() == 0) {
+                            PaylessReportes NewRep = new PaylessReportes() {
+                                Periodo = ListSaturdays[i].AddDays(-6).ToString(ApplicationSettings.DateTimeFormatShort),
+                                PeriodoF = ListSaturdays[i].AddDays(1).ToString(ApplicationSettings.DateTimeFormatShort),
+                                FechaGen = DateTime.Now.ToString(ApplicationSettings.DateTimeFormat),
+                                Tipo = "1"
+                            };
+                            DbO.PaylessReportes.Add(NewRep);
+                            DbO.SaveChanges();
+                            List<PeticionesAdminBGModel> ListOrders = ManualDB.SP_GetWmsGroupDispatchsSunday(ref DbO, 1432, ListSaturdays[i].AddDays(-6).ToString(ApplicationSettings.DateTimeFormatSqlServer), ListSaturdays[i].AddDays(1).ToString(ApplicationSettings.DateTimeFormatSqlServer)).ToList();
+                            ListOrders = ListOrders.OrderByDescending(Pe2 => Pe2.FechaPedido.ToDateFromEspDate()).ToList();
+                            List<int?> ListTiendas = (
+                                from Lo in ListOrders
+                                group Lo by new { Lo.TiendaId }
+                                into G
+                                orderby G.Fod().FechaPedido.ToDateFromEspDate() descending
+                                select G.Fod().TiendaId                                
+                                ).ToList();
+                            List <PaylessReportesDet> ListSubOrders = new List<PaylessReportesDet>();
+                            for (int Ti = 0; Ti < ListTiendas.Count(); Ti++) {
+                                List<PeticionesAdminBGModel> ListOrdersByTienda = ListOrders.Where(Lo => Lo.TiendaId == ListTiendas[Ti]).OrderBy(Lo => Lo.FechaPedido.ToDateFromEspDate()).ToList();
+                                ListSubOrders.Clear();
+                                for (int Pi = 0; Pi < ListOrdersByTienda.Count(); Pi++) {
+                                    ListSubOrders.Add(new PaylessReportesDet {
+                                        TiendaId = ListTiendas[Ti],
+                                        Fecha1 = ListOrdersByTienda[Pi].FechaPedido,
+                                        TotalWomanQty = ListOrdersByTienda[Pi].WomanQty,
+                                        TotalManQty = ListOrdersByTienda[Pi].ManQty,
+                                        TotalKidQty = ListOrdersByTienda[Pi].KidQty,
+                                        TotalAccQty = ListOrdersByTienda[Pi].AccQty,
+                                        Total = ListOrdersByTienda[Pi].Total
+                                    });                                    
+                                }
+                                PaylessReportesDet NewRepDet = new PaylessReportesDet() {
+                                    IdM = NewRep.Id,
+                                    TiendaId = ListTiendas[Ti],
+                                    TotalWomanQty = ListSubOrders.Sum(O1 => O1.TotalWomanQty),
+                                    TotalManQty = ListSubOrders.Sum(O1 => O1.TotalManQty),
+                                    TotalKidQty = ListSubOrders.Sum(O1 => O1.TotalKidQty),
+                                    TotalAccQty = ListSubOrders.Sum(O1 => O1.TotalAccQty),
+                                    Total = ListSubOrders.Sum(O1 => O1.Total)
+                                };
+                                for (int Z = 0; Z < ListSubOrders.Count; Z++) {
+                                    switch (Z) {
+                                        case 0:
+                                            NewRepDet.Fecha1 = ListSubOrders[Z].Fecha1;
+                                            NewRepDet.Cant1 = ListSubOrders[Z].Total;
+                                            break;
+                                        case 1:
+                                            NewRepDet.Fecha2 = ListSubOrders[Z].Fecha1;
+                                            NewRepDet.Cant2 = ListSubOrders[Z].Total;
+                                            break;
+                                        case 2:
+                                            NewRepDet.Fecha3 = ListSubOrders[Z].Fecha1;
+                                            NewRepDet.Cant3 = ListSubOrders[Z].Total;
+                                            break;
+                                        case 3:
+                                            NewRepDet.Fecha4 = ListSubOrders[Z].Fecha1;
+                                            NewRepDet.Cant4 = ListSubOrders[Z].Total;
+                                            break;
+                                        case 4:
+                                            NewRepDet.Fecha5 = ListSubOrders[Z].Fecha1;
+                                            NewRepDet.Cant5 = ListSubOrders[Z].Total;
+                                            break;
+                                        case 5:
+                                            NewRepDet.Fecha6 = ListSubOrders[Z].Fecha1;
+                                            NewRepDet.Cant6 = ListSubOrders[Z].Total;
+                                            break;
+                                        default:
+                                            break;
+                                    }
+                                }
+                                DbO.PaylessReportesDet.Add(NewRepDet);
+                                DbO.SaveChanges();
+                            }
+                            CreateExcelAutoRepAndSendByMail(NewRep, false);
+                        }
+                    }
+                }
+                //Fin rep domingo
                 return new RetData<string> {
                     Data = "ok",
                     Info = new RetInfo() {

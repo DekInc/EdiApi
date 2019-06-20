@@ -882,5 +882,32 @@ namespace EdiApi.Models
             }
             return ListExists;
         }
+        public static IEnumerable<PeticionesAdminBGModel> SP_GetWmsGroupDispatchsSunday(ref Models.EdiDB.EdiDBContext _DbO, int ClienteId, string FechaI, string FechaF) {
+            List<PeticionesAdminBGModel> ListExists = new List<PeticionesAdminBGModel>();
+            using (DbCommand Cmd = _DbO.Database.GetDbConnection().CreateCommand()) {
+                Cmd.CommandText = $"[dbo].[SP_GetWmsGroupDispatchsSunday] {ClienteId}, '{FechaI}', '{FechaF}'";
+                _DbO.Database.OpenConnection();
+                DbDataReader Dr = Cmd.ExecuteReader();
+                if (Dr.HasRows) {
+                    while (Dr.Read()) {
+                        ListExists.Add(new PeticionesAdminBGModel() {
+                            Id = Dr.Gr<int>(0),
+                            TiendaId = Convert.ToInt32(Dr.Gr<string>(1)),
+                            Tienda = Dr.Gr<string>(2),
+                            WomanQty = Dr.Gr<int>(3),
+                            ManQty = Dr.Gr<int>(4),
+                            KidQty = Dr.Gr<int>(5),
+                            AccQty = Dr.Gr<int>(6),
+                            FechaPedido = Dr.Gr<string>(7),
+                            Total = Convert.ToInt32(Dr.Gr<double>(8))
+                        });
+                    }
+                }
+                _DbO.Database.CloseConnection();
+                if (!Dr.IsClosed)
+                    Dr.Close();
+            }
+            return ListExists;
+        }
     }
 }

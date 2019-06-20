@@ -476,6 +476,10 @@ namespace EdiViewer.Controllers
             }
             return View(new ErrorModel());
         }
+        public IActionResult PedidosPaylessDivert() {
+            ViewBag.PedidoIdToModify = 0;            
+            return View(new ErrorModel());
+        }
         public async Task<IActionResult> Inventario()
         {
             try
@@ -1244,10 +1248,10 @@ namespace EdiViewer.Controllers
                 return Json(JsonConvert.SerializeObject(e1));
             }            
         }
-        public async Task<IActionResult> MakeExcelJue(int IdM) {
+        public async Task<IActionResult> MakeExcelAutoRep(int IdM, string Typ) {
             DateTime StartTime = DateTime.Now;
             try {
-                RetData<Tuple<PaylessReportes, IEnumerable<PaylessReportesDet>, IEnumerable<PaylessTiendas>>> ListInfo = await ApiClientFactory.Instance.GetWeekReport(IdM, "0");
+                RetData<Tuple<PaylessReportes, IEnumerable<PaylessReportesDet>, IEnumerable<PaylessTiendas>>> ListInfo = await ApiClientFactory.Instance.GetWeekReport(IdM, Typ);                
                 if (ListInfo.Info.CodError != 0)
                     return Json(ListInfo.Info);
                 if (ListInfo.Data.Item1 == null)
@@ -1256,13 +1260,14 @@ namespace EdiViewer.Controllers
                     return Json("ERROR. No existe información del detalle del reporte 1.");
                 if (ListInfo.Data.Item2.Count() == 0)
                     return Json("ERROR. No existe información del detalle del reporte 2.");
-                string Plantilla = "plantillaOrdenes3.xls";
+                string PlantillaPre = ListInfo.Data.Item1.Tipo == "0" ? "" : "b";
+                string Plantilla = $"plantillaOrdenes3{PlantillaPre}.xls";
                 if (ListInfo.Data.Item2.Where(O1 => !string.IsNullOrEmpty(O1.Fecha4)).Count() > 0)
-                    Plantilla = "plantillaOrdenes4.xls";
+                    Plantilla = $"plantillaOrdenes4{PlantillaPre}.xls";
                 if (ListInfo.Data.Item2.Where(O1 => !string.IsNullOrEmpty(O1.Fecha5)).Count() > 0)
-                    Plantilla = "plantillaOrdenes5.xls";
+                    Plantilla = $"plantillaOrdenes5{PlantillaPre}.xls";
                 if (ListInfo.Data.Item2.Where(O1 => !string.IsNullOrEmpty(O1.Fecha6)).Count() > 0)
-                    Plantilla = "plantillaOrdenes6.xls";
+                    Plantilla = $"plantillaOrdenes6{PlantillaPre}.xls";
                 Utility.ExceL ExcelO = new Utility.ExceL();                
                 using (FileStream FilePlantilla = new FileStream(Plantilla, FileMode.Open, FileAccess.Read, FileShare.ReadWrite)) {
                     MemoryStream Ms = new MemoryStream();
@@ -1279,7 +1284,7 @@ namespace EdiViewer.Controllers
                     ExcelO.SetRow(2);
                     ExcelO.SetCell(4);
                     ExcelO.SetCellValue(ListInfo.Data.Item1.PeriodoF);
-                    IEnumerable<PaylessReportesDet> ListDetOrd = ListInfo.Data.Item2.OrderByDescending(O1 => O1.Fecha1.ToDate());
+                    IEnumerable<PaylessReportesDet> ListDetOrd = ListInfo.Data.Item2.OrderByDescending(O1 => O1.Fecha1.ToDateFromEspDate());
                     for (int i = 0; i < ListDetOrd.Count(); i++) {
                         ExcelO.CreateRow(i + 4);
                         ExcelO.CreateCell(1, CellType.String);
@@ -1309,6 +1314,7 @@ namespace EdiViewer.Controllers
                             ExcelO.CreateCell(17, CellType.String);
                             ExcelO.SetCellValue(ListDetOrd.ElementAt(i).Cant1);
                             ExcelO.CreateCell(18, CellType.String);
+                            if (ListInfo.Data.Item1.Tipo == "0")
                             ExcelO.SetCellValue(ListDetOrd.ElementAt(i).Fecha1.Substring(12));
                         }
                         if (!string.IsNullOrEmpty(ListDetOrd.ElementAt(i).Fecha2)) {
@@ -1317,7 +1323,8 @@ namespace EdiViewer.Controllers
                             ExcelO.CreateCell(20, CellType.String);
                             ExcelO.SetCellValue(ListDetOrd.ElementAt(i).Cant2);
                             ExcelO.CreateCell(21, CellType.String);
-                            ExcelO.SetCellValue(ListDetOrd.ElementAt(i).Fecha2.Substring(12));
+                            if (ListInfo.Data.Item1.Tipo == "0")
+                                ExcelO.SetCellValue(ListDetOrd.ElementAt(i).Fecha2.Substring(12));
                         }
                         if (!string.IsNullOrEmpty(ListDetOrd.ElementAt(i).Fecha3)) {
                             ExcelO.CreateCell(22, CellType.String);
@@ -1325,12 +1332,41 @@ namespace EdiViewer.Controllers
                             ExcelO.CreateCell(23, CellType.String);
                             ExcelO.SetCellValue(ListDetOrd.ElementAt(i).Cant3);
                             ExcelO.CreateCell(24, CellType.String);
-                            ExcelO.SetCellValue(ListDetOrd.ElementAt(i).Fecha3.Substring(12));
+                            if (ListInfo.Data.Item1.Tipo == "0")
+                                ExcelO.SetCellValue(ListDetOrd.ElementAt(i).Fecha3.Substring(12));
+                        }
+                        if (!string.IsNullOrEmpty(ListDetOrd.ElementAt(i).Fecha4)) {
+                            ExcelO.CreateCell(25, CellType.String);
+                            ExcelO.SetCellValue(ListDetOrd.ElementAt(i).Fecha4.Substring(0, 10));
+                            ExcelO.CreateCell(26, CellType.String);
+                            ExcelO.SetCellValue(ListDetOrd.ElementAt(i).Cant4);
+                            ExcelO.CreateCell(27, CellType.String);
+                            if (ListInfo.Data.Item1.Tipo == "0")
+                                ExcelO.SetCellValue(ListDetOrd.ElementAt(i).Fecha4.Substring(12));
+                        }
+                        if (!string.IsNullOrEmpty(ListDetOrd.ElementAt(i).Fecha5)) {
+                            ExcelO.CreateCell(28, CellType.String);
+                            ExcelO.SetCellValue(ListDetOrd.ElementAt(i).Fecha5.Substring(0, 10));
+                            ExcelO.CreateCell(29, CellType.String);
+                            ExcelO.SetCellValue(ListDetOrd.ElementAt(i).Cant5);
+                            ExcelO.CreateCell(30, CellType.String);
+                            if (ListInfo.Data.Item1.Tipo == "0")
+                                ExcelO.SetCellValue(ListDetOrd.ElementAt(i).Fecha5.Substring(12));
+                        }
+                        if (!string.IsNullOrEmpty(ListDetOrd.ElementAt(i).Fecha6)) {
+                            ExcelO.CreateCell(31, CellType.String);
+                            ExcelO.SetCellValue(ListDetOrd.ElementAt(i).Fecha6.Substring(0, 10));
+                            ExcelO.CreateCell(32, CellType.String);
+                            ExcelO.SetCellValue(ListDetOrd.ElementAt(i).Cant6);
+                            ExcelO.CreateCell(33, CellType.String);
+                            if (ListInfo.Data.Item1.Tipo == "0")
+                                ExcelO.SetCellValue(ListDetOrd.ElementAt(i).Fecha6.Substring(12));
                         }
                     }
                     MemoryStream Ms2 = new MemoryStream();
                     ExcelO.ExcelWorkBook.Write(Ms2);
-                    return File(Ms2.ToArray(), "application/octet-stream", "Archivo_RepJuevesPedidos_" + DateTime.Now.ToString("ddMMyyyy") + ".xls");
+                    string ExcelName = ListInfo.Data.Item1.Tipo == "0" ? "Archivo_RepJuevesPedidos_" : "Archivo_RepDomingoEnvios_";
+                    return File(Ms2.ToArray(), "application/octet-stream", ExcelName + DateTime.Now.ToString("ddMMyyyy") + ".xls");
                 }
             } catch (Exception e1) {
                 return Json(JsonConvert.SerializeObject(e1));

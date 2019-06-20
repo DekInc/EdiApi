@@ -773,3 +773,9 @@ table.dataTable.dtr-inline.collapsed > tbody > tr[role="row"] > td:first-child:b
     background-repeat: no-repeat;
     background-size: contain;
 }
+.littleDate {
+    max-width: 180px;
+}
+label {
+    margin-top: .5rem;
+}

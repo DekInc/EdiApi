@@ -25,21 +25,23 @@ select distinct Color, CodProducto from wms.dbo.Producto where CodProducto like 
 select top 1000000 * from wms.dbo.Producto P where ClienteID = 385
 select * from wms.dbo.ItemInventario where CodProducto like '1902347' and color  = 'DRYU 961708-5'
 --Did: 52004, Cd 1902347
-select * from EdiDB.dbo.PAYLESS_ReportesMails
+SELECT * FROM EdiDB.dbo.ProductoUbicacion
+select * from EdiDB.dbo.PAYLESS_ReportesMails order by Id
 select * from EdiDB.dbo.AsyncStates
 select * from EdiDB.dbo.PAYLESS_Reportes
-select * from EdiDB.dbo.PAYLESS_ReportesDet where IdM = 34 order by IdM, TiendaId
+select * from EdiDB.dbo.PAYLESS_Reportes where Periodo = '09/06/2019'
+select * from EdiDB.dbo.PAYLESS_ReportesDet where IdM = 20 order by Id
 SELECT * FROM EdiDB.dbo.PedidosExternos order by FechaCreacion DESC
 SELECT * FROM EdiDB.dbo.PedidosExternos order by FechaPedido DESC
 SELECT * FROM EdiDB.dbo.PedidosExternos where Id = 96
-SELECT * FROM EdiDB.dbo.PedidosExternos where TiendaId = 7384
+SELECT * FROM EdiDB.dbo.PedidosExternos 
 SELECT * FROM EdiDB.dbo.PedidosExternos where FullPed = 0
 --update EdiDB.dbo.PedidosExternos SET FullPed = null where FullPed = 0
 --truncate table EdiDB.dbo.PAYLESS_Reportes
 --truncate table EdiDB.dbo.PAYLESS_ReportesDet
 --delete from EdiDB.dbo.AsyncStates where Id = 2
---delete from EdiDB.dbo.PAYLESS_Reportes where Id = 36
---delete from EdiDB.dbo.PAYLESS_ReportesDet where IdM = 36
+--delete from EdiDB.dbo.PAYLESS_Reportes where Id in (35, 36, 38)
+--delete from EdiDB.dbo.PAYLESS_ReportesDet where IdM in (35, 36, 38)
 select * from EdiDB.dbo.EdiComs order by Id DESC
 
 select * from wms_test_29_01_2019.dbo.Transacciones where pais_orig = 90
@@ -226,7 +228,7 @@ SELECT * FROM LEAR_EQUIVALENCIAS
 --70246
 EXEC GetSNDet 70246
 select * from wms.dbo.Pedido where ClienteId = 1432
-select * from wms.dbo.Pedido where PedidoId = 69104
+select * from wms.dbo.Pedido where PedidoId = 70920
 select * from wms.dbo.Pedido where PedidoId = 70310
 select * from wms.dbo.DtllPedido where PedidoId = 70246
 --70246, despacho 51633
@@ -234,9 +236,9 @@ select * from wms.dbo.usrsystem where idusr = 'EPALACIOS'
 select top 20 * from wms.dbo.Despachos where DocumentoFiscal = 'SA118246' order by DespachoID DESC
 select top 20 * from wms.dbo.Transacciones where NoTransaccion = 'SA118246'
 select top 20 * from wms.dbo.DtllDespacho Dd where Dd.DespachoID = 51953
-SELECT TOP 200 * FROM wms.dbo.Transacciones WHERE TransaccionID = 118246
+SELECT TOP 200 * FROM wms.dbo.Transacciones WHERE PedidoId = 70920
 SELECT * FROM wms.dbo.SysTempSalidas S WHERE S.DtllPedidoID in (
-	select DtllPedidoID from wms.dbo.DtllPedido where PedidoId = 70644
+	select DtllPedidoID from wms.dbo.DtllPedido where PedidoId = 70649
 ) 
 AND S.CodProducto IN (
 	SELECT CodProducto FROM EdiDB.dbo.PedidosDetExternos where PedidoId = 40
