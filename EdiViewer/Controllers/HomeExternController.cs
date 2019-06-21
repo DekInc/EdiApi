@@ -127,6 +127,38 @@ namespace EdiViewer.Controllers
                 return View("PedidosPayless3", new ErrorModel() { ErrorMessage = Ret.Info.Mensaje });
             }
         }
+        public async Task<IActionResult> SetNewDisPaylessDivert(string dtpFechaEntrega, int txtWomanQty, int txtManQty, int txtKidQty, int txtAccQty, string radInvType, string cboTiendaOr, string cboTiendaDest) {
+            ViewBag.PedidoIdToModify = 0;
+            //return View("PedidosPaylessDivert", new ErrorModel() { Typ = 1, ErrorMessage = "" });
+            if (string.IsNullOrEmpty(radInvType)) {
+                return View("PedidosPaylessDivert", new ErrorModel() { ErrorMessage = "El tipo de pedido está vacío." });
+            }
+            if (string.IsNullOrEmpty(dtpFechaEntrega)) {
+                return View("PedidosPaylessDivert", new ErrorModel() { ErrorMessage = "La fecha de entrega está vacía." });
+            }
+            if (txtWomanQty.Equals("0") && txtManQty.Equals("0") && txtKidQty.Equals("0") && txtAccQty.Equals("0")) {
+                return View("PedidosPaylessDivert", new ErrorModel() { ErrorMessage = "La cantidad a pedir es cero para todas las categorias." });
+            }
+            DateTime DateDis = dtpFechaEntrega.ToDate();
+            if ((DateDis - DateTime.Now).TotalHours < 24) {
+                return View("PedidosPaylessDivert", new ErrorModel() { ErrorMessage = "La fecha y hora del pedido debe ser con más de 24 horas de anticipación." });
+            }
+            List<PaylessProdPrioriDetModel> ListQtys = HttpContext.Session.GetObjSession<List<PaylessProdPrioriDetModel>>("Session.StoreQtys");
+            bool? FullPed = null;
+            FullPed = (
+                ListQtys.Where(O => O.Cp == "No" && O.Categoria.ToUpper() == "DAMAS").Fod().Existencia == txtWomanQty
+                && ListQtys.Where(O => O.Cp == "No" && O.Categoria.ToUpper() == "CABALLEROS").Fod().Existencia == txtManQty
+                && ListQtys.Where(O => O.Cp == "No" && O.Categoria.ToUpper() == "NIÑOS / AS").Fod().Existencia == txtKidQty
+                && ListQtys.Where(O => O.Cp == "No" && O.Categoria.ToUpper() == "ACCESORIOS").Fod().Existencia == txtAccQty
+                );
+            RetData<string> Ret = new RetData<string>();
+            Ret = await ApiClientFactory.Instance.SetNewDisPayless(dtpFechaEntrega, txtWomanQty, txtManQty, txtKidQty, txtAccQty, radInvType, HttpContext.Session.GetObjSession<int>("Session.ClientId"), HttpContext.Session.GetObjSession<int>("Session.TiendaId"), true, (FullPed == false ? null : FullPed), Convert.ToInt32(cboTiendaDest));
+            if (Ret.Info.CodError == 0) {
+                return View("PedidosPaylessDivert", new ErrorModel() { Typ = 1, ErrorMessage = Ret.Data });
+            } else {
+                return View("PedidosPaylessDivert", new ErrorModel() { ErrorMessage = Ret.Info.Mensaje });
+            }
+        }
         public async Task<RetData<string>> SetPaylessProdPriori(string dtpPeriodUpload, string txtTransporte, bool ChkUpDelete)
         {
             DateTime StartTime = DateTime.Now;

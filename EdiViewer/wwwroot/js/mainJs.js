@@ -85,6 +85,37 @@ function fillCombobox(divSpin, serverUrl, comboName, valueName, textName, valueD
     });
 }
 
+function fillComboboxWithValue(divSpin, serverUrl, comboName, valueName, textName, valueDef) {
+    $(divSpin).show();
+    $(comboName).empty();
+    $.ajax({
+        method: "GET",
+        url: serverUrl,
+        success: function (data) {
+            $(divSpin).hide();
+            if (data.info.codError != 0) {
+                menErrorEdi(data.info.mensaje, 'Error');
+                return;
+            }
+            if (data.data != null) {
+                $.each(data.data, function (indexI, storeO) {
+                    $(comboName).append($('<option>', {
+                        value: this[valueName],
+                        text: this[valueName] + ' - ' + this[textName],
+                        selected: this[valueName] == valueDef ? true : false
+                    }));
+                });
+                if (afterFillCombobox != null)
+                    afterFillCombobox();
+            }
+        },
+        error: function (xhr, ajaxOptions, thrownError) {
+            menErrorEdi(xhr.status, 'Error throw in js');
+            menErrorEdi(thrownError, 'Error throw in js');
+        }
+    });
+}
+
 function makeAjaxPost(serverUrl, successFunc) {
     $.ajax({
         method: "POST",

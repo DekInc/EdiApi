@@ -13,28 +13,32 @@
     <div class="container">
         <div class="card-deck cardMain">
             <div class="card box-shadow">
-                <div class="card-header">
-                    <h4 class="my-0 font-weight-normal">Pedidos Payless&nbsp;<img class="imgHeaderHelp" src="~/images/help.png" title="Pantalla utilizada para hacer pedidos a partir del consolidado" alt="Pantalla utilizada para hacer pedidos a partir del consolidado"></h4>
+                <div class="card-header card-header-payless">
+                    <h4 class="my-0 font-weight-normal">Pedidos Payless&nbsp;<img class="imgHeaderHelp" src="~/images/help.png" title="Pantalla utilizada para hacer pedidos por barcode, lote, talla, estilo y genero" alt="Pantalla utilizada para hacer pedidos por barcode, lote, talla, estilo y genero"></h4>
                 </div>
-                <div class="card-body">
-                    <div>
-                        <span id="spanClientName">
-                            <span id="divSpinClientName" class="spinner-border spinner-border-sm text-danger" style="display: none" role="status">
-                                <span class="sr-only">Loading...</span>
-                            </span>
-                        </span>
-                    </div>
+                <div class="card-body">                    
                     <form id="formSearch">
                         <div class="container div856Search">
                             <div class="row">
                                 <div class="col-sm">
-                                    <label for="cboPeriod">
-                                        Periodo
-                                        <span id="divSpincboPeriod" class="spinner-border spinner-border-sm text-danger" style="display: none" role="status">
-                                            <span class="sr-only">Loading...</span>
-                                        </span>
-                                    </label>
-                                    <select class="form-control cboPeriod" id="cboPeriod"></select>
+                                    <label for="TxtBarcode">Barcode</label>
+                                    <input class="form-control" id="TxtBarcode" maxlength="10" autocorrect="off" autocapitalize="off" autocomplete="off">
+                                </div>
+                                <div class="col-sm">
+                                    <label for="TxtProducto">Lote</label>
+                                    <input class="form-control" id="TxtProducto" maxlength="6" autocorrect="off" autocapitalize="off" autocomplete="off">
+                                </div>
+                                <div class="col-sm">
+                                    <label for="TxtTalla">Talla</label>
+                                    <input class="form-control" id="TxtTalla" maxlength="5" autocorrect="off" autocapitalize="off" autocomplete="off">
+                                </div>
+                                <div class="col-sm">
+                                    <label for="TxtLote">Estilo</label>
+                                    <input class="form-control" id="TxtTalla" maxlength="6" autocorrect="off" autocapitalize="off" autocomplete="off">
+                                </div>
+                                <div class="col-sm">
+                                    <label for="TxtCategoria">Genero</label>
+                                    <input class="form-control" id="TxtTalla" maxlength="6" autocorrect="off" autocapitalize="off" autocomplete="off">
                                 </div>
                             </div>
                             <div class="row margin5">
@@ -54,11 +58,11 @@
                                     <button type="button" class="btn btn-primary" id="btnNewDis" data-togle="tooltip" data-html="true" title="Seleccione los productos a pedir y acá click acá para solicitarlos">Crear pedido</button>
                                     <button type="button" class="btn btn-primary" id="btnAddFiltered" data-togle="tooltip" data-html="true" title="Agregar todos los productos filtrados con disponibilidad al pedido">Agregar filtrado a pedido</button>
                                     @*<button type="button" class="btn btn-primary" id="btnExportDis" data-togle="tooltip" data-html="true" title="Exportar pedido en Excel">
-                                        Exportar pedido a Excel <img src="/images/excel.png" class="imgButton">
-                                        <div id="divSpinPrintAll" class="spinner-border spinner-border-sm text-danger" style="display: none" role="status">
-                                            <span class="sr-only">Loading...</span>
-                                        </div>
-                                    </button>*@
+                    Exportar pedido a Excel <img src="/images/excel.png" class="imgButton">
+                    <div id="divSpinPrintAll" class="spinner-border spinner-border-sm text-danger" style="display: none" role="status">
+                        <span class="sr-only">Loading...</span>
+                    </div>
+                </button>*@
                                 </div>
                             </div>
                         </div>
@@ -136,51 +140,6 @@
             mainGrid.refresh();
         }, 366);
         return isValid;
-    }
-    function getClientName() {
-        $('#divSpinClientName').show();
-        $.ajax({
-            method: "GET",
-            url: "@this.Url.Action("GetClientName", "HomeExtern")",
-            success: function (data) {
-                if (data.info.codError != 0) {
-                    menErrorEdi(data.info.mensaje, 'Error');
-                    return;
-                }
-                $('#spanClientName').html(data.data);
-                $('#divSpinClientName').hide();
-            },
-            error: function (xhr, ajaxOptions, thrownError) {
-                menErrorEdi(xhr.status, 'Error throw in js');
-                menErrorEdi(thrownError, 'Error throw in js');
-            }
-        });
-    }
-    function getPeriods() {
-        $('#divSpincboPeriod').show();
-        $.ajax({
-            url: '@this.Url.Action("GetPaylessPeriodPrioriByClient", "HomeExtern")',
-            type: 'GET',
-            dataType: 'JSON',
-            success: function (json) {
-                if (json.info.codError != 0) {
-                    menErrorEdi(json.info.mensaje);
-                    return json.data;
-                }
-                $('#divSpincboPeriod').hide();
-                $.each(json.data, function (indexI, itemO) {
-                    $('#cboPeriod').append($('<option>', {
-                        value: this,
-                        text: this,
-                        selected: false
-                    }));
-                });
-            },
-            error: function (xhr, ajaxOptions, thrownError) {
-                menErrorEdi(xhr.status, '');
-                menErrorEdi(thrownError, '');
-            }
-        });
     }
     function refreshGrid(auto) {
         w2ui.grid.autoLoad = auto;
@@ -261,8 +220,6 @@
     $(document).ready(function () {
         $('.imgHeaderHelp').tooltip();
         crearGrid();        
-        getPeriods();
-        getClientName();
         reDrawObjects();
         $('#btnNewDis').on('click', function (e) {
             $('#exampleModalLabel2').html('Crear pedido');

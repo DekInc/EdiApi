@@ -3361,6 +3361,22 @@ SET XACT_ABORT OFF
                         }
                     };
                 }
+                if (StartTime.DayOfWeek == DayOfWeek.Sunday && dtpFechaEntrega.ToDateFromEspDate().DayOfWeek == DayOfWeek.Monday)
+                    return new RetData<string> {
+                        Info = new RetInfo() {
+                            CodError = -1,
+                            Mensaje = "Error, el domingo no se pueden hacer pedidos para el lunes.",
+                            ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                        }
+                    };
+                if (StartTime.DayOfWeek == DayOfWeek.Saturday && StartTime.Hour > 10 && dtpFechaEntrega.ToDateFromEspDate().DayOfWeek == DayOfWeek.Monday)
+                    return new RetData<string> {
+                        Info = new RetInfo() {
+                            CodError = -1,
+                            Mensaje = "Error, el sábado no se pueden hacer pedidos a partir de las 10am para el lunes.",
+                            ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                        }
+                    };
                 List<PaylessProdPrioriDetModel> ListProdTienda = ManualDB.SP_GetPaylessProdSinPedido(ref DbO, ClienteId, TiendaId);                
                 List<PaylessProdPrioriDetModel> ListProdWithStock = new List<PaylessProdPrioriDetModel>();
                 IEnumerable<FE830DataAux> ListStock = ManualDB.SP_GetExistenciasByTienda(ref DbO, ClienteId, TiendaId);
@@ -3380,13 +3396,17 @@ SET XACT_ABORT OFF
                     }
                 }
                 List<PaylessProdPrioriDetModel> ListProdPedido = new List<PaylessProdPrioriDetModel>();
-                ListProdPedido = (
-                    from P1 in ListProdWithStock
-                    where !string.IsNullOrEmpty(P1.Cp)
-                    && (P1.Cp.Contains("A", StringComparison.InvariantCultureIgnoreCase) 
-                    || P1.Cp.Contains("H", StringComparison.InvariantCultureIgnoreCase))
-                    select P1
-                    ).ToList();
+                if (Divert.HasValue) {
+                    if (!Divert.Value) {
+                        ListProdPedido = (
+                            from P1 in ListProdWithStock
+                            where !string.IsNullOrEmpty(P1.Cp)
+                            && (P1.Cp.Contains("A", StringComparison.InvariantCultureIgnoreCase)
+                            || P1.Cp.Contains("H", StringComparison.InvariantCultureIgnoreCase))
+                            select P1
+                            ).ToList();
+                    }
+                }
                 int NContCp = ListProdPedido.Count;
                 switch (radInvType) {
                     case "fifo":
@@ -3891,7 +3911,7 @@ SET XACT_ABORT OFF
             DateTime StartTime = DateTime.Now;
             try {
                 //Jueves
-                if ((StartTime.DayOfWeek == DayOfWeek.Thursday && StartTime.Hour >= 15)
+                if ((StartTime.DayOfWeek == DayOfWeek.Thursday && StartTime.Hour >= 17)
                     || StartTime.DayOfWeek == DayOfWeek.Friday
                     || StartTime.DayOfWeek == DayOfWeek.Saturday
                     || StartTime.DayOfWeek == DayOfWeek.Sunday) {
@@ -4042,7 +4062,7 @@ SET XACT_ABORT OFF
                     }
                 }
                 //Fin jueves
-                if ((StartTime.DayOfWeek == DayOfWeek.Saturday && StartTime.Hour >= 10) || 1 == 1) {
+                if ((StartTime.DayOfWeek == DayOfWeek.Saturday && StartTime.Hour >= 10)) {
                     List<DateTime> ListSaturdays = Utility.Funcs.AllSaturdayInMonth(StartTime.Year, StartTime.Month).Where(D => D <= (new DateTime(StartTime.Year, StartTime.Month, StartTime.Day, 23, 59, 59)).AddDays(1)).ToList();
                     for (int i = 0; i < ListSaturdays.Count; i++) {
                         List<PaylessReportes> ListRep = (

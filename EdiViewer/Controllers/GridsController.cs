@@ -549,9 +549,11 @@ namespace EdiViewer.Controllers
             }
 
         }
-        public async Task<IActionResult> GetPaylessProdPrioriInventario2() {
+        public async Task<IActionResult> GetPaylessProdPrioriInventario2(string tiendaId = null) {
             try {
-                string TiendaId = HttpContext.Session.GetObjSession<string>("Session.TiendaId");
+                if (tiendaId != null)
+                    HttpContext.Session.SetObjSession("Session.TiendaId", tiendaId);
+                string TiendaId = string.IsNullOrEmpty(tiendaId)? HttpContext.Session.GetObjSession<string>("Session.TiendaId") : tiendaId;
                 RetData<IEnumerable<PaylessProdPrioriDetModel>> ListProd = await ApiLongClientFactory.Instance.GetPaylessProdPrioriAll(TiendaId);
                 if (ListProd.Info.CodError != 0)
                     return Json(new { total = 0, records = "", errorMessage = ListProd.Info.Mensaje });
@@ -584,7 +586,7 @@ namespace EdiViewer.Controllers
                 List<PaylessProdPrioriDetModel> AllRecords = Records;
                 List<PaylessProdPrioriDetModel> ListProdWithStock = new List<PaylessProdPrioriDetModel>();
                 List<PaylessProdPrioriDetModel> FilteredRecords = Records;
-                RetData<Tuple<IEnumerable<PedidosExternos>, IEnumerable<PedidosDetExternos>>> TuplePextSent = await ApiClientFactory.Instance.GetPedidosExternosPendientesByTienda(HttpContext.Session.GetObjSession<int>("Session.ClientId"), HttpContext.Session.GetObjSession<int>("Session.TiendaId"));
+                RetData<Tuple<IEnumerable<PedidosExternos>, IEnumerable<PedidosDetExternos>>> TuplePextSent = await ApiClientFactory.Instance.GetPedidosExternosPendientesByTienda(HttpContext.Session.GetObjSession<int>("Session.ClientId"), Convert.ToInt32(TiendaId));
                 if (TuplePextSent.Info.CodError != 0)
                     return Json(new { total = 0, records = "", errorMessage = TuplePextSent.Info.Mensaje });
                 List<PedidosDetExternos> ListPendientes = (
@@ -598,7 +600,7 @@ namespace EdiViewer.Controllers
                 List<string> ListBodegas = new List<string>();
                 string CodProductoFuera = string.Empty;
                 if (Records.Count() > 0) {
-                    RetData<IEnumerable<FE830DataAux>> StockData = await ApiLongClientFactory.Instance.GetStockByTienda(HttpContext.Session.GetObjSession<int>("Session.ClientId"), HttpContext.Session.GetObjSession<int>("Session.TiendaId"));
+                    RetData<IEnumerable<FE830DataAux>> StockData = await ApiLongClientFactory.Instance.GetStockByTienda(HttpContext.Session.GetObjSession<int>("Session.ClientId"), Convert.ToInt32(TiendaId));
                     if (StockData.Info.CodError != 0)
                         return Json(new { total = 0, records = "", errorMessage = StockData.Info.Mensaje });
                     foreach (FE830DataAux Stock in StockData.Data) {
@@ -652,6 +654,14 @@ namespace EdiViewer.Controllers
                     }
                 }                
                 AllRecords = Records;
+                if (Records.Where(O => O.Cp == "No" && O.Categoria.ToUpper() == "DAMAS").Count() == 0)
+                    Records.Add(new PaylessProdPrioriDetModel { Cp = "No", Categoria = "DAMAS" });
+                if (Records.Where(O => O.Cp == "No" && O.Categoria.ToUpper() == "CABALLEROS").Count() == 0)
+                    Records.Add(new PaylessProdPrioriDetModel { Cp = "No", Categoria = "CABALLEROS" });
+                if (Records.Where(O => O.Cp == "No" && O.Categoria.ToUpper() == "NIÑOS / AS").Count() == 0)
+                    Records.Add(new PaylessProdPrioriDetModel { Cp = "No", Categoria = "NIÑOS / AS" });
+                if (Records.Where(O => O.Cp == "No" && O.Categoria.ToUpper() == "ACCESORIOS").Count() == 0)
+                    Records.Add(new PaylessProdPrioriDetModel { Cp = "No", Categoria = "ACCESORIOS" });
                 HttpContext.Session.SetObjSession("Session.StoreQtys", Records);
                 if (TuplePextSent.Data.Item1.Count() > 0)
                     return Json(new { Total, Records, errorMessage = "", AllRecords, FilteredRecords, pedidosPendientes = TuplePextSent.Data.Item1 });

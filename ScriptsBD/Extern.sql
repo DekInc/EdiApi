@@ -4,8 +4,9 @@ select * from wms_test_29_01_2019.dbo.Paises where NomPais like'%pana%'
 --487	TIENDAS CARRION, S.A. DE C.V.(TRANSITO A GUATEMAL)
 select * from wms.dbo.Clientes with(nolock) where nombre like '%payl%' OR ClienteID = 610 order by ClienteID asc
 select * from edidb.dbo.IEnetUsers where Id > 4 order by CodUsr
+select * from edidb.dbo.IEnetUsers order by CodUsr
 select * from edidb.dbo.IEnetGroupsAccesses
---delete from edidb.dbo.IEnetGroupsAccesses where Id = 37
+--delete from edidb.dbo.IEnetGroupsAccesses where Id = 40
 --37	4	19
 --Hbbb2fdd1866c4212a9f99a0d040620190936
 --PAYLESS SHOE SOURCE, HONDURAS
@@ -64,8 +65,8 @@ select * from edidb.dbo.IEnetUsers where Id > 4
 --16	1432	7384	04/06/2019 08:00	2	31/05/2019 11:45	NULL	NULL	100	19	0	0	fifo
 SELECT FechaPedido, REPLACE(FechaPedido, '03/06', '04/06') FROM EdiDB.dbo.PedidosExternos
 --update EdiDB.dbo.PedidosExternos SET FechaPedido = REPLACE(FechaPedido, '04/06', '05/06')
---delete from EdiDB.dbo.PedidosExternos where id in (79)
---delete from EdiDB.dbo.PedidosDetExternos where PedidoId in (79)
+--delete from EdiDB.dbo.PedidosExternos where id in (109)
+--delete from EdiDB.dbo.PedidosDetExternos where PedidoId in (109)
 --update PedidosExternos SET FechaPedido = '08/05/2019 16:00', IdEstado = 2 where Id = 1
 --delete from EdiDB.dbo.PedidosExternos where Id > 15
 --truncate table EdiDB.dbo.PedidosExternos
@@ -75,7 +76,8 @@ SELECT FechaPedido, REPLACE(FechaPedido, '03/06', '04/06') FROM EdiDB.dbo.Pedido
 SELECT * FROM EdiDB.dbo.PedidosDetExternos where PedidoId = 12
 SELECT * FROM EdiDB.dbo.PedidosDetExternos where CodProducto = '7372854892'
 order by CodProducto, CantPedir
-select * from EdiDB.dbo.PAYLESS_ProdPrioriDet where barcode like '7376840999'
+select * from EdiDB.dbo.PAYLESS_ProdPrioriDet where lote like '569862'
+select MAX(LEN(lote)) from EdiDB.dbo.PAYLESS_ProdPrioriDet where barcode like '7376840999'
 --7372854892
 --7377821116
 --7379885086
