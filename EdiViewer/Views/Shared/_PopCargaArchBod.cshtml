@@ -1,0 +1,59 @@
+﻿<div class="modal fade2" id="modalCargaArchBod" tabindex="-1" role="dialog" aria-labelledby="modalCargaArchBodLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content modal-content-normal">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalCargaArchBodLabel">Carga de archivos</h5>
+            </div>
+            <div class="modal-body">
+                <div id="divModalCargaArchBodContent">
+                    <form class="formSearch">
+                        <div class="container div856Search">
+                            <div class="row">
+                                <div class="col-sm">
+                                    <label for="cboTipo">Tipo</label>
+                                    <select class="form-control" id="cboTipo" name="cboTipo">
+                                        <option title="Tienda" value="0">Tienda</option>
+                                        <option title="Traslado" value="1">Traslado</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm" id="divPeriodo">
+                                    <label for="cboPeriod">Periodo</label>
+                                    <select class="form-control" id="cboPeriod"></select>
+                                </div>
+                                <div class="col-sm noShow" id="divPeriodo2">
+                                    <label for="dtpPeriodo">Periodo</label>
+                                    <input class="form-control datepicker" data-date-format="dd/mm/yyyy" id="dtpPeriodo" placeholder="dd/mm/yyyy" maxlength="10" autocorrect="off" autocapitalize="off" autocomplete="off" />
+                                </div>
+                            </div>
+                            <div class="row" id="divTransporte">
+                                <div class="col-sm">
+                                    <label for="cboTransporte">Transporte</label>
+                                    <div id="divSpinCboTransporte" class="spinner-border spinner-border-sm text-danger" style="display: none" role="status">
+                                        <span class="sr-only">Loading...</span>
+                                    </div>
+                                    <select class="form-control" id="cboTransporte" name="cboTransporte"></select>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm custom-file divUpload">
+                                    <input type="file" class="custom-file-input inputUpload" id="fUpload" name="fUpload">
+                                    <label id="lblFile" class="custom-file-label" for="fUpload">Archivo salida bodega</label>
+                                </div>
+                                <div id="divArchEntrada" class="col-sm custom-file divUpload noShow">
+                                    <input type="file" class="custom-file-input inputUpload" id="fUpload2" name="fUpload2">
+                                    <label id="lblFile2" class="custom-file-label" for="fUpload2">Archivo entrada bodega</label>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="modal-footer text-center">
+                <button id="btnCargaArchBodOk" type="button" class="btn btn-success btnModal" data-dismiss="modal">Guardar</button>
+                <button id="btnCargaArchBodCancel" type="button" class="btn btn-success btnModal" data-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>

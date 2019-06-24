@@ -62,7 +62,6 @@ namespace EdiApi.Models.EdiDB
         public virtual DbSet<LearTd5856> LearTd5856 { get; set; }
         public virtual DbSet<LearUit830> LearUit830 { get; set; }
         public virtual DbSet<PaylessPeriodoTransporte> PaylessPeriodoTransporte { get; set; }
-        public virtual DbSet<PaylessProdPriori> PaylessProdPriori { get; set; }
         public virtual DbSet<PaylessProdPrioriArchDet> PaylessProdPrioriArchDet { get; set; }
         public virtual DbSet<PaylessProdPrioriArchM> PaylessProdPrioriArchM { get; set; }
         public virtual DbSet<PaylessProdPrioriDet> PaylessProdPrioriDet { get; set; }
@@ -79,8 +78,7 @@ namespace EdiApi.Models.EdiDB
         public virtual DbSet<UsuariosExternos> UsuariosExternos { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            
+        {            
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -982,7 +980,8 @@ namespace EdiApi.Models.EdiDB
                     .HasColumnName("FProcesado")
                     .HasMaxLength(16);
 
-                entity.Property(e => e.InOut)
+                entity.Property(e => e.Inout)
+                    .HasColumnName("inout")
                     .HasMaxLength(1)
                     .IsUnicode(false);
 
@@ -1260,29 +1259,6 @@ namespace EdiApi.Models.EdiDB
                 entity.Property(e => e.Periodo).HasMaxLength(10);
             });
 
-            modelBuilder.Entity<PaylessProdPriori>(entity =>
-            {
-                entity.ToTable("PAYLESS_ProdPriori");
-
-                entity.Property(e => e.Cargada).HasMaxLength(255);
-
-                entity.Property(e => e.Categoria).HasMaxLength(255);
-
-                entity.Property(e => e.Cp)
-                    .HasColumnName("CP")
-                    .HasMaxLength(255);
-
-                entity.Property(e => e.Etiquetada).HasMaxLength(255);
-
-                entity.Property(e => e.Oid).HasColumnName("OID");
-
-                entity.Property(e => e.Periodo).HasMaxLength(10);
-
-                entity.Property(e => e.Pickeada).HasMaxLength(255);
-
-                entity.Property(e => e.Preinspeccion).HasMaxLength(255);
-            });
-
             modelBuilder.Entity<PaylessProdPrioriArchDet>(entity =>
             {
                 entity.ToTable("PAYLESS_ProdPrioriArchDet");
@@ -1420,6 +1396,10 @@ namespace EdiApi.Models.EdiDB
             {
                 entity.ToTable("PAYLESS_ReportesMails");
 
+                entity.HasIndex(e => e.MailDir)
+                    .HasName("UQ__PAYLESS___7E7D34CC075714DC")
+                    .IsUnique();
+
                 entity.Property(e => e.MailDir).HasMaxLength(256);
             });
 
@@ -1427,19 +1407,35 @@ namespace EdiApi.Models.EdiDB
             {
                 entity.ToTable("PAYLESS_Tiendas");
 
-                entity.Property(e => e.Cel).HasMaxLength(32);
+                entity.Property(e => e.Cel)
+                    .HasMaxLength(32)
+                    .IsUnicode(false);
 
                 entity.Property(e => e.ClienteId).HasColumnName("ClienteID");
 
-                entity.Property(e => e.Descr).HasMaxLength(256);
+                entity.Property(e => e.Descr)
+                    .HasMaxLength(256)
+                    .IsUnicode(false);
 
-                entity.Property(e => e.Direc).HasMaxLength(256);
+                entity.Property(e => e.Direc)
+                    .HasMaxLength(256)
+                    .IsUnicode(false);
 
-                entity.Property(e => e.Distrito).HasMaxLength(8);
+                entity.Property(e => e.Distrito)
+                    .HasMaxLength(8)
+                    .IsUnicode(false);
 
-                entity.Property(e => e.Lider).HasMaxLength(128);
+                entity.Property(e => e.HorarioEntrega)
+                    .HasMaxLength(128)
+                    .IsUnicode(false);
 
-                entity.Property(e => e.Tel).HasMaxLength(32);
+                entity.Property(e => e.Lider)
+                    .HasMaxLength(128)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.Tel)
+                    .HasMaxLength(32)
+                    .IsUnicode(false);
             });
 
             modelBuilder.Entity<PaylessTransporte>(entity =>
@@ -1471,6 +1467,10 @@ namespace EdiApi.Models.EdiDB
 
             modelBuilder.Entity<PedidosExternos>(entity =>
             {
+                entity.HasIndex(e => new { e.TiendaId, e.FechaPedido })
+                    .HasName("PedidosExternosUnique1")
+                    .IsUnique();
+
                 entity.Property(e => e.ClienteId).HasColumnName("ClienteID");
 
                 entity.Property(e => e.FechaCreacion).HasMaxLength(16);

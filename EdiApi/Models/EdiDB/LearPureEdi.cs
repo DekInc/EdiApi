@@ -14,6 +14,6 @@ namespace EdiApi.Models.EdiDB
         public string Log { get; set; }
         public int? CheckSeg { get; set; }
         public bool Shp { get; set; }
-        public string InOut { get; set; }
+        public string Inout { get; set; }
     }
 }

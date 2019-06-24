@@ -5,7 +5,9 @@ select * from wms_test_29_01_2019.dbo.Paises where NomPais like'%pana%'
 select * from wms.dbo.Clientes with(nolock) where nombre like '%payl%' OR ClienteID = 610 order by ClienteID asc
 select * from edidb.dbo.IEnetUsers where Id > 4 order by CodUsr
 select * from edidb.dbo.IEnetUsers order by CodUsr
+select * from edidb.dbo.IEnetUsers where HashId like '%24062019%' order by HashId desc
 select * from edidb.dbo.IEnetGroupsAccesses
+select * from EdiDb.dbo.Trasladado1
 --delete from edidb.dbo.IEnetGroupsAccesses where Id = 40
 --37	4	19
 --Hbbb2fdd1866c4212a9f99a0d040620190936
@@ -34,7 +36,7 @@ select * from EdiDB.dbo.PAYLESS_Reportes where Periodo = '09/06/2019'
 select * from EdiDB.dbo.PAYLESS_ReportesDet where IdM = 20 order by Id
 SELECT * FROM EdiDB.dbo.PedidosExternos order by FechaCreacion DESC
 SELECT * FROM EdiDB.dbo.PedidosExternos order by FechaPedido DESC
-SELECT * FROM EdiDB.dbo.PedidosExternos where Id = 96
+SELECT * FROM EdiDB.dbo.PedidosExternos where Id = 112
 SELECT * FROM EdiDB.dbo.PedidosExternos 
 SELECT * FROM EdiDB.dbo.PedidosExternos where FullPed = 0
 --update EdiDB.dbo.PedidosExternos SET FullPed = null where FullPed = 0
@@ -65,8 +67,8 @@ select * from edidb.dbo.IEnetUsers where Id > 4
 --16	1432	7384	04/06/2019 08:00	2	31/05/2019 11:45	NULL	NULL	100	19	0	0	fifo
 SELECT FechaPedido, REPLACE(FechaPedido, '03/06', '04/06') FROM EdiDB.dbo.PedidosExternos
 --update EdiDB.dbo.PedidosExternos SET FechaPedido = REPLACE(FechaPedido, '04/06', '05/06')
---delete from EdiDB.dbo.PedidosExternos where id in (109)
---delete from EdiDB.dbo.PedidosDetExternos where PedidoId in (109)
+--delete from EdiDB.dbo.PedidosExternos where id in (112)
+--delete from EdiDB.dbo.PedidosDetExternos where PedidoId in (112)
 --update PedidosExternos SET FechaPedido = '08/05/2019 16:00', IdEstado = 2 where Id = 1
 --delete from EdiDB.dbo.PedidosExternos where Id > 15
 --truncate table EdiDB.dbo.PedidosExternos
@@ -78,6 +80,8 @@ SELECT * FROM EdiDB.dbo.PedidosDetExternos where CodProducto = '7372854892'
 order by CodProducto, CantPedir
 select * from EdiDB.dbo.PAYLESS_ProdPrioriDet where lote like '569862'
 select MAX(LEN(lote)) from EdiDB.dbo.PAYLESS_ProdPrioriDet where barcode like '7376840999'
+select DISTINCT Talla, Producto from EdiDB.dbo.PAYLESS_ProdPrioriDet order by 2
+select DISTINCT Talla, Producto from EdiDB.dbo.PAYLESS_ProdPrioriDet order by 2
 --7372854892
 --7377821116
 --7379885086
@@ -378,9 +382,13 @@ where IdPAYLESS_ProdPrioriM = 1
 --truncate table PAYLESS_ProdPrioriM
 select * from wms_test_29_01_2019.dbo.Producto where Descripcion like'%GEMU3131%'
 select * from PAYLESS_ProdPrioriDet where IdTransporte = 9
-select * from PAYLESS_ProdPrioriArchM
+select * from EdiDb.dbo.PAYLESS_ProdPrioriArchM
+--update  EdiDb.dbo.PAYLESS_ProdPrioriArchM SET PorcValidez = null, Typ = 0 where Id = 9
+--update  EdiDb.dbo.PAYLESS_ProdPrioriArchM SET Typ = 0
 select * from EdiDb.dbo.PAYLESS_ProdPrioriArchDet
 select * from EdiDb.dbo.PAYLESS_Transporte
+select * from EdiDb.dbo.Lear_PureEdi
+--drop table PedidosDetExternos2
 --8	SMLU 789569-3
 --9	SMLU 796382-8
 select * from EdiDb.dbo.PAYLESS_ProdPrioriM

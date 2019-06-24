@@ -452,6 +452,32 @@ namespace EdiViewer.Controllers
                 };
             }
         }
+        public async Task<RetData<Tuple<string, string>>> GetClientNameScheduleById() {
+            DateTime StartTime = DateTime.Now;
+            try {
+                if (HttpContext.Session.GetObjSession<int?>("Session.TiendaId") != null) {
+                    RetData<Tuple<string, string>> ClienteP = await ApiClientFactory.Instance.GetClientNameScheduleById(HttpContext.Session.GetObjSession<int>("Session.TiendaId"));
+                    return ClienteP;
+                }                
+                return new RetData<Tuple<string, string>>() {
+                    Data = new Tuple<string, string>("", ""),
+                    Info = new RetInfo() {
+                        CodError = -1,
+                        Mensaje = "El usuario no tiene una tienda asignada, tiene que establecerla para usar está pantalla.",
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };                
+            } catch (Exception e2) {
+                return new RetData<Tuple<string, string>> {
+                    Data = new Tuple<string, string>("", ""),
+                    Info = new RetInfo() {
+                        CodError = -1,
+                        Mensaje = e2.ToString(),
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            }
+        }
         public async Task<IActionResult> PedidosPayless() {
             try {
                 //ViewBag.ListOldDis = null;
@@ -952,7 +978,7 @@ namespace EdiViewer.Controllers
                 };
             }
         }
-        public async Task<RetData<PaylessProdPrioriArchM>> SetPaylessPeriodPrioriFile(string CboPeriod, int IdTransporte)
+        public async Task<RetData<PaylessProdPrioriArchM>> SetPaylessPeriodPrioriFile(string CboPeriod, int IdTransporte, string cboTipo, string dtpPeriodo)
         {
             DateTime StartTime = DateTime.Now;
             List<PaylessProdPrioriArchDet> ListBarcodes = new List<PaylessProdPrioriArchDet>();

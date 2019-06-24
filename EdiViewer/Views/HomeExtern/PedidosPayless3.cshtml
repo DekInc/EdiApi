@@ -27,6 +27,12 @@
                                     <span class="sr-only">Loading...</span>
                                 </span>
                             </span>
+                            <b>Horario programado de entrega:</b>
+                            <span id="spanClientSchedule">
+                                <span id="divSpinClientSchedule" class="spinner-border spinner-border-sm text-danger" style="display: none" role="status">
+                                    <span class="sr-only">Loading...</span>
+                                </span>
+                            </span>
                         </div>
                         <div class="container div856Search">
                             <div class="row">
@@ -226,6 +232,26 @@
             }
         });
     }
+    function getClientSchedule() {
+        $('#divSpinClientName').show();
+        $.ajax({
+            method: "GET",
+            url: "@this.Url.Action("GetClientNameScheduleById", "HomeExtern")",
+            success: function (data) {
+                if (data.info.codError != 0) {
+                    menErrorEdi(data.info.mensaje, 'Error');
+                    return;
+                }
+                $('#spanClientName').html(data.data.item1);
+                $('#divSpinClientName').hide();
+                $('#spanClientSchedule').html(data.data.item2);
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                menErrorEdi(xhr.status, 'Error throw in js');
+                menErrorEdi(thrownError, 'Error throw in js');
+            }
+        });
+    }
     function refreshGrid(auto) {
         w2ui.grid.autoLoad = auto;
         w2ui.grid.skip(0);
@@ -312,7 +338,7 @@
         $('.imgHeaderHelp').tooltip();
         //$('#dtpFechaEntrega').datepicker();
         $('#dtpFechaEntrega').datetimepicker({ format: 'dd/mm/yyyy hh:ii' });
-        getClientName();
+        getClientSchedule();
         showQtys();
         reDrawObjects();
         $('.txtCantPedir').on('keypress', function (Event) {

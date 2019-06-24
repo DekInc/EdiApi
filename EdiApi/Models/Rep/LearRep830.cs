@@ -447,7 +447,7 @@ namespace EdiApi
                 Reprocesar = true,
                 NombreArchivo = _FileName,
                 CheckSeg = _CheckSeg,
-                InOut = "I"
+                Inout = "I"
             };
             DbO.LearPureEdi.Add(LearPureEdiO);
             DbO.SaveChanges();
@@ -630,7 +630,7 @@ namespace EdiApi
                 Log = $"{NSeg} segmentos analizados, procesados y guardados",
                 CheckSeg = NSeg,
                 Shp = false,
-                InOut = "O"
+                Inout = "O"
             };
             DbO.LearPureEdi.Add(Pe);
             DbO.SaveChanges();

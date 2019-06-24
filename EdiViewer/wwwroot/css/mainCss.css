@@ -674,7 +674,7 @@ table.dataTable.dtr-inline.collapsed > tbody > tr[role="row"] > td:first-child:b
 .custom-file-label {
     overflow: hidden;
 }
-#formSearch{
+#formSearch, .formSearch {
     padding-left: 6px;
 }
 .actions button {

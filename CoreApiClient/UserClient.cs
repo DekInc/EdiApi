@@ -197,6 +197,9 @@ namespace CoreApiClient
         public async Task<RetData<string>> GetClientById(int ClienteId) {
             return await GetAsync<RetData<string>>(CreateRequestUri(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Data/GetClientById"), $"?ClienteId={ClienteId}"));
         }
+        public async Task<RetData<Tuple<string, string>>> GetClientNameScheduleById(int TiendaId) {
+            return await GetAsync<RetData<Tuple<string, string>>>(CreateRequestUri(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Data/GetClientNameScheduleById"), $"?TiendaId={TiendaId}"));
+        }
         public async Task<RetData<IEnumerable<PaylessProdPrioriDetModel>>> GetPaylessFileDif(string idProdArch, int idData)
         {
             return await GetAsync<RetData<IEnumerable<PaylessProdPrioriDetModel>>>(CreateRequestUri(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Data/GetPaylessFileDif"), $"?idProdArch={idProdArch}&idData={idData}"));

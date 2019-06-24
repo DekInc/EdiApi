@@ -79,7 +79,7 @@
     function changeClient(recId, clienteId) {
         $('#modalPopChangeStoreLabel').html('Cambio de cliente');
         $('#modalPopChangeStore').modal();
-        fillCombobox('#divSpinList', '@this.Url.Action("getClients", "HomeExtern")', '#cboList', 'clienteId', 'nombre', clienteId);
+        fillComboboxWithValue('#divSpinList', '@this.Url.Action("getClients", "HomeExtern")', '#cboList', 'clienteId', 'nombre', clienteId);
         $('#btnPopChangeStoreLabelOk').on('click', function () {
             makeAjaxPost('@this.Url.Action("ChangeUserClient", "HomeExtern")?IdUser=' + recId + '&ClienteId=' + $('#cboList').val(), function (data) {
                 if (data.info.codError != 0) {
@@ -95,7 +95,7 @@
     function changeStore(recId, tiendaId, clienteId) {
         $('#modalPopChangeStoreLabel').html('Cambio de tienda');
         $('#modalPopChangeStore').modal();
-        fillCombobox('#divSpinList', '@this.Url.Action("GetStores", "HomeExtern")', '#cboList', 'tiendaId', 'descr', tiendaId);
+        fillComboboxWithValue('#divSpinList', '@this.Url.Action("GetStores", "HomeExtern")', '#cboList', 'tiendaId', 'descr', tiendaId);
         $('#btnPopChangeStoreLabelOk').on('click', function () {
             makeAjaxPost('@this.Url.Action("ChangeUserTienda", "HomeExtern")?IdUser=' + recId + '&TiendaId=' + $('#cboList').val(), function (data) {
                 if (data.info.codError != 0) {

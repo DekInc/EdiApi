@@ -13,33 +13,9 @@
                 <div class="card-body">
                     <form id="formSearch">
                         <div class="container div856Search">
-                            <div class="row">                                
-                                <div class="col-sm">
-                                    <label for="cboPeriod">Periodo</label>
-                                    <select class="form-control" id="cboPeriod"></select>
-                                </div>
-                                <div class="col-sm">
-                                    <label for="cboTransporte">Transporte</label>
-                                    <div id="divSpinCboTransporte" class="spinner-border spinner-border-sm text-danger" style="display: none" role="status">
-                                        <span class="sr-only">Loading...</span>
-                                    </div>
-                                    <select class="form-control" id="cboTransporte" name="cboTransporte"></select>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-sm custom-file divUpload">
-                                    <input type="file" class="custom-file-input inputUpload" id="fUpload" name="fUpload">
-                                    <label id="lblFile" class="custom-file-label" for="fUpload">Archivo a cargar</label>
-                                </div>
-                            </div>
                             <div class="row margin5">
                                 <div class="col-sm">
-                                    <button class="btn btn-primary" type="button" id="btnUpload">
-                                        &nbsp;&nbsp;&nbsp;Cargar archivo&nbsp;&nbsp;&nbsp;
-                                        <div id="divSpinUploadFile" class="spinner-border spinner-border-sm text-danger" style="display: none" role="status">
-                                            <span class="sr-only">Loading...</span>
-                                        </div>
-                                    </button>
+                                    <button class="btn btn-primary" type="button" id="btnUpload">Cargar archivo</button>
                                 </div>
                             </div>
                         </div>
@@ -53,6 +29,7 @@
         </div>
     </div>
 </div>
+@await Html.PartialAsync("_PopCargaArchBod")
 @await Html.PartialAsync("_PopCargaProdArchBodDet")
 <script>
     var tblReportes = null;
@@ -126,7 +103,7 @@
                 show: {
                     footer: true,
                     toolbar: true,
-                    expandColumn: window.mobileAndTabletcheck()                    
+                    expandColumn: window.mobileAndTabletcheck()
                 },
                 searches: [
                     { field: "clientName", caption: "Cliente", type: 'text' },
@@ -136,10 +113,10 @@
                     { field: 'clientName' },
                     { field: 'periodo' }
                 ],
-                columns: [                    
+                columns: [
                     { field: "id", caption: "Id", sortable: true, hidden: true },
                     { field: "periodo", caption: "Periodo", sortable: true },
-                    { field: "transporte", caption: "Transporte", sortable: true },                    
+                    { field: "transporte", caption: "Transporte", sortable: true },
                     {
                         field: "insertDate", caption: "Fecha de carga / actualización", sortable: true, render: function (record) {
                             if (record.updateDate)
@@ -148,7 +125,18 @@
                                 return '<div>' + record.insertDate + '</div>';
                         }
                     },
-                    { field: "porValid", caption: "Porc. validez", sortable: true },                    
+                    { field: "porValid", caption: "Porc. validez", sortable: true },
+                    { field: "cantExcel", caption: "Cant Excel", sortable: true, size: '100px' },
+                    { field: "cantEscaner", caption: "Cant escaner", sortable: true, size: '100px' },
+                    {
+                        field: "Typ", caption: "Tipo", sortable: true, render: function (record) {
+                            if (record.typ == 0)
+                                return '<div>Tienda</div>';
+                            else
+                                return '<div>Traslado</div>';
+                        }
+                    },
+                    { field: "porValid", caption: "Porc. validez", sortable: true },
                     {
                         field: "updateDate", caption: "", sortable: true, render: function (record) {
                             return '<a href="javascript:downloadWmsFile(' + "'" + record.periodo + "'" + ', ' + "'" + record.idTransporte + "'" + ')">Archivo WMS</a>&nbsp;|&nbsp;<a href="javascript:verDetalle(' + record.id + ')">Ver detalle</a>';
@@ -159,20 +147,22 @@
         };
         mainGrid = $('#gridScans').w2grid(config.grid);
         arrayGrids['gridScans'] = mainGrid;
-    }    
+    }
     function downloadWmsFile(period, idTransport) {
-        window.open('@this.Url.Action("MakeExcelWms1", "HomeExtern")?Period=' + period + '&IdTransport=' + idTransport);        
+        window.open('@this.Url.Action("MakeExcelWms1", "HomeExtern")?Period=' + period + '&IdTransport=' + idTransport);
     }
     function verDetalle(idM) {
         idProdArch = idM;
         gridRepDet3.reload2('@this.Url.Action("GetPaylessFileDif", "Grids")?idProdArch=' + idProdArch + '&idData=3');
         $('#tab1').click();
-        $('#modalCargaProdArchBodDet').modal();        
+        $('#modalCargaProdArchBodDet').modal();
     }
     $(document).ready(function () {
         $('.imgHeaderHelp').tooltip();
-        getPeriods();        
+        getPeriods();
         crearGrid();
+        $('#cboTipo').val("0");
+        $('#dtpPeriodo').datepicker();
         $('#cboPeriod').on('change', function (Event) {
             getTransportes();
         });
@@ -188,6 +178,22 @@
             }
         });
         $('#btnUpload').on('click', function () {
+            $('#modalCargaArchBod').modal();
+        });
+        $('#cboTipo').on('change', function (Event) {
+            if ($('#cboTipo').val() == "0") {
+                $('#divArchEntrada').addClass('noShow');
+                $('#divPeriodo2').addClass('noShow');
+                $('#divPeriodo').removeClass('noShow');
+                $('#divTransporte').removeClass('noShow');
+            } else {
+                $('#divArchEntrada').removeClass('noShow');
+                $('#divPeriodo2').removeClass('noShow');
+                $('#divPeriodo').addClass('noShow');
+                $('#divTransporte').addClass('noShow');
+            }
+        });
+        $('#btnCargaArchBodOk').on('click', function () {
             if ($('#cboPeriod').val() == '') {
                 menErrorEdi('El valor del periodo no puede estar vacio', 'Error');
                 return;
@@ -195,7 +201,7 @@
             var fileExtension = ['xml', 'XML'];
             var filename = $('#fUpload').val();
             if (filename.length == 0) {
-                menErrorEdi('Por favor seleccione un archivo', 'Error');
+                menErrorEdi('Por favor seleccione un archivo de salida', 'Error');
                 return false;
             }
             else {
@@ -205,14 +211,32 @@
                     return false;
                 }
             }
+            if ($('#cboTipo') == "1") {
+                filename = $('#fUpload2').val();
+                if (filename.length == 0) {
+                    menErrorEdi('Por favor seleccione un archivo de entrada de escaner', 'Error');
+                    return false;
+                }
+                else {                    
+                    var extension = filename.replace(/^.*\./, '');
+                    if ($.inArray(extension, fileExtension) == -1) {
+                        menErrorEdi('Solo se permiten archivos de handheld con extensiones: .xml', 'Error');
+                        return false;
+                    }
+                }
+            }
             $('#divSpinUploadFile').show();
             var fdata = new FormData();
             var fileUpload = $("#fUpload").get(0);
+            var fileUpload2 = $("#fUpload2").get(0);
             var files = fileUpload.files;
+            var files2 = fileUpload2.files;
             fdata.append(files[0].name, files[0]);
+            if ($('#fUpload2').val().length != 0)
+                fdata.append(files2[0].name, files2[0]);
             $.ajax({
                 type: "POST",
-                url: '@this.Url.Action("SetPaylessPeriodPrioriFile", "HomeExtern")?CboPeriod=' + $('#cboPeriod').val() + '&IdTransporte=' + $('#cboTransporte').val(),
+                url: '@this.Url.Action("SetPaylessPeriodPrioriFile", "HomeExtern")?CboPeriod=' + $('#cboPeriod').val() + '&IdTransporte=' + $('#cboTransporte').val() + '&cboTipo=' + $('#cboTipo').val() + '&dtpPeriodo=' + $('#dtpPeriodo').val(),
                 beforeSend: function (xhr) {
                     xhr.setRequestHeader("XSRF-TOKEN",
                         $('input:hidden[name="__RequestVerificationToken"]').val());

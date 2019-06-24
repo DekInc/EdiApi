@@ -259,7 +259,7 @@ namespace EdiApi.Controllers
                     LearRep830O.LearPureEdiO.Reprocesar = false;
                     LearRep830O.LearPureEdiO.Fprocesado = DateTime.Now.ToString(ApplicationSettings.DateTimeFormat);
                     LearRep830O.LearPureEdiO.Log = ParseRet;
-                    LearRep830O.LearPureEdiO.InOut = "I";
+                    LearRep830O.LearPureEdiO.Inout = "I";
                     DbO.LearPureEdi.Update(LearRep830O.LearPureEdiO);
                     DbO.SaveChanges();
                     return new RetReporte()

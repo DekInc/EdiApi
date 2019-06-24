@@ -134,7 +134,7 @@ namespace EdiApi.Controllers
                         orderby Pe.Fingreso descending
                         select new Rep830Info()
                         {
-                            InOut = (Pe.InOut == "I" ? "Pedido" : "Inventario"),
+                            InOut = (Pe.Inout == "I" ? "Pedido" : "Inventario"),
                             From = IsaF.InterchangeSenderId,
                             To = IsaF.InterchangeReceiverId,
                             HashId = Pe.HashId,
@@ -349,7 +349,7 @@ namespace EdiApi.Controllers
                 //Obtener ultimo reporte
                 List<string> LastRepHashId =
                     (from Pe in DbO.LearPureEdi
-                     where Pe.InOut == "I"
+                     where Pe.Inout == "I"
                      && !Pe.Shp
                      && Pe.Fingreso.ToDateEsp() >= DateTime.Now.AddDays(-15)
                      orderby Pe.Fingreso.ToDateEsp() descending
@@ -891,6 +891,40 @@ namespace EdiApi.Controllers
             {
                 return new RetData<PaylessTiendas>
                 {
+                    Info = new RetInfo()
+                    {
+                        CodError = -1,
+                        Mensaje = e1.ToString(),
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            }
+        }
+        [HttpGet]
+        public RetData<Tuple<string, string>> GetClientNameScheduleById(int TiendaId)
+        {
+            DateTime StartTime = DateTime.Now;
+            try
+            {
+                PaylessTiendas Tienda = (
+                    from T in DbO.PaylessTiendas
+                    where T.TiendaId == TiendaId
+                    select T
+                    ).Fod();
+                return new RetData<Tuple<string, string>>
+                {
+                    Data = new Tuple<string, string>(Tienda.Descr, Tienda.HorarioEntrega),
+                    Info = new RetInfo()
+                    {
+                        CodError = 0,
+                        Mensaje = "ok",
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };                
+            }
+            catch (Exception e1)
+            {
+                return new RetData<Tuple<string, string>> {
                     Info = new RetInfo()
                     {
                         CodError = -1,
@@ -1823,7 +1857,8 @@ namespace EdiApi.Controllers
                         IdTransporte = IdTransporte,
                         Periodo = Periodo,
                         InsertDate = DateTime.Now.ToString(ApplicationSettings.DateTimeFormat),
-                        CodUsr = codUsr
+                        CodUsr = codUsr,
+                        Typ = 0
                     };
                     DbO.PaylessProdPrioriArchM.Add(NewMas);
                 }                
@@ -1879,12 +1914,15 @@ namespace EdiApi.Controllers
                         InsertDate = Pe.InsertDate,
                         UpdateDate = Pe.UpdateDate,
                         Periodo = Pe.Periodo,
-                        PorValid = Pe.PorcValidez
+                        PorValid = Pe.PorcValidez,
+                        CantEscaner = Pe.CantEscaner,
+                        CantExcel = Pe.CantExcel,
+                        Typ = Pe.Typ
                         
                     }).ToList();                
                 for(int Ci = 0; Ci < ListArchMaMo.Count(); Ci++)
                 {
-                    if (ListArchMaMo[Ci].PorValid == null) {
+                    if (ListArchMaMo[Ci].PorValid == null && ListArchMaMo[Ci].Typ == 0) {
                         IEnumerable<string> ListExcelOriginal = (
                             from Fu in DbO.PaylessProdPrioriM
                             from FuD in DbO.PaylessProdPrioriDet
@@ -1920,8 +1958,12 @@ namespace EdiApi.Controllers
                             PorcValidez -= (double)(ListEscaneados.Count() - ListExcelOriginal.Count())/(double)ListExcelOriginal.Count();
                         PaylessProdPrioriArchM Am = DbO.PaylessProdPrioriArchM.Where(O => O.Id == ListArchMaMo[Ci].Id).Fod();
                         Am.PorcValidez = Math.Round(PorcValidez * 100, 3);
+                        Am.CantExcel = ListExcelOriginal.Count();
+                        Am.CantEscaner = ListEscaneados.Count();
                         DbO.PaylessProdPrioriArchM.Update(Am);
                         ListArchMaMo[Ci].PorValid = Am.PorcValidez;
+                        ListArchMaMo[Ci].CantExcel = Am.CantExcel;
+                        ListArchMaMo[Ci].CantEscaner = Am.CantEscaner;
                     }
                 }
                 DbO.SaveChanges();
