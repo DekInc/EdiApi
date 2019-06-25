@@ -36,10 +36,11 @@ select * from EdiDB.dbo.PAYLESS_Reportes where Periodo = '09/06/2019'
 select * from EdiDB.dbo.PAYLESS_ReportesDet where IdM = 20 order by Id
 SELECT * FROM EdiDB.dbo.PedidosExternos order by FechaCreacion DESC
 SELECT * FROM EdiDB.dbo.PedidosExternos order by FechaPedido DESC
-SELECT * FROM EdiDB.dbo.PedidosExternos where Id = 112
+SELECT * FROM EdiDB.dbo.PedidosExternos where Id = 122
 SELECT * FROM EdiDB.dbo.PedidosExternos 
+SELECT * FROM EdiDB.dbo.PedidosExternos where TiendaId = 7376 AND Id = 122
 SELECT * FROM EdiDB.dbo.PedidosExternos where FullPed = 0
---update EdiDB.dbo.PedidosExternos SET FullPed = null where FullPed = 0
+--update EdiDB.dbo.PedidosExternos SET FechaPedido = '28/06/2019 07:00' where Id = 122
 --truncate table EdiDB.dbo.PAYLESS_Reportes
 --truncate table EdiDB.dbo.PAYLESS_ReportesDet
 --delete from EdiDB.dbo.AsyncStates where Id = 2
@@ -385,6 +386,8 @@ select * from PAYLESS_ProdPrioriDet where IdTransporte = 9
 select * from EdiDb.dbo.PAYLESS_ProdPrioriArchM
 --update  EdiDb.dbo.PAYLESS_ProdPrioriArchM SET PorcValidez = null, Typ = 0 where Id = 9
 --update  EdiDb.dbo.PAYLESS_ProdPrioriArchM SET Typ = 0
+--delete from EdiDb.dbo.PAYLESS_ProdPrioriArchM where Id = 33
+--delete from EdiDb.dbo.PAYLESS_ProdPrioriArchDet where IdM = 33
 select * from EdiDb.dbo.PAYLESS_ProdPrioriArchDet
 select * from EdiDb.dbo.PAYLESS_Transporte
 select * from EdiDb.dbo.Lear_PureEdi
@@ -746,9 +749,9 @@ select * from EdiDb.dbo.PAYLESS_ProdPrioriDet where Barcode
 
 select distinct IdTransporte, Barcode from EdiDb.dbo.PAYLESS_ProdPrioriDet where Barcode like '7365%'
 select * from EdiDb.dbo.PAYLESS_ProdPrioriArchM
---delete from EdiDb.dbo.PAYLESS_ProdPrioriArchM where Id in (8)
-select * from EdiDb.dbo.PAYLESS_ProdPrioriArchDet where IdM = 8
---delete from EdiDb.dbo.PAYLESS_ProdPrioriArchDet where IdM = 8
+--delete from EdiDb.dbo.PAYLESS_ProdPrioriArchM where Id in (29, 30, 31)
+select SUBSTRING(barcode, 2, 10), barcode from EdiDb.dbo.PAYLESS_ProdPrioriArchDet where IdM = 32 and SUBSTRING(barcode, 1, 1) = '-'
+--delete from EdiDb.dbo.PAYLESS_ProdPrioriArchDet where IdM in (29, 30, 31)
 --update EdiDb.dbo.PAYLESS_ProdPrioriArchM SET PorcValidez = null where Id = 1
 select * from EdiDb.dbo.PAYLESS_ProdPrioriM
 --delete from EdiDb.dbo.PAYLESS_ProdPrioriM where Id = 7

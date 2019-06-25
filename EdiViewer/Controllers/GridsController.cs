@@ -349,7 +349,7 @@ namespace EdiViewer.Controllers
                 return Json(new { total = 0, records = "", errorMessage = e1.ToString() });
             }
         }
-        public async Task<IActionResult> GetPaylessFileDif(string idProdArch, int idData = 1) {
+        public async Task<IActionResult> GetPaylessFileDif(string idProdArch, int idData = 1, int Typ = 0) {
             try {
                 //if (idProdArch == "0") return null;
                 RetData<IEnumerable<PaylessProdPrioriDetModel>> ListProdPrioriArch = await ApiLongClientFactory.Instance.GetPaylessFileDif(idProdArch, idData);

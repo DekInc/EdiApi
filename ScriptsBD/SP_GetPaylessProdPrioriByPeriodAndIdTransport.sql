@@ -15,7 +15,7 @@ BEGIN
 		Ex.OID,
 		Ex.Barcode,
 		Ex.Estado,
-		Ex.Pri,
+		(SUBSTRING(Ex.Barcode, 1, 4) + ' - ' + Ti.Descr) Tienda,
 		Ex.PoolP,
 		Ex.Producto,
 		Ex.Talla,
@@ -31,22 +31,24 @@ BEGIN
 		Ex.Peso,
 		Ex.IdTransporte,
 		T.Transporte,
-(select top 1 C.Nombre, T.TiendaId 
-from EdiDb.dbo.PAYLESS_Tiendas T
-join wms.dbo.Clientes C
+(select top 1 C.Nombre
+from EdiDb.dbo.PAYLESS_Tiendas T WITH(NOLOCK)
+join wms.dbo.Clientes C WITH(NOLOCK)
 	on C.ClienteID = T.ClienteID
-	AND T.TiendaId = SUBSTRING(Ad.BarCode, 1, 4)) NomCliente
-from EdiDb.dbo.PAYLESS_ProdPrioriArchDet Ad
-join EdiDb.dbo.PAYLESS_ProdPrioriArchM Am 
+	AND T.TiendaId = SUBSTRING(Ad.BarCode, 1, 4)) NomCliente	
+from EdiDb.dbo.PAYLESS_ProdPrioriArchDet Ad WITH(NOLOCK)
+join EdiDb.dbo.PAYLESS_ProdPrioriArchM Am WITH(NOLOCK) 
 	on Am.Id = Ad.IdM AND Am.Periodo = @Period
-join EdiDb.dbo.PAYLESS_ProdPrioriDet Ex 
+join EdiDb.dbo.PAYLESS_ProdPrioriDet Ex WITH(NOLOCK) 
 	on Ex.Barcode = Ad.barcode AND Ex.IdTransporte = @IdTransport
+join EdiDb.dbo.PAYLESS_Tiendas Ti WITH(NOLOCK) 
+	ON Ti.TiendaId = SUBSTRING(Ex.Barcode, 1, 4)
 LEFT JOIN EdiDb.dbo.PAYLESS_Transporte T WITH(NOLOCK)
 		ON T.Id = Ex.IdTransporte
 ORDER BY Ex.Barcode
 END
 GO
-
+--1592
 exec SP_GetPaylessProdPrioriByPeriodAndIdTransport '17/05/2019', 8
 --EXEC SP_GetPaylessProdPrioriByPeriodAndIdTransport '13/05/2019', 6
 --select * from EdiDb.dbo.PAYLESS_ProdPrioriArchM

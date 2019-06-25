@@ -528,6 +528,39 @@ namespace EdiApi.Models
             }
             return ListProdDet;
         }
+        public static IEnumerable<PaylessProdPrioriDetModel> GetWmsFileById(ref Models.EdiDB.EdiDBContext _DbO, int IdM) {
+            List<PaylessProdPrioriDetModel> ListProdDet = new List<PaylessProdPrioriDetModel>();
+            using (DbCommand Cmd = _DbO.Database.GetDbConnection().CreateCommand()) {
+                Cmd.CommandText = $"dbo.GetWmsFileById {IdM}";
+                _DbO.Database.OpenConnection();
+                DbDataReader Dr = Cmd.ExecuteReader();
+                if (Dr.HasRows) {
+                    int NRow = 0;
+                    while (Dr.Read()) {
+                        ListProdDet.Add(new PaylessProdPrioriDetModel() {
+                            Id = (NRow++),
+                            Barcode = Dr.Gr<string>(0),
+                            Producto = Dr.Gr<string>(1),
+                            Talla = Dr.Gr<string>(2),
+                            Lote = Dr.Gr<string>(3),
+                            Categoria = Dr.Gr<string>(4),
+                            Departamento = Dr.Gr<string>(5),
+                            Cp = Dr.Gr<string>(6),
+                            IdTransporte = Dr.Gr<int?>(7),
+                            //Transporte = Dr.Gr<string>(8),
+                            dateProm = Dr.Gr<string>(9),
+                            Pri = Dr.Gr<string>(10),
+                            Peso = Dr.Gr<double?>(11),
+                            M3 = Dr.Gr<double?>(12)
+                        });
+                    }
+                }
+                _DbO.Database.CloseConnection();
+                if (!Dr.IsClosed)
+                    Dr.Close();
+            }
+            return ListProdDet;
+        }
         public static int UploadBatch(ref Models.WmsDB.WmsContext _Wms, string Batch) {
             int Res = 0;
             using (DbCommand Cmd = _Wms.Database.GetDbConnection().CreateCommand()) {

@@ -181,10 +181,10 @@ namespace CoreApiClient
             string JsonParams = JsonConvert.SerializeObject(ClienteId);
             return await GetAsync<RetData<IEnumerable<string>>>(CreateRequestUri(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Data/GetPaylessPeriodPrioriByClient"), $"?ClienteId={ClienteId}"));
         }
-        public async Task<RetData<PaylessProdPrioriArchM>> SetPaylessProdPrioriFile(IEnumerable<PaylessProdPrioriArchDet> ListUpload, int IdTransporte, string Periodo, string codUsr)
+        public async Task<RetData<PaylessProdPrioriArchM>> SetPaylessProdPrioriFile(IEnumerable<PaylessProdPrioriArchDet> ListUploadSalida, IEnumerable<PaylessProdPrioriArchDet> ListUploadEntrada, int IdTransporte, string Periodo, string codUsr, string cboTipo)
         {
-            string JsonParams = JsonConvert.SerializeObject(ListUpload);
-            return await PostGetAsyncJson<RetData<PaylessProdPrioriArchM>>(CreateRequestUri(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Data/SetPaylessProdPrioriFile"), $"?IdTransporte={IdTransporte}&Periodo={Periodo}&codUsr={codUsr}"), JsonParams);
+            string JsonParams = JsonConvert.SerializeObject(new Tuple<IEnumerable<PaylessProdPrioriArchDet>, IEnumerable<PaylessProdPrioriArchDet>>(ListUploadSalida, ListUploadEntrada));
+            return await PostGetAsyncJson<RetData<PaylessProdPrioriArchM>>(CreateRequestUri(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Data/SetPaylessProdPrioriFile"), $"?IdTransporte={IdTransporte}&Periodo={Periodo}&codUsr={codUsr}&cboTipo={cboTipo}"), JsonParams);
         }
         public async Task<RetData<Tuple<IEnumerable<PaylessProdPrioriArchMModel>, IEnumerable<PaylessProdPrioriArchDet>>>> GetPaylessPeriodPrioriFile()
         {            
@@ -259,8 +259,8 @@ namespace CoreApiClient
         public async Task<RetData<IEnumerable<PaylessReportes>>> GetPaylessReportes() {
             return await GetAsync<RetData<IEnumerable<PaylessReportes>>>(CreateRequestUri(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Data/GetPaylessReportes")));
         }
-        public async Task<RetData<IEnumerable<WmsFileModel>>> GetWmsFile(string Period, int IdTransport) {
-            return await GetAsync<RetData<IEnumerable<WmsFileModel>>>(CreateRequestUri(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Data/GetWmsFile"), $"?Period={Period}&IdTransport={IdTransport}"));
+        public async Task<RetData<IEnumerable<WmsFileModel>>> GetWmsFile(string Period, int IdTransport, int Typ) {
+            return await GetAsync<RetData<IEnumerable<WmsFileModel>>>(CreateRequestUri(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Data/GetWmsFile"), $"?Period={Period}&IdTransport={IdTransport}&Typ={Typ}"));
         }
         public async Task<RetData<string>> SetGroupAccess(int IdGroup, int IdAccess) {
             return await PostGetAsyncJson<RetData<string>>(CreateRequestUri(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Data/SetGroupAccess"), $"?IdGroup={IdGroup}&IdAccess={IdAccess}"), "");

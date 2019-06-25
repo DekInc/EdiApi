@@ -116,7 +116,14 @@
                 columns: [
                     { field: "id", caption: "Id", sortable: true, hidden: true },
                     { field: "periodo", caption: "Periodo", sortable: true },
-                    { field: "transporte", caption: "Transporte", sortable: true },
+                    {
+                        field: "transporte", caption: "Transporte", sortable: true, render: function (record) {
+                            if (record.typ == 0)
+                                return '<div>' + record.transporte + '</div>';
+                            else
+                                return '<div></div>';
+                        }
+                    },
                     {
                         field: "insertDate", caption: "Fecha de carga / actualización", sortable: true, render: function (record) {
                             if (record.updateDate)
@@ -125,7 +132,6 @@
                                 return '<div>' + record.insertDate + '</div>';
                         }
                     },
-                    { field: "porValid", caption: "Porc. validez", sortable: true },
                     { field: "cantExcel", caption: "Cant Excel", sortable: true, size: '100px' },
                     { field: "cantEscaner", caption: "Cant escaner", sortable: true, size: '100px' },
                     {
@@ -139,7 +145,7 @@
                     { field: "porValid", caption: "Porc. validez", sortable: true },
                     {
                         field: "updateDate", caption: "", sortable: true, render: function (record) {
-                            return '<a href="javascript:downloadWmsFile(' + "'" + record.periodo + "'" + ', ' + "'" + record.idTransporte + "'" + ')">Archivo WMS</a>&nbsp;|&nbsp;<a href="javascript:verDetalle(' + record.id + ')">Ver detalle</a>';
+                            return '<a href="javascript:downloadWmsFile(' + "'" + record.periodo + "'" + ', ' + "'" + record.idTransporte + "'" + ', ' + record.typ + ', ' + record.id + ')">Archivo WMS</a>&nbsp;|&nbsp;<a href="javascript:verDetalle(' + record.id + ', ' + record.typ + ')">Ver detalle</a>';
                         }
                     }
                 ]
@@ -148,12 +154,19 @@
         mainGrid = $('#gridScans').w2grid(config.grid);
         arrayGrids['gridScans'] = mainGrid;
     }
-    function downloadWmsFile(period, idTransport) {
-        window.open('@this.Url.Action("MakeExcelWms1", "HomeExtern")?Period=' + period + '&IdTransport=' + idTransport);
+    function downloadWmsFile(period, idTransport, typ, idM) {
+        if (typ == 0)
+            window.open('@this.Url.Action("MakeExcelWms1", "HomeExtern")?Period=' + period + '&IdTransport=' + idTransport + '&Typ=' + typ);
+        else
+            window.open('@this.Url.Action("MakeExcelWms1", "HomeExtern")?Period=' + period + '&IdTransport=' + idTransport + '&Typ=' + idM);
     }
-    function verDetalle(idM) {
+    function verDetalle(idM, typ) {
+        if (typ != 0) {
+            menErrorEdi('Todavía no implementado', 'Información');
+            return;
+        }
         idProdArch = idM;
-        gridRepDet3.reload2('@this.Url.Action("GetPaylessFileDif", "Grids")?idProdArch=' + idProdArch + '&idData=3');
+        gridRepDet3.reload2('@this.Url.Action("GetPaylessFileDif", "Grids")?idProdArch=' + idProdArch + '&idData=3' + '&Typ=' + typ);
         $('#tab1').click();
         $('#modalCargaProdArchBodDet').modal();
     }
@@ -175,6 +188,17 @@
                     filename = filename.substring(1);
                 }
                 $('#lblFile').text(filename);
+            }
+        });
+        $('#fUpload2').on('change', function (event) {
+            var fullPath = $('#fUpload2').val();
+            if (fullPath) {
+                var startIndex = (fullPath.indexOf('\\') >= 0 ? fullPath.lastIndexOf('\\') : fullPath.lastIndexOf('/'));
+                var filename = fullPath.substring(startIndex);
+                if (filename.indexOf('\\') === 0 || filename.indexOf('/') === 0) {
+                    filename = filename.substring(1);
+                }
+                $('#lblFile2').text(filename);
             }
         });
         $('#btnUpload').on('click', function () {

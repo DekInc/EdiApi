@@ -49,7 +49,7 @@ namespace EdiApi.Controllers
             DbO = _DbO;
             DbOLong = _DbOL;
             WmsDbO = _WmsDbO;            
-            WmsDbOLong = _WmsDbOLong;            
+            WmsDbOLong = _WmsDbOLong;
             Config = _Config;
             DbO.Database.SetCommandTimeout(TimeSpan.FromMinutes(2));
             DbOLong.Database.SetCommandTimeout(TimeSpan.FromMinutes(10));
@@ -1831,12 +1831,11 @@ namespace EdiApi.Controllers
             }
         }
         [HttpPost]
-        public RetData<PaylessProdPrioriArchM> SetPaylessProdPrioriFile(IEnumerable<PaylessProdPrioriArchDet> ListUpload, int IdTransporte, string Periodo, string codUsr)
+        public RetData<PaylessProdPrioriArchM> SetPaylessProdPrioriFile(Tuple<IEnumerable<PaylessProdPrioriArchDet>, IEnumerable<PaylessProdPrioriArchDet>> TupleBarcodes, int IdTransporte, string Periodo, string codUsr, int cboTipo)
         {
             DateTime StartTime = DateTime.Now;
             try
             {
-
                 IEnumerable<PaylessProdPrioriArchM> ListPaylessProdPrioriArchM = DbO.PaylessProdPrioriArchM.Where(Pp => Pp.Periodo == Periodo && Pp.IdTransporte == IdTransporte);
                 if (ListPaylessProdPrioriArchM.Count() > 0)
                 {
@@ -1858,12 +1857,12 @@ namespace EdiApi.Controllers
                         Periodo = Periodo,
                         InsertDate = DateTime.Now.ToString(ApplicationSettings.DateTimeFormat),
                         CodUsr = codUsr,
-                        Typ = 0
+                        Typ = cboTipo
                     };
                     DbO.PaylessProdPrioriArchM.Add(NewMas);
                 }                
                 DbO.SaveChanges();
-                foreach (PaylessProdPrioriArchDet Uf in ListUpload)
+                foreach (PaylessProdPrioriArchDet Uf in TupleBarcodes.Item1)
                 {
                     DbO.PaylessProdPrioriArchDet.Add(new PaylessProdPrioriArchDet()
                     {
@@ -1872,6 +1871,15 @@ namespace EdiApi.Controllers
                     });
                 }
                 DbO.SaveChanges();
+                if (cboTipo == 1) {
+                    foreach (PaylessProdPrioriArchDet Uf2 in TupleBarcodes.Item2) {
+                        DbO.PaylessProdPrioriArchDet.Add(new PaylessProdPrioriArchDet() {
+                            IdM = NewMas.Id,
+                            Barcode = "-" + Uf2.Barcode 
+                        });
+                    }
+                    DbO.SaveChanges();
+                }
                 return new RetData<PaylessProdPrioriArchM>
                 {
                     Data = NewMas,
@@ -1917,8 +1925,7 @@ namespace EdiApi.Controllers
                         PorValid = Pe.PorcValidez,
                         CantEscaner = Pe.CantEscaner,
                         CantExcel = Pe.CantExcel,
-                        Typ = Pe.Typ
-                        
+                        Typ = Pe.Typ                        
                     }).ToList();                
                 for(int Ci = 0; Ci < ListArchMaMo.Count(); Ci++)
                 {
@@ -1964,11 +1971,29 @@ namespace EdiApi.Controllers
                         ListArchMaMo[Ci].PorValid = Am.PorcValidez;
                         ListArchMaMo[Ci].CantExcel = Am.CantExcel;
                         ListArchMaMo[Ci].CantEscaner = Am.CantEscaner;
+                        DbO.SaveChanges();
+                    } else if(ListArchMaMo[Ci].PorValid == null && ListArchMaMo[Ci].Typ == 1) {
+                        IEnumerable<string> ListOut = (                           
+                            from Pe in DbO.PaylessProdPrioriArchDet
+                            where Pe.IdM == ListArchMaMo[Ci].Id
+                            && Pe.Barcode[0] != '-'
+                            select Pe.Barcode
+                            ).Distinct();
+                        IEnumerable<string> ListIn = (
+                            from Pe in DbO.PaylessProdPrioriArchDet
+                            where Pe.IdM == ListArchMaMo[Ci].Id
+                            && Pe.Barcode[0] == '-'
+                            select Pe.Barcode
+                            ).Distinct();
+                        double PorcMatch = 1.0 - ((double)Math.Abs((double)ListOut.Count() - (double)ListIn.Count())) / (double)ListOut.Count();
+                        PaylessProdPrioriArchM Am = DbO.PaylessProdPrioriArchM.Where(O => O.Id == ListArchMaMo[Ci].Id).Fod();
+                        Am.PorcValidez = Math.Round(PorcMatch * 100.0, 3);
+                        Am.CantExcel = ListOut.Count();
+                        Am.CantEscaner = ListIn.Count();
+                        DbO.PaylessProdPrioriArchM.Update(Am);
+                        DbO.SaveChanges();
                     }
                 }
-                DbO.SaveChanges();
-                //////////////////////////
-                //////////////////////////
                 ///////////////////
                 /// REVISA EL RETURN
                 return new RetData<Tuple<IEnumerable<PaylessProdPrioriArchMModel>, IEnumerable<PaylessProdPrioriArchDet>>>
@@ -2348,33 +2373,39 @@ namespace EdiApi.Controllers
             }
         }
         [HttpGet]
-        public RetData<IEnumerable<WmsFileModel>> GetWmsFile(string Period, int IdTransport) { 
+        public RetData<IEnumerable<WmsFileModel>> GetWmsFile(string Period, int IdTransport, int Typ) { 
             DateTime StartTime = DateTime.Now;
             try {
-                IEnumerable<PaylessProdPrioriDetModel> ListData = ManualDB.SP_GetPaylessProdPrioriByPeriodAndIdTransport(ref DbO, Period, IdTransport);                
+                IEnumerable<PaylessProdPrioriDetModel> ListData;
+                if (Typ == 0) {
+                    ListData = ManualDB.SP_GetPaylessProdPrioriByPeriodAndIdTransport(ref DbO, Period, IdTransport);                    
+                } else {
+                    ListData = ManualDB.GetWmsFileById(ref DbO, Typ);
+                }
                 IEnumerable<WmsFileModel> ListRep = (
-                    from Ex in ListData
-                    group new { Ex} by new { Ex.Barcode } into G
-                    select new WmsFileModel() {
-                        Barcode = G.Fod().Ex.Barcode,
-                        Descripcion = G.Fod().Ex.Categoria,
-                        Piezas = 1,
-                        Unidad = 1,
-                        Cantidad = 1,
-                        CodigoLocalizacion = "STAGE-01",
-                        Peso = G.Sum(Lin => Lin.Ex.Peso),
-                        Volumen = G.Fod().Ex.M3,
-                        Cliente = G.Fod().Ex.dateProm,
-                        UOM = 1,
-                        Exportador = 2,
-                        PaisOrigen = 166,
-                        Cp = string.Join(" ", G.Where(O1 => !string.IsNullOrEmpty(O1.Ex.Cp)).Select(O2 => O2.Ex.Cp).Distinct().ToArray()),
-                        Cont = G.Count(),
-                        Modelo = G.Where(O1 => !string.IsNullOrEmpty(O1.Ex.Talla)).Select(O2 => O2.Ex.Talla).Distinct().Count() == 1? G.Fod().Ex.Talla : "Varios",
-                        Lote = G.Where(O1 => !string.IsNullOrEmpty(O1.Ex.Producto)).Select(O2 => O2.Ex.Producto).Distinct().Count() == 1 ? G.Fod().Ex.Producto : "Varios",
-                        Estilo = G.Where(O1 => !string.IsNullOrEmpty(O1.Ex.Lote)).Select(O2 => O2.Ex.Lote).Distinct().Count() == 1 ? G.Fod().Ex.Lote : "Varios",
-                        Transporte = G.Fod().Ex.Transporte
-                    });
+                        from Ex in ListData
+                        group new { Ex } by new { Ex.Barcode } into G
+                        select new WmsFileModel() {
+                            Barcode = G.Fod().Ex.Barcode,
+                            Descripcion = G.Fod().Ex.Categoria,
+                            Piezas = 1,
+                            Unidad = 1,
+                            Cantidad = 1,
+                            CodigoLocalizacion = "STAGE-01",
+                            Peso = G.Sum(Lin => Lin.Ex.Peso),
+                            Volumen = G.Fod().Ex.M3,
+                            Cliente = G.Fod().Ex.dateProm,
+                            UOM = 1,
+                            Exportador = 2,
+                            PaisOrigen = 166,
+                            Cp = string.Join(" ", G.Where(O1 => !string.IsNullOrEmpty(O1.Ex.Cp)).Select(O2 => O2.Ex.Cp).Distinct().ToArray()),
+                            Cont = G.Count(),
+                            Modelo = G.Where(O1 => !string.IsNullOrEmpty(O1.Ex.Talla)).Select(O2 => O2.Ex.Talla).Distinct().Count() == 1 ? G.Fod().Ex.Talla : "Varios",
+                            Lote = G.Where(O1 => !string.IsNullOrEmpty(O1.Ex.Producto)).Select(O2 => O2.Ex.Producto).Distinct().Count() == 1 ? G.Fod().Ex.Producto : "Varios",
+                            Estilo = G.Where(O1 => !string.IsNullOrEmpty(O1.Ex.Lote)).Select(O2 => O2.Ex.Lote).Distinct().Count() == 1 ? G.Fod().Ex.Lote : "Varios",
+                            Transporte = G.Fod().Ex.Transporte,
+                            CodEquivalente = G.Fod().Ex.Pri
+                        });
                 return new RetData<IEnumerable<WmsFileModel>> {
                     Data = ListRep,
                     Info = new RetInfo() {
@@ -2382,7 +2413,7 @@ namespace EdiApi.Controllers
                         Mensaje = "ok",
                         ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
                     }
-                };
+                };                
             } catch (Exception e1) {
                 return new RetData<IEnumerable<WmsFileModel>> {
                     Info = new RetInfo() {

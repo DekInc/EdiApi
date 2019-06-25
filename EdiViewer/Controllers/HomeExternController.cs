@@ -981,47 +981,59 @@ namespace EdiViewer.Controllers
         public async Task<RetData<PaylessProdPrioriArchM>> SetPaylessPeriodPrioriFile(string CboPeriod, int IdTransporte, string cboTipo, string dtpPeriodo)
         {
             DateTime StartTime = DateTime.Now;
-            List<PaylessProdPrioriArchDet> ListBarcodes = new List<PaylessProdPrioriArchDet>();
+            if (string.IsNullOrEmpty(cboTipo)) {
+                return new RetData<PaylessProdPrioriArchM>() {
+                    Info = new RetInfo() {
+                        CodError = -1,
+                        Mensaje = "Los parámetros son incorrectos.",
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            }
+            List<PaylessProdPrioriArchDet> ListBarcodesSalida = new List<PaylessProdPrioriArchDet>();
+            List<PaylessProdPrioriArchDet> ListBarcodesEntrada = new List<PaylessProdPrioriArchDet>();
             try
             {
-                IFormFile FileUploaded = Request.Form.Files[0];
-                StringBuilder sb = new StringBuilder();
-                if (FileUploaded.Length > 0)
-                {
-                    string FileExtension = Path.GetExtension(FileUploaded.FileName).ToLower();
-                    using (MemoryStream stream = new MemoryStream())
-                    {
-                        FileUploaded.CopyTo(stream);                        
-                        stream.Position = 0;                        
-                        if (!(FileExtension == ".xml" || FileExtension == ".XML"))
-                        {
-                            return new RetData<PaylessProdPrioriArchM>()
-                            {
-                                Info = new RetInfo()
-                                {
-                                    CodError = -1,
-                                    Mensaje = "El archivo no tiene la extensión .xml",
-                                    ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
-                                }
-                            };
-                        }
-                        System.Data.DataSet FileUploadDs = new System.Data.DataSet();
-                        FileUploadDs.ReadXml(stream);
-                        if (FileUploadDs.Tables.Count > 3 && FileUploadDs.Tables[1].Columns[0].ColumnName == "ShipmentID")
-                        {
-                            if (FileUploadDs.Tables[3].TableName == "CaseDetail")
-                            {
-                                foreach (System.Data.DataRow FileCod in FileUploadDs.Tables[3].Rows)
-                                {
-                                    if (ListBarcodes.Where(Bc => Bc.Barcode == FileCod["CaseNumber"].ToString()).Count() == 0)
-                                        ListBarcodes.Add(new PaylessProdPrioriArchDet() { Barcode = FileCod["CaseNumber"].ToString() });
-                                }
+                if (cboTipo == "0") {
+                    IFormFile FileUploaded = Request.Form.Files[0];
+                    StringBuilder sb = new StringBuilder();
+                    if (FileUploaded.Length > 0) {
+                        string FileExtension = Path.GetExtension(FileUploaded.FileName).ToLower();
+                        using (MemoryStream stream = new MemoryStream()) {
+                            FileUploaded.CopyTo(stream);
+                            stream.Position = 0;
+                            if (!(FileExtension == ".xml" || FileExtension == ".XML")) {
+                                return new RetData<PaylessProdPrioriArchM>() {
+                                    Info = new RetInfo() {
+                                        CodError = -1,
+                                        Mensaje = "El archivo no tiene la extensión .xml",
+                                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                                    }
+                                };
                             }
-                            else {
-                                return new RetData<PaylessProdPrioriArchM>()
-                                {
-                                    Info = new RetInfo()
-                                    {
+                            System.Data.DataSet FileUploadDs = new System.Data.DataSet();
+                            FileUploadDs.ReadXml(stream);
+                            if (FileUploadDs.Tables.Count > 0) {
+
+                                int NTblSalida = 0;
+                                for (NTblSalida = 0; NTblSalida < FileUploadDs.Tables.Count; NTblSalida++)
+                                    if (FileUploadDs.Tables[NTblSalida].TableName.ToLower() == "casedetail")
+                                        break;                                
+                                if (NTblSalida == FileUploadDs.Tables.Count)
+                                    return new RetData<PaylessProdPrioriArchM>() {
+                                        Info = new RetInfo() {
+                                            CodError = -1,
+                                            Mensaje = "El archivo no es correcto",
+                                            ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                                        }
+                                    };
+                                foreach (System.Data.DataRow FileCod in FileUploadDs.Tables[NTblSalida].Rows) {
+                                    if (ListBarcodesSalida.Where(Bc => Bc.Barcode == FileCod["CaseNumber"].ToString()).Count() == 0)
+                                        ListBarcodesSalida.Add(new PaylessProdPrioriArchDet() { Barcode = FileCod["CaseNumber"].ToString() });
+                                }
+                            } else {
+                                return new RetData<PaylessProdPrioriArchM>() {
+                                    Info = new RetInfo() {
                                         CodError = -1,
                                         Mensaje = "El archivo no es correcto",
                                         ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
@@ -1029,21 +1041,115 @@ namespace EdiViewer.Controllers
                                 };
                             }
                         }
-                        else {
-                            return new RetData<PaylessProdPrioriArchM>()
-                            {
-                                Info = new RetInfo()
-                                {
+                    }
+                    RetData<PaylessProdPrioriArchM> Ret = await ApiClientFactory.Instance.SetPaylessProdPrioriFile(ListBarcodesSalida, null, IdTransporte, CboPeriod, HttpContext.Session.GetObjSession<string>("Session.CodUsr"), cboTipo);
+                    return Ret;
+                } else if(cboTipo == "1") {
+                    IFormFile FileUploadedSalida;
+                    IFormFile FileUploadedEntrada;
+                    try {
+                        FileUploadedSalida = Request.Form.Files[0];
+                        FileUploadedEntrada = Request.Form.Files[1];
+                        if (FileUploadedSalida == null || FileUploadedEntrada == null)
+                            return new RetData<PaylessProdPrioriArchM>() {
+                                Info = new RetInfo() {
                                     CodError = -1,
-                                    Mensaje = "El archivo no es correcto",
+                                    Mensaje = "No se enviaron los 2 archivos completos.",
                                     ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
                                 }
                             };
+                    } catch (Exception e2) {
+                        return new RetData<PaylessProdPrioriArchM>() {
+                            Info = new RetInfo() {
+                                CodError = -1,
+                                Mensaje = e2.ToString(),
+                                ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                            }
+                        };
+                    }
+                    StringBuilder sb = new StringBuilder();
+                    if (FileUploadedSalida.Length > 0 && FileUploadedEntrada.Length > 0) {
+                        string FileExtension = Path.GetExtension(FileUploadedSalida.FileName).ToLower();
+                        string FileExtension2 = Path.GetExtension(FileUploadedEntrada.FileName).ToLower();
+                        using (MemoryStream StreamEntrada = new MemoryStream())
+                        using (MemoryStream StreamSalida = new MemoryStream()) {
+                            FileUploadedSalida.CopyTo(StreamSalida);
+                            FileUploadedEntrada.CopyTo(StreamEntrada);
+                            StreamSalida.Position = 0;
+                            StreamEntrada.Position = 0;
+                            if (!(FileExtension == ".xml" || FileExtension == ".XML")) {
+                                return new RetData<PaylessProdPrioriArchM>() {
+                                    Info = new RetInfo() {
+                                        CodError = -1,
+                                        Mensaje = "El archivo de salida no tiene la extensión .xml",
+                                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                                    }
+                                };
+                            }
+                            if (!(FileExtension2 == ".xml" || FileExtension == ".XML")) {
+                                return new RetData<PaylessProdPrioriArchM>() {
+                                    Info = new RetInfo() {
+                                        CodError = -1,
+                                        Mensaje = "El archivo de entrada no tiene la extensión .xml",
+                                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                                    }
+                                };
+                            }
+                            System.Data.DataSet FileUploadDsSalida = new System.Data.DataSet();
+                            System.Data.DataSet FileUploadDsEntrada = new System.Data.DataSet();
+                            FileUploadDsSalida.ReadXml(StreamSalida);
+                            FileUploadDsEntrada.ReadXml(StreamEntrada);
+                            if (FileUploadDsSalida.Tables.Count > 0 && FileUploadDsEntrada.Tables.Count > 0) {                                
+                                int NTblEntrada = 0, NTblSalida = 0;
+                                for (NTblSalida = 0; NTblSalida < FileUploadDsSalida.Tables.Count; NTblSalida++)
+                                    if (FileUploadDsSalida.Tables[NTblSalida].TableName.ToLower() == "casedetail")
+                                        break;
+                                for (NTblEntrada = 0; NTblEntrada < FileUploadDsSalida.Tables.Count; NTblEntrada++)
+                                    if (FileUploadDsSalida.Tables[NTblEntrada].TableName.ToLower() == "casedetail")
+                                        break;
+                                if (NTblSalida == FileUploadDsSalida.Tables.Count)
+                                    return new RetData<PaylessProdPrioriArchM>() {
+                                        Info = new RetInfo() {
+                                            CodError = -1,
+                                            Mensaje = "El archivo de salida no es correcto",
+                                            ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                                        }
+                                    };
+                                if (NTblEntrada == FileUploadDsSalida.Tables.Count)
+                                    return new RetData<PaylessProdPrioriArchM>() {
+                                        Info = new RetInfo() {
+                                            CodError = -1,
+                                            Mensaje = "El archivo de entrada no es correcto",
+                                            ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                                        }
+                                    };
+                                foreach (System.Data.DataRow FileCod in FileUploadDsSalida.Tables[NTblSalida].Rows)
+                                    if (ListBarcodesSalida.Where(Bc => Bc.Barcode == FileCod["CaseNumber"].ToString()).Count() == 0)
+                                        ListBarcodesSalida.Add(new PaylessProdPrioriArchDet() { Barcode = FileCod["CaseNumber"].ToString() });
+                                foreach (System.Data.DataRow FileCod in FileUploadDsEntrada.Tables[NTblEntrada].Rows)
+                                    if (ListBarcodesEntrada.Where(Bc => Bc.Barcode == FileCod["CaseNumber"].ToString()).Count() == 0)
+                                        ListBarcodesEntrada.Add(new PaylessProdPrioriArchDet() { Barcode = FileCod["CaseNumber"].ToString() });
+                            } else {
+                                return new RetData<PaylessProdPrioriArchM>() {
+                                    Info = new RetInfo() {
+                                        CodError = -1,
+                                        Mensaje = "El archivo no es correcto",
+                                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                                    }
+                                };
+                            }
                         }
                     }
+                    RetData<PaylessProdPrioriArchM> Ret = await ApiClientFactory.Instance.SetPaylessProdPrioriFile(ListBarcodesSalida, ListBarcodesEntrada, IdTransporte, dtpPeriodo, HttpContext.Session.GetObjSession<string>("Session.CodUsr"), cboTipo);
+                    return Ret;
                 }
-                RetData<PaylessProdPrioriArchM> Ret = await ApiClientFactory.Instance.SetPaylessProdPrioriFile(ListBarcodes, IdTransporte, CboPeriod, HttpContext.Session.GetObjSession<string>("Session.CodUsr"));
-                return Ret;
+                return new RetData<PaylessProdPrioriArchM>() {
+                    Info = new RetInfo() {
+                        CodError = -1,
+                        Mensaje = "Error",
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
             }
             catch (Exception ex1)
             {
@@ -1201,10 +1307,10 @@ namespace EdiViewer.Controllers
                 };
             }            
         }
-        public async Task<IActionResult> MakeExcelWms1(string Period, int IdTransport) {
+        public async Task<IActionResult> MakeExcelWms1(string Period, int IdTransport, int Typ) {
             DateTime StartTime = DateTime.Now;
             try {
-                RetData<IEnumerable<WmsFileModel>> ListInfo = await ApiClientFactory.Instance.GetWmsFile(Period, IdTransport);
+                RetData<IEnumerable<WmsFileModel>> ListInfo = await ApiClientFactory.Instance.GetWmsFile(Period, IdTransport, Typ);
                 if (ListInfo.Info.CodError != 0)
                     return Json( ListInfo.Info );
                 Utility.ExceL ExcelO = new Utility.ExceL();
@@ -1286,7 +1392,10 @@ namespace EdiViewer.Controllers
                                     ExcelO.SetCellValue(RowO.Estilo);
                                     break;
                                 case "COLOR":
-                                    ExcelO.SetCellValue(RowO.Transporte);
+                                    ExcelO.SetCellValue(string.IsNullOrEmpty(RowO.Transporte) ? "" : RowO.Transporte);
+                                    break;
+                                case "cod_equivale":
+                                    ExcelO.SetCellValue(RowO.CodEquivalente);
                                     break;
                                 default:
                                     break;
