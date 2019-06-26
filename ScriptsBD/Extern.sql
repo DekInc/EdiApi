@@ -5,7 +5,7 @@ select * from wms_test_29_01_2019.dbo.Paises where NomPais like'%pana%'
 select * from wms.dbo.Clientes with(nolock) where nombre like '%payl%' OR ClienteID = 610 order by ClienteID asc
 select * from edidb.dbo.IEnetUsers where Id > 4 order by CodUsr
 select * from edidb.dbo.IEnetUsers order by CodUsr
-select * from edidb.dbo.IEnetUsers where HashId like '%24062019%' order by HashId desc
+select * from edidb.dbo.IEnetUsers where HashId like '%26062019%' order by HashId desc
 select * from edidb.dbo.IEnetGroupsAccesses
 select * from EdiDb.dbo.Trasladado1
 --delete from edidb.dbo.IEnetGroupsAccesses where Id = 40
@@ -381,13 +381,15 @@ select * from PAYLESS_ProdPrioriDet where IdPAYLESS_ProdPrioriM = 10 and Barcode
 where IdPAYLESS_ProdPrioriM = 1
 --truncate table PAYLESS_ProdPrioriDet
 --truncate table PAYLESS_ProdPrioriM
+select distinct Producto, Talla, Lote, Categoria from PAYLESS_ProdPrioriDet ORDER BY Producto, Talla, Lote, Categoria
+select distinct Producto from PAYLESS_ProdPrioriDet ORDER BY Producto
 select * from wms_test_29_01_2019.dbo.Producto where Descripcion like'%GEMU3131%'
 select * from PAYLESS_ProdPrioriDet where IdTransporte = 9
 select * from EdiDb.dbo.PAYLESS_ProdPrioriArchM
 --update  EdiDb.dbo.PAYLESS_ProdPrioriArchM SET PorcValidez = null, Typ = 0 where Id = 9
 --update  EdiDb.dbo.PAYLESS_ProdPrioriArchM SET Typ = 0
---delete from EdiDb.dbo.PAYLESS_ProdPrioriArchM where Id = 33
---delete from EdiDb.dbo.PAYLESS_ProdPrioriArchDet where IdM = 33
+--delete from EdiDb.dbo.PAYLESS_ProdPrioriArchM where Id = 35
+--delete from EdiDb.dbo.PAYLESS_ProdPrioriArchDet where IdM = 35
 select * from EdiDb.dbo.PAYLESS_ProdPrioriArchDet
 select * from EdiDb.dbo.PAYLESS_Transporte
 select * from EdiDb.dbo.Lear_PureEdi

@@ -204,6 +204,9 @@ namespace CoreApiClient
         {
             return await GetAsync<RetData<IEnumerable<PaylessProdPrioriDetModel>>>(CreateRequestUri(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Data/GetPaylessFileDif"), $"?idProdArch={idProdArch}&idData={idData}"));
         }
+        public async Task<RetData<IEnumerable<PaylessProdPrioriDetModel>>> GetTransDif(int IdM) {
+            return await GetAsync<RetData<IEnumerable<PaylessProdPrioriDetModel>>>(CreateRequestUri(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Data/GetTransDif"), $"?IdM={IdM}"));
+        }
         /////////////////////////////////////////Account
         public async Task<string> LoginIe(string _User, string _Password)
         {
@@ -321,6 +324,12 @@ namespace CoreApiClient
         }
         public async Task<RetData<Tuple<PaylessReportes, IEnumerable<PaylessReportesDet>, IEnumerable<PaylessTiendas>>>> GetWeekReport(int Id, string Typ) {
             return await GetAsync<RetData<Tuple<PaylessReportes, IEnumerable<PaylessReportesDet>, IEnumerable<PaylessTiendas>>>>(CreateRequestUri(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Data/GetWeekReport"), $"?Id={Id}&Typ={Typ}"));
+        }
+        public async Task<RetData<Tuple<IEnumerable<int>, IEnumerable<string>, IEnumerable<int>, IEnumerable<string>>>> GetProductoTallaLoteCategoria() {
+            return await GetAsync<RetData<Tuple<IEnumerable<int>, IEnumerable<string>, IEnumerable<int>, IEnumerable<string>>>>(CreateRequestUri(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Data/GetProductoTallaLoteCategoria")));
+        }
+        public async Task<RetData<IEnumerable<PaylessProdPrioriDetModel>>> GetPaylessProdTallaLoteFil(string TxtBarcode, string CboProducto, string CboTalla, string CboLote, string CboCategoria) {
+            return await GetAsync<RetData<IEnumerable<PaylessProdPrioriDetModel>>>(CreateRequestUri(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Data/GetPaylessProdTallaLoteFil"), $"?TxtBarcode={TxtBarcode}&CboProducto={CboProducto}&CboTalla={CboTalla}&CboLote={CboLote}&CboCategoria={CboCategoria}"));
         }
         /////////////////////////////////////////
         //public async Task<List<UsersModel>> GetUsers()

@@ -2192,5 +2192,20 @@ namespace EdiViewer.Controllers
                 return Json(JsonConvert.SerializeObject(e1));
             }
         }
+        public async Task<RetData<Tuple<IEnumerable<int>, IEnumerable<string>, IEnumerable<int>, IEnumerable<string>>>> GetProductoTallaLoteCategoria() {
+            DateTime StartTime = DateTime.Now;
+            try {
+                RetData<Tuple<IEnumerable<int>, IEnumerable<string>, IEnumerable<int>, IEnumerable<string>>> ListDis = await ApiClientFactory.Instance.GetProductoTallaLoteCategoria();
+                return ListDis;
+            } catch (Exception e2) {
+                return new RetData<Tuple<IEnumerable<int>, IEnumerable<string>, IEnumerable<int>, IEnumerable<string>>> { 
+                    Info = new RetInfo() {
+                        CodError = -1,
+                        Mensaje = e2.ToString(),
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            }
+        }
     }
 }

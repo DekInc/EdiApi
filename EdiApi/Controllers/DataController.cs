@@ -2105,7 +2105,7 @@ namespace EdiApi.Controllers
             {
                 switch (idData) {
                     case 1:
-                        IEnumerable<PaylessProdPrioriDetModel> Ret = ManualDB.SP_GetPaylessProdPrioriFileDif(ref DbO, idData, idProdArch);
+                        IEnumerable<PaylessProdPrioriDetModel> Ret = ManualDB.SP_GetPaylessProdPrioriFileDif(ref DbOLong, idData, idProdArch);
                         return new RetData<IEnumerable<PaylessProdPrioriDetModel>> {
                             Data = Ret,
                             Info = new RetInfo() {
@@ -2115,7 +2115,7 @@ namespace EdiApi.Controllers
                             }
                         };
                     case 2:
-                        List<PaylessProdPrioriDetModel> ListOriginal = ManualDB.SP_GetPaylessProdPrioriFileDif(ref DbO, 2, idProdArch).ToList();
+                        List<PaylessProdPrioriDetModel> ListOriginal = ManualDB.SP_GetPaylessProdPrioriFileDif(ref DbOLong, 2, idProdArch).ToList();
                         List<PaylessProdPrioriDetModel> ListExcelEscaneado = ManualDB.SP_GetPaylessProdPrioriFileDif(ref DbO, 1, idProdArch).ToList();
                         ListExcelEscaneado.ForEach(Or => {
                             if (ListOriginal.Where(Oi => Oi.Barcode == Or.Barcode).Count() > 0)
@@ -2183,15 +2183,38 @@ namespace EdiApi.Controllers
             }
         }
         [HttpGet]
-        public RetData<IEnumerable<Clientes>> GetClients()
+        public RetData<IEnumerable<Clientes>> GetClients() {
+            DateTime StartTime = DateTime.Now;
+            try {
+                IEnumerable<Clientes> ListUsers = WmsDbO.Clientes.Select(C => new Clientes() { ClienteId = C.ClienteId, Nombre = C.Nombre }).OrderBy(C2 => C2.Nombre);
+                return new RetData<IEnumerable<Clientes>> {
+                    Data = ListUsers,
+                    Info = new RetInfo() {
+                        CodError = 0,
+                        Mensaje = "ok",
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            } catch (Exception e1) {
+                return new RetData<IEnumerable<Clientes>> {
+                    Info = new RetInfo() {
+                        CodError = -1,
+                        Mensaje = e1.ToString(),
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            }
+        }
+        [HttpGet]
+        public RetData<IEnumerable<PaylessProdPrioriDetModel>> GetTransDif(int IdM)
         {
             DateTime StartTime = DateTime.Now;
             try
             {
-                IEnumerable<Clientes> ListUsers = WmsDbO.Clientes.Select(C => new Clientes() { ClienteId = C.ClienteId, Nombre = C.Nombre }).OrderBy(C2 => C2.Nombre);
-                return new RetData<IEnumerable<Clientes>>
+                IEnumerable<PaylessProdPrioriDetModel> List = ManualDB.SP_GetTransDif(ref DbO, IdM);
+                return new RetData<IEnumerable<PaylessProdPrioriDetModel>>
                 {
-                    Data = ListUsers,
+                    Data = List,
                     Info = new RetInfo()
                     {
                         CodError = 0,
@@ -2202,10 +2225,59 @@ namespace EdiApi.Controllers
             }
             catch (Exception e1)
             {
-                return new RetData<IEnumerable<Clientes>>
+                return new RetData<IEnumerable<PaylessProdPrioriDetModel>>
                 {
                     Info = new RetInfo()
                     {
+                        CodError = -1,
+                        Mensaje = e1.ToString(),
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            }
+        }
+        [HttpGet]
+        public RetData<IEnumerable<PaylessProdPrioriDetModel>> GetPaylessProdTallaLoteFil(string TxtBarcode, string CboProducto, string CboTalla, string CboLote, string CboCategoria) {
+            DateTime StartTime = DateTime.Now;
+            try {
+                IEnumerable<PaylessProdPrioriDetModel> List = ManualDB.SP_GetPaylessProdTallaLoteFil(ref DbO, TxtBarcode, CboProducto, CboTalla, CboLote, CboCategoria);
+                return new RetData<IEnumerable<PaylessProdPrioriDetModel>> {
+                    Data = List,
+                    Info = new RetInfo() {
+                        CodError = 0,
+                        Mensaje = "ok",
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            } catch (Exception e1) {
+                return new RetData<IEnumerable<PaylessProdPrioriDetModel>> {
+                    Info = new RetInfo() {
+                        CodError = -1,
+                        Mensaje = e1.ToString(),
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            }
+        }
+        [HttpGet]
+        public RetData<Tuple<IEnumerable<int>, IEnumerable<string>, IEnumerable<int>, IEnumerable<string>>> GetProductoTallaLoteCategoria() {
+            DateTime StartTime = DateTime.Now;
+            try {
+                IEnumerable<int> ListProduct = (from D in DbO.PaylessProdPrioriDet orderby D.Producto select Convert.ToInt32(D.Producto)).Distinct().OrderBy(O => O);
+                IEnumerable<string> ListTalla = (from D in DbO.PaylessProdPrioriDet orderby D.Talla select D.Talla).Distinct();
+                IEnumerable<int> ListLote = (from D in DbO.PaylessProdPrioriDet orderby D.Lote select Convert.ToInt32(D.Lote)).Distinct().OrderBy(O2 => O2);
+                IEnumerable<string> ListCat = (from D in DbO.PaylessProdPrioriDet orderby D.Categoria select D.Categoria).Distinct();
+                return new RetData<Tuple<IEnumerable<int>, IEnumerable<string>, IEnumerable<int>, IEnumerable<string>>> {
+                    Data = new Tuple<IEnumerable<int>, IEnumerable<string>, IEnumerable<int>, IEnumerable<string>>(ListProduct, ListTalla, ListLote, ListCat),
+                    Info = new RetInfo() {
+                        CodError = 0,
+                        Mensaje = "ok",
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            } catch (Exception e1) {
+                return new RetData<Tuple<IEnumerable<int>, IEnumerable<string>, IEnumerable<int>, IEnumerable<string>>> {
+                    Info = new RetInfo() {
                         CodError = -1,
                         Mensaje = e1.ToString(),
                         ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds

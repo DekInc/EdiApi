@@ -349,7 +349,7 @@ namespace EdiViewer.Controllers
                 return Json(new { total = 0, records = "", errorMessage = e1.ToString() });
             }
         }
-        public async Task<IActionResult> GetPaylessFileDif(string idProdArch, int idData = 1, int Typ = 0) {
+        public async Task<IActionResult> GetPaylessFileDif(string idProdArch, int idData = 1) {
             try {
                 //if (idProdArch == "0") return null;
                 RetData<IEnumerable<PaylessProdPrioriDetModel>> ListProdPrioriArch = await ApiLongClientFactory.Instance.GetPaylessFileDif(idProdArch, idData);
@@ -359,6 +359,28 @@ namespace EdiViewer.Controllers
                     return Json(new { total = 0, records = "", errorMessage = (ListProdPrioriArch.Info.CodError != 0 ? ListProdPrioriArch.Info.Mensaje : string.Empty) });
                 if (ListProdPrioriArch.Data.Count() == 0)
                     return Json(new { total = 0, records = "", errorMessage = (ListProdPrioriArch.Info.CodError != 0 ? ListProdPrioriArch.Info.Mensaje : string.Empty) });                
+                List<PaylessProdPrioriDetModel> Records = ListProdPrioriArch.Data.ToList();
+                List<PaylessProdPrioriDetModel> AllRecords = new List<PaylessProdPrioriDetModel>();
+                int Total = Records.Count;
+                if (Total > 0) {
+                    AllRecords = Utility.ExpressionBuilderHelper.W2uiSearchNoSkip(Records, Request.Form);
+                    Records = Utility.ExpressionBuilderHelper.W2uiSearch(Records, Request.Form);
+                }
+                return Json(new { Total, Records, errorMessage = "", AllRecords });
+            } catch (Exception e1) {
+                return Json(new { total = 0, records = "", errorMessage = e1.ToString() });
+            }
+        }
+        public async Task<IActionResult> GetTransDif(int IdM) {
+            try {
+                //if (idProdArch == "0") return null;
+                RetData<IEnumerable<PaylessProdPrioriDetModel>> ListProdPrioriArch = await ApiLongClientFactory.Instance.GetTransDif(IdM);
+                if (ListProdPrioriArch.Info.CodError != 0)
+                    return Json(new { total = 0, records = "", errorMessage = ListProdPrioriArch.Info.Mensaje });
+                if (ListProdPrioriArch.Data == null)
+                    return Json(new { total = 0, records = "", errorMessage = (ListProdPrioriArch.Info.CodError != 0 ? ListProdPrioriArch.Info.Mensaje : string.Empty) });
+                if (ListProdPrioriArch.Data.Count() == 0)
+                    return Json(new { total = 0, records = "", errorMessage = (ListProdPrioriArch.Info.CodError != 0 ? ListProdPrioriArch.Info.Mensaje : string.Empty) });
                 List<PaylessProdPrioriDetModel> Records = ListProdPrioriArch.Data.ToList();
                 List<PaylessProdPrioriDetModel> AllRecords = new List<PaylessProdPrioriDetModel>();
                 int Total = Records.Count;
@@ -667,6 +689,47 @@ namespace EdiViewer.Controllers
                     return Json(new { Total, Records, errorMessage = "", AllRecords, FilteredRecords, pedidosPendientes = TuplePextSent.Data.Item1 });
                 else
                     return Json(new { Total, Records, errorMessage = "", AllRecords, FilteredRecords });
+            } catch (Exception e1) {
+                return Json(new { draw = 0, recordsFiltered = 0, recordsTotal = 0, errorMessage = e1.ToString(), data = "" });
+            }
+        }
+        public async Task<IActionResult> GetPaylessProdTallaLoteFil(string TxtBarcode, string CboProducto, string CboTalla, string CboLote, string CboCategoria) {
+            try {
+                if (TxtBarcode == "null") TxtBarcode = string.Empty;
+                if (CboProducto == "null") CboProducto = string.Empty;
+                if (CboTalla == "null") CboTalla = string.Empty;
+                if (CboLote == "null") CboLote = string.Empty;
+                if (CboCategoria == "null") CboCategoria = string.Empty;
+                RetData<IEnumerable<PaylessProdPrioriDetModel>> ListProd = await ApiLongClientFactory.Instance.GetPaylessProdTallaLoteFil(TxtBarcode, CboProducto, CboTalla, CboLote, CboCategoria);
+                if (ListProd.Info.CodError != 0)
+                    return Json(new { total = 0, records = "", errorMessage = ListProd.Info.Mensaje });
+                if (ListProd.Data == null)
+                    return Json(new { total = 0, records = "", errorMessage = (ListProd.Info.CodError != 0 ? ListProd.Info.Mensaje : string.Empty) });
+                if (ListProd.Data.Count() == 0)
+                    return Json(new { total = 0, records = "", errorMessage = (ListProd.Info.CodError != 0 ? ListProd.Info.Mensaje : string.Empty) });
+                List<PaylessProdPrioriDetModel> Records = ListProd.Data.ToList();
+                List<PaylessProdPrioriDetModel> AllRecords = Records;
+                List<PaylessProdPrioriDetModel> ListProdWithStock = new List<PaylessProdPrioriDetModel>();
+                List<PaylessProdPrioriDetModel> FilteredRecords = Records;
+                int Total = Records.Count;
+                string CodProductoFuera = string.Empty;
+                if (Records.Count() > 0) {                    
+                    bool HaveForm = true;
+                    try {
+                        if (Request.Form != null) {
+                            IFormCollection GridForm = Request.Form;
+                        }
+                    } catch {
+                        HaveForm = false;
+                    }
+                    FilteredRecords = Records;
+                    if (HaveForm) {
+                        FilteredRecords = Utility.ExpressionBuilderHelper.W2uiSearchNoSkip<PaylessProdPrioriDetModel>(Records, Request.Form);
+                        Records = Utility.ExpressionBuilderHelper.W2uiSearch<PaylessProdPrioriDetModel>(Records, Request.Form);
+                    }
+                }
+                AllRecords = Records;
+                return Json(new { Total, Records, errorMessage = "", AllRecords, FilteredRecords });
             } catch (Exception e1) {
                 return Json(new { draw = 0, recordsFiltered = 0, recordsTotal = 0, errorMessage = e1.ToString(), data = "" });
             }

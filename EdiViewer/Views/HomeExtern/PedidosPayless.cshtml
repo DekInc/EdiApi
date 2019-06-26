@@ -14,7 +14,7 @@
         <div class="card-deck cardMain">
             <div class="card box-shadow">
                 <div class="card-header card-header-payless">
-                    <h4 class="my-0 font-weight-normal">Pedidos Payless&nbsp;<img class="imgHeaderHelp" src="~/images/help.png" title="Pantalla utilizada para hacer pedidos por barcode, lote, talla, estilo y genero" alt="Pantalla utilizada para hacer pedidos por barcode, lote, talla, estilo y genero"></h4>
+                    <h4 class="my-0 font-weight-normal">Pedidos Payless específicos</h4>
                 </div>
                 <div class="card-body">                    
                     <form id="formSearch">
@@ -25,32 +25,36 @@
                                     <input class="form-control" id="TxtBarcode" maxlength="10" autocorrect="off" autocapitalize="off" autocomplete="off">
                                 </div>
                                 <div class="col-sm">
-                                    <label for="TxtProducto">Lote</label>
+                                    <label for="cboProducto">Lote</label>
                                     <div id="divSpincboProducto" class="spinner-border spinner-border-sm text-danger" style="display: none" role="status">
                                         <span class="sr-only">Loading...</span>
                                     </div>
-                                    <select class="form-control" id="cboProducto" name="cboProducto"></select>
+                                    <select class="form-control" id="cboProducto" name="cboProducto">
+                                    </select>
                                 </div>
                                 <div class="col-sm">
-                                    <label for="TxtTalla">Talla</label>
+                                    <label for="cboTalla">Talla</label>
                                     <div id="divSpincboTalla" class="spinner-border spinner-border-sm text-danger" style="display: none" role="status">
                                         <span class="sr-only">Loading...</span>
                                     </div>
-                                    <select class="form-control" id="cboTalla" name="cboTalla"></select>
+                                    <select class="form-control" id="cboTalla" name="cboTalla">
+                                    </select>
                                 </div>
                                 <div class="col-sm">
-                                    <label for="TxtLote">Estilo</label>
+                                    <label for="cboLote">Estilo</label>
                                     <div id="divSpincboLote" class="spinner-border spinner-border-sm text-danger" style="display: none" role="status">
                                         <span class="sr-only">Loading...</span>
                                     </div>
-                                    <select class="form-control" id="cboLote" name="cboLote"></select>
+                                    <select class="form-control" id="cboLote" name="cboLote">
+                                    </select>
                                 </div>
                                 <div class="col-sm">
-                                    <label for="TxtCategoria">Genero</label>
+                                    <label for="cboCategoria">Genero</label>
                                     <div id="divSpincboCategoria" class="spinner-border spinner-border-sm text-danger" style="display: none" role="status">
                                         <span class="sr-only">Loading...</span>
                                     </div>
-                                    <select class="form-control" id="cboCategoria" name="cboCategoria"></select>
+                                    <select class="form-control" id="cboCategoria" name="cboCategoria">
+                                    </select>
                                 </div>
                             </div>
                             <div class="row margin5">
@@ -164,10 +168,10 @@
                 selectType: 'cell',
                 bResponsive: true,
                 bMobile: window.mobileAndTabletcheck(),
-                url: "@this.Url.Action("GetPaylessProdPrioriInventario", "Grids")?dtpPeriodoBuscar=" + $('#cboPeriod').val(),
+                url: '@this.Url.Action("GetPaylessProdTallaLoteFil", "Grids")?TxtBarcode=' + $('#TxtBarcode').val() + '&CboProducto=' + $('#cboProducto').val() + '&CboTalla=' + $('#cboTalla').val() + '&CboLote=' + $('#cboLote').val() + '&CboCategoria=' + $('#cboCategoria').val(),
                 show: {
                     footer: true,
-                    toolbar: true,
+                    toolbar: false,
                     expandColumn: window.mobileAndTabletcheck()
                 },
                 searches: [
@@ -229,10 +233,95 @@
         $('#modalPopCargaProdPrioriDet').modal();
         detGrid.reload2("@this.Url.Action("GetPaylessProdPrioriDet", "Grids")?barcode=" + barcode + '&talla=' + talla);
     }
+    var fillProductoTallaLote = new Promise(function (resolve, reject) {
+        $('#divSpincboProducto').show();
+        $('#divSpincboTalla').show();
+        $('#divSpincboLote').show();
+        $('#divSpincboCategoria').show();
+        $('#divSpincboProducto').empty();
+        $('#divSpincboTalla').empty();
+        $('#divSpincboLote').empty();
+        $('#divSpincboCategoria').empty();
+        $.ajax({
+            method: "GET",
+            url: '@this.Url.Action("GetProductoTallaLoteCategoria", "HomeExtern")',
+            success: function (data) {
+                $('#divSpincboProducto').hide();
+                $('#divSpincboTalla').hide();
+                $('#divSpincboLote').hide();
+                $('#divSpincboCategoria').hide();
+                if (data.info.codError != 0) {
+                    menErrorEdi(data.info.mensaje, 'Error');
+                    return;
+                }
+                if (data.data != null) {
+                    if (data.data.item1 != null) {
+                        $.each(data.data.item1, function (indexI, storeO) {
+                            $('#cboProducto').append($('<option>', {
+                                value: this,
+                                text: this
+                            }));
+                        });
+                        $('#cboProducto').append($('<option>', {
+                            value: 0,
+                            text: ''
+                        }));
+                        $('#cboProducto').val(0);
+                    }
+                    if (data.data.item2 != null) {
+                        $.each(data.data.item2, function (indexI, storeO) {
+                            $('#cboTalla').append($('<option>', {
+                                value: this,
+                                text: this
+                            }));
+                        });
+                        $('#cboTalla').append($('<option>', {
+                            value: 0,
+                            text: ''
+                        }));
+                        $('#cboTalla').val(0);
+                    }
+                    if (data.data.item3 != null) {
+                        $.each(data.data.item3, function (indexI, storeO) {
+                            $('#cboLote').append($('<option>', {
+                                value: this,
+                                text: this
+                            }));
+                        });
+                        $('#cboLote').append($('<option>', {
+                            value: 0,
+                            text: ''
+                        }));
+                        $('#cboLote').val(0);
+                    }
+                    if (data.data.item4 != null) {
+                        var contI = 0;
+                        $.each(data.data.item4, function (indexI, storeO) {
+                            $('#cboCategoria').append($('<option>', {
+                                value: contI++,
+                                text: this
+                            }));
+                        });
+                        $('#cboCategoria').append($('<option>', {
+                            value: 0,
+                            text: ''
+                        }));
+                        $('#cboCategoria').val(0);
+                    }
+                }
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                menErrorEdi(xhr.status, 'Error throw in js');
+                menErrorEdi(thrownError, 'Error throw in js');
+            }
+        });
+        if (resolve) resolve();
+    });
     $(document).ready(function () {
         $('.imgHeaderHelp').tooltip();
         crearGrid();        
         reDrawObjects();
+        fillProductoTallaLote.then();
         $('#btnNewDis').on('click', function (e) {
             $('#exampleModalLabel2').html('Crear pedido');
             ModalPopNewDis = $('#modalPopNewDis').modal();
@@ -263,17 +352,18 @@
         });        
         $('#btnFiltrar').on("click", function (Event) {
             miAlive();
-            mainGrid.allRecords = [];
-            if ($('#cboPeriod').val() == '') {
-                menErrorEdi('El periodo es necesario para una búsqueda', 'Error');
-                return;
-            }
+            mainGrid.allRecords = [];            
             $('#divSpinFiltrar').show();
             mainGrid.searchReset(true);
-            mainGrid.reload2("@this.Url.Action("GetPaylessProdPrioriInventario", "Grids")?dtpPeriodoBuscar=" + $('#cboPeriod').val());
+            mainGrid.reload2('@this.Url.Action("GetPaylessProdTallaLoteFil", "Grids")?TxtBarcode=' + $('#TxtBarcode').val() + '&CboProducto=' + $('#cboProducto').val() + '&CboTalla=' + $('#cboTalla').val() + '&CboLote=' + $('#cboLote').val() + '&CboCategoria=' + $('#cboCategoria').val());
         });
         $('#btnLimpiar').on("click", function (Event) {
             $('#divSpinFiltrar').hide();
+            $('#cboProducto').val(0);
+            $('#cboTalla').val(0);
+            $('#cboLote').val(0);
+            $('#cboCategoria').val(0);
+            $('#TxtBarcode').val('');
             mainGrid.allRecords = [];
             mainGrid.searchReset();
             mainGrid.reload2("@this.Url.Action("GetPaylessProdPrioriInventario", "Grids")?dtpPeriodoBuscar=" + $('#cboPeriod').val());

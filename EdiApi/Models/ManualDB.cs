@@ -942,5 +942,49 @@ namespace EdiApi.Models
             }
             return ListExists;
         }
+        public static IEnumerable<PaylessProdPrioriDetModel> SP_GetTransDif(ref Models.EdiDB.EdiDBContext _DbO, int IdM) {
+            List<PaylessProdPrioriDetModel> ListExists = new List<PaylessProdPrioriDetModel>();
+            using (DbCommand Cmd = _DbO.Database.GetDbConnection().CreateCommand()) {
+                Cmd.CommandText = $"dbo.GetTransDif {IdM}";
+                _DbO.Database.OpenConnection();
+                DbDataReader Dr = Cmd.ExecuteReader();
+                if (Dr.HasRows) {
+                    int NRow = 0;
+                    while (Dr.Read()) {
+                        ListExists.Add(new PaylessProdPrioriDetModel() {
+                            Id = NRow++,
+                            Barcode = Dr.Gr<string>(0),
+                            Categoria = Dr.Gr<string>(1)
+                        });
+                    }
+                }
+                _DbO.Database.CloseConnection();
+                if (!Dr.IsClosed)
+                    Dr.Close();
+            }
+            return ListExists;
+        }
+        public static IEnumerable<PaylessProdPrioriDetModel> SP_GetPaylessProdTallaLoteFil(ref Models.EdiDB.EdiDBContext _DbO, string TxtBarcode, string CboProducto, string CboTalla, string CboLote, string CboCategoria) {
+            List<PaylessProdPrioriDetModel> ListExists = new List<PaylessProdPrioriDetModel>();
+            using (DbCommand Cmd = _DbO.Database.GetDbConnection().CreateCommand()) {
+                Cmd.CommandText = $"dbo.SP_GetPaylessProdTallaLoteFil '{TxtBarcode}', '{CboProducto}', '{CboTalla}', '{CboLote}', '{CboCategoria}'";
+                _DbO.Database.OpenConnection();
+                DbDataReader Dr = Cmd.ExecuteReader();
+                if (Dr.HasRows) {
+                    int NRow = 0;
+                    while (Dr.Read()) {
+                        ListExists.Add(new PaylessProdPrioriDetModel() {
+                            Id = NRow++,
+                            Barcode = Dr.Gr<string>(0),
+                            Categoria = Dr.Gr<string>(1)
+                        });
+                    }
+                }
+                _DbO.Database.CloseConnection();
+                if (!Dr.IsClosed)
+                    Dr.Close();
+            }
+            return ListExists;
+        }
     }
 }
