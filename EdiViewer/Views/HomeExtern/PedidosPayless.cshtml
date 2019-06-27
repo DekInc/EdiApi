@@ -168,7 +168,7 @@
                 selectType: 'cell',
                 bResponsive: true,
                 bMobile: window.mobileAndTabletcheck(),
-                url: '@this.Url.Action("GetPaylessProdTallaLoteFil", "Grids")?TxtBarcode=' + $('#TxtBarcode').val() + '&CboProducto=' + $('#cboProducto').val() + '&CboTalla=' + $('#cboTalla').val() + '&CboLote=' + $('#cboLote').val() + '&CboCategoria=' + $('#cboCategoria').val(),
+                url: '@this.Url.Action("GetPaylessProdTallaLoteFil", "Grids")?TxtBarcode=321553&CboProducto=' + $('#cboProducto').val() + '&CboTalla=' + $('#cboTalla').val() + '&CboLote=' + $('#cboLote').val() + '&CboCategoria=' + $('#cboCategoria').val(),
                 show: {
                     footer: true,
                     toolbar: false,
@@ -193,34 +193,26 @@
                 ],
                 columns: [
                     { field: "id", caption: "id", sortable: true, hidden: true },
-                    { field: "transporte", caption: "Transporte", type: 'text' },
                     { field: "barcode", caption: "Cod. caja", type: 'text', sortable: true },
-                    //{ field: "producto", caption: "Lote", type: 'text' },
-                    { field: "talla", caption: "talla", type: 'text' },
+                    { field: "producto", caption: "Lote", type: 'text', sortable: true },
+                    { field: "talla", caption: "Talla", type: 'text', sortable: true },
+                    { field: "lote", caption: "estilo", type: 'text', sortable: true },
                     { field: "categoria", caption: "Genero", type: 'text', sortable: true },
-                    //{ field: "lote", caption: "estilo", type: 'text' },
-                    { field: "existencia", caption: "Existencia", sortable: true },
-                    { field: "reservado", caption: "Reservado", sortable: true },
-                    { field: "disponible", caption: "Disponible", sortable: true },
+                    { field: "cp", caption: "cp", type: 'text', sortable: true },
                     {
-                        field: "cantPedir", caption: "Cantidad a pedir", sortable: true, render: function (record) {
+                        field: "cantPedir", caption: "Cantidad a pedir", sortable: false, render: function (record) {
                             var cantPedir2 = record.cantPedir;
-                            if ((record.cp != '' && parseInt(record.cantPedir) == 0) && parseInt(record.disponible) > 0)
-                                cantPedir2 = record.disponible;
+                            //if ((record.cp != '' && parseInt(record.cantPedir) == 0) && parseInt(record.disponible) > 0)
+                            //    cantPedir2 = record.disponible;
                             var posDisable = '';
                             var isCp = '';
-                            if (record.cp != '') {
-                                posDisable = 'readonly="readonly"';
-                                isCp = 'backRed';
-                            }
+                            //if (record.cp != '') {
+                            //    posDisable = 'readonly="readonly"';
+                            //    isCp = 'backRed';
+                            //}
                             return '<input id="TxtProducto' + record.id + '" name="TxtProducto' + record.id + '" type="textbox" maxlength="7" class="editor-active form-control ' + isCp + ' txtCantPedir w2ui-input" ' + posDisable + ' tabIndex="' + record.id + '" value="' + cantPedir2 + '" onkeypress="return changeProdPedido(isNumberKey(event), ' + "'" + record.id + "'" + ', this)">';                            
                         }
-                    },
-                    //{ field: "estado", caption: "estado", type: 'text' },
-                    //{ field: "pri", caption: "pri", type: 'text' },
-                    //{ field: "poolP", caption: "poolP", type: 'text' },
-                    { field: "departamento", caption: "departamento", type: 'text' },
-                    { field: "cp", caption: "cp", type: 'text' }                    
+                    }                    
                 ]
             }
         };
@@ -303,10 +295,10 @@
                             }));
                         });
                         $('#cboCategoria').append($('<option>', {
-                            value: 0,
+                            value: -1,
                             text: ''
                         }));
-                        $('#cboCategoria').val(0);
+                        $('#cboCategoria').val(-1);
                     }
                 }
             },
@@ -352,7 +344,7 @@
         });        
         $('#btnFiltrar').on("click", function (Event) {
             miAlive();
-            mainGrid.allRecords = [];            
+            mainGrid.allRecords = [];
             $('#divSpinFiltrar').show();
             mainGrid.searchReset(true);
             mainGrid.reload2('@this.Url.Action("GetPaylessProdTallaLoteFil", "Grids")?TxtBarcode=' + $('#TxtBarcode').val() + '&CboProducto=' + $('#cboProducto').val() + '&CboTalla=' + $('#cboTalla').val() + '&CboLote=' + $('#cboLote').val() + '&CboCategoria=' + $('#cboCategoria').val());
@@ -362,11 +354,12 @@
             $('#cboProducto').val(0);
             $('#cboTalla').val(0);
             $('#cboLote').val(0);
-            $('#cboCategoria').val(0);
+            $('#cboCategoria').val(-1);
             $('#TxtBarcode').val('');
             mainGrid.allRecords = [];
-            mainGrid.searchReset();
-            mainGrid.reload2("@this.Url.Action("GetPaylessProdPrioriInventario", "Grids")?dtpPeriodoBuscar=" + $('#cboPeriod').val());
+            //mainGrid.searchReset();
+            mainGrid.clear();
+            //mainGrid.reload2('@this.Url.Action("GetPaylessProdTallaLoteFil", "Grids")?TxtBarcode=' + $('#TxtBarcode').val() + '&CboProducto=' + $('#cboProducto').val() + '&CboTalla=' + $('#cboTalla').val() + '&CboLote=' + $('#cboLote').val() + '&CboCategoria=' + $('#cboCategoria').val());
         });
         if (window.mobileAndTabletcheck()) {
             $('.div856Search').css({ "max-width": "unset" });

@@ -76,9 +76,10 @@ namespace EdiApi.Models.EdiDB
         public virtual DbSet<PedidosExternos> PedidosExternos { get; set; }
         public virtual DbSet<ProductoUbicacion> ProductoUbicacion { get; set; }
         public virtual DbSet<UsuariosExternos> UsuariosExternos { get; set; }
+        public virtual DbSet<WmsProductoExistencia> WmsProductoExistencia { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {            
+        {
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -1263,6 +1264,9 @@ namespace EdiApi.Models.EdiDB
             {
                 entity.ToTable("PAYLESS_ProdPrioriArchDet");
 
+                entity.HasIndex(e => e.Barcode)
+                    .HasName("IndexPaylessProdPrioriArchDetBarcode");
+
                 entity.HasIndex(e => e.IdM)
                     .HasName("IndexPaylessProdPrioriArchDetIdM");
 
@@ -1274,6 +1278,9 @@ namespace EdiApi.Models.EdiDB
             modelBuilder.Entity<PaylessProdPrioriArchM>(entity =>
             {
                 entity.ToTable("PAYLESS_ProdPrioriArchM");
+
+                entity.HasIndex(e => e.IdTransporte)
+                    .HasName("IndexPaylessProdPrioriArchMIdTrans");
 
                 entity.HasIndex(e => e.Periodo)
                     .HasName("IndexPaylessProdPrioriArchMPeriodo");
@@ -1397,10 +1404,12 @@ namespace EdiApi.Models.EdiDB
                 entity.ToTable("PAYLESS_ReportesMails");
 
                 entity.HasIndex(e => e.MailDir)
-                    .HasName("UQ__PAYLESS___7E7D34CC075714DC")
+                    .HasName("UQ__PAYLESS___7E7D34CC370627FE")
                     .IsUnique();
 
-                entity.Property(e => e.MailDir).HasMaxLength(256);
+                entity.Property(e => e.MailDir)
+                    .HasMaxLength(256)
+                    .IsUnicode(false);
             });
 
             modelBuilder.Entity<PaylessTiendas>(entity =>
@@ -1514,6 +1523,23 @@ namespace EdiApi.Models.EdiDB
                 entity.Property(e => e.NomUsr).HasMaxLength(128);
 
                 entity.Property(e => e.UsrPassword).HasMaxLength(256);
+            });
+
+            modelBuilder.Entity<WmsProductoExistencia>(entity =>
+            {
+                entity.HasIndex(e => e.CodProducto)
+                    .HasName("IndexWmsProductoExistenciaCodProducto");
+
+                entity.HasIndex(e => e.CodUser)
+                    .HasName("IndexWmsProductoExistenciaCodUser");
+
+                entity.Property(e => e.CodProducto)
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.CodUser)
+                    .HasMaxLength(128)
+                    .IsUnicode(false);
             });
         }
     }

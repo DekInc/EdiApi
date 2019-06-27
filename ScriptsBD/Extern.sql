@@ -5,7 +5,7 @@ select * from wms_test_29_01_2019.dbo.Paises where NomPais like'%pana%'
 select * from wms.dbo.Clientes with(nolock) where nombre like '%payl%' OR ClienteID = 610 order by ClienteID asc
 select * from edidb.dbo.IEnetUsers where Id > 4 order by CodUsr
 select * from edidb.dbo.IEnetUsers order by CodUsr
-select * from edidb.dbo.IEnetUsers where HashId like '%26062019%' order by HashId desc
+select * from edidb.dbo.IEnetUsers where HashId like '%26062019%' order by CodUsr desc
 select * from edidb.dbo.IEnetGroupsAccesses
 select * from EdiDb.dbo.Trasladado1
 --delete from edidb.dbo.IEnetGroupsAccesses where Id = 40
@@ -93,7 +93,7 @@ select DISTINCT Talla, Producto from EdiDB.dbo.PAYLESS_ProdPrioriDet order by 2
 --7384817053
 --7385876330
 select * from wms.dbo.DtllPedido where CodProducto = '7383810131'
-select * from EdiDB.dbo.PAYLESS_ProdPrioriDet WHERE iDpA
+select * from EdiDB.dbo.PAYLESS_ProdPrioriDet WHERE BarCode = '7383810131'
 select * from EdiDB.dbo.PAYLESS_ProdPrioriM where Id = 4
 select * from EdiDb.dbo.Payless_Transporte
 

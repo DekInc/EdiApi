@@ -964,10 +964,10 @@ namespace EdiApi.Models
             }
             return ListExists;
         }
-        public static IEnumerable<PaylessProdPrioriDetModel> SP_GetPaylessProdTallaLoteFil(ref Models.EdiDB.EdiDBContext _DbO, string TxtBarcode, string CboProducto, string CboTalla, string CboLote, string CboCategoria) {
+        public static IEnumerable<PaylessProdPrioriDetModel> SP_GetPaylessProdTallaLoteFil(ref Models.EdiDB.EdiDBContext _DbO, string TxtBarcode, string CboProducto, string CboTalla, string CboLote, string CboCategoria, string CodUser) {
             List<PaylessProdPrioriDetModel> ListExists = new List<PaylessProdPrioriDetModel>();
             using (DbCommand Cmd = _DbO.Database.GetDbConnection().CreateCommand()) {
-                Cmd.CommandText = $"dbo.SP_GetPaylessProdTallaLoteFil '{TxtBarcode}', '{CboProducto}', '{CboTalla}', '{CboLote}', '{CboCategoria}'";
+                Cmd.CommandText = $"dbo.SP_GetPaylessProdTallaLoteFil '{TxtBarcode}', '{CboProducto}', '{CboTalla}', '{CboLote}', '{CboCategoria}', '{CodUser}'";
                 _DbO.Database.OpenConnection();
                 DbDataReader Dr = Cmd.ExecuteReader();
                 if (Dr.HasRows) {
@@ -976,7 +976,11 @@ namespace EdiApi.Models
                         ListExists.Add(new PaylessProdPrioriDetModel() {
                             Id = NRow++,
                             Barcode = Dr.Gr<string>(0),
-                            Categoria = Dr.Gr<string>(1)
+                            Producto = Dr.Gr<string>(1),
+                            Talla = Dr.Gr<string>(2),
+                            Lote = Dr.Gr<string>(3),
+                            Categoria = Dr.Gr<string>(4),
+                            Cp = Dr.Gr<string>(5)
                         });
                     }
                 }
@@ -985,6 +989,15 @@ namespace EdiApi.Models
                     Dr.Close();
             }
             return ListExists;
+        }
+        public static void SP_GetSetExistenciasByCliente(ref Models.EdiDB.EdiDBContext _DbO, int ClienteId, string CodUser) {
+            List<PaylessProdPrioriDetModel> ListExists = new List<PaylessProdPrioriDetModel>();
+            using (DbCommand Cmd = _DbO.Database.GetDbConnection().CreateCommand()) {
+                Cmd.CommandText = $"dbo.SP_GetSetExistenciasByCliente {ClienteId}, '{CodUser}'";
+                _DbO.Database.OpenConnection();
+                Cmd.ExecuteNonQuery();
+                _DbO.Database.CloseConnection();
+            }
         }
     }
 }

@@ -2237,10 +2237,10 @@ namespace EdiApi.Controllers
             }
         }
         [HttpGet]
-        public RetData<IEnumerable<PaylessProdPrioriDetModel>> GetPaylessProdTallaLoteFil(string TxtBarcode, string CboProducto, string CboTalla, string CboLote, string CboCategoria) {
+        public RetData<IEnumerable<PaylessProdPrioriDetModel>> GetPaylessProdTallaLoteFil(string TxtBarcode, string CboProducto, string CboTalla, string CboLote, string CboCategoria, string CodUser) {
             DateTime StartTime = DateTime.Now;
             try {
-                IEnumerable<PaylessProdPrioriDetModel> List = ManualDB.SP_GetPaylessProdTallaLoteFil(ref DbO, TxtBarcode, CboProducto, CboTalla, CboLote, CboCategoria);
+                IEnumerable<PaylessProdPrioriDetModel> List = ManualDB.SP_GetPaylessProdTallaLoteFil(ref DbO, TxtBarcode, CboProducto, CboTalla, CboLote, CboCategoria, CodUser);
                 return new RetData<IEnumerable<PaylessProdPrioriDetModel>> {
                     Data = List,
                     Info = new RetInfo() {
@@ -2251,6 +2251,28 @@ namespace EdiApi.Controllers
                 };
             } catch (Exception e1) {
                 return new RetData<IEnumerable<PaylessProdPrioriDetModel>> {
+                    Info = new RetInfo() {
+                        CodError = -1,
+                        Mensaje = e1.ToString(),
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            }
+        }
+        [HttpGet]
+        public RetData<bool> GetSetExistenciasByCliente(int ClienteId, string CodUser) {
+            DateTime StartTime = DateTime.Now;
+            try {
+                ManualDB.SP_GetSetExistenciasByCliente(ref DbO, ClienteId, CodUser);
+                return new RetData<bool> {
+                    Info = new RetInfo() {
+                        CodError = 0,
+                        Mensaje = "ok",
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            } catch (Exception e1) {
+                return new RetData<bool> {
                     Info = new RetInfo() {
                         CodError = -1,
                         Mensaje = e1.ToString(),
@@ -4060,7 +4082,12 @@ SET XACT_ABORT OFF
                     || StartTime.DayOfWeek == DayOfWeek.Friday
                     || StartTime.DayOfWeek == DayOfWeek.Saturday
                     || StartTime.DayOfWeek == DayOfWeek.Sunday) {
-                    List<DateTime> ListThurs = Utility.Funcs.AllThursdaysInMonth(StartTime.Year, StartTime.Month).Where(D => D <= (new DateTime(StartTime.Year, StartTime.Month, StartTime.Day, 23, 59, 59)).AddDays(7)).ToList();
+                    List<DateTime> ListThurs = Utility.Funcs.AllThursdaysInMonth(StartTime.Year, StartTime.Month).Where(D => D <= (new DateTime(StartTime.Year, StartTime.Month, StartTime.Day, 23, 59, 59)).AddDays(8)).ToList();
+                    if ((new DateTime(StartTime.Year, StartTime.Month, StartTime.Day, 23, 59, 59)).AddDays(8).Month != StartTime.Month
+                        && (new DateTime(StartTime.Year, StartTime.Month, StartTime.Day, 23, 59, 59)).AddDays(8).Year == StartTime.Year) {
+                        List<DateTime> ListThursNext = Utility.Funcs.AllThursdaysInMonth(StartTime.Year, StartTime.Month + 1).ToList();
+                        ListThurs.Add(ListThursNext.Fod());
+                    }                    
                     for (int I = 0; I < ListThurs.Count(); I++) {
                         List<PaylessReportes> ListRep = (
                             from R in DbO.PaylessReportes

@@ -480,23 +480,24 @@ namespace EdiViewer.Controllers
         }
         public async Task<IActionResult> PedidosPayless() {
             try {
-                //ViewBag.ListOldDis = null;
+                ApiClientFactory.Instance.GetSetExistenciasByCliente(HttpContext.Session.GetObjSession<int>("Session.ClientId"), HttpContext.Session.GetObjSession<string>("Session.CodUsr"));
+                ViewBag.ListOldDis = null;
                 ViewBag.DateLastDis = DateTime.Now.ToString(ApplicationSettings.DateTimeFormatT);
-                //ViewBag.PedidoId = null;
+                ViewBag.PedidoId = null;
                 //HttpContext.Session.SetObjSession("PedidoId", null);
-                RetData<Tuple<IEnumerable<PedidosExternos>, IEnumerable<PedidosDetExternos>>> ListDis = await ApiClientFactory.Instance.GetPedidosExternosByTienda(HttpContext.Session.GetObjSession<int>("Session.ClientId"), HttpContext.Session.GetObjSession<int>("Session.TiendaId"));
-                if (ListDis.Info.CodError == 0) {
-                    if (ListDis.Data.Item1.Count() > 0) {
-                        PedidosExternos Pe = ListDis.Data.Item1.Where(O => O.IdEstado == 1).Fod();
-                        if (Pe != null) {
-                            HttpContext.Session.SetObjSession("PedidoId", Pe.Id);
-                            ViewBag.DateLastDis = Pe.FechaPedido;
-                            //if (ListDis.Data.Item2.Count() > 0) {
-                            //    ViewBag.ListOldDis = JsonConvert.SerializeObject(ListDis.Data.Item2.Where(Pde => Pde.PedidoId == ListDis.Data.Item1.Fod().Id).Select(Pd => new { codProducto = Pd.CodProducto.Replace(" ", "^"), cantPedir = Pd.CantPedir, producto = Pd.Producto }));
-                            //}
-                        }
-                    }
-                }
+                //RetData<Tuple<IEnumerable<PedidosExternos>, IEnumerable<PedidosDetExternos>>> ListDis = await ApiClientFactory.Instance.GetPedidosExternosByTienda(HttpContext.Session.GetObjSession<int>("Session.ClientId"), HttpContext.Session.GetObjSession<int>("Session.TiendaId"));
+                //if (ListDis.Info.CodError == 0) {
+                //    if (ListDis.Data.Item1.Count() > 0) {
+                //        PedidosExternos Pe = ListDis.Data.Item1.Where(O => O.IdEstado == 1).Fod();
+                //        if (Pe != null) {
+                //            HttpContext.Session.SetObjSession("PedidoId", Pe.Id);
+                //            ViewBag.DateLastDis = Pe.FechaPedido;
+                //            //if (ListDis.Data.Item2.Count() > 0) {
+                //            //    ViewBag.ListOldDis = JsonConvert.SerializeObject(ListDis.Data.Item2.Where(Pde => Pde.PedidoId == ListDis.Data.Item1.Fod().Id).Select(Pd => new { codProducto = Pd.CodProducto.Replace(" ", "^"), cantPedir = Pd.CantPedir, producto = Pd.Producto }));
+                //            //}
+                //        }
+                //    }
+                //}
             } catch (Exception e1) {
                 ViewBag.ClientName = e1.ToString();
             }

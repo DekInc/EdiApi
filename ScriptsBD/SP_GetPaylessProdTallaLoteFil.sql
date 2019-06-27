@@ -9,13 +9,21 @@ CREATE PROCEDURE [dbo].SP_GetPaylessProdTallaLoteFil
 @CboProducto VARCHAR(16),
 @CboTalla VARCHAR(8),
 @CboLote VARCHAR(8),
-@CboCategoria VARCHAR(1)
+@CboCategoria VARCHAR(1),
+@CodUser VARCHAR(128)
 AS
 BEGIN
-	SELECT
-		*
+	SELECT DISTINCT
+		D.Barcode,
+		D.Producto,
+		D.Talla,
+		D.Lote,
+		D.Categoria,
+		D.CP
 	FROM EdiDB.dbo.PAYLESS_ProdPrioriDet D WITH(NOLOCK)
-	WHERE D.Barcode like @TxtBarcode + '%'
+	LEFT JOIN EdiDB.dbo.WmsProductoExistencia Ex WITH(NOLOCK)
+		ON Ex.CodUser = @CodUser AND Ex.CodProducto = D.Barcode
+	WHERE D.Barcode like '%' + @TxtBarcode + '%'
 	AND D.Producto like @CboProducto + '%'
 	AND D.Talla like @CboTalla + '%'
 	AND D.Lote like @CboLote + '%'
@@ -28,7 +36,8 @@ BEGIN
 		WHEN '' THEN '%'
 	END
 	)
+	AND Ex.CodUser IS NOT NULL
 END
 GO
 
-exec SP_GetPaylessProdTallaLoteFil '7372854987', '', '', '', '' 
+exec SP_GetPaylessProdTallaLoteFil '2670', '', '', '', '', 'Admin'

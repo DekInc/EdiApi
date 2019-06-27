@@ -328,8 +328,11 @@ namespace CoreApiClient
         public async Task<RetData<Tuple<IEnumerable<int>, IEnumerable<string>, IEnumerable<int>, IEnumerable<string>>>> GetProductoTallaLoteCategoria() {
             return await GetAsync<RetData<Tuple<IEnumerable<int>, IEnumerable<string>, IEnumerable<int>, IEnumerable<string>>>>(CreateRequestUri(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Data/GetProductoTallaLoteCategoria")));
         }
-        public async Task<RetData<IEnumerable<PaylessProdPrioriDetModel>>> GetPaylessProdTallaLoteFil(string TxtBarcode, string CboProducto, string CboTalla, string CboLote, string CboCategoria) {
-            return await GetAsync<RetData<IEnumerable<PaylessProdPrioriDetModel>>>(CreateRequestUri(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Data/GetPaylessProdTallaLoteFil"), $"?TxtBarcode={TxtBarcode}&CboProducto={CboProducto}&CboTalla={CboTalla}&CboLote={CboLote}&CboCategoria={CboCategoria}"));
+        public async Task<RetData<IEnumerable<PaylessProdPrioriDetModel>>> GetPaylessProdTallaLoteFil(string TxtBarcode, string CboProducto, string CboTalla, string CboLote, string CboCategoria, string CodUser) {
+            return await GetAsync<RetData<IEnumerable<PaylessProdPrioriDetModel>>>(CreateRequestUri(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Data/GetPaylessProdTallaLoteFil"), $"?TxtBarcode={TxtBarcode}&CboProducto={CboProducto}&CboTalla={CboTalla}&CboLote={CboLote}&CboCategoria={CboCategoria}&CodUser={CodUser}"));
+        }
+        public async Task<RetData<bool>> GetSetExistenciasByCliente(int ClienteId, string CodUser) {
+            return await GetAsync<RetData<bool>>(CreateRequestUri(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Data/GetSetExistenciasByCliente"), $"?ClienteId={ClienteId}&CodUser={CodUser}"));
         }
         /////////////////////////////////////////
         //public async Task<List<UsersModel>> GetUsers()

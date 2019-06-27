@@ -696,18 +696,18 @@ namespace EdiViewer.Controllers
         public async Task<IActionResult> GetPaylessProdTallaLoteFil(string TxtBarcode, string CboProducto, string CboTalla, string CboLote, string CboCategoria) {
             try {
                 if (TxtBarcode == "null") TxtBarcode = string.Empty;
-                if (CboProducto == "null") CboProducto = string.Empty;
-                if (CboTalla == "null") CboTalla = string.Empty;
-                if (CboLote == "null") CboLote = string.Empty;
-                if (CboCategoria == "null") CboCategoria = string.Empty;
-                RetData<IEnumerable<PaylessProdPrioriDetModel>> ListProd = await ApiLongClientFactory.Instance.GetPaylessProdTallaLoteFil(TxtBarcode, CboProducto, CboTalla, CboLote, CboCategoria);
+                if (CboProducto == "null" || CboProducto == "0") CboProducto = string.Empty;
+                if (CboTalla == "null" || CboTalla == "0") CboTalla = string.Empty;
+                if (CboLote == "null" || CboLote == "0") CboLote = string.Empty;
+                if (CboCategoria == "null" || CboCategoria == "-1") CboCategoria = string.Empty;
+                RetData<IEnumerable<PaylessProdPrioriDetModel>> ListProd = await ApiLongClientFactory.Instance.GetPaylessProdTallaLoteFil(TxtBarcode, CboProducto, CboTalla, CboLote, CboCategoria, HttpContext.Session.GetObjSession<string>("Session.CodUsr"));
                 if (ListProd.Info.CodError != 0)
                     return Json(new { total = 0, records = "", errorMessage = ListProd.Info.Mensaje });
                 if (ListProd.Data == null)
                     return Json(new { total = 0, records = "", errorMessage = (ListProd.Info.CodError != 0 ? ListProd.Info.Mensaje : string.Empty) });
                 if (ListProd.Data.Count() == 0)
                     return Json(new { total = 0, records = "", errorMessage = (ListProd.Info.CodError != 0 ? ListProd.Info.Mensaje : string.Empty) });
-                List<PaylessProdPrioriDetModel> Records = ListProd.Data.ToList();
+                List<PaylessProdPrioriDetModel> Records = ListProd.Data.ToList();                
                 List<PaylessProdPrioriDetModel> AllRecords = Records;
                 List<PaylessProdPrioriDetModel> ListProdWithStock = new List<PaylessProdPrioriDetModel>();
                 List<PaylessProdPrioriDetModel> FilteredRecords = Records;
@@ -729,6 +729,7 @@ namespace EdiViewer.Controllers
                     }
                 }
                 AllRecords = Records;
+                Records.ForEach(R => R.Existencia = 1);
                 return Json(new { Total, Records, errorMessage = "", AllRecords, FilteredRecords });
             } catch (Exception e1) {
                 return Json(new { draw = 0, recordsFiltered = 0, recordsTotal = 0, errorMessage = e1.ToString(), data = "" });

@@ -243,7 +243,7 @@
                     {
                         field: "Typ", caption: "Tipo", sortable: true, render: function (record) {
                             if (record.typ == 0)
-                                return '<div>Tienda</div>';
+                                return '<div>Ingreso</div>';
                             else
                                 return '<div>Traslado</div>';
                         }
@@ -356,11 +356,14 @@
                 $('#divPeriodo2').addClass('noShow');
                 $('#divPeriodo').removeClass('noShow');
                 $('#divTransporte').removeClass('noShow');
+                $('#lblFile').text('Archivo de entrada SPS');
             } else {
                 $('#divArchEntrada').removeClass('noShow');
                 $('#divPeriodo2').removeClass('noShow');
                 $('#divPeriodo').addClass('noShow');
                 $('#divTransporte').addClass('noShow');
+                $('#lblFile').text('Archivo de salida SPS');
+                $('#lblFile2').text('Archivo de entrada TGU');
             }
         });
         $('.nav-tabs a').on('shown.bs.tab', function (event) {

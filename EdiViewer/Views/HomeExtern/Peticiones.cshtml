@@ -111,8 +111,8 @@
                     {
                         field: "periodo", caption: "", sortable: true, render: function (record) {
                             var strBtn = '<div class="w2ui-buttons"><a href="javascript:verDetalle(' + record.id + ')">Ver detalle</a>';
-                            if (record.idEstado == 2 && record.changeState)
-                                strBtn += ' | <a href="javascript:ModifyDis(' + record.id + ')">Modificar</a>';
+                            //if (record.idEstado == 2 && record.changeState)
+                            //    strBtn += ' | <a href="javascript:ModifyDis(' + record.id + ')">Modificar</a>';
                             strBtn += '</div>';
                             return strBtn;
                         }
