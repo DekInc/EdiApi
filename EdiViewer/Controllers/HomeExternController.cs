@@ -665,16 +665,16 @@ namespace EdiViewer.Controllers
             }
         }        
         [HttpPost]
-        public async Task<RetInfo> SetPedidoExterno([FromBody]string Json, string cboPeriod)
+        public async Task<RetInfo> SetPedidoExterno([FromBody]string Json, string cboPeriod, int TiendaId)
         {
-            return await SetPedidoExterno2(Json, 1, cboPeriod);
+            return await SetPedidoExterno2(Json, 1, cboPeriod, TiendaId);
         }
         [HttpPost]
-        public async Task<RetInfo> SendPedidoExterno([FromBody]string Json, string cboPeriod)
+        public async Task<RetInfo> SendPedidoExterno([FromBody]string Json, string CboPeriod, int TiendaId)
         {
-            return await SetPedidoExterno2(Json, 2, cboPeriod);            
+            return await SetPedidoExterno2(Json, 2, CboPeriod, TiendaId);
         }
-        private async Task<RetInfo> SetPedidoExterno2(string Json, int IdEstado, string cboPeriod)
+        private async Task<RetInfo> SetPedidoExterno2([FromBody]string Json, int IdEstado, string CboPeriod, int TiendaId)
         {
             DateTime StartTime = DateTime.Now;            
             IEnumerable<PaylessProdPrioriDetModel> ListDis = JsonConvert.DeserializeObject<IEnumerable<PaylessProdPrioriDetModel>>(Json.ToString());            
@@ -701,7 +701,7 @@ namespace EdiViewer.Controllers
             }
             try
             {
-                RetData<PedidosExternos> RetDataO = await ApiClientFactory.Instance.SetPedidoExterno(ListDis, HttpContext.Session.GetObjSession<int>("Session.ClientId"), IdEstado, cboPeriod);
+                RetData<PedidosExternos> RetDataO = await ApiClientFactory.Instance.SetPedidoExterno(ListDis, HttpContext.Session.GetObjSession<int>("Session.ClientId"), IdEstado, CboPeriod);
                 return RetDataO.Info;
             }
             catch (Exception e2)
@@ -1374,6 +1374,9 @@ namespace EdiViewer.Controllers
                                 case "UOM":
                                     ExcelO.SetCellValue(RowO.UOM);
                                     break;
+                                case "destino":
+                                    ExcelO.SetCellValue(RowO.Destino);
+                                    break;
                                 case "exportador":
                                     ExcelO.SetCellValue(RowO.Exportador);
                                     break;
@@ -1639,7 +1642,7 @@ namespace EdiViewer.Controllers
                 return new RetData<string>() {
                     Data = "",
                     Info = new RetInfo() {
-                        CodError = -1,
+                        CodError = -2,
                         Mensaje = "Bodega y regimen inválidos, son cero.",
                         ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
                     }
@@ -1684,7 +1687,7 @@ namespace EdiViewer.Controllers
                             return new RetData<string>() {
                                 Data = "",
                                 Info = new RetInfo() {
-                                    CodError = -1,
+                                    CodError = -2,
                                     Mensaje = "El archivo no tiene la extensión .xls o .xlsx",
                                     ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
                                 }
@@ -1694,7 +1697,7 @@ namespace EdiViewer.Controllers
                             return new RetData<string>() {
                                 Data = "",
                                 Info = new RetInfo() {
-                                    CodError = -1,
+                                    CodError = -2,
                                     Mensaje = "El archivo contiene más de una hoja, por favor coloque la información en la primera hoja.",
                                     ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
                                 }
@@ -1715,7 +1718,7 @@ namespace EdiViewer.Controllers
                                 return new RetData<string>() {
                                     Data = "",
                                     Info = new RetInfo() {
-                                        CodError = -1,
+                                        CodError = -2,
                                         Mensaje = "El archivo contiene columnas que no han sido establecidas, nombre de columna que da error: " + ((NPOI.SS.UserModel.ICell)HeaderRow.GetCell(j)).ToString(),
                                         ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
                                     }
@@ -1788,7 +1791,7 @@ namespace EdiViewer.Controllers
                                                 NewRowInsert.Observaciones = row.GetCell(j).ToString();
                                                 break;
                                             case "oden de compra":
-                                                NewRowInsert.OrdenDeCompra = Convert.ToInt32(row.GetCell(j).ToString());
+                                                NewRowInsert.OrdenDeCompra = row.GetCell(j).ToString();
                                                 break;
                                             case "lote":
                                                 NewRowInsert.Lote = row.GetCell(j).ToString();
@@ -1842,7 +1845,7 @@ namespace EdiViewer.Controllers
                                         return new RetData<string>() {
                                             Data = "",
                                             Info = new RetInfo() {
-                                                CodError = -1,
+                                                CodError = -2,
                                                 Mensaje = $"Error en conversión de tipo para el campo {ListCols[j]} {ec1.ToString()} en la fila {i}",
                                                 ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
                                             }
@@ -1854,7 +1857,7 @@ namespace EdiViewer.Controllers
                         }
                     }
                 }
-                RetData<string> Ret = await ApiLongClientFactory.Instance.SetIngresoExcelWms2(ListExcelRows, cboBodega, cboRegimen);
+                RetData<string> Ret = await ApiLongClientFactory.Instance.SetIngresoExcelWms2(ListExcelRows, cboBodega, cboRegimen, HttpContext.Session.GetObjSession<string>("Session.CodUsr"));
                 return Ret;
             } catch (Exception ex1) {
                 return new RetData<string>() {
@@ -2031,7 +2034,7 @@ namespace EdiViewer.Controllers
         public async Task<RetData<IEnumerable<AsyncStates>>> GetAsyncState0() {
             DateTime StartTime = DateTime.Now;
             try {
-                RetData<IEnumerable<AsyncStates>> List = await ApiClientFactory.Instance.GetAsyncState(0);
+                RetData<IEnumerable<AsyncStates>> List = await ApiClientFactory.Instance.GetAsyncState(0, HttpContext.Session.GetObjSession<string>("Session.CodUsr"));
                 return List;
             } catch (Exception e2) {
                 return new RetData<IEnumerable<AsyncStates>>() {

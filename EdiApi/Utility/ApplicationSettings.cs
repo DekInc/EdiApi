@@ -9,6 +9,7 @@ namespace EdiApi
     {
         public const string DateTimeFormat = "dd/MM/yyyy HH:mm";
         public const string DateTimeFormatSqlServer = "dd-MM-yyyy";
+        public const string DateTimeFormatSqlServerInsert = "yyyy-MM-dd HH:mm";
         public const string DateTimeFormatShort = "dd/MM/yyyy";
         public const string ToDateTimeFormat = "yyMMdd";
         public const string ToTimeFormat = "HHmm";

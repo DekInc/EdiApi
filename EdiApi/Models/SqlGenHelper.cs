@@ -8,11 +8,11 @@ namespace EdiApi.Models {
     public static class SqlGenHelper {
         public static string Temp = "";
         public static string GetSqlWmsMaxTbl(string TableName, string Pk, string Var) {
-            return $"SELECT @{Var} = ISNULL(MAX({Pk}), 0) + 1 FROM dbo.{TableName}; {Temp}";
+            return $"SELECT @{Var} = ISNULL(MAX({Pk}), 0) + 5 FROM dbo.{TableName}; {Temp}";
         }
         public static string GetSqlWmsInsertTransacciones(Transacciones T) {
             return $"INSERT INTO dbo.Transacciones(TransaccionID, NoTransaccion, IDTipoTransaccion, FechaTransaccion, BodegaID, RegimenID, ClienteID, TipoIngreso, Observacion, Usuariocrea, Fechacrea, EstatusID, exportadorid, destinoid) " +
-                $"SELECT @MaxTransaccionId, 'IN' + RIGHT('00000'+ CONVERT(VARCHAR(64), @MaxTransaccionId), 5), '{T.IdtipoTransaccion}', {T.FechaTransaccion.ToSqlDate()}, {T.BodegaId}, {T.RegimenId}, {T.ClienteId}, '{T.TipoIngreso}', '{T.Observacion}', '{T.Usuariocrea}', {T.Fechacrea.ToSqlDate()}, {T.EstatusId}, {T.Exportadorid}, {T.Destinoid}; {Temp}";
+                $"SELECT @MaxTransaccionId, 'IN' + RIGHT('000000'+ CONVERT(VARCHAR(64), @MaxTransaccionId), 6), '{T.IdtipoTransaccion}', {T.FechaTransaccion.ToSqlDate()}, {T.BodegaId}, {T.RegimenId}, {T.ClienteId}, '{T.TipoIngreso}', '{T.Observacion}', '{T.Usuariocrea}', {T.Fechacrea.ToSqlDate()}, {T.EstatusId}, {T.Exportadorid}, {T.Destinoid}; {Temp}";
         }
         public static string GetSqlWmsInsertProducto(Producto P) {
             return $"INSERT INTO dbo.Producto(CodProducto, Descripcion, UnidadMedida, ClienteID, EstatusID, CategoriaID, CantMinima, Fecha, Comentario, stock_maximo, descargoid, partida) " +
@@ -20,19 +20,19 @@ namespace EdiApi.Models {
         }
         public static string GetSqlWmsInsertInventario(Inventario I) {
             return $"INSERT INTO dbo.Inventario(InventarioID, Barcode, FechaCreacion, ClienteID, Descripcion, Declarado, Valor, Articulos, Peso, Volumen, EstatusID, IsAgranel, TipoBulto, existencia, auditado, cantidadinicial, Rack)"
-                + $"SELECT @MaxInventarioId, 'BRC' + RIGHT('0000000'+ CONVERT(VARCHAR(64), @MaxInventarioId), 7), {I.FechaCreacion.ToSqlDate()}, {I.ClienteId}, '{I.Descripcion}', {I.Declarado}, {I.Valor}, {I.Articulos}, {I.Peso}, {I.Volumen}, {I.EstatusId}, {(I.IsAgranel.Value? 1 : 0)}, {I.TipoBulto}, {I.Existencia}, {I.Auditado}, {I.CantidadInicial}, {I.Rack}; {Temp}";
+                + $"SELECT @MaxInventarioId, 'BRC' + RIGHT('0000000'+ CONVERT(VARCHAR(64), @MaxInventarioId), 7), {I.FechaCreacion.ToSqlDate()}, {I.ClienteId}, '{I.Descripcion}', { (I.Declarado ?? 0) }, {I.Valor}, {I.Articulos}, {I.Peso}, {I.Volumen}, {I.EstatusId}, {(I.IsAgranel.Value? 1 : 0)}, {I.TipoBulto}, {I.Existencia}, {I.Auditado}, {I.CantidadInicial}, {I.Rack ?? 0}; {Temp}";
         }
         public static string GetSqlWmsInsertDetalleTransacciones(DetalleTransacciones DT) {
             return $"INSERT INTO dbo.DetalleTransacciones(DtllTrnsaccionID, TransaccionID, InventarioID, Conteo, Cantidad, Valor, fechaitem, rack, embalaje, IsEscaneado) " +
-                $"SELECT @MaxDTId, @MaxTransaccionId, @MaxInventarioId, {DT.Conteo}, {DT.Cantidad}, {DT.Valor}, {DT.Fechaitem.ToSqlDate()}, {DT.Rack}, '{DT.Embalaje}', {(DT.IsEscaneado.Value? 1: 0)}; {Temp}";
+                $"SELECT @MaxDTId, @MaxTransaccionId, @MaxInventarioId, {DT.Conteo}, {DT.Cantidad}, {DT.Valor}, {DT.Fechaitem.ToSqlDate()}, {DT.Rack ?? 0}, '{DT.Embalaje}', {(DT.IsEscaneado.Value? 1: 0)}; {Temp}";
         }
         public static string GetSqlWmsInsertItemInventario(ItemInventario Ii) {
             return $"INSERT INTO dbo.ItemInventario(ItemInventarioID, InventarioID, CodProducto, Declarado, Precio, Observacion, fechaitem, descripcion, auditado, existencia, CantidadInicial, cod_equivale, pais_orig, lote, numero_oc, modelo, color, estilo) " +
-                $"SELECT @MaxItemInventario, @MaxInventarioId, '{Ii.CodProducto}', {Ii.Declarado}, {Ii.Precio}, '{Ii.Observacion}', {Ii.Fechaitem.ToSqlDate()}, '{Ii.Descripcion}', {Ii.Auditado}, {Ii.Existencia}, {Ii.CantidadInicial}, '{Ii.CodEquivale}', {Ii.PaisOrig}, '{Ii.Lote}', '{Ii.NumeroOc}', '{Ii.Modelo}', '{Ii.Color}', '{Ii.Estilo}'; {Temp}";
+                $"SELECT @MaxItemInventario, @MaxInventarioId, '{Ii.CodProducto}', {Ii.Declarado}, {Ii.Precio ?? 0}, '{Ii.Observacion}', {Ii.Fechaitem.ToSqlDate()}, '{Ii.Descripcion}', {Ii.Auditado}, {Ii.Existencia}, {Ii.CantidadInicial}, '{Ii.CodEquivale}', {Ii.PaisOrig}, '{Ii.Lote}', '{Ii.NumeroOc}', '{Ii.Modelo}', '{Ii.Color}', '{Ii.Estilo}'; {Temp}";
         }
         public static string GetSqlWmsInsertDtllItemTransaccion(DtllItemTransaccion Dit) {
             return $"INSERT INTO dbo.DtllItemTransaccion(DtllItemTransaccionID, TransaccionID, DtllTransaccionID, ItemInventarioID, Cantidad, Precio, RACK) " +
-                $"SELECT @MaxDetItemTran, @MaxTransaccionId, @MaxDTId, @MaxItemInventario, {Dit.Cantidad}, {Dit.Precio}, {Dit.Rack}; {Temp}";
+                $"SELECT @MaxDetItemTran, @MaxTransaccionId, @MaxDTId, @MaxItemInventario, {Dit.Cantidad}, {Dit.Precio}, {Dit.Rack ?? 0}; {Temp}";
         }
         public static string GetSqlWmsInsertItemParamaetroxProducto(ItemParamaetroxProducto Pa) {
             return $"INSERT INTO dbo.ItemParamaetroxProducto(InventarioID, ItemInventarioID, CodProducto, ParametroID, ValParametro) " +
@@ -77,7 +77,7 @@ namespace EdiApi.Models {
         }
         public static string GetSqlWmsInsertTransaccionesOut(Transacciones T) {
             return $"INSERT INTO dbo.Transacciones(TransaccionID, NoTransaccion, IDTipoTransaccion, FechaTransaccion, BodegaID, RegimenID, ClienteID, TipoIngreso, Observacion, Usuariocrea, Fechacrea, EstatusID) " +
-                $"SELECT @TransaccionID, 'SA' + RIGHT('00000'+ CONVERT(VARCHAR(64), @TransaccionID), 5), '{T.IdtipoTransaccion}', {T.FechaTransaccion.ToSqlDate()}, {T.BodegaId}, {T.RegimenId}, {T.ClienteId}, '{T.TipoIngreso}', '{T.Observacion}', '{T.Usuariocrea}', {T.Fechacrea.ToSqlDate()}, {T.EstatusId}; {Temp}";
+                $"SELECT @TransaccionID, 'SA' + RIGHT('000000'+ CONVERT(VARCHAR(64), @TransaccionID), 6), '{T.IdtipoTransaccion}', {T.FechaTransaccion.ToSqlDate()}, {T.BodegaId}, {T.RegimenId}, {T.ClienteId}, '{T.TipoIngreso}', '{T.Observacion}', '{T.Usuariocrea}', {T.Fechacrea.ToSqlDate()}, {T.EstatusId}; {Temp}";
         }
     }
 }

@@ -277,9 +277,9 @@ namespace CoreApiClient
         public async Task<RetData<IEnumerable<Regimen>>> GetWmsRegimen(int BodegaId) {
             return await PostGetAsyncJson<RetData<IEnumerable<Regimen>>>(CreateRequestUri(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Data/GetWmsRegimen"), $"?BodegaId={BodegaId}"), "");
         }
-        public async Task<RetData<string>> SetIngresoExcelWms2(IEnumerable<WmsFileModel> ListProducts, int cboBodega, int cboRegimen) {
+        public async Task<RetData<string>> SetIngresoExcelWms2(IEnumerable<WmsFileModel> ListProducts, int cboBodega, int cboRegimen, string CodUser) {
             string JsonParams = JsonConvert.SerializeObject(ListProducts);
-            return await PostGetAsyncJson<RetData<string>>(CreateRequestUri(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Data/SetIngresoExcelWms2"), $"?cboBodega={cboBodega}&cboRegimen={cboRegimen}"), JsonParams);
+            return await PostGetAsyncJson<RetData<string>>(CreateRequestUri(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Data/SetIngresoExcelWms2"), $"?cboBodega={cboBodega}&cboRegimen={cboRegimen}&CodUser={CodUser}"), JsonParams);
         }
         public async Task<RetData<string>> SetSalidaWmsFromEscaner(IEnumerable<string> ListProducts2, string dtpPeriodo, int cboBodegas, int cboRegimen) {
             string JsonParams = JsonConvert.SerializeObject(ListProducts2);
@@ -292,8 +292,8 @@ namespace CoreApiClient
         public async Task<RetData<IEnumerable<PaylessTiendas>>> GetStores() {
             return await GetAsync<RetData<IEnumerable<PaylessTiendas>>>(CreateRequestUri(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Data/GetStores")));
         }
-        public async Task<RetData<IEnumerable<AsyncStates>>> GetAsyncState(int Typ) {
-            return await GetAsync<RetData<IEnumerable<AsyncStates>>>(CreateRequestUri(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Data/GetAsyncState"), $"?Typ={Typ}"));
+        public async Task<RetData<IEnumerable<AsyncStates>>> GetAsyncState(int Typ, string CodUser) {
+            return await GetAsync<RetData<IEnumerable<AsyncStates>>>(CreateRequestUri(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Data/GetAsyncState"), $"?Typ={Typ}&CodUser={CodUser}"));
         }
         public async Task<RetData<IEnumerable<FE830DataAux>>> GetStockByTienda(int ClienteId, int TiendaId) {
             return await GetAsync<RetData<IEnumerable<FE830DataAux>>>(CreateRequestUri(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Data/GetStockByTienda"), $"?ClienteId={ClienteId}&TiendaId={TiendaId}"));

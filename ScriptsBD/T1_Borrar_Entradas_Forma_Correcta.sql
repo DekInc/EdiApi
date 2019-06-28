@@ -22,7 +22,7 @@ select * from EdiDb.dbo.AsyncStates
 ----1-------------------------------
 begin
 DECLARE @TransaccionId int;
-SET @TransaccionId = 116883;
+SET @TransaccionId = 119518;
 
 Delete From wms.dbo.ItemParamaetroxProducto Where ItemInventarioID In (
 Select ItemInventarioID From wms.dbo.ItemInventario Where InventarioID In (

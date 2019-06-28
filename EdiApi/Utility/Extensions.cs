@@ -88,10 +88,10 @@ namespace EdiApi
                         );
         }
         public static string ToSqlDate(this DateTime _D) {
-            return $"CONVERT(DATETIME, '{_D.ToString(ApplicationSettings.DateTimeFormatShort)}', 103)";
+            return $"CONVERT(DATETIME, '{_D.ToString(ApplicationSettings.DateTimeFormatSqlServerInsert)}', 120)";
         }
         public static string ToSqlDate(this DateTime? _D) {
-            return $"CONVERT(DATETIME, '{_D.Value.ToString(ApplicationSettings.DateTimeFormatShort)}', 103)";
+            return $"CONVERT(DATETIME, '{_D.Value.ToString(ApplicationSettings.DateTimeFormatSqlServerInsert)}', 120)";
         }
         public static T Gr<T>(this System.Data.Common.DbDataReader Dr, int I) {
             if (Dr.IsDBNull(I)) return default(T);

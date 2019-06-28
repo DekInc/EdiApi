@@ -693,6 +693,9 @@ table.dataTable.dtr-inline.collapsed > tbody > tr[role="row"] > td:first-child:b
 .marginTop10{
     margin-top: 10px;
 }
+.marginBottom10 {
+    margin-bottom: 10px;
+}
 .divPaso {
     color: #000;
     font-weight: bold;

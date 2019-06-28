@@ -20,7 +20,7 @@ namespace EdiApi.Models {
         public double? Valor { get; set; }
         public double? NumeroEntrada { get; set; }
         public string Observaciones { get; set; }
-        public int OrdenDeCompra { get; set; }
+        public string OrdenDeCompra { get; set; }
         public string Lote { get; set; }
         public string NumeroFactura { get; set; }
         public string Cliente { get; set; }

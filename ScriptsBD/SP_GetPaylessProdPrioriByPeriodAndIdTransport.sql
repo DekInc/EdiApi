@@ -15,7 +15,7 @@ BEGIN
 		Ex.OID,
 		Ex.Barcode,
 		Ex.Estado,
-		(SUBSTRING(Ex.Barcode, 1, 4) + ' - ' + Ti.Descr) Tienda,
+		(SUBSTRING(Ex.Barcode, 1, 4) + ' - ' + 'payless shoe source - ' + (CASE Ti.BodegaId WHEN 81 THEN 'sps' WHEN 82 THEN 'tgu' END)) Tienda,
 		Ex.PoolP,
 		Ex.Producto,
 		Ex.Talla,

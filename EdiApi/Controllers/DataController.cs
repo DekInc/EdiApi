@@ -1837,13 +1837,13 @@ namespace EdiApi.Controllers
             try
             {
                 IEnumerable<PaylessProdPrioriArchM> ListPaylessProdPrioriArchM = DbO.PaylessProdPrioriArchM.Where(Pp => Pp.Periodo == Periodo && Pp.IdTransporte == IdTransporte);
-                if (ListPaylessProdPrioriArchM.Count() > 0)
+                if (ListPaylessProdPrioriArchM.Count() > 0 && cboTipo == 0)
                 {
                     IEnumerable<PaylessProdPrioriArchDet> ListPaylessProdPrioriArchDet = DbO.PaylessProdPrioriArchDet.Where(Pd => Pd.IdM == ListPaylessProdPrioriArchM.Fod().Id);
                     DbO.PaylessProdPrioriArchDet.RemoveRange(ListPaylessProdPrioriArchDet);
                 }
                 PaylessProdPrioriArchM NewMas = new PaylessProdPrioriArchM();
-                if (ListPaylessProdPrioriArchM.Count() > 0)
+                if (ListPaylessProdPrioriArchM.Count() > 0 && cboTipo == 0)
                 {
                     NewMas = ListPaylessProdPrioriArchM.Fod();
                     NewMas.UpdateDate = DateTime.Now.ToString(ApplicationSettings.DateTimeFormat);
@@ -2490,7 +2490,8 @@ namespace EdiApi.Controllers
                             Volumen = G.Fod().Ex.M3,
                             Cliente = G.Fod().Ex.dateProm,
                             UOM = 1,
-                            Exportador = 2,
+                            Exportador = 435,
+                            Destino = 35308,
                             PaisOrigen = 166,
                             Cp = string.Join(" ", G.Where(O1 => !string.IsNullOrEmpty(O1.Ex.Cp)).Select(O2 => O2.Ex.Cp).Distinct().ToArray()),
                             Cont = G.Count(),
@@ -2796,14 +2797,14 @@ namespace EdiApi.Controllers
             }
         }
         [HttpPost]
-        public RetData<string> SetIngresoExcelWms2(IEnumerable<WmsFileModel> ListProducts, int cboBodega, int cboRegimen) {
+        public RetData<string> SetIngresoExcelWms2(IEnumerable<WmsFileModel> ListProducts, int cboBodega, int cboRegimen, string CodUser) {
             DateTime StartTime = DateTime.Now;
             int MaxTransaccionId = 0;
             //int MaxInventarioId = 0;
             if (ListProducts.Select(P => P.Barcode).Distinct().Count() != ListProducts.Count())
                 return new RetData<string> {
                     Info = new RetInfo() {
-                        CodError = -1,
+                        CodError = -2,
                         Mensaje = "Error, el CodProducto debe ser único",
                         ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
                     }
@@ -2817,7 +2818,7 @@ namespace EdiApi.Controllers
                 if (ListProducts.Count() == 0)
                     return new RetData<string> {
                         Info = new RetInfo() {
-                            CodError = -1,
+                            CodError = -2,
                             Mensaje = "Error, no hay filas a cargar",
                             ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
                         }
@@ -2825,15 +2826,64 @@ namespace EdiApi.Controllers
                 if (ListProducts.Where(O => string.IsNullOrEmpty(O.ReciboAlmacen)).Count() > 0)
                     return new RetData<string> {
                         Info = new RetInfo() {
-                            CodError = -1,
+                            CodError = -2,
                             Mensaje = "Error, el recibo de almacen está vacio para un registro",
+                            ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                        }
+                    };
+                if (ListProducts.Where(O => O.RackId == 0).Count() > 0)
+                    return new RetData<string> {
+                        Info = new RetInfo() {
+                            CodError = -2,
+                            Mensaje = "Error, el rack está vacio.",
+                            ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                        }
+                    };
+                if (ListProducts.Where(O => !O.Valor.HasValue).Count() > 0)
+                    return new RetData<string> {
+                        Info = new RetInfo() {
+                            CodError = -2,
+                            Mensaje = "Error, la columna está vacia.",
+                            ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                        }
+                    };
+                if (ListProducts.Where(O => !O.ValorUnitario.HasValue).Count() > 0)
+                    return new RetData<string> {
+                        Info = new RetInfo() {
+                            CodError = -2,
+                            Mensaje = "Error, el valor unitario está vacio.",
+                            ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                        }
+                    };
+                IEnumerable<int> ListProdRacks = ListProducts.Select(Lp => Lp.RackId).Distinct();
+                List<Racks> ListRacksTemp = (
+                    from R in WmsDbO.Racks
+                    from Lpr in ListProdRacks
+                    where R.Rack == Lpr
+                    select R
+                    ).ToList();
+                foreach (Racks R in ListRacksTemp) {
+                    if (R.BodegaId != cboBodega)
+                        return new RetData<string> {
+                            Info = new RetInfo() {
+                                CodError = -2,
+                                Mensaje = "Error, Rack no pertenece a la bodega seleccionada.",
+                                ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                            }
+                        };
+                }                
+                if (ListProducts.Where(O => !O.ValorUnitario.HasValue).Count() > 0)
+                    return new RetData<string> {
+                        Info = new RetInfo() {
+                            CodError = -2,
+                            Mensaje = "Error, el valor unitario está vacio.",
                             ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
                         }
                     };
                 if (ListProducts.Select(O => O.ReciboAlmacen).Distinct().Count() > 1)
                     return new RetData<string> {
                         Info = new RetInfo() {
-                            CodError = -1,
+                            CodError = -2,
                             Mensaje = "Error, hay más de un recibo de almacen",
                             ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
                         }
@@ -2849,7 +2899,7 @@ namespace EdiApi.Controllers
                 if (ListC1.Count > 0)
                     return new RetData<string> {
                         Info = new RetInfo() {
-                            CodError = -1,
+                            CodError = -2,
                             Mensaje = "Error, existen informes de almacen duplicados, el numero de informe Almacen ya existe.",
                             ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
                         }
@@ -2865,7 +2915,7 @@ namespace EdiApi.Controllers
                 if (ListC2.Count != ListC2Verif.Count)
                     return new RetData<string> {
                         Info = new RetInfo() {
-                            CodError = -1,
+                            CodError = -2,
                             Mensaje = "Error, el código de embalaje no existe",
                             ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
                         }
@@ -2876,9 +2926,9 @@ namespace EdiApi.Controllers
                 //Salida.WriteLine("Comienza ingreso.");
                 //Salida.Close();                
                 int NTran = 1;
-                IEnumerable<AsyncStates> ListAsyncs = (from A in DbO.AsyncStates where A.Typ == 0 select A);
+                IEnumerable<AsyncStates> ListAsyncs = (from A in DbO.AsyncStates where A.Typ == 0 && A.CodUser == CodUser select A);
                 if (ListAsyncs.Count() == 0) {
-                    ThisProc = new AsyncStates() { Typ = 0, Val = 0, Maximum = ListProducts.Count() };
+                    ThisProc = new AsyncStates() { Typ = 0, Val = 0, Maximum = ListProducts.Count(), CodUser = CodUser };
                     DbO.AsyncStates.Add(ThisProc);
                     DbO.SaveChanges();
                 } else {
@@ -2886,7 +2936,7 @@ namespace EdiApi.Controllers
                     ThisProc.Mess = string.Empty;
                     ThisProc.Val = 0;
                 }
-                foreach (WmsFileModel Product in ListProducts) {
+                foreach (WmsFileModel Product in ListProducts) {                    
                     //Salida = new System.IO.StreamWriter("Errores.txt", true);
                     //Salida.WriteLine(Product.Barcode);
                     //Salida.Close();
@@ -2909,7 +2959,7 @@ namespace EdiApi.Controllers
                     if (ListVerifCliente.Count() == 0) {
                         return new RetData<string> {
                             Info = new RetInfo() {
-                                CodError = -1,
+                                CodError = -2,
                                 Mensaje = "No existe el cliente " + Product.Cliente,
                                 ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
                             }
@@ -2978,7 +3028,7 @@ namespace EdiApi.Controllers
                             }
                             return new RetData<string> {
                                 Info = new RetInfo() {
-                                    CodError = -1,
+                                    CodError = -2,
                                     Mensaje = "El producto ya existe en la base de datos, CodProducto = " + Product.Barcode,
                                     ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
                                 }
@@ -3094,7 +3144,7 @@ namespace EdiApi.Controllers
                             DocTranNew.Im5 = Product.NumeroEntrada.ToString();
                             //DocTranNew.FeIm5 = Product.FechaIm5.ToDateFromEspDate();
                         }
-                        if (Product.OrdenDeCompra != 0) {
+                        if (!string.IsNullOrEmpty(Product.OrdenDeCompra)) {
                             DocTranNew.OrdenCompra = Product.OrdenDeCompra.ToString();
                         }
                         if (!string.IsNullOrEmpty(Product.NumeroFactura)) {
@@ -3141,7 +3191,7 @@ SET XACT_ABORT OFF
                     }
                 };
             } catch (Exception e1) {
-                ThisProc.Mess = "Error al cargar el archivo.";
+                ThisProc.Mess = "Error al cargar el archivo. " + e1.ToString();
                 DbO.AsyncStates.Update(ThisProc);
                 DbO.SaveChanges();
                 System.IO.StreamWriter Salida2 = new System.IO.StreamWriter("Errores.txt", true);
@@ -3203,7 +3253,7 @@ SET XACT_ABORT OFF
                     } catch (Exception e2) {
                         return new RetData<string> {
                             Info = new RetInfo() {
-                                CodError = -1,
+                                CodError = -2,
                                 Mensaje = $"Error en el ingreso y no se pudo borrar automaticamente la transacción {MaxTransaccionId}. El error principal es: {e1.ToString()} y el error secundario es {e2.ToString()}",
                                 ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
                             }
@@ -3212,7 +3262,7 @@ SET XACT_ABORT OFF
                 }
                 return new RetData<string> {
                     Info = new RetInfo() {
-                        CodError = -1,
+                        CodError = -2,
                         Mensaje = $"Det: {e1.ToString()}",
                         ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
                     }
@@ -3676,10 +3726,10 @@ SET XACT_ABORT OFF
             }
         }
         [HttpGet]
-        public RetData<IEnumerable<AsyncStates>> GetAsyncState(int Typ) {
+        public RetData<IEnumerable<AsyncStates>> GetAsyncState(int Typ, string CodUser) {
             DateTime StartTime = DateTime.Now;
             try {
-                IEnumerable<AsyncStates> List = (from A in DbO.AsyncStates where A.Typ == Typ select A);
+                IEnumerable<AsyncStates> List = (from A in DbO.AsyncStates where A.Typ == Typ && A.CodUser == CodUser select A);
                 return new RetData<IEnumerable<AsyncStates>> {
                     Data = List,
                     Info = new RetInfo() {

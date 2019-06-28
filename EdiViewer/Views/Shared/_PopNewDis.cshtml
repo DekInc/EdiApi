@@ -5,14 +5,33 @@
                 <h5 class="modal-title" id="exampleModalLabel2"></h5>
             </div>
             <div class="modal-body">
-                <div id="divMensajePop2">
-                    <p>Por favor confirme los productos del pedido y la fecha del mismo</p>
-                    <p>
-                        <label class="label" for="dtp2">Fecha y hora esperada</label><br />
-                        <input class="form-control datepicker" data-link-format="dd/mm/yyyy hh:ii" id="dtp2" maxlength="19" value="@(ViewBag.DateLastDis == null? string.Empty : ViewBag.DateLastDis)" />
-                    </p>
-                    <div class="container" id="divList">
-                        <div id="gridPedidoDet" style="min-height: 460px; width: 100%;"></div>
+                <div id="divMensajePop2" class="container-fluid">
+                    <div class="row">
+                        <div class="col">
+                            Por favor confirme los productos del pedido y la fecha del mismo
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <label class="label" for="dtp2">Fecha y hora esperada</label><br />
+                            <input class="form-control datepicker" data-link-format="dd/mm/yyyy hh:ii" id="dtp2" maxlength="19" value="@(ViewBag.DateLastDis == null? string.Empty : ViewBag.DateLastDis)" />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <label for="cboTiendaDest">Tienda destino</label>
+                            <select id="cboTiendaDest" name="cboTiendaDest" class="form-control marginBottom10"></select>
+                            <span id="divSpinTiendaDest" class="spinner-border spinner-border-sm text-danger" style="display: none" role="status">
+                                <span class="sr-only">Loading...</span>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <div class="container" id="divList">
+                                <div id="gridPedidoDet" style="min-height: 260px; width: 100%;"></div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -49,13 +68,11 @@
                 },
                 searches: [
                     { field: "barcode", caption: "Cod. caja", type: 'text' },
-                    //{ field: "producto", caption: "Lote", type: 'text' },
+                    { field: "producto", caption: "Lote", type: 'text' },
                     { field: "talla", caption: "Talla", type: 'text' },
-                    //{ field: "lote", caption: "Estilo", type: 'text' },
+                    { field: "lote", caption: "Estilo", type: 'text' },
                     { field: "categoria", caption: "Genero", type: 'text' },
-                    { field: "departamento", caption: "departamento", type: 'text' },
-                    { field: "cp", caption: "cp", type: 'text' },
-                    { field: "transporte", caption: "Transporte", type: 'text' }
+                    { field: "cp", caption: "cp", type: 'text' }
                 ],
                 colShowResponsive: [
                     { field: 'barcode' },
@@ -63,15 +80,13 @@
                 ],
                 columns: [
                     { field: "id", caption: "id", sortable: true, hidden: true },
-                    { field: "transporte", caption: "Transporte", type: 'text' },
                     { field: "barcode", caption: "Cod. caja", type: 'text', sortable: true },
-                    //{ field: "producto", caption: "Lote", type: 'text' },
-                    { field: "talla", caption: "talla", type: 'text' },
+                    { field: "producto", caption: "Lote", type: 'text', sortable: true },
+                    { field: "talla", caption: "Talla", type: 'text', sortable: true },
+                    { field: "lote", caption: "estilo", type: 'text', sortable: true },
                     { field: "categoria", caption: "Genero", type: 'text', sortable: true },
-                    //{ field: "lote", caption: "estilo", type: 'text' },
-                    { field: "cantPedir", caption: "Cantidad a pedir", sortable: true },
-                    { field: "departamento", caption: "departamento", type: 'text' },
-                    { field: "cp", caption: "cp", type: 'text', sortable: true }
+                    { field: "cp", caption: "cp", type: 'text', sortable: true },
+                    { field: "cantPedir", caption: "Cantidad a pedir", sortable: true }
                 ]
             }
         };
@@ -145,13 +160,14 @@
                 funcbtnOkMessageBox();
         }
     }
-    $('#btnSaveDis').on('click', function () {
+    @*$('#btnSaveDis').on('click', function () {
         SaveSendDis('@this.Url.Action("SetPedidoExterno", "HomeExtern")?cboPeriod=' + $('#cboPeriod').val(), 1);
-    });
+    });*@
     $('#btnSendDis').on('click', function () {
-        SaveSendDis('@this.Url.Action("SendPedidoExterno", "HomeExtern")?cboPeriod=' + $('#cboPeriod').val(), 2);
+        SaveSendDis('@this.Url.Action("SendPedidoExterno", "HomeExtern")?CboPeriod=' + $('#dtp2').val() + '&TiendaId=' + $('#cboTiendaDest').val(), 2);
     });
     $(document).ready(function () {
         $('#dtp2').datetimepicker({ format: 'dd/mm/yyyy hh:ii' });
+        fillComboboxWithValue('#divSpinTiendaDest', '@this.Url.Action("GetStores", "HomeExtern")', '#cboTiendaDest', 'tiendaId', 'descr', 0);
     });
 </script>

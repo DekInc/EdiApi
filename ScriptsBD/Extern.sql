@@ -5,7 +5,7 @@ select * from wms_test_29_01_2019.dbo.Paises where NomPais like'%pana%'
 select * from wms.dbo.Clientes with(nolock) where nombre like '%payl%' OR ClienteID = 610 order by ClienteID asc
 select * from edidb.dbo.IEnetUsers where Id > 4 order by CodUsr
 select * from edidb.dbo.IEnetUsers order by CodUsr
-select * from edidb.dbo.IEnetUsers where HashId like '%26062019%' order by CodUsr desc
+select * from edidb.dbo.IEnetUsers where HashId like '%28062019%' order by HashId desc
 select * from edidb.dbo.IEnetGroupsAccesses
 select * from EdiDb.dbo.Trasladado1
 --delete from edidb.dbo.IEnetGroupsAccesses where Id = 40
@@ -24,7 +24,7 @@ select * from wms_test.dbo.Inventario where ClienteID = 610
 -- 2 4 92
 select * from wms.dbo.usrsystem where CodUsr in (2, 4, 92)
 select * from wms.dbo.usrsystem where idusr like'%ainventariot%' or nomusr like'%ainventariot%'
-select distinct Color, CodProducto from wms.dbo.Producto where CodProducto like '7370%'
+select distinct CodProducto from wms.dbo.Producto where CodProducto like '7373824407%'
 select top 1000000 * from wms.dbo.Producto P where ClienteID = 385
 select * from wms.dbo.ItemInventario where CodProducto like '1902347' and color  = 'DRYU 961708-5'
 --Did: 52004, Cd 1902347
@@ -80,7 +80,9 @@ SELECT * FROM EdiDB.dbo.PedidosDetExternos where PedidoId = 12
 SELECT * FROM EdiDB.dbo.PedidosDetExternos where CodProducto = '7372854892'
 order by CodProducto, CantPedir
 select * from EdiDB.dbo.PAYLESS_ProdPrioriDet where lote like '569862'
-select MAX(LEN(lote)) from EdiDB.dbo.PAYLESS_ProdPrioriDet where barcode like '7376840999'
+select * from EdiDB.dbo.PAYLESS_ProdPrioriDet where barcode = '7373824407'
+select * from EdiDB.dbo.PAYLESS_ProdPrioriArchM
+select * from EdiDB.dbo.PAYLESS_ProdPrioriArchDet where barcode = '7373824407'
 select DISTINCT Talla, Producto from EdiDB.dbo.PAYLESS_ProdPrioriDet order by 2
 select DISTINCT Talla, Producto from EdiDB.dbo.PAYLESS_ProdPrioriDet order by 2
 --7372854892
@@ -270,8 +272,9 @@ AND T.IDTipoTransaccion = 'SA'
 
 select top 20 * from wms.dbo.DocumentosxTransaccion
 select top 20 * from wms.dbo.Inventario
-select top 20 * from wms.dbo.Transacciones where TransaccionID = 19060
+select top 20 * from wms.dbo.Transacciones where TransaccionID = 119336
 select * from wms.dbo.SysTempSalidas where TransaccionID = 118398
+select * from wms.dbo.SysTempSalidas where CodProducto = '7373824407'
 select * from EdiDb.dbo.PAYLESS_ProdPrioriDet D where D.Barcode in (
 	SELECT CodProducto FROM wms.dbo.SysTempSalidas S WHERE S.DtllPedidoID in (
 		select DtllPedidoID from wms.dbo.DtllPedido where PedidoId = 70310
@@ -388,8 +391,8 @@ select * from PAYLESS_ProdPrioriDet where IdTransporte = 9
 select * from EdiDb.dbo.PAYLESS_ProdPrioriArchM
 --update  EdiDb.dbo.PAYLESS_ProdPrioriArchM SET PorcValidez = null, Typ = 0 where Id = 9
 --update  EdiDb.dbo.PAYLESS_ProdPrioriArchM SET Typ = 0
---delete from EdiDb.dbo.PAYLESS_ProdPrioriArchM where Id = 35
---delete from EdiDb.dbo.PAYLESS_ProdPrioriArchDet where IdM = 35
+--delete from EdiDb.dbo.PAYLESS_ProdPrioriArchM where Id in (38, 39)
+--delete from EdiDb.dbo.PAYLESS_ProdPrioriArchDet where IdM in (38, 39)
 select * from EdiDb.dbo.PAYLESS_ProdPrioriArchDet
 select * from EdiDb.dbo.PAYLESS_Transporte
 select * from EdiDb.dbo.Lear_PureEdi
@@ -780,14 +783,20 @@ select * from wms.dbo.Racks where Rack = 11759
 select * from wms.dbo.Transacciones where usuarioCrea = 'RPERDOMO' and IDTipoTransaccion = 'IN' and ClienteID = 1432 order by FechaCrea DESC
 select * from wms.dbo.Transacciones WITH(NOLOCK) where usuarioCrea = 'Hilmer' order by FechaCrea DESC
 select * from wms.dbo.Transacciones WITH(NOLOCK) where IDTipoTransaccion = 'IN' and ClienteID = 1432 order by FechaCrea DESC
-select top 40 * from wms.dbo.Transacciones WITH(NOLOCK) where IDTipoTransaccion = 'SA' and ClienteID = 1432 order by TransaccionID DESC
+select top 40 * from wms.dbo.Transacciones WITH(NOLOCK) where 
+--IDTipoTransaccion = 'SA' and 
+ClienteID = 1432 order by TransaccionID DESC
+--119515
 
 --Salidas ultimo es 116661 y está ok
 EXEC SP_WHO2
 select * from wms.dbo.DocumentosxTransaccion order by IDDocxTransaccion DESC
 select * from wms.dbo.DocumentosxTransaccion where Informe_almacen like 'GLCHN33%'  order by IDDocxTransaccion DESC
-
-select * from wms.dbo.DocumentosxTransaccion where TransaccionID = 116883
+--119,483
+SELECT CONVERT(DATETIME, '2019-06-27 16:53', 120) fECHA
+select max(transaccionID) from wms.dbo.Transacciones
+select * from wms.dbo.Transacciones where ClienteId = 1432 order by TransaccionID DESC
+select * from wms.dbo.DocumentosxTransaccion where TransaccionID = 19476
 select * from wms.dbo.DocumentosxTransaccion where TransaccionID in (
 select TransaccionID from wms.dbo.Transacciones WITH(NOLOCK) where ClienteID = 1432
 )
@@ -796,7 +805,7 @@ select TransaccionID from wms.dbo.Transacciones WITH(NOLOCK) where ClienteID = 1
 --delete from wms.dbo.Transacciones where TransaccionID in (116389, 116368, 116367)
 -- 7370872774 es la que viene duplicada, la 7380 vino junto
 select top 2 * from wms.dbo.SysTempSalidas where CodProducto = '7376841272'
-select count(*) from wms.dbo.SysTempSalidas where TransaccionID = 118198
+select * from wms.dbo.SysTempSalidas where TransaccionID = 119473
 --7369829033 duplicado en archivos de escaners ?
 select * from wms.dbo.Producto where CodProducto = '7380872774'
 select * from wms.dbo.Transacciones where TransaccionId in (118198)

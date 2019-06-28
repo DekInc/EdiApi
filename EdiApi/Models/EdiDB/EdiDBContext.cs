@@ -79,13 +79,17 @@ namespace EdiApi.Models.EdiDB
         public virtual DbSet<WmsProductoExistencia> WmsProductoExistencia { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
+        {            
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<AsyncStates>(entity =>
             {
+                entity.Property(e => e.CodUser)
+                    .HasMaxLength(128)
+                    .IsUnicode(false);
+
                 entity.Property(e => e.Fecha)
                     .HasMaxLength(24)
                     .IsUnicode(false);
@@ -1404,7 +1408,7 @@ namespace EdiApi.Models.EdiDB
                 entity.ToTable("PAYLESS_ReportesMails");
 
                 entity.HasIndex(e => e.MailDir)
-                    .HasName("UQ__PAYLESS___7E7D34CC370627FE")
+                    .HasName("UQ__PAYLESS___7E7D34CC4B0D20AB")
                     .IsUnique();
 
                 entity.Property(e => e.MailDir)

@@ -63,6 +63,7 @@
 <script>
     var tblReportes = null;
     var mainGrid = null;
+    var stopAsync = false;
     function getWmsBodegas() {
         $.ajax({
             url: '@this.Url.Action("GetWmsBodegas", "HomeExtern")',
@@ -173,7 +174,13 @@
                 contentType: false,
                 processData: false,
                 success: function (response) {
+                    if (response.info.codError == -2) {
+                        menErrorEdi(response.info.mensaje);
+                        return response.data;
+                    }
                     setInterval(function () {
+                        if (stopAsync)
+                            return;
                         $.ajax({
                             url: '@this.Url.Action("GetAsyncState0", "HomeExtern")',
                             type: 'GET',
@@ -184,10 +191,12 @@
                                     return json.data;
                                 }
                                 if (json.data) {
-                                    $('#spanCont').text(json.data[0].val + ' / ' + json.data[0].Maximum);
+                                    console.log(json.data);
+                                    $('#spanCont').text(json.data[0].val + ' / ' + json.data[0].maximum);
                                     if (json.data[0].Mess != '') {
                                         $('#divSpinUploadFile').hide();
-                                        menErrorEdi(json.data[0].Mess, 'Información');
+                                        menErrorEdi(json.data[0].mess, 'Información');
+                                        stopAsync = true;
                                     }
                                 }
                             },

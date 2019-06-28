@@ -46,7 +46,7 @@ IF OBJECT_ID('PAYLESS_ProdPrioriArchM', 'U') IS NOT NULL
 GO
 CREATE TABLE PAYLESS_ProdPrioriArchM(
 	[Id] int PRIMARY KEY IDENTITY(1,1),
-	[Periodo] [nvarchar](10) NULL,
+	[Periodo] [nvarchar](18) NULL,
 	IdTransporte [int] NULL,	
 	[CodUsr] nvarchar(128),
 	InsertDate nvarchar(16),
