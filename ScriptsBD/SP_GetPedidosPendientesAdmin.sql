@@ -35,7 +35,14 @@ BEGIN
 		D.CP,
 		D.Barcode,
 		Pu.Rack,
-		Pu.NombreRack
+		Pu.NombreRack,
+		D.Departamento,
+		D.Producto,
+		D.Lote,
+		D.Talla,
+		Pe.FullPed,
+		Pe.Divert,
+		Pe.TiendaIdDestino		
 	FROM EdiDB.dbo.PedidosExternos Pe WITH(NOLOCK)
 	JOIN EdiDB.dbo.PedidosDetExternos PeD WITH(NOLOCK)
 		ON PeD.PedidoId = Pe.Id

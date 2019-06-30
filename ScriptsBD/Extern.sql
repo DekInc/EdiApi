@@ -5,7 +5,7 @@ select * from wms_test_29_01_2019.dbo.Paises where NomPais like'%pana%'
 select * from wms.dbo.Clientes with(nolock) where nombre like '%payl%' OR ClienteID = 610 order by ClienteID asc
 select * from edidb.dbo.IEnetUsers where Id > 4 order by CodUsr
 select * from edidb.dbo.IEnetUsers order by CodUsr
-select * from edidb.dbo.IEnetUsers where HashId like '%28062019%' order by HashId desc
+select * from edidb.dbo.IEnetUsers where HashId like '%29062019%' order by HashId desc
 select * from edidb.dbo.IEnetGroupsAccesses
 select * from EdiDb.dbo.Trasladado1
 --delete from edidb.dbo.IEnetGroupsAccesses where Id = 40
@@ -37,9 +37,18 @@ select * from EdiDB.dbo.PAYLESS_ReportesDet where IdM = 20 order by Id
 SELECT * FROM EdiDB.dbo.PedidosExternos order by FechaCreacion DESC
 SELECT * FROM EdiDB.dbo.PedidosExternos order by FechaPedido DESC
 SELECT * FROM EdiDB.dbo.PedidosExternos where Id = 122
-SELECT * FROM EdiDB.dbo.PedidosExternos 
+SELECT * FROM EdiDb.dbo.PedidosExternos_Bkp
+SELECT * INTO EdiDb.dbo.PedidosExternos_Bkp FROM EdiDB.dbo.PedidosExternos 
 SELECT * FROM EdiDB.dbo.PedidosExternos where TiendaId = 7376 AND Id = 122
 SELECT * FROM EdiDB.dbo.PedidosExternos where FullPed = 0
+SELECT * FROM EdiDB.dbo.PedidosExternos where SUBSTRING(FechaPedido, 1, 10) = '02/07/2019'
+SELECT * FROM EdiDB.dbo.PedidosDetExternos where PedidoId = 126
+SELECT Ped.*, D.* 
+FROM EdiDB.dbo.PedidosDetExternos Ped
+JOIN EdiDB.dbo.PAYLESS_ProdPrioriDet D
+	ON D.Barcode = Ped.CodProducto
+where Ped.PedidoId = 126
+select * from EdiDB.dbo.PAYLESS_ProdPrioriDet D where D.Barcode like '7368%' and 
 --update EdiDB.dbo.PedidosExternos SET FechaPedido = '28/06/2019 07:00' where Id = 122
 --truncate table EdiDB.dbo.PAYLESS_Reportes
 --truncate table EdiDB.dbo.PAYLESS_ReportesDet
@@ -59,17 +68,19 @@ select @@servicename
 --63232
 --1967856447
 exec SP_GetExistenciasExtern 618
-	
+
+SELECT * FROM EdiDB.dbo.PedidosExternos order by ID DESC
 SELECT * FROM EdiDB.dbo.PedidosExternos order by TiendaId, FechaPedido
 SELECT * FROM EdiDB.dbo.PedidosExternos where Id = 60
 SELECT * FROM EdiDB.dbo.PedidosDetExternos where PedidoId = 59
---update EdiDB.dbo.PedidosExternos SET PedidoWMS = null, IdEstado = 2
+--update EdiDB.dbo.PedidosExternos SET FullPed = 1 where Id = 151
 select * from edidb.dbo.IEnetUsers where Id > 4
 --16	1432	7384	04/06/2019 08:00	2	31/05/2019 11:45	NULL	NULL	100	19	0	0	fifo
 SELECT FechaPedido, REPLACE(FechaPedido, '03/06', '04/06') FROM EdiDB.dbo.PedidosExternos
---update EdiDB.dbo.PedidosExternos SET FechaPedido = REPLACE(FechaPedido, '04/06', '05/06')
---delete from EdiDB.dbo.PedidosExternos where id in (112)
---delete from EdiDB.dbo.PedidosDetExternos where PedidoId in (112)
+SELECT * FROM EdiDB.dbo.PedidosExternos where SUBSTRING(FechaPedido, 1, 10) = '02/07/2019'
+--update EdiDB.dbo.PedidosExternos SET FechaPedido = '02/07/2019 10:30' where Id = 159
+--delete from EdiDB.dbo.PedidosExternos where id in (156)
+--delete from EdiDB.dbo.PedidosDetExternos where PedidoId in (156)
 --update PedidosExternos SET FechaPedido = '08/05/2019 16:00', IdEstado = 2 where Id = 1
 --delete from EdiDB.dbo.PedidosExternos where Id > 15
 --truncate table EdiDB.dbo.PedidosExternos
@@ -79,6 +90,7 @@ SELECT FechaPedido, REPLACE(FechaPedido, '03/06', '04/06') FROM EdiDB.dbo.Pedido
 SELECT * FROM EdiDB.dbo.PedidosDetExternos where PedidoId = 12
 SELECT * FROM EdiDB.dbo.PedidosDetExternos where CodProducto = '7372854892'
 order by CodProducto, CantPedir
+select * from EdiDB.dbo.PAYLESS_ProdPrioriDet where Categoria = 'ACCESORIOS' and departamento in ('9', '10', '11')
 select * from EdiDB.dbo.PAYLESS_ProdPrioriDet where lote like '569862'
 select * from EdiDB.dbo.PAYLESS_ProdPrioriDet where barcode = '7373824407'
 select * from EdiDB.dbo.PAYLESS_ProdPrioriArchM
@@ -796,7 +808,7 @@ select * from wms.dbo.DocumentosxTransaccion where Informe_almacen like 'GLCHN33
 SELECT CONVERT(DATETIME, '2019-06-27 16:53', 120) fECHA
 select max(transaccionID) from wms.dbo.Transacciones
 select * from wms.dbo.Transacciones where ClienteId = 1432 order by TransaccionID DESC
-select * from wms.dbo.DocumentosxTransaccion where TransaccionID = 19476
+select * from wms.dbo.DocumentosxTransaccion where TransaccionID = 119592
 select * from wms.dbo.DocumentosxTransaccion where TransaccionID in (
 select TransaccionID from wms.dbo.Transacciones WITH(NOLOCK) where ClienteID = 1432
 )

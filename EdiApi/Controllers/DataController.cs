@@ -3586,14 +3586,14 @@ SET XACT_ABORT OFF
                             ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
                         }
                     };
-                if (StartTime.DayOfWeek == DayOfWeek.Saturday && StartTime.Hour > 10 && dtpFechaEntrega.ToDateFromEspDate().DayOfWeek == DayOfWeek.Monday)
-                    return new RetData<string> {
-                        Info = new RetInfo() {
-                            CodError = -1,
-                            Mensaje = "Error, el sábado no se pueden hacer pedidos a partir de las 10am para el lunes.",
-                            ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
-                        }
-                    };
+                //if (StartTime.DayOfWeek == DayOfWeek.Saturday && StartTime.Hour > 10 && dtpFechaEntrega.ToDateFromEspDate().DayOfWeek == DayOfWeek.Monday)
+                //    return new RetData<string> {
+                //        Info = new RetInfo() {
+                //            CodError = -1,
+                //            Mensaje = "Error, el sábado no se pueden hacer pedidos a partir de las 10am para el lunes.",
+                //            ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                //        }
+                //    };
                 List<PaylessProdPrioriDetModel> ListProdTienda = ManualDB.SP_GetPaylessProdSinPedido(ref DbO, ClienteId, TiendaId);                
                 List<PaylessProdPrioriDetModel> ListProdWithStock = new List<PaylessProdPrioriDetModel>();
                 IEnumerable<FE830DataAux> ListStock = ManualDB.SP_GetExistenciasByTienda(ref DbO, ClienteId, TiendaId);
@@ -3617,72 +3617,120 @@ SET XACT_ABORT OFF
                     if (!Divert.Value) {
                         ListProdPedido = (
                             from P1 in ListProdWithStock
-                            where !string.IsNullOrEmpty(P1.Cp)
-                            && (P1.Cp.Contains("A", StringComparison.InvariantCultureIgnoreCase)
-                            || P1.Cp.Contains("H", StringComparison.InvariantCultureIgnoreCase))
+                            where //!string.IsNullOrEmpty(P1.Cp)
+                            (P1.Cp == "A"
+                            ///|| P1.Cp.Contains("H", StringComparison.InvariantCultureIgnoreCase)
+                            || P1.Departamento == "9"
+                            || P1.Departamento == "10"
+                            || P1.Departamento == "11"
+                            )
                             select P1
                             ).ToList();
                     }
+                } else {
+                    ListProdPedido = (
+                           from P1 in ListProdWithStock
+                           where //!string.IsNullOrEmpty(P1.Cp)
+                           (P1.Cp == "A"
+                            ///|| P1.Cp.Contains("H", StringComparison.InvariantCultureIgnoreCase)
+                            || P1.Departamento == "9"
+                           || P1.Departamento == "10"
+                           || P1.Departamento == "11"
+                           )
+                           select P1
+                           ).ToList();
                 }
                 int NContCp = ListProdPedido.Count;
                 switch (radInvType) {
                     case "fifo":
                         ListProdPedido.AddRange((
                             from P2 in ListProdWithStock
-                            where string.IsNullOrEmpty(P2.Cp)
+                            where !(P2.Cp == "A"
+                            || P2.Departamento == "9"
+                            || P2.Departamento == "10"
+                            || P2.Departamento == "11"
+                            )
                             && P2.Categoria.ToUpper() == "DAMAS"
-                            orderby P2.Departamento.ToDateFromEspDate() descending
+                            orderby P2.dateProm.ToDateFromEspDate() descending
                             select P2
                             ).Take(txtWomanQty).Distinct().ToList());
                         ListProdPedido.AddRange((
                             from P2 in ListProdWithStock
-                            where string.IsNullOrEmpty(P2.Cp)
+                            where !(P2.Cp == "A"
+                            || P2.Departamento == "9"
+                            || P2.Departamento == "10"
+                            || P2.Departamento == "11"
+                            )
                             && P2.Categoria.ToUpper() == "CABALLEROS"
-                            orderby P2.Departamento.ToDateFromEspDate() descending
+                            orderby P2.dateProm.ToDateFromEspDate() descending
                             select P2
                             ).Take(txtManQty).Distinct().ToList());
                         ListProdPedido.AddRange((
                             from P2 in ListProdWithStock
-                            where string.IsNullOrEmpty(P2.Cp)
+                            where !(P2.Cp == "A"
+                            || P2.Departamento == "9"
+                            || P2.Departamento == "10"
+                            || P2.Departamento == "11"
+                            )
                             && P2.Categoria.ToUpper() == "NIÑOS / AS"
-                            orderby P2.Departamento.ToDateFromEspDate() descending
+                            orderby P2.dateProm.ToDateFromEspDate() descending
                             select P2
                             ).Take(txtKidQty).Distinct().ToList());
                         ListProdPedido.AddRange((
                             from P2 in ListProdWithStock
-                            where string.IsNullOrEmpty(P2.Cp)
+                            where !(P2.Cp == "A"
+                            || P2.Departamento == "9"
+                            || P2.Departamento == "10"
+                            || P2.Departamento == "11"
+                            )
                             && P2.Categoria.ToUpper() == "ACCESORIOS"
-                            orderby P2.Departamento.ToDateFromEspDate() descending
+                            orderby P2.dateProm.ToDateFromEspDate() descending
                             select P2
                             ).Take(txtAccQty).Distinct().ToList());
                         break;
                     case "lifo":
                         ListProdPedido.AddRange((
                             from P2 in ListProdWithStock
-                            where string.IsNullOrEmpty(P2.Cp)
+                            where !(P2.Cp == "A"
+                            || P2.Departamento == "9"
+                            || P2.Departamento == "10"
+                            || P2.Departamento == "11"
+                            )
                             && P2.Categoria.ToUpper() == "DAMAS"
-                            orderby P2.Departamento.ToDateFromEspDate() ascending
+                            orderby P2.dateProm.ToDateFromEspDate() ascending
                             select P2
                             ).Take(txtWomanQty).Distinct().ToList());
                         ListProdPedido.AddRange((
                             from P2 in ListProdWithStock
-                            where string.IsNullOrEmpty(P2.Cp)
+                            where !(P2.Cp == "A"
+                            || P2.Departamento == "9"
+                            || P2.Departamento == "10"
+                            || P2.Departamento == "11"
+                            )
                             && P2.Categoria.ToUpper() == "CABALLEROS"
-                            orderby P2.Departamento.ToDateFromEspDate() ascending
+                            orderby P2.dateProm.ToDateFromEspDate() ascending
                             select P2
                             ).Take(txtManQty).Distinct().ToList());
                         ListProdPedido.AddRange((
                             from P2 in ListProdWithStock
-                            where string.IsNullOrEmpty(P2.Cp)
+                            where !(P2.Cp == "A"
+                            || P2.Departamento == "9"
+                            || P2.Departamento == "10"
+                            || P2.Departamento == "11"
+                            )
                             && P2.Categoria.ToUpper() == "NIÑOS / AS"
-                            orderby P2.Departamento.ToDateFromEspDate() ascending
+                            orderby P2.dateProm.ToDateFromEspDate() ascending
                             select P2
                             ).Take(txtKidQty).Distinct().ToList());
                         ListProdPedido.AddRange((
                             from P2 in ListProdWithStock
-                            where string.IsNullOrEmpty(P2.Cp)
+                            where !(P2.Cp == "A"
+                            || P2.Departamento == "9"
+                            || P2.Departamento == "10"
+                            || P2.Departamento == "11"
+                            )
                             && P2.Categoria.ToUpper() == "ACCESORIOS"
-                            orderby P2.Departamento.ToDateFromEspDate() ascending
+                            orderby P2.dateProm.ToDateFromEspDate() ascending
                             select P2
                             ).Take(txtAccQty).Distinct().ToList());
                         break;
@@ -3708,10 +3756,10 @@ SET XACT_ABORT OFF
                 DbO.PedidosDetExternos.AddRange(ListPed);
                 DbO.SaveChanges();
                 return new RetData<string> {
-                    Data = $"Se realizo el pedido, para la categoria mujeres: {txtWomanQty}, hombres: {txtManQty}, niñ@s: {txtKidQty}, Accesorios: {txtAccQty}, CP: {NContCp}. Número de pedido: {NewPe.Id}",
+                    Data = $"Se realizo el pedido, para la categoria mujeres: {txtWomanQty}, hombres: {txtManQty}, niñ@s: {txtKidQty}, Accesorios: {txtAccQty}, cantidad de prioridades: {NContCp}. Número de pedido: {NewPe.Id}",
                     Info = new RetInfo() {
                         CodError = 0,
-                        Mensaje = $"Se realizo el pedido, para la categoria mujeres: {txtWomanQty}, hombres: {txtManQty}, niñ@s: {txtKidQty}, Accesorios: {txtAccQty}, CP: {NContCp}. Número de pedido: {NewPe.Id}",
+                        Mensaje = $"Se realizo el pedido, para la categoria mujeres: {txtWomanQty}, hombres: {txtManQty}, niñ@s: {txtKidQty}, Accesorios: {txtAccQty}, cantidad de prioridades: {NContCp}. Número de pedido: {NewPe.Id}",
                         ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
                     }
                 };
@@ -3797,8 +3845,8 @@ SET XACT_ABORT OFF
         [HttpGet]
         public RetData<List<PedidosPendientesAdmin>> GetPedidosPendientesAdmin() {
             DateTime StartTime = DateTime.Now;
-            try {
-                AsyncStates ThisProc = new AsyncStates();
+            AsyncStates ThisProc = new AsyncStates();
+            try {                
                 IEnumerable<AsyncStates> ListAsyncs = (from A in DbO.AsyncStates where A.Typ == 2 select A);
                 if (ListAsyncs.Count() == 0) {
                     ThisProc = new AsyncStates() { Typ = 2, Val = 0, Maximum = 2 };
@@ -3825,6 +3873,10 @@ SET XACT_ABORT OFF
                     }
                 };
             } catch (Exception e1) {
+                if (ThisProc.Id != 0) {
+                    DbO.AsyncStates.Remove(ThisProc);
+                    DbO.SaveChanges();
+                }
                 return new RetData<List<PedidosPendientesAdmin>> {
                     Info = new RetInfo() {
                         CodError = -1,
@@ -4183,28 +4235,44 @@ SET XACT_ABORT OFF
                                             from Pu in DbO.ProductoUbicacion
                                             where Pu.Rack == ListOrdersByTienda.ElementAt(Pi).Id
                                             && Pu.NomBodega.ToUpper() == "DAMAS"
-                                            && (Pu.NombreRack == "A" || Pu.NombreRack == "H")
+                                            && (Pu.NombreRack == "A"
+                                            || Pu.Departamento == "9"
+                                            || Pu.Departamento == "10"
+                                            || Pu.Departamento == "11"
+                                            )
                                             select Pu.Id
                                             ).Count();
                                         ManCp = (
                                             from Pu in DbO.ProductoUbicacion
                                             where Pu.Rack == ListOrdersByTienda.ElementAt(Pi).Id
                                             && Pu.NomBodega.ToUpper() == "CABALLEROS"
-                                            && (Pu.NombreRack == "A" || Pu.NombreRack == "H")
+                                            && (Pu.NombreRack == "A"
+                                            || Pu.Departamento == "9"
+                                            || Pu.Departamento == "10"
+                                            || Pu.Departamento == "11"
+                                            )
                                             select Pu.Id
                                             ).Count();
                                         KidsCp = (
                                             from Pu in DbO.ProductoUbicacion
                                             where Pu.Rack == ListOrdersByTienda.ElementAt(Pi).Id
                                             && Pu.NomBodega.ToUpper() == "NIÑOS / AS"
-                                            && (Pu.NombreRack == "A" || Pu.NombreRack == "H")
+                                            && (Pu.NombreRack == "A"
+                                            || Pu.Departamento == "9"
+                                            || Pu.Departamento == "10"
+                                            || Pu.Departamento == "11"
+                                            )
                                             select Pu.Id
                                             ).Count();
                                         AccCp = (
                                             from Pu in DbO.ProductoUbicacion
                                             where Pu.Rack == ListOrdersByTienda.ElementAt(Pi).Id
                                             && Pu.NomBodega.ToUpper() == "ACCESORIOS"
-                                            && (Pu.NombreRack == "A" || Pu.NombreRack == "H")
+                                            && (Pu.NombreRack == "A"
+                                            || Pu.Departamento == "9"
+                                            || Pu.Departamento == "10"
+                                            || Pu.Departamento == "11"
+                                            )
                                             select Pu.Id
                                             ).Count();
                                         TotalWomanCp += WomanCp;

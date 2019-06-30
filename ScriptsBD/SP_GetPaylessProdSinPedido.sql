@@ -14,7 +14,8 @@ BEGIN
 		D.CP,
 		D.Categoria,
 		D.IdPAYLESS_ProdPrioriM,
-		M.Periodo
+		M.Periodo,
+		D.Departamento
 	FROM dbo.PAYLESS_ProdPrioriM M WITH(NOLOCK)
 	JOIN dbo.PAYLESS_ProdPrioriDet D WITH(NOLOCK) 
 		ON D.IdPAYLESS_ProdPrioriM = M.Id

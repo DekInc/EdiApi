@@ -806,11 +806,12 @@ namespace EdiApi.Models
                 if (Dr.HasRows) {
                     while (Dr.Read()) {
                         ListProdDet.Add(new PaylessProdPrioriDetModel() {
-                            Barcode = Convert.ToString(Dr.GetValue(0)),
-                            Cp = Convert.ToString(Dr.GetValue(1)),
-                            Categoria = Convert.ToString(Dr.GetValue(2)),
-                            IdPaylessProdPrioriM = Convert.ToInt32(Dr.GetValue(3)),
-                            Departamento = Convert.ToString(Dr.GetValue(4)),
+                            Barcode = Dr.Gr<string>(0),
+                            Cp = Dr.Gr<string>(1),
+                            Categoria = Dr.Gr<string>(2),
+                            IdPaylessProdPrioriM = Dr.Gr<int>(3),
+                            dateProm = Dr.Gr<string>(4),
+                            Departamento = Dr.Gr<string>(5),
                         });
                     }
                 }
@@ -840,6 +841,13 @@ namespace EdiApi.Models
                             Barcode = Dr.Gr<string>(7),
                             IdRack = Dr.Gr<int>(8),
                             NombreRack = Dr.Gr<string>(9),
+                            Departamento = Dr.Gr<string>(10),
+                            Producto = Dr.Gr<string>(11),
+                            Lote = Dr.Gr<string>(12),
+                            Talla = Dr.Gr<string>(13),
+                            FullPed = Dr.Gr<bool?>(14),
+                            Divert = Dr.Gr<bool?>(15),
+                            TiendaIdDestino = Dr.Gr<int?>(16)
                         });
                     }
                 }

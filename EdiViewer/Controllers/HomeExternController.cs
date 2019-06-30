@@ -109,9 +109,9 @@ namespace EdiViewer.Controllers
                 return View("PedidosPayless3", new ErrorModel() { ErrorMessage = "La cantidad a pedir es cero para todas las categorias." });
             }
             DateTime DateDis = dtpFechaEntrega.ToDate();
-            if ((DateDis - DateTime.Now).TotalHours < 24) {
-                return View("PedidosPayless3", new ErrorModel() { ErrorMessage = "La fecha y hora del pedido debe ser con más de 24 horas de anticipación." });
-            }
+            //if ((DateDis - DateTime.Now).TotalHours < 24) {
+            //    return View("PedidosPayless3", new ErrorModel() { ErrorMessage = "La fecha y hora del pedido debe ser con más de 24 horas de anticipación." });
+            //}
             List<PaylessProdPrioriDetModel> ListQtys = HttpContext.Session.GetObjSession<List<PaylessProdPrioriDetModel>>("Session.StoreQtys");
             bool? FullPed = null;
             FullPed = (
@@ -2069,6 +2069,8 @@ namespace EdiViewer.Controllers
             DateTime StartTime = DateTime.Now;
             try {
                 RetData<string> List = await ApiClientFactory.Instance.ChangeUserTienda(IdUser, TiendaId);
+                if (IdUser == 1)
+                    HttpContext.Session.SetObjSession("Session.TiendaId", TiendaId);
                 return List;
             } catch (Exception e2) {
                 return new RetData<string> {

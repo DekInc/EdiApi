@@ -598,7 +598,8 @@ namespace EdiViewer.Controllers
                         //Pri = Grp.Fod().Pri,
                         //PoolP = Grp.Fod().PoolP,
                         //Departamento = Grp.Fod().Departamento,
-                        Cp = string.IsNullOrEmpty(Grp.Fod().Cp)? "No" : "Si",
+                        //Cp = Grp.Fod().Cp == "A"? "Si" : "No",
+                        Cp = ((Grp.Fod().Cp == "A" || Grp.Fod().Departamento == "9" || Grp.Fod().Departamento == "10" || Grp.Fod().Departamento == "11") ? "Si" : "No"),
                         Id = Grp.Fod().Id
                         //Peso = Grp.Count(),
                         //IdTransporte = Grp.Fod().IdTransporte,

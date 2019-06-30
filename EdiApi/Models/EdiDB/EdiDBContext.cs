@@ -78,8 +78,10 @@ namespace EdiApi.Models.EdiDB
         public virtual DbSet<UsuariosExternos> UsuariosExternos { get; set; }
         public virtual DbSet<WmsProductoExistencia> WmsProductoExistencia { get; set; }
 
+        // Unable to generate entity type for table 'dbo.PedidosExternos_Bkp'. Please see the warning messages.
+
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {            
+        {
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -95,7 +97,7 @@ namespace EdiApi.Models.EdiDB
                     .IsUnicode(false);
 
                 entity.Property(e => e.Mess)
-                    .HasMaxLength(2048)
+                    .HasMaxLength(4096)
                     .IsUnicode(false);
             });
 
@@ -1505,6 +1507,10 @@ namespace EdiApi.Models.EdiDB
             {
                 entity.Property(e => e.CodProducto)
                     .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.Departamento)
+                    .HasMaxLength(16)
                     .IsUnicode(false);
 
                 entity.Property(e => e.NomBodega)

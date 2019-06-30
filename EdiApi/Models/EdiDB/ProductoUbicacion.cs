@@ -11,5 +11,6 @@ namespace EdiApi.Models.EdiDB
         public string NomBodega { get; set; }
         public int? Rack { get; set; }
         public string NombreRack { get; set; }
+        public string Departamento { get; set; }
     }
 }
