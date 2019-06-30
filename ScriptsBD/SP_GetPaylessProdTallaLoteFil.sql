@@ -10,7 +10,8 @@ CREATE PROCEDURE [dbo].SP_GetPaylessProdTallaLoteFil
 @CboTalla VARCHAR(8),
 @CboLote VARCHAR(8),
 @CboCategoria VARCHAR(1),
-@CodUser VARCHAR(128)
+@CodUser VARCHAR(128),
+@BodegaId int
 AS
 BEGIN
 	SELECT DISTINCT
@@ -22,7 +23,7 @@ BEGIN
 		D.CP
 	FROM EdiDB.dbo.PAYLESS_ProdPrioriDet D WITH(NOLOCK)
 	LEFT JOIN EdiDB.dbo.WmsProductoExistencia Ex WITH(NOLOCK)
-		ON Ex.CodUser = @CodUser AND Ex.CodProducto = D.Barcode
+		ON Ex.CodUser = @CodUser AND Ex.CodProducto = D.Barcode AND Ex.BodegaId = @BodegaId
 	WHERE D.Barcode like '%' + @TxtBarcode + '%'
 	AND D.Producto like @CboProducto + '%'
 	AND D.Talla like @CboTalla + '%'

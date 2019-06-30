@@ -12,16 +12,22 @@ AS
 BEGIN
 	DELETE FROM EdiDB.dbo.ProductoUbicacion WHERE Typ = 1
 	INSERT INTO EdiDB.dbo.ProductoUbicacion (Typ, CodProducto, NomBodega, Rack, NombreRack)
-	SELECT DISTINCT 1, Ii.CodProducto, B.NomBodega, R.Rack, R.NombreRack
+	SELECT DISTINCT 1, 
+		Ii.CodProducto, 
+		B.NomBodega, 
+		R.Rack, 
+		R.NombreRack		
 		from wms.dbo.ItemInventario Ii WITH(NOLOCK)
 		JOIN wms.dbo.DetalleTransacciones Dt WITH(NOLOCK)
-			ON Dt.InventarioID = Ii.InventarioID		
+			ON Dt.InventarioID = Ii.InventarioID
+		JOIN wms.dbo.Transacciones Tr
+			ON Tr.TransaccionID = Dt.TransaccionID
 		JOIN wms.dbo.Inventario I WITH(NOLOCK)
 			ON I.InventarioID = Ii.InventarioID
 		JOIN wms.dbo.Racks R WITH(NOLOCK)
 			ON R.Rack = I.Rack
 		JOIN wms.dbo.Bodegas B WITH(NOLOCK)
-			ON B.BodegaID = R.BodegaID
+			ON B.BodegaID = Tr.BodegaID
 		where I.ClienteID = 1432
 		AND Ii.Existencia > 0
 

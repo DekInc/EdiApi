@@ -694,14 +694,14 @@ namespace EdiViewer.Controllers
                 return Json(new { draw = 0, recordsFiltered = 0, recordsTotal = 0, errorMessage = e1.ToString(), data = "" });
             }
         }
-        public async Task<IActionResult> GetPaylessProdTallaLoteFil(string TxtBarcode, string CboProducto, string CboTalla, string CboLote, string CboCategoria) {
+        public async Task<IActionResult> GetPaylessProdTallaLoteFil(string TxtBarcode, string CboProducto, string CboTalla, string CboLote, string CboCategoria, string CboBodega) {
             try {
                 if (TxtBarcode == "null") TxtBarcode = string.Empty;
                 if (CboProducto == "null" || CboProducto == "0") CboProducto = string.Empty;
                 if (CboTalla == "null" || CboTalla == "0") CboTalla = string.Empty;
                 if (CboLote == "null" || CboLote == "0") CboLote = string.Empty;
                 if (CboCategoria == "null" || CboCategoria == "-1") CboCategoria = string.Empty;
-                RetData<IEnumerable<PaylessProdPrioriDetModel>> ListProd = await ApiLongClientFactory.Instance.GetPaylessProdTallaLoteFil(TxtBarcode, CboProducto, CboTalla, CboLote, CboCategoria, HttpContext.Session.GetObjSession<string>("Session.CodUsr"));
+                RetData<IEnumerable<PaylessProdPrioriDetModel>> ListProd = await ApiLongClientFactory.Instance.GetPaylessProdTallaLoteFil(TxtBarcode, CboProducto, CboTalla, CboLote, CboCategoria, HttpContext.Session.GetObjSession<string>("Session.CodUsr"), CboBodega);
                 if (ListProd.Info.CodError != 0)
                     return Json(new { total = 0, records = "", errorMessage = ListProd.Info.Mensaje });
                 if (ListProd.Data == null)

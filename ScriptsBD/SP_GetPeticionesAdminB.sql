@@ -126,8 +126,9 @@ BEGIN
 		Pe.Divert,
 		Pe.TiendaIdDestino
 	FROM EdiDB.dbo.PedidosExternos Pe WITH(NOLOCK)
-	JOIN EdiDB.dbo.PAYLESS_Tiendas T WITH(NOLOCK)
+	LEFT JOIN EdiDB.dbo.PAYLESS_Tiendas T WITH(NOLOCK)
 		ON T.TiendaId = Pe.TiendaId	
+	
 	DELETE FROM EdiDB.dbo.ProductoUbicacion WHERE Typ IN (2)
 END
 

@@ -28,6 +28,7 @@ select distinct CodProducto from wms.dbo.Producto where CodProducto like '737382
 select top 1000000 * from wms.dbo.Producto P where ClienteID = 385
 select * from wms.dbo.ItemInventario where CodProducto like '1902347' and color  = 'DRYU 961708-5'
 --Did: 52004, Cd 1902347
+select * from EdiDB.dbo.WmsProductoExistencia where BodegaId = 81
 SELECT * FROM EdiDB.dbo.ProductoUbicacion
 select * from EdiDB.dbo.PAYLESS_ReportesMails order by Id
 select * from EdiDB.dbo.AsyncStates
@@ -35,6 +36,7 @@ select * from EdiDB.dbo.PAYLESS_Reportes
 select * from EdiDB.dbo.PAYLESS_Reportes where Periodo = '09/06/2019'
 select * from EdiDB.dbo.PAYLESS_ReportesDet where IdM = 20 order by Id
 SELECT * FROM EdiDB.dbo.PedidosExternos order by FechaCreacion DESC
+SELECT * FROM EdiDB.dbo.PedidosExternos order by id DESC
 SELECT * FROM EdiDB.dbo.PedidosExternos order by FechaPedido DESC
 SELECT * FROM EdiDB.dbo.PedidosExternos where Id = 122
 SELECT * FROM EdiDb.dbo.PedidosExternos_Bkp
@@ -72,15 +74,15 @@ exec SP_GetExistenciasExtern 618
 SELECT * FROM EdiDB.dbo.PedidosExternos order by ID DESC
 SELECT * FROM EdiDB.dbo.PedidosExternos order by TiendaId, FechaPedido
 SELECT * FROM EdiDB.dbo.PedidosExternos where Id = 60
-SELECT * FROM EdiDB.dbo.PedidosDetExternos where PedidoId = 59
+SELECT * FROM EdiDB.dbo.PedidosDetExternos where PedidoId = 174
 --update EdiDB.dbo.PedidosExternos SET FullPed = 1 where Id = 151
 select * from edidb.dbo.IEnetUsers where Id > 4
 --16	1432	7384	04/06/2019 08:00	2	31/05/2019 11:45	NULL	NULL	100	19	0	0	fifo
 SELECT FechaPedido, REPLACE(FechaPedido, '03/06', '04/06') FROM EdiDB.dbo.PedidosExternos
-SELECT * FROM EdiDB.dbo.PedidosExternos where SUBSTRING(FechaPedido, 1, 10) = '02/07/2019'
---update EdiDB.dbo.PedidosExternos SET FechaPedido = '02/07/2019 10:30' where Id = 159
---delete from EdiDB.dbo.PedidosExternos where id in (156)
---delete from EdiDB.dbo.PedidosDetExternos where PedidoId in (156)
+SELECT * FROM EdiDB.dbo.PedidosExternos where SUBSTRING(FechaPedido, 1, 10) = '03/06/2019'
+--update EdiDB.dbo.PedidosExternos SET FechaPedido = '03/07/2019 06:00' where Id = 165
+--delete from EdiDB.dbo.PedidosExternos where id in (175, 176)
+--delete from EdiDB.dbo.PedidosDetExternos where PedidoId in (175, 176)
 --update PedidosExternos SET FechaPedido = '08/05/2019 16:00', IdEstado = 2 where Id = 1
 --delete from EdiDB.dbo.PedidosExternos where Id > 15
 --truncate table EdiDB.dbo.PedidosExternos
@@ -323,7 +325,7 @@ ORDER BY Ii.CodProducto
 
 EXEC sp_spaceused;
 
-select * from wms.dbo.Bodegas where BodegaId = 81
+select * from wms.dbo.Bodegas where BodegaId = 82
 select * from wms.dbo.Racks where Rack in (
 11789,
 11808,

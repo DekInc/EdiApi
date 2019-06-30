@@ -74,7 +74,7 @@ function fillCombobox(divSpin, serverUrl, comboName, valueName, textName, valueD
                         selected: this[valueName] == valueDef? true : false
                     }));
                 });
-                if (afterFillCombobox != null)
+                if (afterFillCombobox)
                     afterFillCombobox();
             }            
         },
@@ -105,7 +105,7 @@ function fillComboboxWithValue(divSpin, serverUrl, comboName, valueName, textNam
                         selected: this[valueName] == valueDef ? true : false
                     }));
                 });
-                if (afterFillCombobox != null)
+                if (afterFillCombobox)
                     afterFillCombobox();
             }
         },

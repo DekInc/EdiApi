@@ -21,6 +21,13 @@
                         <div class="container div856Search">
                             <div class="row">
                                 <div class="col-sm">
+                                    <label for="cboBodega">Lote</label>                                    
+                                    <select class="form-control" id="cboBodega" name="cboBodega">
+                                        <option value="81">GLC EL POLVORIN</option>
+                                        <option value="82">GLC-TGU</option>
+                                    </select>
+                                </div>
+                                <div class="col-sm">
                                     <label for="TxtBarcode">Barcode</label>
                                     <input class="form-control" id="TxtBarcode" maxlength="10" autocorrect="off" autocapitalize="off" autocomplete="off">
                                 </div>
@@ -29,32 +36,28 @@
                                     <div id="divSpincboProducto" class="spinner-border spinner-border-sm text-danger" style="display: none" role="status">
                                         <span class="sr-only">Loading...</span>
                                     </div>
-                                    <select class="form-control" id="cboProducto" name="cboProducto">
-                                    </select>
+                                    <select class="form-control" id="cboProducto" name="cboProducto"></select>
                                 </div>
                                 <div class="col-sm">
                                     <label for="cboTalla">Talla</label>
                                     <div id="divSpincboTalla" class="spinner-border spinner-border-sm text-danger" style="display: none" role="status">
                                         <span class="sr-only">Loading...</span>
                                     </div>
-                                    <select class="form-control" id="cboTalla" name="cboTalla">
-                                    </select>
+                                    <select class="form-control" id="cboTalla" name="cboTalla"></select>
                                 </div>
                                 <div class="col-sm">
                                     <label for="cboLote">Estilo</label>
                                     <div id="divSpincboLote" class="spinner-border spinner-border-sm text-danger" style="display: none" role="status">
                                         <span class="sr-only">Loading...</span>
                                     </div>
-                                    <select class="form-control" id="cboLote" name="cboLote">
-                                    </select>
+                                    <select class="form-control" id="cboLote" name="cboLote"></select>
                                 </div>
                                 <div class="col-sm">
                                     <label for="cboCategoria">Genero</label>
                                     <div id="divSpincboCategoria" class="spinner-border spinner-border-sm text-danger" style="display: none" role="status">
                                         <span class="sr-only">Loading...</span>
                                     </div>
-                                    <select class="form-control" id="cboCategoria" name="cboCategoria">
-                                    </select>
+                                    <select class="form-control" id="cboCategoria" name="cboCategoria"></select>
                                 </div>
                             </div>
                             <div class="row margin5">
@@ -122,6 +125,7 @@
             $('#spanClientName').css('margin-bottom', '10px');
         }
     }
+    function afterFillCombobox() { }
     function changeProdPedido(isValid, idR, txtCant) {
         if (!isValid) return isValid;
         if ($('#TxtProducto' + idR).attr('readonly') != undefined)
@@ -168,7 +172,7 @@
                 selectType: 'cell',
                 bResponsive: true,
                 bMobile: window.mobileAndTabletcheck(),
-                url: '@this.Url.Action("GetPaylessProdTallaLoteFil", "Grids")?TxtBarcode=321553&CboProducto=' + $('#cboProducto').val() + '&CboTalla=' + $('#cboTalla').val() + '&CboLote=' + $('#cboLote').val() + '&CboCategoria=' + $('#cboCategoria').val(),
+                url: '@this.Url.Action("GetPaylessProdTallaLoteFil", "Grids")?TxtBarcode=321553&CboProducto=' + $('#cboProducto').val() + '&CboTalla=' + $('#cboTalla').val() + '&CboLote=' + $('#cboLote').val() + '&CboCategoria=' + $('#cboCategoria').val() + '&CboBodega=' + $('#cboBodega').val(),
                 show: {
                     footer: true,
                     toolbar: false,
@@ -347,7 +351,7 @@
             mainGrid.allRecords = [];
             $('#divSpinFiltrar').show();
             mainGrid.searchReset(true);
-            mainGrid.reload2('@this.Url.Action("GetPaylessProdTallaLoteFil", "Grids")?TxtBarcode=' + $('#TxtBarcode').val() + '&CboProducto=' + $('#cboProducto').val() + '&CboTalla=' + $('#cboTalla').val() + '&CboLote=' + $('#cboLote').val() + '&CboCategoria=' + $('#cboCategoria').val());
+            mainGrid.reload2('@this.Url.Action("GetPaylessProdTallaLoteFil", "Grids")?TxtBarcode=' + $('#TxtBarcode').val() + '&CboProducto=' + $('#cboProducto').val() + '&CboTalla=' + $('#cboTalla').val() + '&CboLote=' + $('#cboLote').val() + '&CboCategoria=' + $('#cboCategoria').val() + '&CboBodega=' + $('#cboBodega').val());
         });
         $('#btnLimpiar').on("click", function (Event) {
             $('#divSpinFiltrar').hide();

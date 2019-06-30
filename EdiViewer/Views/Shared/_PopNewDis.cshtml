@@ -121,21 +121,15 @@
                     data: JSON.stringify(regSend),
                     success: function (json) {
                         funcbtnOkMessageBox = function () { }
-                        if (json.codError != 0)
-                            menErrorEdi(json.mensaje, 'Error');
-                        else {
-                            if (op1 == 1) {
-                                miAlive();
-                                mainGrid.allRecords = [];
-                                $('#divSpinFiltrar').show();
-                                mainGrid.searchReset(true);
-                                mainGrid.reload2("@this.Url.Action("GetPaylessProdPrioriInventario", "Grids")?dtpPeriodoBuscar=" + $('#cboPeriod').val());
-                                menErrorEdi('Se ha guardado el pedido para ser modificado después, el pedido no ha sido enviado a GLC.', 'Mensaje de aplicativo');
-                            }
-                            if (op1 == 2) {
-                                //Redirect a lista de pedidos
-                                location.href = '@this.Url.Action("Peticiones", "HomeExtern")';
-                            }
+                        if (json.info.codError != 0)
+                            menErrorEdi(json.info.mensaje, 'Error');
+                        else {                            
+                            miAlive();
+                            mainGrid.allRecords = [];
+                            $('#divSpinFiltrar').show();
+                            mainGrid.searchReset(true);
+                            //mainGrid.reload2("this.Url.Action("GetPaylessProdPrioriInventario", "Grids")?dtpPeriodoBuscar=" + $('#cboPeriod').val());
+                            menErrorEdi('Se ha creado el pedido.', 'Información');
                         }
                     },
                     error: function (json) {
@@ -164,7 +158,7 @@
         SaveSendDis('@this.Url.Action("SetPedidoExterno", "HomeExtern")?cboPeriod=' + $('#cboPeriod').val(), 1);
     });*@
     $('#btnSendDis').on('click', function () {
-        SaveSendDis('@this.Url.Action("SendPedidoExterno", "HomeExtern")?CboPeriod=' + $('#dtp2').val() + '&TiendaId=' + $('#cboTiendaDest').val(), 2);
+        SaveSendDis('@this.Url.Action("SendPedidoExterno", "HomeExtern")?CboPeriod=' + $('#dtp2').val() + '&TiendaIdDest=' + $('#cboTiendaDest').val(), 2);
     });
     $(document).ready(function () {
         $('#dtp2').datetimepicker({ format: 'dd/mm/yyyy hh:ii' });

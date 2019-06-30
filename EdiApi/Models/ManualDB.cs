@@ -972,10 +972,10 @@ namespace EdiApi.Models
             }
             return ListExists;
         }
-        public static IEnumerable<PaylessProdPrioriDetModel> SP_GetPaylessProdTallaLoteFil(ref Models.EdiDB.EdiDBContext _DbO, string TxtBarcode, string CboProducto, string CboTalla, string CboLote, string CboCategoria, string CodUser) {
+        public static IEnumerable<PaylessProdPrioriDetModel> SP_GetPaylessProdTallaLoteFil(ref Models.EdiDB.EdiDBContext _DbO, string TxtBarcode, string CboProducto, string CboTalla, string CboLote, string CboCategoria, string CodUser, int BodegaId) {
             List<PaylessProdPrioriDetModel> ListExists = new List<PaylessProdPrioriDetModel>();
             using (DbCommand Cmd = _DbO.Database.GetDbConnection().CreateCommand()) {
-                Cmd.CommandText = $"dbo.SP_GetPaylessProdTallaLoteFil '{TxtBarcode}', '{CboProducto}', '{CboTalla}', '{CboLote}', '{CboCategoria}', '{CodUser}'";
+                Cmd.CommandText = $"dbo.SP_GetPaylessProdTallaLoteFil '{TxtBarcode}', '{CboProducto}', '{CboTalla}', '{CboLote}', '{CboCategoria}', '{CodUser}', {BodegaId}";
                 _DbO.Database.OpenConnection();
                 DbDataReader Dr = Cmd.ExecuteReader();
                 if (Dr.HasRows) {

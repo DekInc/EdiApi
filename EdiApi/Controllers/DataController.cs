@@ -66,7 +66,7 @@ namespace EdiApi.Controllers
         }
         [HttpGet]
         public string GetVersion() {
-            return "1.1.3.1";
+            return "1.1.4.0";
         }
         [HttpGet]
         public string UpdateLinComments(string LinHashId, string TxtLinComData, string ListFst) {
@@ -913,7 +913,7 @@ namespace EdiApi.Controllers
                     ).Fod();
                 return new RetData<Tuple<string, string>>
                 {
-                    Data = new Tuple<string, string>(Tienda.Descr, Tienda.HorarioEntrega),
+                    Data = new Tuple<string, string>($"{Tienda.TiendaId} - {Tienda.Descr}", Tienda.HorarioEntrega),
                     Info = new RetInfo()
                     {
                         CodError = 0,
@@ -1255,7 +1255,7 @@ namespace EdiApi.Controllers
             }
         }
         [HttpPost]
-        public RetData<PedidosExternos> SetPedidoExterno(IEnumerable<PaylessProdPrioriDetModel> ListDis, int ClienteId, int IdEstado, string cboPeriod)
+        public RetData<PedidosExternos> SetPedidoExterno(IEnumerable<PaylessProdPrioriDetModel> ListDis, int ClienteId, int IdEstado, string cboPeriod, int TiendaIdDest)
         {
             DateTime StartTime = DateTime.Now;
             try
@@ -1263,43 +1263,69 @@ namespace EdiApi.Controllers
                 if (ListDis.Count() == 0)
                     throw new Exception("No hay productos en la lista. WebAPI.");
                 string DateProm = "";
-                foreach (PaylessProdPrioriDetModel Pem in ListDis)
-                    if (!string.IsNullOrEmpty(Pem.dateProm)) DateProm = Pem.dateProm;
-                IEnumerable<PedidosExternos> ListPe = DbO.PedidosExternos.Where(O => O.ClienteId == ClienteId && O.Periodo == cboPeriod && O.FechaPedido == DateProm && O.IdEstado == 1);
+                foreach (PaylessProdPrioriDetModel Pem in ListDis) {
+                    if (!string.IsNullOrEmpty(Pem.dateProm)) {
+                        DateProm = Pem.dateProm;
+                        break;
+                    }
+                }
+                IEnumerable<PedidosExternos> ListPe = (
+                    from Pe in DbO.PedidosExternos
+                    where Pe.ClienteId == ClienteId
+                    && (
+                        Pe.FechaPedido == DateProm
+                        || (
+                            Pe.FechaPedido.ToDateEsp().Month == DateProm.ToDateEsp().Month
+                            && Pe.FechaPedido.ToDateEsp().Day == DateProm.ToDateEsp().Day
+                        )
+                    )
+                    select Pe
+                    );
+                //IEnumerable<PedidosExternos> ListPe = DbO.PedidosExternos.Where(O => 
+                //    O.ClienteId
+                //    && (
+                //        O.FechaPedido == DateProm
+                //        || (
+                //            O.FechaPedido.ToDate().Month == DateProm.ToDate().Month
+                //            && O.FechaPedido.ToDate().Day == DateProm.ToDate().Day
+                //        )
+                //    )
+                //);
                 int PedidoId = 0;
                 PedidosExternos PedidoExterno = new PedidosExternos();
                 if (ListPe != null) {
                     if (ListPe.Count() > 0) {
-                        PedidoExterno = ListPe.Fod();
-                        PedidoExterno.IdEstado = IdEstado;
+                        return new RetData<PedidosExternos> {
+                            Data = PedidoExterno,
+                            Info = new RetInfo() {
+                                CodError = -1,
+                                Mensaje = "Ya existe un pedido para esa fecha",
+                                ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                            }
+                        };
                     } else {
                         PedidoExterno = new PedidosExternos() {
-                            ClienteId = ClienteId,
-                            FechaCreacion = DateTime.Now.ToString(ApplicationSettings.DateTimeFormat),
-                            IdEstado = IdEstado,
-                            FechaPedido = DateProm,
                             Id = PedidoId,
-                            Periodo = cboPeriod
+                            ClienteId = ClienteId,                            
+                            FechaPedido = DateProm,
+                            IdEstado = 2,
+                            FechaCreacion = DateTime.Now.ToString(ApplicationSettings.DateTimeFormat),
+                            InvType = "fifo",
+                            Divert = true,
+                            TiendaIdDestino = TiendaIdDest
                         };
                     }
-                }                
-                if (PedidoExterno.Id == 0)
-                    DbO.PedidosExternos.Add(PedidoExterno);
-                else
-                {
-                    DbO.PedidosExternos.Update(PedidoExterno);
-                    foreach (PedidosDetExternos Pde in DbO.PedidosDetExternos.Where(Pd => Pd.PedidoId == PedidoExterno.Id))
-                        DbO.PedidosDetExternos.Remove(Pde);
                 }
+                DbO.PedidosExternos.Add(PedidoExterno);
                 DbO.SaveChanges();
                 List<string> ListPedidosHechos = new List<string>();
                 foreach (PaylessProdPrioriDetModel PedidoDet in ListDis)
                 {
                     if (ListPedidosHechos.Where(P1 => P1 == PedidoDet.Barcode).Count() == 0) {
                         PedidosDetExternos PedidoExtDet = new PedidosDetExternos() {
-                            CodProducto = PedidoDet.Barcode,
                             PedidoId = PedidoExterno.Id,
-                            CantPedir = Convert.ToDouble(PedidoDet.CantPedir)
+                            CodProducto = PedidoDet.Barcode,                            
+                            CantPedir = 1
                         };
                         DbO.PedidosDetExternos.Add(PedidoExtDet);
                         ListPedidosHechos.Add(PedidoDet.Barcode);
@@ -2237,10 +2263,10 @@ namespace EdiApi.Controllers
             }
         }
         [HttpGet]
-        public RetData<IEnumerable<PaylessProdPrioriDetModel>> GetPaylessProdTallaLoteFil(string TxtBarcode, string CboProducto, string CboTalla, string CboLote, string CboCategoria, string CodUser) {
+        public RetData<IEnumerable<PaylessProdPrioriDetModel>> GetPaylessProdTallaLoteFil(string TxtBarcode, string CboProducto, string CboTalla, string CboLote, string CboCategoria, string CodUser, int BodegaId) {
             DateTime StartTime = DateTime.Now;
             try {
-                IEnumerable<PaylessProdPrioriDetModel> List = ManualDB.SP_GetPaylessProdTallaLoteFil(ref DbO, TxtBarcode, CboProducto, CboTalla, CboLote, CboCategoria, CodUser);
+                IEnumerable<PaylessProdPrioriDetModel> List = ManualDB.SP_GetPaylessProdTallaLoteFil(ref DbO, TxtBarcode, CboProducto, CboTalla, CboLote, CboCategoria, CodUser, BodegaId);
                 return new RetData<IEnumerable<PaylessProdPrioriDetModel>> {
                     Data = List,
                     Info = new RetInfo() {
@@ -3586,14 +3612,14 @@ SET XACT_ABORT OFF
                             ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
                         }
                     };
-                //if (StartTime.DayOfWeek == DayOfWeek.Saturday && StartTime.Hour > 10 && dtpFechaEntrega.ToDateFromEspDate().DayOfWeek == DayOfWeek.Monday)
-                //    return new RetData<string> {
-                //        Info = new RetInfo() {
-                //            CodError = -1,
-                //            Mensaje = "Error, el sábado no se pueden hacer pedidos a partir de las 10am para el lunes.",
-                //            ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
-                //        }
-                //    };
+                if (StartTime.DayOfWeek == DayOfWeek.Saturday && StartTime.Hour > 10 && dtpFechaEntrega.ToDateFromEspDate().DayOfWeek == DayOfWeek.Monday)
+                    return new RetData<string> {
+                        Info = new RetInfo() {
+                            CodError = -1,
+                            Mensaje = "Error, el sábado no se pueden hacer pedidos a partir de las 10am para el lunes.",
+                            ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                        }
+                    };
                 List<PaylessProdPrioriDetModel> ListProdTienda = ManualDB.SP_GetPaylessProdSinPedido(ref DbO, ClienteId, TiendaId);                
                 List<PaylessProdPrioriDetModel> ListProdWithStock = new List<PaylessProdPrioriDetModel>();
                 IEnumerable<FE830DataAux> ListStock = ManualDB.SP_GetExistenciasByTienda(ref DbO, ClienteId, TiendaId);
@@ -3619,7 +3645,6 @@ SET XACT_ABORT OFF
                             from P1 in ListProdWithStock
                             where //!string.IsNullOrEmpty(P1.Cp)
                             (P1.Cp == "A"
-                            ///|| P1.Cp.Contains("H", StringComparison.InvariantCultureIgnoreCase)
                             || P1.Departamento == "9"
                             || P1.Departamento == "10"
                             || P1.Departamento == "11"
@@ -3632,7 +3657,6 @@ SET XACT_ABORT OFF
                            from P1 in ListProdWithStock
                            where //!string.IsNullOrEmpty(P1.Cp)
                            (P1.Cp == "A"
-                            ///|| P1.Cp.Contains("H", StringComparison.InvariantCultureIgnoreCase)
                             || P1.Departamento == "9"
                            || P1.Departamento == "10"
                            || P1.Departamento == "11"
