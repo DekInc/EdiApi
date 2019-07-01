@@ -32,6 +32,7 @@ select * from EdiDB.dbo.WmsProductoExistencia where BodegaId = 81
 SELECT * FROM EdiDB.dbo.ProductoUbicacion
 select * from EdiDB.dbo.PAYLESS_ReportesMails order by Id
 select * from EdiDB.dbo.AsyncStates
+--delete from EdiDB.dbo.AsyncStates where Id = 29
 select * from EdiDB.dbo.PAYLESS_Reportes
 select * from EdiDB.dbo.PAYLESS_Reportes where Periodo = '09/06/2019'
 select * from EdiDB.dbo.PAYLESS_ReportesDet where IdM = 20 order by Id
@@ -39,7 +40,8 @@ SELECT * FROM EdiDB.dbo.PedidosExternos order by FechaCreacion DESC
 SELECT * FROM EdiDB.dbo.PedidosExternos order by id DESC
 SELECT * FROM EdiDB.dbo.PedidosExternos order by FechaPedido DESC
 SELECT * FROM EdiDB.dbo.PedidosExternos where Id = 122
-SELECT * FROM EdiDb.dbo.PedidosExternos_Bkp
+SELECT * FROM EdiDb.dbo.PedidosExternos_Bkp where TiendaId = 7372 AND SUBSTRING(FechaPedido, 1, 10) = '02/07/2019'
+SELECT * FROM EdiDb.dbo.PedidosExternos where TiendaId = 7385 AND SUBSTRING(FechaPedido, 1, 10) = '02/07/2019'
 SELECT * INTO EdiDb.dbo.PedidosExternos_Bkp FROM EdiDB.dbo.PedidosExternos 
 SELECT * FROM EdiDB.dbo.PedidosExternos where TiendaId = 7376 AND Id = 122
 SELECT * FROM EdiDB.dbo.PedidosExternos where FullPed = 0

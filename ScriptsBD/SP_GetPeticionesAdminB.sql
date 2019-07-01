@@ -134,5 +134,14 @@ END
 
 --truncate table EdiDB.dbo.ProductoUbicacion
 EXEC EdiDb.dbo.SP_GetPeticionesAdminB
---27763
-select * from EdiDB.dbo.ProductoUbicacion WHERE Typ = 3 AND Rack = '70532' ORDER BY NomBodega
+--2617 not in
+select distinct CodProducto, NomBodega, Rack, NombreRack, Departamento from EdiDB.dbo.ProductoUbicacion 
+WHERE Typ = 3 
+AND NomBodega = 'DAMAS'
+AND (Departamento IN ('9', '10', '11', '5')
+and NombreRack in ('A', 'H')
+)
+--AND Rack = '152'
+ORDER BY NomBodega
+
+--51

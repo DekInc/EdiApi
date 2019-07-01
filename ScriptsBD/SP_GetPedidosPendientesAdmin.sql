@@ -20,7 +20,7 @@ BEGIN
 		from wms.dbo.ItemInventario Ii WITH(NOLOCK)
 		JOIN wms.dbo.DetalleTransacciones Dt WITH(NOLOCK)
 			ON Dt.InventarioID = Ii.InventarioID
-		JOIN wms.dbo.Transacciones Tr
+		JOIN wms.dbo.Transacciones Tr WITH(NOLOCK)
 			ON Tr.TransaccionID = Dt.TransaccionID
 		JOIN wms.dbo.Inventario I WITH(NOLOCK)
 			ON I.InventarioID = Ii.InventarioID
@@ -43,9 +43,9 @@ BEGIN
 		Pu.Rack,
 		Pu.NombreRack,
 		D.Departamento,
-		D.Producto,
-		D.Lote,
-		D.Talla,
+		null Producto,
+		null Lote,
+		null Talla,
 		Pe.FullPed,
 		Pe.Divert,
 		Pe.TiendaIdDestino		
@@ -56,7 +56,7 @@ BEGIN
 		ON D.Barcode = PeD.CodProducto
 	JOIN EdiDB.dbo.PAYLESS_ProdPrioriM M WITH(NOLOCK)
 		ON M.Id = D.IdPAYLESS_ProdPrioriM
-	LEFT JOIN EdiDB.dbo.ProductoUbicacion Pu
+	LEFT JOIN EdiDB.dbo.ProductoUbicacion Pu WITH(NOLOCK)
 		ON Pu.CodProducto = PeD.CodProducto AND Pu.Typ = 1
 	WHERE Pe.IdEstado = 2
 	ORDER BY Pe.Id, Pe.TiendaId, M.Periodo, D.Categoria, D.Barcode

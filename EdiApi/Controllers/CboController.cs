@@ -96,6 +96,7 @@ namespace EdiApi.Controllers
                     where Pe.TiendaId == TiendaId
                     && Pe.FechaPedido.ToDateEsp() >= StartTime.AddDays(DaysToAdd)
                     && Pe.FechaPedido.ToDateEsp() <= StartTime.AddDays(DaysToAdd + 7)
+                    orderby Pe.Id
                     select new CboValuesModel {
                         V = Pe.Id.ToString(),
                         T = $"# {Pe.Id} - {Pe.FechaPedido} "

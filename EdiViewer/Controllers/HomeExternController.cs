@@ -113,7 +113,8 @@ namespace EdiViewer.Controllers
             }
             DateTime DateDis = dtpFechaEntrega.ToDate();
             if ((DateDis - DateTime.Now).TotalHours < 24) {
-                return View("PedidosPayless3", new ErrorModel() { ErrorMessage = "La fecha y hora del pedido debe ser con más de 24 horas de anticipación." });
+                if (HttpContext.Session.GetObjSession<int>("Session.IdGroup") != 1)
+                    return View("PedidosPayless3", new ErrorModel() { ErrorMessage = "La fecha y hora del pedido debe ser con más de 24 horas de anticipación." });
             }
             if (DateDis < DateTime.Now) {
                 return View("PedidosPayless3", new ErrorModel() { ErrorMessage = "La fecha es anterior a la fecha actual." });

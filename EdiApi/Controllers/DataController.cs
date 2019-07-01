@@ -3669,10 +3669,10 @@ SET XACT_ABORT OFF
                     case "fifo":
                         ListProdPedido.AddRange((
                             from P2 in ListProdWithStock
-                            where !(P2.Cp == "A"
-                            || P2.Departamento == "9"
-                            || P2.Departamento == "10"
-                            || P2.Departamento == "11"
+                            where (P2.Cp != "A"
+                            && P2.Departamento != "9"
+                            && P2.Departamento != "10"
+                            && P2.Departamento != "11"
                             )
                             && P2.Categoria.ToUpper() == "DAMAS"
                             orderby P2.dateProm.ToDateFromEspDate() descending
@@ -3680,10 +3680,10 @@ SET XACT_ABORT OFF
                             ).Take(txtWomanQty).Distinct().ToList());
                         ListProdPedido.AddRange((
                             from P2 in ListProdWithStock
-                            where !(P2.Cp == "A"
-                            || P2.Departamento == "9"
-                            || P2.Departamento == "10"
-                            || P2.Departamento == "11"
+                            where (P2.Cp != "A"
+                            && P2.Departamento != "9"
+                            && P2.Departamento != "10"
+                            && P2.Departamento != "11"
                             )
                             && P2.Categoria.ToUpper() == "CABALLEROS"
                             orderby P2.dateProm.ToDateFromEspDate() descending
@@ -3691,10 +3691,10 @@ SET XACT_ABORT OFF
                             ).Take(txtManQty).Distinct().ToList());
                         ListProdPedido.AddRange((
                             from P2 in ListProdWithStock
-                            where !(P2.Cp == "A"
-                            || P2.Departamento == "9"
-                            || P2.Departamento == "10"
-                            || P2.Departamento == "11"
+                            where (P2.Cp != "A"
+                            && P2.Departamento != "9"
+                            && P2.Departamento != "10"
+                            && P2.Departamento != "11"
                             )
                             && P2.Categoria.ToUpper() == "NIÑOS / AS"
                             orderby P2.dateProm.ToDateFromEspDate() descending
@@ -3702,10 +3702,10 @@ SET XACT_ABORT OFF
                             ).Take(txtKidQty).Distinct().ToList());
                         ListProdPedido.AddRange((
                             from P2 in ListProdWithStock
-                            where !(P2.Cp == "A"
-                            || P2.Departamento == "9"
-                            || P2.Departamento == "10"
-                            || P2.Departamento == "11"
+                            where (P2.Cp != "A"
+                            && P2.Departamento != "9"
+                            && P2.Departamento != "10"
+                            && P2.Departamento != "11"
                             )
                             && P2.Categoria.ToUpper() == "ACCESORIOS"
                             orderby P2.dateProm.ToDateFromEspDate() descending
@@ -3715,10 +3715,10 @@ SET XACT_ABORT OFF
                     case "lifo":
                         ListProdPedido.AddRange((
                             from P2 in ListProdWithStock
-                            where !(P2.Cp == "A"
-                            || P2.Departamento == "9"
-                            || P2.Departamento == "10"
-                            || P2.Departamento == "11"
+                            where (P2.Cp != "A"
+                            && P2.Departamento != "9"
+                            && P2.Departamento != "10"
+                            && P2.Departamento != "11"
                             )
                             && P2.Categoria.ToUpper() == "DAMAS"
                             orderby P2.dateProm.ToDateFromEspDate() ascending
@@ -3726,10 +3726,10 @@ SET XACT_ABORT OFF
                             ).Take(txtWomanQty).Distinct().ToList());
                         ListProdPedido.AddRange((
                             from P2 in ListProdWithStock
-                            where !(P2.Cp == "A"
-                            || P2.Departamento == "9"
-                            || P2.Departamento == "10"
-                            || P2.Departamento == "11"
+                            where (P2.Cp != "A"
+                            && P2.Departamento != "9"
+                            && P2.Departamento != "10"
+                            && P2.Departamento != "11"
                             )
                             && P2.Categoria.ToUpper() == "CABALLEROS"
                             orderby P2.dateProm.ToDateFromEspDate() ascending
@@ -3737,10 +3737,10 @@ SET XACT_ABORT OFF
                             ).Take(txtManQty).Distinct().ToList());
                         ListProdPedido.AddRange((
                             from P2 in ListProdWithStock
-                            where !(P2.Cp == "A"
-                            || P2.Departamento == "9"
-                            || P2.Departamento == "10"
-                            || P2.Departamento == "11"
+                            where (P2.Cp != "A"
+                            && P2.Departamento != "9"
+                            && P2.Departamento != "10"
+                            && P2.Departamento != "11"
                             )
                             && P2.Categoria.ToUpper() == "NIÑOS / AS"
                             orderby P2.dateProm.ToDateFromEspDate() ascending
@@ -3748,10 +3748,10 @@ SET XACT_ABORT OFF
                             ).Take(txtKidQty).Distinct().ToList());
                         ListProdPedido.AddRange((
                             from P2 in ListProdWithStock
-                            where !(P2.Cp == "A"
-                            || P2.Departamento == "9"
-                            || P2.Departamento == "10"
-                            || P2.Departamento == "11"
+                            where (P2.Cp != "A"
+                            && P2.Departamento != "9"
+                            && P2.Departamento != "10"
+                            && P2.Departamento != "11"
                             )
                             && P2.Categoria.ToUpper() == "ACCESORIOS"
                             orderby P2.dateProm.ToDateFromEspDate() ascending
