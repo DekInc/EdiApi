@@ -334,6 +334,9 @@ namespace CoreApiClient
         public async Task<RetData<bool>> GetSetExistenciasByCliente(int ClienteId, string CodUser) {
             return await GetAsync<RetData<bool>>(CreateRequestUri(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Data/GetSetExistenciasByCliente"), $"?ClienteId={ClienteId}&CodUser={CodUser}"));
         }
+        public async Task<RetData<IEnumerable<CboValuesModel>>> GetPaylessEncuestaCboPedidos(int TiendaId) {
+            return await GetAsync<RetData<IEnumerable<CboValuesModel>>>(CreateRequestUri(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Cbo/GetPaylessEncuestaCboPedidos"), $"?TiendaId={TiendaId}"));
+        }
         /////////////////////////////////////////
         //public async Task<List<UsersModel>> GetUsers()
         //{

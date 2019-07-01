@@ -782,3 +782,6 @@ table.dataTable.dtr-inline.collapsed > tbody > tr[role="row"] > td:first-child:b
 label {
     margin-top: .5rem;
 }
+.rowEncuesta {
+    width: 100%;
+}

@@ -30,6 +30,9 @@ namespace EdiViewer.Controllers
             HttpContext.Session.SetObjSession("Session.HashId", string.Empty);
             return new RedirectResult("/Account/");
         }
+        public IActionResult PaylessEncuesta() {
+            return View();
+        }
         public IActionResult Pedidos()
         {
             return View();
@@ -1790,7 +1793,7 @@ namespace EdiViewer.Controllers
                     }
                 };
             }
-        }
+        }        
         public async Task<RetData<string>> ChangePedidoExternoIdWMS(int PedidoId, int PedidoIdWms) {
             DateTime StartTime = DateTime.Now;
             try {
@@ -1899,6 +1902,21 @@ namespace EdiViewer.Controllers
                 return ListDis;
             } catch (Exception e2) {
                 return new RetData<Tuple<IEnumerable<int>, IEnumerable<string>, IEnumerable<int>, IEnumerable<string>>> { 
+                    Info = new RetInfo() {
+                        CodError = -1,
+                        Mensaje = e2.ToString(),
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            }
+        }
+        public async Task<RetData<IEnumerable<CboValuesModel>>> GetPaylessEncuestaCboPedidos() {
+            DateTime StartTime = DateTime.Now;
+            try {
+                RetData<IEnumerable<CboValuesModel>> List = await ApiClientFactory.Instance.GetPaylessEncuestaCboPedidos(HttpContext.Session.GetObjSession<int>("Session.TiendaId"));
+                return List;
+            } catch (Exception e2) {
+                return new RetData<IEnumerable<CboValuesModel>>() {
                     Info = new RetInfo() {
                         CodError = -1,
                         Mensaje = e2.ToString(),
