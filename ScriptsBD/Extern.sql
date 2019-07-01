@@ -5,7 +5,7 @@ select * from wms_test_29_01_2019.dbo.Paises where NomPais like'%pana%'
 select * from wms.dbo.Clientes with(nolock) where nombre like '%payl%' OR ClienteID = 610 order by ClienteID asc
 select * from edidb.dbo.IEnetUsers where Id > 4 order by CodUsr
 select * from edidb.dbo.IEnetUsers order by CodUsr
-select * from edidb.dbo.IEnetUsers where HashId like '%29062019%' order by HashId desc
+select * from edidb.dbo.IEnetUsers where HashId like '%01072019%' order by HashId desc
 select * from edidb.dbo.IEnetGroupsAccesses
 select * from EdiDb.dbo.Trasladado1
 --delete from edidb.dbo.IEnetGroupsAccesses where Id = 40
@@ -41,7 +41,7 @@ SELECT * FROM EdiDB.dbo.PedidosExternos order by id DESC
 SELECT * FROM EdiDB.dbo.PedidosExternos order by FechaPedido DESC
 SELECT * FROM EdiDB.dbo.PedidosExternos where Id = 122
 SELECT * FROM EdiDb.dbo.PedidosExternos_Bkp where TiendaId = 7372 AND SUBSTRING(FechaPedido, 1, 10) = '02/07/2019'
-SELECT * FROM EdiDb.dbo.PedidosExternos where TiendaId = 7385 AND SUBSTRING(FechaPedido, 1, 10) = '02/07/2019'
+SELECT * FROM EdiDb.dbo.PedidosExternos where TiendaId = 7370 AND SUBSTRING(FechaPedido, 1, 10) = '04/07/2019'
 SELECT * INTO EdiDb.dbo.PedidosExternos_Bkp FROM EdiDB.dbo.PedidosExternos 
 SELECT * FROM EdiDB.dbo.PedidosExternos where TiendaId = 7376 AND Id = 122
 SELECT * FROM EdiDB.dbo.PedidosExternos where FullPed = 0
