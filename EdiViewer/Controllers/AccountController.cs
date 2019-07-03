@@ -60,7 +60,11 @@ namespace EdiViewer.Controllers
             {                
                 RetData<IEnumerable<IenetUsers>> ListUsers = await ApiClientFactory.Instance.GetUsers(ApiClientFactory.Instance.Encrypt($"Fun|{HttpContext.Session.GetObjSession<string>("Session.HashId")}"));                
                 IEnumerable<IenetGroups> ListGroups = HttpContext.Session.GetObjSession<IEnumerable<IenetGroups>>("ListGroups");
-                RetData<IEnumerable<Clientes>> ListClients = await ApiClientFactory.Instance.GetAllClients(ApiClientFactory.Instance.Encrypt($"Fun|{HttpContext.Session.GetObjSession<string>("Session.HashId")}"));                
+                RetData<IEnumerable<Clientes>> ListClients = await ApiClientFactory.Instance.GetAllClients(ApiClientFactory.Instance.Encrypt($"Fun|{HttpContext.Session.GetObjSession<string>("Session.HashId")}"));
+                if (ListClients.Info.CodError != 0)
+                {
+                    return Json(new { total = 0, records = "", errorMessage = ListClients.Info.Mensaje });
+                }
                 List<IenetUsersModel> Records = new List<IenetUsersModel>();
                 List<IenetUsersModel> AllRecords = new List<IenetUsersModel>();
                 if (ListUsers.Data == null) {

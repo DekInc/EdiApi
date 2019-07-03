@@ -5,7 +5,7 @@ select * from wms_test_29_01_2019.dbo.Paises where NomPais like'%pana%'
 select * from wms.dbo.Clientes with(nolock) where nombre like '%payl%' OR ClienteID = 610 order by ClienteID asc
 select * from edidb.dbo.IEnetUsers where Id > 4 order by CodUsr
 select * from edidb.dbo.IEnetUsers order by CodUsr
-select * from edidb.dbo.IEnetUsers where HashId like '%0107201916%' order by HashId desc
+select * from edidb.dbo.IEnetUsers where HashId like '%0307201916%' order by HashId desc
 select * from edidb.dbo.IEnetGroupsAccesses
 select * from EdiDb.dbo.Trasladado1
 --delete from edidb.dbo.IEnetGroupsAccesses where Id = 40

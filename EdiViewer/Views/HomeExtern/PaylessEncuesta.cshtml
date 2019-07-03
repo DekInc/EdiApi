@@ -17,237 +17,239 @@
                 </div>
                 <div class="card-body">
                     <div class="container">
-                        <div class="row">
-                            <div class="col">
-                                <label for="cboPedido">1. Seleccione el número de pedido</label>
-                                <div id="divSpincboPedido" class="spinner-border spinner-border-sm text-danger" style="display: none" role="status">
-                                    <span class="sr-only">Loading...</span>
-                                </div>
-                                <select class="form-control" id="cboPedido" name="cboPedido"></select>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col">
-                                <label for="preg2">2. ¿Se cumple la cantidad de cajas pedidas?</label>
-                                <select class="form-control" id="preg2" name="preg2">
-                                    <option value="1">Si</option>
-                                    <option value="0">No</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div id="divPreg2a" class="noShow">
+                        <form id="frmEncuesta">
                             <div class="row">
-                                <div class="col" style="color: maroon">
-                                    <b>Por favor indicar códigos de caja en observaciones</b>
+                                <div class="col">
+                                    <label for="cboPedido">1. Seleccione el número de pedido</label>
+                                    <div id="divSpincboPedido" class="spinner-border spinner-border-sm text-danger" style="display: none" role="status">
+                                        <span class="sr-only">Loading...</span>
+                                    </div>
+                                    <select class="form-control" id="cboPedido" name="cboPedido"></select>
                                 </div>
                             </div>
                             <div class="row">
                                 <div class="col">
-                                    <label for="preg2a">2a. Cajas faltantes</label>
-                                    <input class="form-control" id="preg2a" name="preg2a" maxlength="8" autocorrect="off" autocapitalize="off" autocomplete="off">
+                                    <label for="preg2">2. ¿Se cumple la cantidad de cajas pedidas?</label>
+                                    <select class="form-control" id="preg2" name="preg2">
+                                        <option value="1">Si</option>
+                                        <option value="0">No</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div id="divPreg2a" class="noShow">
+                                <div class="row">
+                                    <div class="col" style="color: maroon">
+                                        <b>Por favor indicar códigos de caja en observaciones</b>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col">
+                                        <label for="preg2a">2a. Cajas faltantes</label>
+                                        <input class="form-control" id="preg2a" name="preg2a" maxlength="8" autocorrect="off" autocapitalize="off" autocomplete="off">
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col">
+                                        <label for="preg2b">2b. Cajas sobrantes</label>
+                                        <input class="form-control" id="preg2b" name="preg2b" maxlength="8" autocorrect="off" autocapitalize="off" autocomplete="off">
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col">
+                                        <label for="preg2c">2c. Cajas retornadas a chofer</label>
+                                        <input class="form-control" id="preg2c" name="preg2c" maxlength="8" autocorrect="off" autocapitalize="off" autocomplete="off">
+                                    </div>
                                 </div>
                             </div>
                             <div class="row">
                                 <div class="col">
-                                    <label for="preg2b">2b. Cajas sobrantes</label>
-                                    <input class="form-control" id="preg2b" name="preg2b" maxlength="8" autocorrect="off" autocapitalize="off" autocomplete="off">
+                                    <label for="preg3">3. ¿Se cumple la cantidad de unidades pedidas?</label>
+                                    <select class="form-control" id="preg3" name="preg3">
+                                        <option value="1">Si</option>
+                                        <option value="0">No</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div id="divPreg3a" class="noShow">
+                                <div class="row">
+                                    <div class="col">
+                                        <label for="preg3a">3a. Unidades recibidas</label>
+                                        <input class="form-control" id="preg3a" name="preg3a" maxlength="8" autocorrect="off" autocapitalize="off" autocomplete="off">
+                                    </div>
                                 </div>
                             </div>
                             <div class="row">
                                 <div class="col">
-                                    <label for="preg2c">2c. Cajas retornadas a chofer</label>
-                                    <input class="form-control" id="preg2c" name="preg2c" maxlength="8" autocorrect="off" autocapitalize="off" autocomplete="off">
+                                    <label for="preg4">4. ¿Se cumple el día de entrega?</label>
+                                    <select class="form-control" id="preg4" name="preg4">
+                                        <option value="1">Si</option>
+                                        <option value="0">No</option>
+                                    </select>
                                 </div>
                             </div>
-                        </div>
-                        <div class="row">
-                            <div class="col">
-                                <label for="preg3">3. ¿Se cumple la cantidad de unidades pedidas?</label>
-                                <select class="form-control" id="preg3" name="preg3">
-                                    <option value="1">Si</option>
-                                    <option value="0">No</option>
-                                </select>
+                            <div id="divPreg4a" class="noShow">
+                                <div class="row">
+                                    <div class="col">
+                                        <label for="preg4a">4a. Día recibido</label>
+                                        <input class="form-control" id="preg4a" name="preg4a" maxlength="8" autocorrect="off" autocapitalize="off" autocomplete="off">
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                        <div id="divPreg3a" class="noShow">
                             <div class="row">
                                 <div class="col">
-                                    <label for="preg3a">3a. Unidades recibidas</label>
-                                    <input class="form-control" id="preg3a" name="preg3a" maxlength="8" autocorrect="off" autocapitalize="off" autocomplete="off">
+                                    <label for="preg5">5. ¿Se cumple la hora de entrega?</label>
+                                    <select class="form-control" id="preg5" name="preg5">
+                                        <option value="1">Si</option>
+                                        <option value="0">No</option>
+                                    </select>
                                 </div>
                             </div>
-                        </div>
-                        <div class="row">
-                            <div class="col">
-                                <label for="preg4">4. ¿Se cumple el día de entrega?</label>
-                                <select class="form-control" id="preg4" name="preg4">
-                                    <option value="1">Si</option>
-                                    <option value="0">No</option>
-                                </select>
+                            <div id="divPreg5a" class="noShow">
+                                <div class="row">
+                                    <div class="col">
+                                        <label for="preg5a">5a. Hora recibida</label>
+                                        <input class="form-control" id="preg5a" name="preg5a" maxlength="8" autocorrect="off" autocapitalize="off" autocomplete="off">
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                        <div id="divPreg4a" class="noShow">
                             <div class="row">
                                 <div class="col">
-                                    <label for="preg4a">4a. Día recibido</label>
-                                    <input class="form-control" id="preg4a" name="preg4a" maxlength="8" autocorrect="off" autocapitalize="off" autocomplete="off">
+                                    <label for="preg6">6. ¿Cantidad de aux. descargue?</label>
+                                    <select class="form-control" id="preg6" name="preg6">
+                                        <option value="1">Si</option>
+                                        <option value="0">No</option>
+                                    </select>
                                 </div>
                             </div>
-                        </div>
-                        <div class="row">
-                            <div class="col">
-                                <label for="preg5">5. ¿Se cumple la hora de entrega?</label>
-                                <select class="form-control" id="preg5" name="preg5">
-                                    <option value="1">Si</option>
-                                    <option value="0">No</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div id="divPreg5a" class="noShow">
                             <div class="row">
                                 <div class="col">
-                                    <label for="preg5a">5a. Hora recibida</label>
-                                    <input class="form-control" id="preg5a" name="preg5a" maxlength="8" autocorrect="off" autocapitalize="off" autocomplete="off">
+                                    <label for="preg7">7. ¿Cantidad de instrumentos descargue (carretillas)?</label>
+                                    <select class="form-control" id="preg7" name="preg7">
+                                        <option value="1">Si</option>
+                                        <option value="0">No</option>
+                                    </select>
                                 </div>
                             </div>
-                        </div>
-                        <div class="row">
-                            <div class="col">
-                                <label for="preg6">6. ¿Cantidad de aux. descargue?</label>
-                                <select class="form-control" id="preg6" name="preg6">
-                                    <option value="1">Si</option>
-                                    <option value="0">No</option>
-                                </select>
+                            <div id="divPreg7a" class="row noShow">
+                                <div class="col">
+                                    <label for="preg7a">7a. ¿Número de carretillas en el descargue?</label>
+                                    <input class="form-control" id="preg7a" name="preg7a" maxlength="8" autocorrect="off" autocapitalize="off" autocomplete="off">
+                                </div>
                             </div>
-                        </div>
-                        <div class="row">
-                            <div class="col">
-                                <label for="preg7">7. ¿Cantidad de instrumentos descargue (carretillas)?</label>
-                                <select class="form-control" id="preg7" name="preg7">
-                                    <option value="1">Si</option>
-                                    <option value="0">No</option>
-                                </select>
+                            <div class="row">
+                                <div class="col">
+                                    <label for="preg8">8. ¿Cumple protocolo de entrega?</label>
+                                    <select class="form-control" id="preg8" name="preg8">
+                                        <option value="1">Si</option>
+                                        <option value="0">No</option>
+                                    </select>
+                                </div>
                             </div>
-                        </div>
-                        <div id="divPreg7a" class="row noShow">
-                            <div class="col">
-                                <label for="preg7a">7a. ¿Número de carretillas en el descargue?</label>
-                                <input class="form-control" id="preg7a" name="preg7a" maxlength="8" autocorrect="off" autocapitalize="off" autocomplete="off">
+                            <div class="row">
+                                <div class="col">
+                                    <label for="preg9">9. ¿Presento documentos correctos?</label>
+                                    <select class="form-control" id="preg9" name="preg9">
+                                        <option value="1">Si</option>
+                                        <option value="0">No</option>
+                                    </select>
+                                </div>
                             </div>
-                        </div>
-                        <div class="row">
-                            <div class="col">
-                                <label for="preg8">8. ¿Cumple protocolo de entrega?</label>
-                                <select class="form-control" id="preg8" name="preg8">
-                                    <option value="1">Si</option>
-                                    <option value="0">No</option>
-                                </select>
+                            <div class="row">
+                                <div class="col">
+                                    <label for="preg10">10. ¿Separacion por genero en tiendas?</label>
+                                    <select class="form-control" id="preg10" name="preg10">
+                                        <option value="1">Si</option>
+                                        <option value="0">No</option>
+                                    </select>
+                                </div>
                             </div>
-                        </div>
-                        <div class="row">
-                            <div class="col">
-                                <label for="preg9">9. ¿Presento documentos correctos?</label>
-                                <select class="form-control" id="preg9" name="preg9">
-                                    <option value="1">Si</option>
-                                    <option value="0">No</option>
-                                </select>
+                            <div class="row">
+                                <div class="col">
+                                    <label for="preg11">11. ¿El escaner funciona correctamente?</label>
+                                    <select class="form-control" id="preg11" name="preg11">
+                                        <option value="1">Si</option>
+                                        <option value="0">No</option>
+                                    </select>
+                                </div>
                             </div>
-                        </div>
-                        <div class="row">
-                            <div class="col">
-                                <label for="preg10">10. ¿Separacion por genero en tiendas?</label>
-                                <select class="form-control" id="preg10" name="preg10">
-                                    <option value="1">Si</option>
-                                    <option value="0">No</option>
-                                </select>
+                            <div class="row">
+                                <div class="col">
+                                    <label for="preg12">12. ¿El escaner se sincroniza con la computadora?</label>
+                                    <select class="form-control" id="preg12" name="preg12">
+                                        <option value="1">Si</option>
+                                        <option value="0">No</option>
+                                    </select>
+                                </div>
                             </div>
-                        </div>
-                        <div class="row">
-                            <div class="col">
-                                <label for="preg11">11. ¿El escaner funciona correctamente?</label>
-                                <select class="form-control" id="preg11" name="preg11">
-                                    <option value="1">Si</option>
-                                    <option value="0">No</option>
-                                </select>
+                            <div class="row">
+                                <div class="col">
+                                    <label for="preg13">13. ¿En caso de fallas en sistema, ha transmitido un tiquete?</label>
+                                    <select class="form-control" id="preg13" name="preg13">
+                                        <option value="1">Si</option>
+                                        <option value="0">No</option>
+                                    </select>
+                                </div>
                             </div>
-                        </div>
-                        <div class="row">
-                            <div class="col">
-                                <label for="preg12">12. ¿El escaner se sincroniza con la computadora?</label>
-                                <select class="form-control" id="preg12" name="preg12">
-                                    <option value="1">Si</option>
-                                    <option value="0">No</option>
-                                </select>
+                            <div class="row">
+                                <div class="col">
+                                    <label for="preg14">14. ¿Firma de documentos?</label>
+                                    <select class="form-control" id="preg14" name="preg14">
+                                        <option value="1">Si</option>
+                                        <option value="0">No</option>
+                                    </select>
+                                </div>
                             </div>
-                        </div>
-                        <div class="row">
-                            <div class="col">
-                                <label for="preg13">13. ¿En caso de fallas en sistema, ha transmitido un tiquete?</label>
-                                <select class="form-control" id="preg13" name="preg13">
-                                    <option value="1">Si</option>
-                                    <option value="0">No</option>
-                                </select>
+                            <div class="row">
+                                <div class="col">
+                                    <label for="preg15">15. ¿Presento marchamos?</label>
+                                    <select class="form-control" id="preg15" name="preg15">
+                                        <option value="1">Si</option>
+                                        <option value="0">No</option>
+                                    </select>
+                                </div>
                             </div>
-                        </div>
-                        <div class="row">
-                            <div class="col">
-                                <label for="preg14">14. ¿Firma de documentos?</label>
-                                <select class="form-control" id="preg14" name="preg14">
-                                    <option value="1">Si</option>
-                                    <option value="0">No</option>
-                                </select>
+                            <div class="row">
+                                <div class="col">
+                                    <label for="preg16">16. ¿Trato cordial de Cia. Transporte?</label>
+                                    <select class="form-control" id="preg16" name="preg16">
+                                        <option value="1">Si</option>
+                                        <option value="0">No</option>
+                                    </select>
+                                </div>
                             </div>
-                        </div>
-                        <div class="row">
-                            <div class="col">
-                                <label for="preg15">15. ¿Presento marchamos?</label>
-                                <select class="form-control" id="preg15" name="preg15">
-                                    <option value="1">Si</option>
-                                    <option value="0">No</option>
-                                </select>
+                            <div class="row">
+                                <div class="col">
+                                    <label for="preg17">17. ¿Asociado y transportes firman SDR y ficha tecnica?</label>
+                                    <select class="form-control" id="preg17" name="preg17">
+                                        <option value="1">Si</option>
+                                        <option value="0">No</option>
+                                    </select>
+                                </div>
                             </div>
-                        </div>
-                        <div class="row">
-                            <div class="col">
-                                <label for="preg16">16. ¿Trato cordial de Cia. Transporte?</label>
-                                <select class="form-control" id="preg16" name="preg16">
-                                    <option value="1">Si</option>
-                                    <option value="0">No</option>
-                                </select>
+                            <div id="divPreg17a" class="row noShow">
+                                <div class="col">
+                                    <label for="preg17a">17a. Motivo</label>
+                                    <textarea class="form-control" id="preg17a" name="preg17a" rows="3"></textarea>
+                                </div>
                             </div>
-                        </div>
-                        <div class="row">
-                            <div class="col">
-                                <label for="preg17">17. ¿Asociado y transportes firman SDR y ficha tecnica?</label>
-                                <select class="form-control" id="preg17" name="preg17">
-                                    <option value="1">Si</option>
-                                    <option value="0">No</option>
-                                </select>
+                            <div class="row">
+                                <div class="col">
+                                    <label for="preg18">Observaciones Asociado</label>
+                                    <textarea class="form-control" id="preg18" name="preg18" rows="4"></textarea>
+                                </div>
                             </div>
-                        </div>
-                        <div id="divPreg17a" class="row noShow">
-                            <div class="col">
-                                <label for="preg17a">17a. Motivo</label>
-                                <textarea class="form-control" id="preg17a" name="preg17a" rows="3"></textarea>
+                            <div class="row margin5">
+                                <div class="col-sm">
+                                    <button class="btn btn-primary noShow" type="button" id="btnAnt" onclick="window.location.href = window.location.href;">
+                                        &nbsp;&nbsp;&nbsp;Anterior&nbsp;&nbsp;&nbsp;
+                                    </button>
+                                    <button class="btn btn-primary" type="button" id="btnSig">
+                                        &nbsp;&nbsp;&nbsp;Guardar encuesta&nbsp;&nbsp;&nbsp;
+                                    </button>
+                                </div>
                             </div>
-                        </div>
-                        <div class="row">
-                            <div class="col">
-                                <label for="preg18">Observaciones Asociado</label>
-                                <textarea class="form-control" id="preg18" name="preg18" rows="4"></textarea>
-                            </div>
-                        </div>
-                        <div class="row margin5">
-                            <div class="col-sm">
-                                <button class="btn btn-primary noShow" type="button" onclick="window.location.href = window.location.href;">
-                                    &nbsp;&nbsp;&nbsp;Anterior&nbsp;&nbsp;&nbsp;
-                                </button>
-                                <button class="btn btn-primary" type="button" id="btnSig">
-                                    &nbsp;&nbsp;&nbsp;Siguiente&nbsp;&nbsp;&nbsp;
-                                </button>
-                            </div>
-                        </div>
-                        <br />
+                            <br />
+                        </form>
                     </div>
                 </div>
             </div>
@@ -265,8 +267,16 @@
                 $(divSubQ).addClass('noShow');
         });
     }
+    function reDrawObjects() {
+        if (window.mobileAndTabletcheck()) {            
+            $('#btnSig').addClass('btn-block');
+        } else {
+            $('#btnSig').removeClass('btn-block');
+        }
+    }
     $(document).ready(function () {
         $('.imgHeaderHelp').tooltip();
+        reDrawObjects();
         fillCombobox('#divSpincboPedido', '@this.Url.Action("GetPaylessEncuestaCboPedidos", "HomeExtern")', '#cboPedido', 'v', 't', '');
         hideShowPreg('#preg2', '#divPreg2a');
         hideShowPreg('#preg3', '#divPreg3a');

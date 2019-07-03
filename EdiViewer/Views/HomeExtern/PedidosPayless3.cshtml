@@ -264,6 +264,14 @@
     }
     function showQtys() {
         $('.divSpinQty').show();
+        if ($('#spanWomanQty').text() == '') $('#spanWomanQty').text('0');
+        if ($('#spanWomanCpQty').text() == '') $('#spanWomanCpQty').text('0');
+        if ($('#spanManQty').text() == '') $('#spanManQty').text('0');
+        if ($('#spanManCpQty').text() == '') $('#spanManCpQty').text('0');
+        if ($('#spanKidQty').text() == '') $('#spanKidQty').text('0');
+        if ($('#spanKidCpQty').text() == '') $('#spanKidCpQty').text('0');
+        if ($('#spanAccQty').text() == '') $('#spanAccQty').text('0');
+        if ($('#spanAccCpQty').text() == '') $('#spanAccCpQty').text('0');
         $.ajax({
             url: '@this.Url.Action("GetPaylessProdPrioriInventario2", "Grids")',
             type: 'GET',
@@ -306,15 +314,7 @@
                                 break;
                             default:
                         }
-                    });
-                    if ($('#spanWomanQty').text() == '') $('#spanWomanQty').text('0');
-                    if ($('#spanWomanCpQty').text() == '') $('#spanWomanCpQty').text('0');
-                    if ($('#spanManQty').text() == '') $('#spanManQty').text('0');
-                    if ($('#spanManCpQty').text() == '') $('#spanManCpQty').text('0');
-                    if ($('#spanKidQty').text() == '') $('#spanKidQty').text('0');
-                    if ($('#spanKidCpQty').text() == '') $('#spanKidCpQty').text('0');
-                    if ($('#spanAccQty').text() == '') $('#spanAccQty').text('0');
-                    if ($('#spanAccCpQty').text() == '') $('#spanAccCpQty').text('0');
+                    });                    
                     total = parseInt($('#spanWomanQty').text()) + parseInt($('#spanManQty').text())
                         + parseInt($('#spanKidQty').text()) + parseInt($('#spanAccQty').text()) + 
                         parseInt($('#spanWomanCpQty').text()) + parseInt($('#spanManCpQty').text())

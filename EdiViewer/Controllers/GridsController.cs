@@ -582,7 +582,7 @@ namespace EdiViewer.Controllers
                 if (ListProd.Data == null)
                     return Json(new { total = 0, records = "", errorMessage = (ListProd.Info.CodError != 0 ? ListProd.Info.Mensaje : string.Empty) });
                 if (ListProd.Data.Count() == 0)
-                    return Json(new { total = 0, records = "", errorMessage = (ListProd.Info.CodError != 0 ? ListProd.Info.Mensaje : string.Empty) });                
+                    return Json(new { total = 0, records = "", errorMessage = (ListProd.Info.CodError != 0 ? ListProd.Info.Mensaje : "No hay productos en el WMS para la tienda") });                
                 List<PaylessProdPrioriDetModel> Records = ListProd.Data.Where(R => R.Tienda == TiendaId).Select(O => Utility.Funcs.Reflect(O, new PaylessProdPrioriDetModel())).ToList();                
                 Records = (
                     from Pp in Records
