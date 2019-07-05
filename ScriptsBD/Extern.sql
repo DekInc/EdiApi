@@ -5,9 +5,11 @@ select * from wms_test_29_01_2019.dbo.Paises where NomPais like'%pana%'
 select * from wms.dbo.Clientes with(nolock) where nombre like '%payl%' OR ClienteID = 610 order by ClienteID asc
 select * from edidb.dbo.IEnetUsers where Id > 4 order by CodUsr
 select * from edidb.dbo.IEnetUsers order by CodUsr
-select * from edidb.dbo.IEnetUsers where HashId like '%0307201916%' order by HashId desc
+select * from edidb.dbo.IEnetUsers where HashId like '%0407201916%' order by HashId desc
 select * from edidb.dbo.IEnetGroupsAccesses
 select * from EdiDb.dbo.Trasladado1
+
+
 --delete from edidb.dbo.IEnetGroupsAccesses where Id = 40
 --37	4	19
 --Hbbb2fdd1866c4212a9f99a0d040620190936
@@ -34,8 +36,9 @@ select * from EdiDB.dbo.PAYLESS_ReportesMails order by Id
 select * from EdiDB.dbo.AsyncStates
 --delete from EdiDB.dbo.AsyncStates where Id = 29
 select * from EdiDB.dbo.PAYLESS_Reportes
+--delete from EdiDB.dbo.PAYLESS_ReportesDet where IdM = 60
 select * from EdiDB.dbo.PAYLESS_Reportes where Periodo = '09/06/2019'
-select * from EdiDB.dbo.PAYLESS_ReportesDet where IdM = 20 order by Id
+select * from EdiDB.dbo.PAYLESS_ReportesDet where IdM = 59 order by Id
 SELECT * FROM EdiDB.dbo.PedidosExternos order by FechaCreacion DESC
 SELECT * FROM EdiDB.dbo.PedidosExternos order by id DESC
 SELECT * FROM EdiDB.dbo.PedidosExternos order by FechaPedido DESC
@@ -53,6 +56,20 @@ JOIN EdiDB.dbo.PAYLESS_ProdPrioriDet D
 	ON D.Barcode = Ped.CodProducto
 where Ped.PedidoId = 126
 select * from EdiDB.dbo.PAYLESS_ProdPrioriDet D where D.Barcode like '7368%' and 
+
+select top 10 * from EdiDB.dbo.WmsProductoExistencia
+select distinct
+SUBSTRING(Barcode, 1, 4) Tienda,
+BarCode,
+Categoria,
+CP,
+Departamento
+from EdiDB.dbo.PAYLESS_ProdPrioriDet D 
+JOIN EdiDB.dbo.WmsProductoExistencia Pe
+	ON Pe.CodProducto = D.Barcode
+where (D.CP = 'A'
+OR D.Departamento in ('9', '10', '11'))
+
 --update EdiDB.dbo.PedidosExternos SET FechaPedido = '28/06/2019 07:00' where Id = 122
 --truncate table EdiDB.dbo.PAYLESS_Reportes
 --truncate table EdiDB.dbo.PAYLESS_ReportesDet
@@ -254,20 +271,26 @@ SELECT * FROM LEAR_EQUIVALENCIAS
 EXEC GetSNDet 70246
 select * from wms.dbo.Pedido where ClienteId = 1432
 select * from wms.dbo.Pedido where PedidoId = 70920
-select * from wms.dbo.Pedido where PedidoId = 70310
-select * from wms.dbo.DtllPedido where PedidoId = 70246
+select * from wms.dbo.Pedido where PedidoId = 71915
+select * from wms.dbo.DtllPedido where PedidoId = 71908
 --70246, despacho 51633
 select * from wms.dbo.usrsystem where idusr = 'EPALACIOS'
-select top 20 * from wms.dbo.Despachos where DocumentoFiscal = 'SA118246' order by DespachoID DESC
-select top 20 * from wms.dbo.Transacciones where NoTransaccion = 'SA118246'
+select top 20 * from wms.dbo.Despachos where DocumentoFiscal = 'SA120103' order by DespachoID DESC
+select top 20 * from wms.dbo.Transacciones where NoTransaccion = 'SA120106'
+select top 20 * from wms.dbo.DetalleTransacciones where TransaccionID = 120106
 select top 20 * from wms.dbo.DtllDespacho Dd where Dd.DespachoID = 51953
 SELECT TOP 200 * FROM wms.dbo.Transacciones WHERE PedidoId = 70920
+select * from wms.dbo.DtllPedido where PedidoId = 71908
 SELECT * FROM wms.dbo.SysTempSalidas S WHERE S.DtllPedidoID in (
-	select DtllPedidoID from wms.dbo.DtllPedido where PedidoId = 70649
+	select DtllPedidoID from wms.dbo.DtllPedido where PedidoId = 71908
 ) 
-AND S.CodProducto IN (
-	SELECT CodProducto FROM EdiDB.dbo.PedidosDetExternos where PedidoId = 40
+AND S.CodProducto NOT IN (
+select CodProducto from wms.dbo.DtllPedido where PedidoId = 71908
 )
+
+--IN (
+--	SELECT CodProducto FROM EdiDB.dbo.PedidosDetExternos where PedidoId = 40
+--)
 select * from EdiDB.dbo.PedidosExternos where PedidoWMS = 70648
 select * from wms.dbo.Inventario where InventarioID in (
 	SELECT InventarioID FROM wms.dbo.SysTempSalidas WHERE DtllPedidoID in (
@@ -798,7 +821,8 @@ order by Dt.TransaccionID DESC
 select * from wms.dbo.Racks where Rack = 11759
 select * from wms.dbo.Transacciones where usuarioCrea = 'RPERDOMO' and IDTipoTransaccion = 'IN' and ClienteID = 1432 order by FechaCrea DESC
 select * from wms.dbo.Transacciones WITH(NOLOCK) where usuarioCrea = 'Hilmer' order by FechaCrea DESC
-select * from wms.dbo.Transacciones WITH(NOLOCK) where IDTipoTransaccion = 'IN' and ClienteID = 1432 order by FechaCrea DESC
+select * from wms.dbo.Transacciones WITH(NOLOCK) where-- IDTipoTransaccion = 'IN' and 
+ClienteID = 1432 order by FechaCrea DESC
 select top 40 * from wms.dbo.Transacciones WITH(NOLOCK) where 
 --IDTipoTransaccion = 'SA' and 
 ClienteID = 1432 order by TransaccionID DESC

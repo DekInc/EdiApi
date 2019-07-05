@@ -1410,7 +1410,7 @@ namespace EdiApi.Models.EdiDB
                 entity.ToTable("PAYLESS_ReportesMails");
 
                 entity.HasIndex(e => e.MailDir)
-                    .HasName("UQ__PAYLESS___7E7D34CC4B0D20AB")
+                    .HasName("UQ__PAYLESS___7E7D34CC79C80F94")
                     .IsUnique();
 
                 entity.Property(e => e.MailDir)

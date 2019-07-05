@@ -4215,19 +4215,47 @@ SET XACT_ABORT OFF
                         ListThurs.Add(ListThursNext.Fod());
                     }                    
                     for (int I = 0; I < ListThurs.Count(); I++) {
+                        PaylessReportes NewRep = new PaylessReportes()
+                        {
+                            Periodo = ListThurs[I].AddDays(-3).ToString(ApplicationSettings.DateTimeFormatShort),
+                            PeriodoF = ListThurs[I].AddDays(1).ToString(ApplicationSettings.DateTimeFormatShort),
+                            FechaGen = DateTime.Now.ToString(ApplicationSettings.DateTimeFormat),
+                            Tipo = "0"
+                        };
                         List<PaylessReportes> ListRep = (
                             from R in DbO.PaylessReportes
                             where R.Periodo == ListThurs[I].AddDays(-3).ToString(ApplicationSettings.DateTimeFormatShort)
                             && R.Tipo == "0"
                             select R
                             ).ToList();
-                        if (ListRep.Count() == 0) {
-                            PaylessReportes NewRep = new PaylessReportes() {
-                                Periodo = ListThurs[I].AddDays(-3).ToString(ApplicationSettings.DateTimeFormatShort),
-                                PeriodoF = ListThurs[I].AddDays(1).ToString(ApplicationSettings.DateTimeFormatShort),
-                                FechaGen = DateTime.Now.ToString(ApplicationSettings.DateTimeFormat),
-                                Tipo = "0"
-                            };
+                        if (I == ListThurs.Count() - 1)
+                        {
+                            bool TheSame = true;
+                            List<PeticionesAdminBGModel> ListOrders = ManualDB.SP_GetPeticionesAdminB(ref DbOLong).ToList();
+                            ListOrders = ListOrders.Where(Pe => Pe.FechaPedido.ToDateEsp() >= ListThurs[I].AddDays(-4)
+                                && Pe.FechaPedido.ToDateEsp() <= ListThurs[I].AddDays(3)).OrderByDescending(Pe2 => Pe2.FechaPedido.ToDateEsp()).ToList();
+                            List<PaylessReportesDet> ListRepDet = (from Rd in DbO.PaylessReportesDet where Rd.IdM == ListRep.Fod().Id select Rd).ToList();
+                            foreach (PeticionesAdminBGModel PedNuevo in ListOrders)
+                            {
+                                if (ListRepDet.Where(O1 =>
+                                    O1.Fecha1 == PedNuevo.FechaPedido
+                                    || O1.Fecha2 == PedNuevo.FechaPedido
+                                    || O1.Fecha3 == PedNuevo.FechaPedido
+                                    || O1.Fecha4 == PedNuevo.FechaPedido
+                                    || O1.Fecha5 == PedNuevo.FechaPedido
+                                    || O1.Fecha6 == PedNuevo.FechaPedido).Count() == 0)
+                                    TheSame = false;
+                            }
+                            if (!TheSame)
+                            {
+                                DbO.PaylessReportesDet.RemoveRange(DbO.PaylessReportesDet.Where(R1 => R1.IdM == ListRep.Fod().Id));
+                                DbO.PaylessReportes.Remove(ListRep.Fod());
+                                DbO.SaveChanges();
+                                ListRep.Clear();
+                                NewRep.MailEnviado = true;
+                            }
+                        }
+                        if (ListRep.Count() == 0) {                            
                             DbO.PaylessReportes.Add(NewRep);
                             DbO.SaveChanges();
                             List<PeticionesAdminBGModel> ListOrders = ManualDB.SP_GetPeticionesAdminB(ref DbOLong).ToList();
@@ -4348,30 +4376,8 @@ SET XACT_ABORT OFF
                                 DbO.SaveChanges();
                             }
                             DbO.ProductoUbicacion.RemoveRange(DbO.ProductoUbicacion.Where(Pu => Pu.Typ == 3));
-                            CreateExcelAutoRepAndSendByMail(NewRep, true);
-                        } else {
-                            if (I == ListThurs.Count() - 1) {
-                                bool TheSame = true;
-                                List<PeticionesAdminBGModel> ListOrders = ManualDB.SP_GetPeticionesAdminB(ref DbOLong).ToList();
-                                ListOrders = ListOrders.Where(Pe => Pe.FechaPedido.ToDateEsp() >= ListThurs[I].AddDays(-4)
-                                    && Pe.FechaPedido.ToDateEsp() <= ListThurs[I].AddDays(3)).OrderByDescending(Pe2 => Pe2.FechaPedido.ToDateEsp()).ToList();
-                                List<PaylessReportesDet> ListRepDet = (from Rd in DbO.PaylessReportesDet where Rd.IdM == ListRep.Fod().Id select Rd).ToList();
-                                foreach (PeticionesAdminBGModel PedNuevo in ListOrders) {
-                                    if (ListRepDet.Where(O1 =>
-                                        O1.Fecha1 == PedNuevo.FechaPedido
-                                        || O1.Fecha2 == PedNuevo.FechaPedido
-                                        || O1.Fecha3 == PedNuevo.FechaPedido
-                                        || O1.Fecha4 == PedNuevo.FechaPedido
-                                        || O1.Fecha5 == PedNuevo.FechaPedido
-                                        || O1.Fecha6 == PedNuevo.FechaPedido).Count() == 0)
-                                        TheSame = false;
-                                }
-                                if (!TheSame) {
-                                    DbO.PaylessReportesDet.RemoveRange(DbO.PaylessReportesDet.Where(R1 => R1.IdM == ListRep.Fod().Id));
-                                    DbO.PaylessReportes.Remove(ListRep.Fod());
-                                    DbO.SaveChanges();
-                                }
-                            }
+                            if (!NewRep.MailEnviado ?? true)
+                                CreateExcelAutoRepAndSendByMail(NewRep, true);
                         }
                     }
                 }

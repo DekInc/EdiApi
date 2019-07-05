@@ -60,7 +60,7 @@ END
 
 EXEC EdiDb.dbo.SP_GetSetExistenciasByCliente 1432, 'Admin'
 
-SELECT * from EdiDB.dbo.WmsProductoExistencia where CodUser = 'Admin' AND CodProducto = '7383810131'
+SELECT * from EdiDB.dbo.WmsProductoExistencia where CodUser = 'Admin' AND CodProducto like '7386%'
 
 SELECT DISTINCT
 CodProducto
