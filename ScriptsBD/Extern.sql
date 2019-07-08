@@ -44,9 +44,9 @@ SELECT * FROM EdiDB.dbo.PedidosExternos order by id DESC
 SELECT * FROM EdiDB.dbo.PedidosExternos order by FechaPedido DESC
 SELECT * FROM EdiDB.dbo.PedidosExternos where Id = 122
 SELECT * FROM EdiDb.dbo.PedidosExternos_Bkp where TiendaId = 7372 AND SUBSTRING(FechaPedido, 1, 10) = '02/07/2019'
-SELECT * FROM EdiDb.dbo.PedidosExternos where TiendaId = 7370 AND SUBSTRING(FechaPedido, 1, 10) = '04/07/2019'
+SELECT * FROM EdiDb.dbo.PedidosExternos where TiendaId = 7382 AND SUBSTRING(FechaPedido, 1, 10) = '04/07/2019'
 SELECT * INTO EdiDb.dbo.PedidosExternos_Bkp FROM EdiDB.dbo.PedidosExternos 
-SELECT * FROM EdiDB.dbo.PedidosExternos where TiendaId = 7376 AND Id = 122
+SELECT * FROM EdiDB.dbo.PedidosExternos where TiendaId = 7368 AND Id = 122
 SELECT * FROM EdiDB.dbo.PedidosExternos where FullPed = 0
 SELECT * FROM EdiDB.dbo.PedidosExternos where SUBSTRING(FechaPedido, 1, 10) = '02/07/2019'
 SELECT * FROM EdiDB.dbo.PedidosDetExternos where PedidoId = 126
@@ -92,16 +92,16 @@ exec SP_GetExistenciasExtern 618
 
 SELECT * FROM EdiDB.dbo.PedidosExternos order by ID DESC
 SELECT * FROM EdiDB.dbo.PedidosExternos order by TiendaId, FechaPedido
-SELECT * FROM EdiDB.dbo.PedidosExternos where Id = 60
+SELECT * FROM EdiDB.dbo.PedidosExternos where Id = 202
 SELECT * FROM EdiDB.dbo.PedidosDetExternos where PedidoId = 174
 --update EdiDB.dbo.PedidosExternos SET FullPed = 1 where Id = 151
 select * from edidb.dbo.IEnetUsers where Id > 4
 --16	1432	7384	04/06/2019 08:00	2	31/05/2019 11:45	NULL	NULL	100	19	0	0	fifo
 SELECT FechaPedido, REPLACE(FechaPedido, '03/06', '04/06') FROM EdiDB.dbo.PedidosExternos
 SELECT * FROM EdiDB.dbo.PedidosExternos where SUBSTRING(FechaPedido, 1, 10) = '03/06/2019'
---update EdiDB.dbo.PedidosExternos SET FechaPedido = '03/07/2019 06:00' where Id = 165
---delete from EdiDB.dbo.PedidosExternos where id in (175, 176)
---delete from EdiDB.dbo.PedidosDetExternos where PedidoId in (175, 176)
+--update EdiDB.dbo.PedidosExternos SET FechaPedido = '08/07/2019 07:30' where Id = 202
+--delete from EdiDB.dbo.PedidosExternos where id in (210)
+--delete from EdiDB.dbo.PedidosDetExternos where PedidoId in (210)
 --update PedidosExternos SET FechaPedido = '08/05/2019 16:00', IdEstado = 2 where Id = 1
 --delete from EdiDB.dbo.PedidosExternos where Id > 15
 --truncate table EdiDB.dbo.PedidosExternos

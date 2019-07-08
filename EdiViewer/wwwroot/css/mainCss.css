@@ -506,7 +506,7 @@ table.dataTable thead th, table.dataTable thead td {
     margin-bottom: 10px;
 }
 .txtCantPedir {
-    width: 100px;
+    width: 60px;
     border: unset !important;
     margin-top: -3px !important;
     padding: unset !important;
@@ -515,6 +515,9 @@ table.dataTable thead th, table.dataTable thead td {
     border-color: unset !important;
     box-shadow: unset !important;
     font-size: 12pt !important;
+}
+.txtCantPedirT {
+    width: 60px;
 }
 table.dataTable.dtr-inline.collapsed > tbody > tr.parent > td:first-child:before, table.dataTable.dtr-inline.collapsed > tbody > tr.parent > th:first-child:before {
     font-size: 18pt;
@@ -735,7 +738,7 @@ table.dataTable.dtr-inline.collapsed > tbody > tr[role="row"] > td:first-child:b
     z-index: 8;
     /*padding: 5px;*/
     color: #FFFFFF;
-    font-size: 16pt;
+    font-size: 13pt;
 }
 .divPedidoPaylessOverInfoContent {
     z-index: 9;

@@ -73,19 +73,26 @@
                                         <div class="divPedidoPaylessOverInfoContent">
                                             <span class="overInfoContentTittle">Damas<br /></span>
                                             <div class="overInfoContentContent">
-                                                Existencias: <span id="spanWomanQty" class="qty"></span>
-                                                <div class="spinner-border spinner-border-sm text-danger divSpinQty" style="display: none" role="status">
-                                                    <span class="sr-only">...</span>
-                                                </div>
-                                                <br />
                                                 CP: <span id="spanWomanCpQty"></span>
                                                 <div class="spinner-border spinner-border-sm text-danger divSpinQty" style="display: none" role="status">
                                                     <span class="sr-only">...</span>
                                                 </div>
                                                 <br />
-                                                Cant. a pedir:
-                                                <input id="txtWomanQty" name="txtWomanQty" class="txtCantPedir" value="0" />
+                                                Cant a pedir:
+                                                <input id="txtWomanQty" name="txtWomanQty" class="txtCantPedir" value="0" />&nbsp;&nbsp;/&nbsp;&nbsp;<span id="spanWomanQty" class="qty"></span>
+                                                <div class="spinner-border spinner-border-sm text-danger divSpinQty" style="display: none" role="status">
+                                                    <span class="sr-only">...</span>
+                                                </div>
                                                 <button type="button" class="btn btn-primary btnTodos" style="height: 22px; font-size: 10pt; padding: 5px; padding-top: 1px; max-width: 92%;">&nbsp;T&nbsp;</button>
+                                                <div>
+                                                    Temporada:&nbsp;&nbsp;
+                                                    <input id="txtWomanQtyT" name="txtWomanQtyT" class="txtCantPedir txtCantPedirT" value="0" />
+                                                    &nbsp;&nbsp;/&nbsp;&nbsp;<span id="spanWomanQtyT"></span>
+                                                    <div class="spinner-border spinner-border-sm text-danger divSpinQty" style="display: none" role="status">
+                                                        <span class="sr-only">...</span>
+                                                    </div>
+                                                </div>
+                                                @*<button type="button" class="btn btn-primary btnTodos btnTodos2" style="height: 22px; font-size: 10pt; padding: 5px; padding-top: 1px; max-width: 92%; margin-bottom: 6px;">&nbsp;T&nbsp;</button>*@
                                             </div>
                                         </div>
                                     </div>
@@ -96,11 +103,6 @@
                                         <div class="divPedidoPaylessOverInfoContent">
                                             <span class="overInfoContentTittle">Caballeros<br /></span>
                                             <div class="overInfoContentContent">
-                                                Existencias: <span id="spanManQty" class="qty"></span>
-                                                <div class="spinner-border spinner-border-sm text-danger divSpinQty" style="display: none" role="status">
-                                                    <span class="sr-only">...</span>
-                                                </div>
-                                                <br />
                                                 CP: <span id="spanManCpQty"></span>
                                                 <div class="spinner-border spinner-border-sm text-danger divSpinQty" style="display: none" role="status">
                                                     <span class="sr-only">...</span>
@@ -108,7 +110,20 @@
                                                 <br />
                                                 Cant. a pedir:
                                                 <input id="txtManQty" name="txtManQty" class="txtCantPedir" value="0" />
+                                                &nbsp;&nbsp;/&nbsp;&nbsp;
+                                                <span id="spanManQty" class="qty"></span>
+                                                <div class="spinner-border spinner-border-sm text-danger divSpinQty" style="display: none" role="status">
+                                                    <span class="sr-only">...</span>
+                                                </div>
                                                 <button type="button" class="btn btn-primary btnTodos" style="height: 22px; font-size: 10pt; padding: 5px; padding-top: 1px; max-width: 92%;">&nbsp;T&nbsp;</button>
+                                                <div>
+                                                    Temporada:&nbsp;&nbsp;
+                                                    <input id="txtManQtyT" name="txtManQtyT" class="txtCantPedir txtCantPedirT" value="0" />
+                                                    &nbsp;&nbsp;/&nbsp;&nbsp;<span id="spanManQtyT"></span>
+                                                    <div class="spinner-border spinner-border-sm text-danger divSpinQty" style="display: none" role="status">
+                                                        <span class="sr-only">...</span>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -132,6 +147,14 @@
                                                 Cant. a pedir:
                                                 <input id="txtKidQty" name="txtKidQty" class="txtCantPedir" value="0" />
                                                 <button type="button" class="btn btn-primary btnTodos" style="height: 22px; font-size: 10pt; padding: 5px; padding-top: 1px; max-width: 92%;">&nbsp;T&nbsp;</button>
+                                                <div>
+                                                    Temporada:&nbsp;&nbsp;
+                                                    <input id="txtKidQtyT" name="txtKidQtyT" class="txtCantPedir txtCantPedirT" value="0" />
+                                                    &nbsp;&nbsp;/&nbsp;&nbsp;<span id="spanKidQtyT"></span>
+                                                    <div class="spinner-border spinner-border-sm text-danger divSpinQty" style="display: none" role="status">
+                                                        <span class="sr-only">...</span>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -205,10 +228,10 @@
 
             $('.div856Search').css({ "max-width": "unset" });
             $('#dtpFechaEntrega').css({ "width": "100%" });
-            $('.btn').css({ "margin-bottom": "10px" });
+            $('.btnTodos').css({ "margin-bottom": "10px" });
+            $('.btnTodos').css({ "margin-top": "10px" });
             $('.btn').addClass('btn-block');
             $('.divPedidoPaylessOverInfo').css({ "left": "unset" });
-            $('.btnTodos').css({ "margin-top": "10px" });
         } else {
             $('#spanClientName').css('margin-bottom', '10px');
         }
