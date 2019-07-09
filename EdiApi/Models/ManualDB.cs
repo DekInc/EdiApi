@@ -755,6 +755,39 @@ namespace EdiApi.Models
             }
             return ListProdDet;
         }
+        public static IEnumerable<PaylessProdPrioriDetModel> SP_GetPaylessSellQtys(ref Models.EdiDB.EdiDBContext _DbO, int ClienteId, string TiendaId, string CodUser)
+        {
+            List<PaylessProdPrioriDetModel> ListProdDet = new List<PaylessProdPrioriDetModel>();
+            using (DbCommand Cmd = _DbO.Database.GetDbConnection().CreateCommand())
+            {
+                Cmd.CommandText = $"dbo.SP_GetPaylessSellQtys {ClienteId}, '{TiendaId}', '{CodUser}'";
+                _DbO.Database.OpenConnection();
+                DbDataReader Dr = Cmd.ExecuteReader();
+                if (Dr.HasRows)
+                {
+                    int NRow = 0;
+                    while (Dr.Read())
+                    {
+                        ListProdDet.Add(new PaylessProdPrioriDetModel()
+                        {
+                            Id = (NRow++),
+                            Barcode = Dr.Gr<string>(0),
+                            Categoria = Dr.Gr<string>(1),
+                            Cp = Dr.Gr<string>(2),
+                            Producto = Dr.Gr<string>(3),
+                            Talla = Dr.Gr<string>(4),
+                            Lote = Dr.Gr<string>(5),
+                            Departamento = Dr.Gr<string>(6),
+                            Existencia = Dr.Gr<int>(7)
+                        });
+                    }
+                }
+                _DbO.Database.CloseConnection();
+                if (!Dr.IsClosed)
+                    Dr.Close();
+            }
+            return ListProdDet;
+        }
         public static IEnumerable<FE830DataAux> SP_GetExistenciasByTienda(ref Models.EdiDB.EdiDBContext _DbO, int ClienteId, int TiendaId) {
             List<FE830DataAux> ListProdDet = new List<FE830DataAux>();
             using (DbCommand Cmd = _DbO.Database.GetDbConnection().CreateCommand()) {

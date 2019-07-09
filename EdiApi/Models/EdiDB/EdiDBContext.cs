@@ -61,6 +61,7 @@ namespace EdiApi.Models.EdiDB
         public virtual DbSet<LearTd3856> LearTd3856 { get; set; }
         public virtual DbSet<LearTd5856> LearTd5856 { get; set; }
         public virtual DbSet<LearUit830> LearUit830 { get; set; }
+        public virtual DbSet<PaylessPedidosCpT> PaylessPedidosCpT { get; set; }
         public virtual DbSet<PaylessPeriodoTransporte> PaylessPeriodoTransporte { get; set; }
         public virtual DbSet<PaylessProdPrioriArchDet> PaylessProdPrioriArchDet { get; set; }
         public virtual DbSet<PaylessProdPrioriArchM> PaylessProdPrioriArchM { get; set; }
@@ -82,6 +83,7 @@ namespace EdiApi.Models.EdiDB
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
+            
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -1257,6 +1259,33 @@ namespace EdiApi.Models.EdiDB
                 entity.Property(e => e.ParentHashId).HasMaxLength(128);
 
                 entity.Property(e => e.UnitOfMeasure).HasMaxLength(2);
+            });
+
+            modelBuilder.Entity<PaylessPedidosCpT>(entity =>
+            {
+                entity.Property(e => e.Categoria)
+                    .HasMaxLength(256)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.Cp)
+                    .HasMaxLength(8)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.Departamento)
+                    .HasMaxLength(16)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.Lote)
+                    .HasMaxLength(8)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.Producto)
+                    .HasMaxLength(16)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.Talla)
+                    .HasMaxLength(8)
+                    .IsUnicode(false);
             });
 
             modelBuilder.Entity<PaylessPeriodoTransporte>(entity =>

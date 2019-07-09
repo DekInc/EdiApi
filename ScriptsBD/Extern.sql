@@ -58,6 +58,8 @@ where Ped.PedidoId = 126
 select * from EdiDB.dbo.PAYLESS_ProdPrioriDet D where D.Barcode like '7368%' and 
 
 select top 10 * from EdiDB.dbo.WmsProductoExistencia
+
+EXEC EdiDb.dbo.SP_GetSetExistenciasByCliente 1432, 'Admin'
 select distinct
 SUBSTRING(Barcode, 1, 4) Tienda,
 BarCode,

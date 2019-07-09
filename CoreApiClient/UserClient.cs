@@ -337,6 +337,9 @@ namespace CoreApiClient
         public async Task<RetData<IEnumerable<CboValuesModel>>> GetPaylessEncuestaCboPedidos(int TiendaId) {
             return await GetAsync<RetData<IEnumerable<CboValuesModel>>>(CreateRequestUri(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Cbo/GetPaylessEncuestaCboPedidos"), $"?TiendaId={TiendaId}"));
         }
+        public async Task<RetData<IEnumerable<PaylessProdPrioriDetModel>>> GetPaylessSellQtys(int ClienteId, string TiendaId, string CodUser) {
+            return await GetAsync<RetData<IEnumerable<PaylessProdPrioriDetModel>>>(CreateRequestUri(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Data/GetPaylessSellQtys"), $"?ClienteId={ClienteId}&TiendaId={TiendaId}&CodUser={CodUser}"));
+        }
         /////////////////////////////////////////
         //public async Task<List<UsersModel>> GetUsers()
         //{

@@ -751,7 +751,7 @@ table.dataTable.dtr-inline.collapsed > tbody > tr[role="row"] > td:first-child:b
     text-shadow: 2px 2px #222;
 }
 .overInfoContentTittle {
-    font-size: 18pt;
+    font-size: 16pt;
     font-weight: bold;
     font-style: italic;
 }

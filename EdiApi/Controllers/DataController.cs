@@ -1670,31 +1670,40 @@ namespace EdiApi.Controllers
             }
         }
         [HttpGet]
-        public RetData<IEnumerable<PaylessProdPrioriDetModel>> GetPaylessProdPrioriAll() {
+        public RetData<IEnumerable<PaylessProdPrioriDetModel>> GetPaylessProdPrioriAll()
+        {
             DateTime StartTime = DateTime.Now;
-            try {
+            try
+            {
                 IEnumerable<PaylessProdPrioriDetModel> ListPaylessProdPrioriDet = (
                     from D in DbO.PaylessProdPrioriDet
                     from T in DbO.PaylessTransporte
                     where T.Id == D.IdTransporte
-                    select new PaylessProdPrioriDetModel {
+                    select new PaylessProdPrioriDetModel
+                    {
                         Id = D.Id,
                         Barcode = D.Barcode,
                         Categoria = D.Categoria,
                         Cp = D.Cp,
                         Transporte = T.Transporte
                     });
-                return new RetData<IEnumerable<PaylessProdPrioriDetModel>>() {
+                return new RetData<IEnumerable<PaylessProdPrioriDetModel>>()
+                {
                     Data = ListPaylessProdPrioriDet,
-                    Info = new RetInfo() {
+                    Info = new RetInfo()
+                    {
                         CodError = 0,
                         Mensaje = "ok",
                         ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
                     }
                 };
-            } catch (Exception e1) {
-                return new RetData<IEnumerable<PaylessProdPrioriDetModel>>() {
-                    Info = new RetInfo() {
+            }
+            catch (Exception e1)
+            {
+                return new RetData<IEnumerable<PaylessProdPrioriDetModel>>()
+                {
+                    Info = new RetInfo()
+                    {
                         CodError = -1,
                         Mensaje = e1.ToString(),
                         ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
@@ -1702,6 +1711,37 @@ namespace EdiApi.Controllers
                 };
             }
         }
+        [HttpGet]
+        public RetData<IEnumerable<PaylessProdPrioriDetModel>> GetPaylessSellQtys(int ClienteId, string TiendaId, string CodUser)
+        {
+            DateTime StartTime = DateTime.Now;
+            try
+            {
+                IEnumerable<PaylessProdPrioriDetModel> ListPaylessProdPrioriDet = ManualDB.SP_GetPaylessSellQtys(ref DbO, ClienteId, TiendaId, CodUser);
+                return new RetData<IEnumerable<PaylessProdPrioriDetModel>>()
+                {
+                    Data = ListPaylessProdPrioriDet,
+                    Info = new RetInfo()
+                    {
+                        CodError = 0,
+                        Mensaje = "ok",
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            }
+            catch (Exception e1)
+            {
+                return new RetData<IEnumerable<PaylessProdPrioriDetModel>>()
+                {
+                    Info = new RetInfo()
+                    {
+                        CodError = -1,
+                        Mensaje = e1.ToString(),
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            }
+        }        
         [HttpPost]
         public RetData<string> SetPaylessProdPriori(IEnumerable<PaylessUploadFileModel> ListUpload, int ClienteId, string Periodo, string codUsr, string transporte, bool ChkUpDelete)
         {
