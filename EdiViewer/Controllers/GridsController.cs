@@ -447,7 +447,7 @@ namespace EdiViewer.Controllers
                     return Json(new { total = 0, records = "", errorMessage = (ListPe.Info.CodError != 0 ? ListPe.Info.Mensaje : string.Empty) });
                 List<PeticionesAdminBGModel> Records = new List<PeticionesAdminBGModel>();
                 foreach (PeticionesAdminBGModel Pe in ListPe.Data) {
-                    Pe.Total = Pe.WomanQty + Pe.ManQty + Pe.KidQty + Pe.AccQty + Pe.TotalCp;
+                    Pe.Total = Pe.WomanQty + Pe.ManQty + Pe.KidQty + Pe.AccQty + Pe.TotalCp + (Pe.WomanQtyT ?? 0) + (Pe.ManQtyT ?? 0) + (Pe.KidQtyT ?? 0) + (Pe.AccQtyT ?? 0);
                     Pe.TotalEnv = Pe.WomanQtyEnv + Pe.ManQtyEnv + Pe.KidQtyEnv + Pe.AccQtyEnv + Pe.TotalCpEnv;
                     if (Pe.TotalEnv != 0)
                         Pe.PorcValid = Math.Round((1.0 - (double)(Math.Abs((double)Pe.Total - (double)Pe.TotalEnv)/(double)Pe.Total)) * 100.0, 2);
@@ -694,6 +694,14 @@ namespace EdiViewer.Controllers
                 return Json(new { draw = 0, recordsFiltered = 0, recordsTotal = 0, errorMessage = e1.ToString(), data = "" });
             }
         }
+        private void AddCat(ref List<PaylessProdPrioriDetModel> Records, ref RetData<IEnumerable<PaylessProdPrioriDetModel>> ListProdWithExists, string Cat, string CatN, string Cp, string Est, int Typ) {
+            Records.Add(new PaylessProdPrioriDetModel() {
+                Categoria = Cat,
+                Cp = Cp,
+                Estado = Est,
+                Existencia = ListProdWithExists.Data.Where(D => D.Existencia == Typ && D.Categoria == CatN).Select(O => O.Barcode).Distinct().Count()
+            });
+        }
         public async Task<IActionResult> GetPaylessProdPrioriInventario3(string tiendaId = null) {
             try {
                 if (tiendaId != null)
@@ -707,78 +715,18 @@ namespace EdiViewer.Controllers
                 if (ListProdWithExists.Data.Count() == 0)
                     return Json(new { total = 0, records = "", errorMessage = (ListProdWithExists.Info.CodError != 0 ? ListProdWithExists.Info.Mensaje : "No hay productos en el WMS para la tienda") });
                 List<PaylessProdPrioriDetModel> Records = new List<PaylessProdPrioriDetModel>();
-                Records.Add(new PaylessProdPrioriDetModel() {
-                    Categoria = "0",
-                    Cp = "0",
-                    Estado = "0",
-                    Existencia = ListProdWithExists.Data.Where(D => D.Existencia == 1 && D.Categoria == "DAMAS").Select(O => O.Barcode).Distinct().Count()
-                });
-                Records.Add(new PaylessProdPrioriDetModel() {
-                    Categoria = "1",
-                    Cp = "0",
-                    Estado = "0",
-                    Existencia = ListProdWithExists.Data.Where(D => D.Existencia == 1 && D.Categoria == "CABALLEROS").Select(O => O.Barcode).Distinct().Count()
-                });
-                Records.Add(new PaylessProdPrioriDetModel() {
-                    Categoria = "2",
-                    Cp = "0",
-                    Estado = "0",
-                    Existencia = ListProdWithExists.Data.Where(D => D.Existencia == 1 && D.Categoria == "NIÑOS / AS").Select(O => O.Barcode).Distinct().Count()
-                });
-                Records.Add(new PaylessProdPrioriDetModel() {
-                    Categoria = "3",
-                    Cp = "0",
-                    Estado = "0",
-                    Existencia = ListProdWithExists.Data.Where(D => D.Existencia == 1 && D.Categoria == "ACCESORIOS").Select(O => O.Barcode).Distinct().Count()
-                });
-                Records.Add(new PaylessProdPrioriDetModel() {
-                    Categoria = "0",
-                    Cp = "1",
-                    Estado = "0",
-                    Existencia = ListProdWithExists.Data.Where(D => D.Existencia == 2 && D.Categoria == "DAMAS").Select(O => O.Barcode).Distinct().Count()
-                });
-                Records.Add(new PaylessProdPrioriDetModel() {
-                    Categoria = "1",
-                    Cp = "1",
-                    Estado = "0",
-                    Existencia = ListProdWithExists.Data.Where(D => D.Existencia == 2 && D.Categoria == "CABALLEROS").Select(O => O.Barcode).Distinct().Count()
-                });
-                Records.Add(new PaylessProdPrioriDetModel() {
-                    Categoria = "2",
-                    Cp = "1",
-                    Estado = "0",
-                    Existencia = ListProdWithExists.Data.Where(D => D.Existencia == 2 && D.Categoria == "NIÑOS / AS").Select(O => O.Barcode).Distinct().Count()
-                });
-                Records.Add(new PaylessProdPrioriDetModel() {
-                    Categoria = "3",
-                    Cp = "1",
-                    Estado = "0",
-                    Existencia = ListProdWithExists.Data.Where(D => D.Existencia == 2 && D.Categoria == "ACCESORIOS").Select(O => O.Barcode).Distinct().Count()
-                });
-                Records.Add(new PaylessProdPrioriDetModel() {
-                    Categoria = "0",
-                    Cp = "0",
-                    Estado = "1",
-                    Existencia = ListProdWithExists.Data.Where(D => D.Existencia == 3 && D.Categoria == "DAMAS").Select(O => O.Barcode).Distinct().Count()
-                });
-                Records.Add(new PaylessProdPrioriDetModel() {
-                    Categoria = "1",
-                    Cp = "0",
-                    Estado = "1",
-                    Existencia = ListProdWithExists.Data.Where(D => D.Existencia == 3 && D.Categoria == "CABALLEROS").Select(O => O.Barcode).Distinct().Count()
-                });
-                Records.Add(new PaylessProdPrioriDetModel() {
-                    Categoria = "2",
-                    Cp = "0",
-                    Estado = "1",
-                    Existencia = ListProdWithExists.Data.Where(D => D.Existencia == 3 && D.Categoria == "NIÑOS / AS").Select(O => O.Barcode).Distinct().Count()
-                });
-                Records.Add(new PaylessProdPrioriDetModel() {
-                    Categoria = "3",
-                    Cp = "0",
-                    Estado = "1",
-                    Existencia = ListProdWithExists.Data.Where(D => D.Existencia == 3 && D.Categoria == "ACCESORIOS").Select(O => O.Barcode).Distinct().Count()
-                });
+                AddCat(ref Records, ref ListProdWithExists, "0", "DAMAS", "0", "0", 1);
+                AddCat(ref Records, ref ListProdWithExists, "1", "CABALLEROS", "0", "0", 1);
+                AddCat(ref Records, ref ListProdWithExists, "2", "NIÑOS / AS", "0", "0", 1);
+                AddCat(ref Records, ref ListProdWithExists, "3", "ACCESORIOS", "0", "0", 1);
+                AddCat(ref Records, ref ListProdWithExists, "0", "DAMAS", "1", "0", 2);
+                AddCat(ref Records, ref ListProdWithExists, "1", "CABALLEROS", "1", "0", 2);
+                AddCat(ref Records, ref ListProdWithExists, "2", "NIÑOS / AS", "1", "0", 2);
+                AddCat(ref Records, ref ListProdWithExists, "3", "ACCESORIOS", "1", "0", 2);
+                AddCat(ref Records, ref ListProdWithExists, "0", "DAMAS", "0", "1", 3);
+                AddCat(ref Records, ref ListProdWithExists, "1", "CABALLEROS", "0", "1", 3);
+                AddCat(ref Records, ref ListProdWithExists, "2", "NIÑOS / AS", "0", "1", 3);
+                AddCat(ref Records, ref ListProdWithExists, "3", "ACCESORIOS", "0", "1", 3);
                 int Total = Records.Count;
                 HttpContext.Session.SetObjSession("Session.StoreQtys", Records);                
                 return Json(new { Total, Records, errorMessage = "" });

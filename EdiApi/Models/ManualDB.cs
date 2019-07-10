@@ -919,7 +919,11 @@ namespace EdiApi.Models
                             TotalCpEnv = Dr.Gr<int>(16),
                             FullPed = Dr.Gr<bool?>(17),
                             Divert = Dr.Gr<bool?>(18),
-                            TiendaIdDestino = Dr.Gr<int?>(19)
+                            TiendaIdDestino = Dr.Gr<int?>(19),
+                            WomanQtyT = Dr.Gr<int?>(20),
+                            ManQtyT = Dr.Gr<int?>(21),
+                            KidQtyT = Dr.Gr<int?>(22),
+                            AccQtyT = Dr.Gr<int?>(23)
                         });
                     }
                 }

@@ -100,8 +100,12 @@ namespace EdiViewer.Controllers
         public IActionResult CrearWmsSalida() {
             return View();
         }
-        public async Task<IActionResult> SetNewDisPayless(string dtpFechaEntrega, int txtWomanQty, int txtManQty, int txtKidQty, int txtAccQty, string radInvType) {
+        public async Task<IActionResult> SetNewDisPayless(string dtpFechaEntrega, int txtWomanQty, int txtManQty, int txtKidQty, int txtAccQty, int? txtWomanQtyT, int? txtManQtyT, int? txtKidQtyT, int? txtAccQtyT, string radInvType) {
             ViewBag.PedidoIdToModify = 0;
+            txtWomanQtyT = txtWomanQtyT == 0 ? null : txtWomanQtyT;
+            txtManQtyT = txtManQtyT == 0 ? null : txtManQtyT;
+            txtKidQtyT = txtKidQtyT == 0 ? null : txtKidQtyT;
+            txtAccQtyT = txtAccQtyT == 0 ? null : txtAccQtyT;
             if (string.IsNullOrEmpty(radInvType)) {
                 return View("PedidosPayless3", new ErrorModel() { ErrorMessage = "El tipo de pedido está vacío." });
             }
@@ -122,12 +126,12 @@ namespace EdiViewer.Controllers
             List<PaylessProdPrioriDetModel> ListQtys = HttpContext.Session.GetObjSession<List<PaylessProdPrioriDetModel>>("Session.StoreQtys");
             bool? FullPed = null;
             FullPed = (
-                ListQtys.Where(O => O.Cp == "No" && O.Categoria.ToUpper() == "DAMAS").Fod().Existencia == txtWomanQty
-                && ListQtys.Where(O => O.Cp == "No" && O.Categoria.ToUpper() == "CABALLEROS").Fod().Existencia == txtManQty
-                && ListQtys.Where(O => O.Cp == "No" && O.Categoria.ToUpper() == "NIÑOS / AS").Fod().Existencia == txtKidQty
-                && ListQtys.Where(O => O.Cp == "No" && O.Categoria.ToUpper() == "ACCESORIOS").Fod().Existencia == txtAccQty
+                ListQtys.Where(O => O.Cp == "0" && O.Categoria.ToUpper() == "0").Fod().Existencia == txtWomanQty
+                && ListQtys.Where(O => O.Cp == "0" && O.Categoria.ToUpper() == "1").Fod().Existencia == txtManQty
+                && ListQtys.Where(O => O.Cp == "0" && O.Categoria.ToUpper() == "2").Fod().Existencia == txtKidQty
+                && ListQtys.Where(O => O.Cp == "0" && O.Categoria.ToUpper() == "3").Fod().Existencia == txtAccQty
                 );
-            RetData<string> Ret = await ApiClientFactory.Instance.SetNewDisPayless(dtpFechaEntrega, txtWomanQty, txtManQty, txtKidQty, txtAccQty, radInvType, HttpContext.Session.GetObjSession<int>("Session.ClientId"), HttpContext.Session.GetObjSession<int>("Session.TiendaId"), null, (FullPed == false? null : FullPed), null);
+            RetData<string> Ret = await ApiClientFactory.Instance.SetNewDisPayless(dtpFechaEntrega, txtWomanQty, txtManQty, txtKidQty, txtAccQty, radInvType, HttpContext.Session.GetObjSession<int>("Session.ClientId"), HttpContext.Session.GetObjSession<int>("Session.TiendaId"), null, (FullPed == false? null : FullPed), null, txtWomanQtyT, txtManQtyT, txtKidQtyT, txtAccQtyT);
             if (Ret.Info.CodError == 0) {
                 return View("PedidosPayless3", new ErrorModel() { Typ = 1, ErrorMessage = Ret.Data });
             } else {
@@ -159,7 +163,7 @@ namespace EdiViewer.Controllers
                 && ListQtys.Where(O => O.Cp == "No" && O.Categoria.ToUpper() == "ACCESORIOS").Fod().Existencia == txtAccQty
                 );
             RetData<string> Ret = new RetData<string>();
-            Ret = await ApiClientFactory.Instance.SetNewDisPayless(dtpFechaEntrega, txtWomanQty, txtManQty, txtKidQty, txtAccQty, radInvType, HttpContext.Session.GetObjSession<int>("Session.ClientId"), HttpContext.Session.GetObjSession<int>("Session.TiendaId"), true, (FullPed == false ? null : FullPed), Convert.ToInt32(cboTiendaDest));
+            Ret = await ApiClientFactory.Instance.SetNewDisPayless(dtpFechaEntrega, txtWomanQty, txtManQty, txtKidQty, txtAccQty, radInvType, HttpContext.Session.GetObjSession<int>("Session.ClientId"), HttpContext.Session.GetObjSession<int>("Session.TiendaId"), true, (FullPed == false ? null : FullPed), Convert.ToInt32(cboTiendaDest), null, null, null, null);
             if (Ret.Info.CodError == 0) {
                 return View("PedidosPaylessDivert", new ErrorModel() { Typ = 1, ErrorMessage = Ret.Data });
             } else {

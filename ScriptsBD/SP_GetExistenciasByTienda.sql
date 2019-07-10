@@ -49,5 +49,5 @@ BEGIN
 	ORDER BY t.BodegaId, ii.CodProducto
 END
 
-EXEC EdiDb.dbo.SP_GetExistenciasByTienda 1432, '7365'
+EXEC EdiDb.dbo.SP_GetExistenciasByTienda 1432, '7392'
 --657

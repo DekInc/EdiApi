@@ -182,7 +182,7 @@
                                                 <div>
                                                     Temporada:&nbsp;&nbsp;
                                                     <input id="txtAccQtyT" name="txtAccQtyT" class="txtCantPedir txtCantPedirT" value="0" />
-                                                    &nbsp;&nbsp;/&nbsp;&nbsp;<span id="spanKidQtyT"></span>
+                                                    &nbsp;&nbsp;/&nbsp;&nbsp;<span id="spanAccQtyT"></span>
                                                     <div class="spinner-border spinner-border-sm text-danger divSpinQty" style="display: none" role="status">
                                                         <span class="sr-only">...</span>
                                                     </div>
@@ -302,7 +302,7 @@
     function showQtys() {
         $('.divSpinQty').show();        
         $.ajax({
-            url: '@this.Url.Action("GetPaylessProdPrioriInventario2", "Grids")',
+            url: '@this.Url.Action("GetPaylessProdPrioriInventario3", "Grids")',
             type: 'GET',
             dataType: 'JSON',
             success: function (json) {
@@ -315,6 +315,10 @@
                 if ($('#spanKidCpQty').text() == '') $('#spanKidCpQty').text('0');
                 if ($('#spanAccQty').text() == '') $('#spanAccQty').text('0');
                 if ($('#spanAccCpQty').text() == '') $('#spanAccCpQty').text('0');
+                if ($('#spanWomanQtyT').text() == '') $('#spanWomanQtyT').text('0');
+                if ($('#spanManQtyT').text() == '') $('#spanManQtyT').text('0');
+                if ($('#spanKidQtyT').text() == '') $('#spanKidQtyT').text('0');
+                if ($('#spanAccQtyT').text() == '') $('#spanAccQtyT').text('0');
                 $('.txtCantPedir').prop('disabled', false);
                 if (json.errorMessage != '') {
                     menErrorEdi(json.errorMessage, 'Error en petición');
@@ -325,29 +329,37 @@
                     var total = 0;
                     $.each(json.records, function (indexI, itemO) {
                         switch (itemO.categoria) {
-                            case 'DAMAS':
-                                if (itemO.cp == 'No')
+                            case '0':
+                                if (itemO.cp == '0' && itemO.estado == '0')
                                     $('#spanWomanQty').text(itemO.existencia);
-                                else
+                                else if (itemO.cp == '1' && itemO.estado == '0')
                                     $('#spanWomanCpQty').text(itemO.existencia);
+                                else if (itemO.cp == '0' && itemO.estado == '1')
+                                    $('#spanWomanQtyT').text(itemO.existencia);
                                 break;
-                            case 'CABALLEROS':
-                                if (itemO.cp == 'No')
+                            case '1':
+                                if (itemO.cp == '0' && itemO.estado == '0')
                                     $('#spanManQty').text(itemO.existencia);
-                                else
+                                else if (itemO.cp == '1' && itemO.estado == '0')
                                     $('#spanManCpQty').text(itemO.existencia);
+                                else if (itemO.cp == '0' && itemO.estado == '1')
+                                    $('#spanManQtyT').text(itemO.existencia);
                                 break;
-                            case 'NIÑOS / AS':
-                                if (itemO.cp == 'No')
+                            case '2':
+                                if (itemO.cp == '0' && itemO.estado == '0')
                                     $('#spanKidQty').text(itemO.existencia);
-                                else
+                                else if (itemO.cp == '1' && itemO.estado == '0')
                                     $('#spanKidCpQty').text(itemO.existencia);
+                                else if (itemO.cp == '0' && itemO.estado == '1')
+                                    $('#spanKidQtyT').text(itemO.existencia);
                                 break;
-                            case 'ACCESORIOS':
-                                if (itemO.cp == 'No')
+                            case '3':
+                                if (itemO.cp == '0' && itemO.estado == '0')
                                     $('#spanAccQty').text(itemO.existencia);
-                                else
+                                else if (itemO.cp == '1' && itemO.estado == '0')
                                     $('#spanAccCpQty').text(itemO.existencia);
+                                else if (itemO.cp == '0' && itemO.estado == '1')
+                                    $('#spanAccQtyT').text(itemO.existencia);
                                 break;
                             default:
                         }

@@ -58,7 +58,7 @@ BEGIN
 		Pe.WomanQty,
 		Pe.ManQty,
 		Pe.KidQty,
-		Pe.AccQty,		
+		Pe.AccQty,				
 		Pe.FechaCreacion,
 		Pe.FechaPedido,		
 		(SELECT COUNT(*) FROM (
@@ -124,7 +124,11 @@ BEGIN
 		) TotalCpEnv,
 		Pe.FullPed,
 		Pe.Divert,
-		Pe.TiendaIdDestino
+		Pe.TiendaIdDestino,
+		Pe.WomanQtyT,
+		Pe.ManQtyT,
+		Pe.KidQtyT,
+		Pe.AccQtyT
 	FROM EdiDB.dbo.PedidosExternos Pe WITH(NOLOCK)
 	LEFT JOIN EdiDB.dbo.PAYLESS_Tiendas T WITH(NOLOCK)
 		ON T.TiendaId = Pe.TiendaId	

@@ -3610,7 +3610,7 @@ SET XACT_ABORT OFF
             }
         }
         [HttpPost]
-        public RetData<string> SetNewDisPayless(string dtpFechaEntrega, int txtWomanQty, int txtManQty, int txtKidQty, int txtAccQty, string radInvType, int ClienteId, int TiendaId, bool? Divert, bool? FullPed, int? TiendaIdDestino) {
+        public RetData<string> SetNewDisPayless(string dtpFechaEntrega, int txtWomanQty, int txtManQty, int txtKidQty, int txtAccQty, string radInvType, int ClienteId, int TiendaId, bool? Divert, bool? FullPed, int? TiendaIdDestino, int? txtWomanQtyT, int? txtManQtyT, int? txtKidQtyT, int? txtAccQtyT) {
             DateTime StartTime = DateTime.Now;
             try {
                 PedidosExternos NewPe = new PedidosExternos() {
@@ -3623,6 +3623,10 @@ SET XACT_ABORT OFF
                     ManQty = txtManQty,
                     KidQty = txtKidQty,
                     AccQty = txtAccQty,
+                    WomanQtyT = txtWomanQtyT,
+                    ManQtyT = txtManQtyT,
+                    KidQtyT = txtKidQtyT,
+                    AccQtyT = txtAccQtyT,
                     InvType = radInvType,
                     FullPed = FullPed,
                     Divert = Divert,

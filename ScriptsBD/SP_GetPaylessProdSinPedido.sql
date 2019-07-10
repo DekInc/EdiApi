@@ -69,7 +69,7 @@ BEGIN
 END
 GO
 
-EXEC EdiDB.dbo.SP_GetPaylessProdSinPedido 1432, '7365'
+EXEC EdiDB.dbo.SP_GetPaylessProdSinPedido 1432, '7392'
 
 select distinct Barcode from dbo.PAYLESS_ProdPrioriDet where Barcode like'7375%'
 --797

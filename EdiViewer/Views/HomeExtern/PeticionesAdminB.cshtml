@@ -157,13 +157,37 @@
                     { field: 'cont' }
                 ],
                 columns: [
-                    { field: "id", caption: "Id orden", sortable: true, hidden: false },
-                    { field: "tiendaId", caption: "TiendaId", sortable: true, hidden: false },
+                    { field: "id", caption: "Id orden", sortable: true, hidden: false, size: '60px' },
+                    {
+                        field: "periodo", caption: "Ped WMS", sortable: true, render: function (record) {
+                            var l1 = '', l2 = '';
+                            if (!(record.pedidoWMS == 0 || record.pedidoWMS == null)) {
+                                l2 = '<a target="_new" href="@this.Url.Action("PedidosDet", "HomeExtern")?PedidoId=' + record.pedidoWMS + '">' + record.pedidoWMS + '</a>';
+                                l1 = ' | ';
+                            }                            
+                            l1 = l1 + '<span class="w2ui-buttons"><a href="javascript:assignDis(' + $('#cbClient').val() + ', ' + record.tiendaId + ', ' + record.id + ')">Asignar</a></span>';                            
+                            return l2 + l1;
+                        }
+                    },
+                    { field: "tiendaId", caption: "TiendaId", sortable: true, hidden: false, size: '60px' },
                     { field: "tienda", caption: "Tienda", sortable: true, hidden: true },
-                    { field: "womanQty", caption: "Mujeres", sortable: true, hidden: false },
-                    { field: "manQty", caption: "Hombres", sortable: true, hidden: false },
-                    { field: "kidQty", caption: "Niñ@s", sortable: true, hidden: false },
-                    { field: "accQty", caption: "Accesorios", sortable: true, hidden: false },
+                    { field: "fechaPedido", caption: "Fecha y hora esperada", sortable: true, size: '120px' },
+                    { field: "tiendaIdDestino", caption: "Tienda Destino", sortable: true, size: '80px' },
+                    {
+                        field: "idEstado", caption: "Estado", sortable: false, render: function (record) {
+                            if (record.idEstado == 1) return '<span class="thisSpan" alt="' + record.id + '">Guardado</span>';
+                            if (record.idEstado == 2) return '<span class="thisSpan" alt="' + record.id + '">Pendiente</span>';
+                            if (record.idEstado == 3) return '<span class="thisSpan" alt="' + record.id + '">Despachado</span>';
+                        }
+                    },
+                    { field: "womanQty", caption: "Mujeres", sortable: true, hidden: false, size: '80px' },
+                    { field: "manQty", caption: "Hombres", sortable: true, hidden: false, size: '80px' },
+                    { field: "kidQty", caption: "Niñ@s", sortable: true, hidden: false, size: '80px' },
+                    { field: "accQty", caption: "Accesorios", sortable: true, hidden: false, size: '80px' },
+                    { field: "womanQtyT", caption: "T Mujeres", sortable: true, hidden: false, size: '80px' },
+                    { field: "manQtyT", caption: "T Hombres", sortable: true, hidden: false, size: '80px' },
+                    { field: "kidQtyT", caption: "T Niñ@s", sortable: true, hidden: false, size: '80px' },
+                    { field: "accQtyT", caption: "T Accesorios", sortable: true, hidden: false, size: '80px' },
                     { field: "totalCp", caption: "Total CP", sortable: true, hidden: false },
                     { field: "total", caption: "Cantidad total", sortable: true },
                     { field: "womanQtyEnv", caption: "Mujeres Env", sortable: true, hidden: true },
@@ -174,28 +198,8 @@
                     { field: "totalEnv", caption: "Cantidad total Env", sortable: true },
                     { field: "porcValid", caption: "Porc validez", sortable: true },
                     { field: "divert", caption: "Divert", sortable: true, size: '60px' },
-                    { field: "fullPed", caption: "Full", sortable: true, size: '60px' },
-                    { field: "tiendaIdDestino", caption: "Tienda Destino", sortable: true, size: '80px' },
-                    { field: "fechaCreacion", caption: "Fecha de creación", sortable: true, hidden: true },
-                    { field: "fechaPedido", caption: "Fecha y hora esperada", sortable: true },
-                    {
-                        field: "idEstado", caption: "Estado", sortable: false, render: function (record) {
-                            if (record.idEstado == 1) return '<span class="thisSpan" alt="' + record.id + '">Guardado</span>';
-                            if (record.idEstado == 2) return '<span class="thisSpan" alt="' + record.id + '">Pendiente</span>';
-                            if (record.idEstado == 3) return '<span class="thisSpan" alt="' + record.id + '">Despachado</span>';
-                        }
-                    },
-                    {
-                        field: "periodo", caption: "Despacho WMS", sortable: true, render: function (record) {
-                            var l1 = '', l2 = '';
-                            if (!(record.pedidoWMS == 0 || record.pedidoWMS == null)) {
-                                l2 = '<a target="_new" href="@this.Url.Action("PedidosDet", "HomeExtern")?PedidoId=' + record.pedidoWMS + '">' + record.pedidoWMS + '</a>';
-                                l1 = ' | ';
-                            }                            
-                            l1 = l1 + '<span class="w2ui-buttons"><a href="javascript:assignDis(' + $('#cbClient').val() + ', ' + record.tiendaId + ', ' + record.id + ')">Asignar</a></span>';                            
-                            return l2 + l1;
-                        }
-                    }
+                    { field: "fullPed", caption: "Full", sortable: true, size: '60px' },                    
+                    { field: "fechaCreacion", caption: "Fecha de creación", sortable: true, hidden: true }                    
                 ]
             }
         };

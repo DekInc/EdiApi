@@ -42,14 +42,16 @@ select * from EdiDB.dbo.PAYLESS_ReportesDet where IdM = 59 order by Id
 SELECT * FROM EdiDB.dbo.PedidosExternos order by FechaCreacion DESC
 SELECT * FROM EdiDB.dbo.PedidosExternos order by id DESC
 SELECT * FROM EdiDB.dbo.PedidosExternos order by FechaPedido DESC
-SELECT * FROM EdiDB.dbo.PedidosExternos where Id = 122
+SELECT * FROM EdiDB.dbo.PedidosExternos where Id = 206
 SELECT * FROM EdiDb.dbo.PedidosExternos_Bkp where TiendaId = 7372 AND SUBSTRING(FechaPedido, 1, 10) = '02/07/2019'
 SELECT * FROM EdiDb.dbo.PedidosExternos where TiendaId = 7382 AND SUBSTRING(FechaPedido, 1, 10) = '04/07/2019'
 SELECT * INTO EdiDb.dbo.PedidosExternos_Bkp FROM EdiDB.dbo.PedidosExternos 
 SELECT * FROM EdiDB.dbo.PedidosExternos where TiendaId = 7368 AND Id = 122
 SELECT * FROM EdiDB.dbo.PedidosExternos where FullPed = 0
 SELECT * FROM EdiDB.dbo.PedidosExternos where SUBSTRING(FechaPedido, 1, 10) = '02/07/2019'
-SELECT * FROM EdiDB.dbo.PedidosDetExternos where PedidoId = 126
+SELECT * FROM EdiDB.dbo.PedidosDetExternos where PedidoId = 206
+delete from EdiDB.dbo.PedidosExternos where Id in (205, 206)
+delete from EdiDB.dbo.PedidosDetExternos where PedidoId in (205, 206)
 SELECT Ped.*, D.* 
 FROM EdiDB.dbo.PedidosDetExternos Ped
 JOIN EdiDB.dbo.PAYLESS_ProdPrioriDet D
@@ -114,6 +116,8 @@ SELECT * FROM EdiDB.dbo.PedidosDetExternos where PedidoId = 12
 SELECT * FROM EdiDB.dbo.PedidosDetExternos where CodProducto = '7372854892'
 order by CodProducto, CantPedir
 select * from EdiDB.dbo.PAYLESS_ProdPrioriDet where Categoria = 'ACCESORIOS' and departamento in ('9', '10', '11')
+select * from EdiDB.dbo.PAYLESS_ProdPrioriDet where SUBSTRING(Barcode, 1, 4) = '7393' and cp = 'A' and departamento in ('9', '10', '11')
+select distinct barcode from EdiDB.dbo.PAYLESS_ProdPrioriDet where SUBSTRING(Barcode, 1, 4) = '7393' and cp != 'A' and departamento in ('9', '10', '11') AND Categoria = 'DAMAS'
 select * from EdiDB.dbo.PAYLESS_ProdPrioriDet where lote like '569862'
 select * from EdiDB.dbo.PAYLESS_ProdPrioriDet where barcode = '7373824407'
 select * from EdiDB.dbo.PAYLESS_ProdPrioriArchM

@@ -13,6 +13,10 @@ namespace EdiApi.Models {
         public int ManQty { get; set; }
         public int KidQty { get; set; }
         public int AccQty { get; set; }
+        public int? WomanQtyT { get; set; }
+        public int? ManQtyT { get; set; }
+        public int? KidQtyT { get; set; }
+        public int? AccQtyT { get; set; }
         public string FechaCreacion { get; set; }
         public string FechaPedido { get; set; }
         public int TotalCp { get; set; }

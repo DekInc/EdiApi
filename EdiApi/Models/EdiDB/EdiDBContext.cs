@@ -82,8 +82,7 @@ namespace EdiApi.Models.EdiDB
         // Unable to generate entity type for table 'dbo.PedidosExternos_Bkp'. Please see the warning messages.
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            
+        {            
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
