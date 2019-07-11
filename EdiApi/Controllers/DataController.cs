@@ -974,7 +974,7 @@ namespace EdiApi.Controllers
         [HttpGet]
         public RetData<Tuple<IEnumerable<PedidosExternos>, IEnumerable<PedidosDetExternos>>> GetPedidosExternosByTienda(int ClienteId, int TiendaId) {
             DateTime StartTime = DateTime.Now;
-            try {
+            try {                
                 IEnumerable<PedidosExternos> ListPe = (
                     from Pe in DbO.PedidosExternos
                     where Pe.ClienteId == ClienteId
@@ -3610,7 +3610,7 @@ SET XACT_ABORT OFF
             }
         }
         [HttpPost]
-        public RetData<string> SetNewDisPayless(string dtpFechaEntrega, int txtWomanQty, int txtManQty, int txtKidQty, int txtAccQty, string radInvType, int ClienteId, int TiendaId, bool? Divert, bool? FullPed, int? TiendaIdDestino, int? txtWomanQtyT, int? txtManQtyT, int? txtKidQtyT, int? txtAccQtyT) {
+        public RetData<string> SetNewDisPaylessDivert(string dtpFechaEntrega, int txtWomanQty, int txtManQty, int txtKidQty, int txtAccQty, string radInvType, int ClienteId, int TiendaId, bool? Divert, bool? FullPed, int? TiendaIdDestino, int? txtWomanQtyT, int? txtManQtyT, int? txtKidQtyT, int? txtAccQtyT) {
             DateTime StartTime = DateTime.Now;
             try {
                 PedidosExternos NewPe = new PedidosExternos() {
@@ -3664,7 +3664,7 @@ SET XACT_ABORT OFF
                             ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
                         }
                     };
-                List<PaylessProdPrioriDetModel> ListProdTienda = ManualDB.SP_GetPaylessProdSinPedido(ref DbO, ClienteId, TiendaId);                
+                List<PaylessProdPrioriDetModel> ListProdTienda = ManualDB.SP_GetPaylessProdSinPedido(ref DbO, ClienteId, TiendaId);
                 List<PaylessProdPrioriDetModel> ListProdWithStock = new List<PaylessProdPrioriDetModel>();
                 IEnumerable<FE830DataAux> ListStock = ManualDB.SP_GetExistenciasByTienda(ref DbO, ClienteId, TiendaId);
                 if (ListStock.Count() == 0)
@@ -3828,6 +3828,82 @@ SET XACT_ABORT OFF
                     Info = new RetInfo() {
                         CodError = 0,
                         Mensaje = $"Se realizo el pedido, para la categoria mujeres: {txtWomanQty}, hombres: {txtManQty}, niñ@s: {txtKidQty}, Accesorios: {txtAccQty}, cantidad de prioridades: {NContCp}. Número de pedido: {NewPe.Id}",
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            } catch (Exception e1) {
+                return new RetData<string> {
+                    Info = new RetInfo() {
+                        CodError = -1,
+                        Mensaje = e1.ToString(),
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            }
+        }
+        [HttpPost]
+        public RetData<string> SetNewDisPayless(string dtpFechaEntrega, int txtWomanQty, int txtManQty, int txtKidQty, int txtAccQty, string radInvType, int ClienteId, int TiendaId, bool? Divert, bool? FullPed, int? TiendaIdDestino, int? txtWomanQtyT, int? txtManQtyT, int? txtKidQtyT, int? txtAccQtyT, string CodUser) {
+            DateTime StartTime = DateTime.Now;
+            try {
+                PedidosExternos NewPe = new PedidosExternos() {
+                    ClienteId = ClienteId,
+                    FechaCreacion = DateTime.Now.ToString(ApplicationSettings.DateTimeFormat),
+                    FechaPedido = dtpFechaEntrega,
+                    IdEstado = 2,
+                    TiendaId = TiendaId,
+                    WomanQty = txtWomanQty,
+                    ManQty = txtManQty,
+                    KidQty = txtKidQty,
+                    AccQty = txtAccQty,
+                    WomanQtyT = txtWomanQtyT,
+                    ManQtyT = txtManQtyT,
+                    KidQtyT = txtKidQtyT,
+                    AccQtyT = txtAccQtyT,
+                    InvType = radInvType,
+                    FullPed = FullPed,
+                    Divert = Divert,
+                    TiendaIdDestino = TiendaIdDestino
+                };
+                IEnumerable<int> ListExistPedido = (
+                    from Pe in DbO.PedidosExternos
+                    where Pe.FechaPedido.Substring(0, 10) == dtpFechaEntrega.Substring(0, 10)
+                    && Pe.ClienteId == ClienteId
+                    && Pe.TiendaId == TiendaId
+                    select Pe.Id
+                    );
+                if (ListExistPedido.Count() > 0) {
+                    return new RetData<string> {
+                        Info = new RetInfo() {
+                            CodError = -1,
+                            Mensaje = "Error, Ya existe un pedido para la misma fecha.",
+                            ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                        }
+                    };
+                }
+                if (StartTime.DayOfWeek == DayOfWeek.Sunday && dtpFechaEntrega.ToDateFromEspDate().DayOfWeek == DayOfWeek.Monday)
+                    return new RetData<string> {
+                        Info = new RetInfo() {
+                            CodError = -1,
+                            Mensaje = "Error, el domingo no se pueden hacer pedidos para el lunes.",
+                            ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                        }
+                    };
+                if (StartTime.DayOfWeek == DayOfWeek.Saturday && StartTime.Hour > 10 && dtpFechaEntrega.ToDateFromEspDate().DayOfWeek == DayOfWeek.Monday)
+                    return new RetData<string> {
+                        Info = new RetInfo() {
+                            CodError = -1,
+                            Mensaje = "Error, el sábado no se pueden hacer pedidos a partir de las 10am para el lunes.",
+                            ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                        }
+                    };
+                DbO.PedidosExternos.Add(NewPe);
+                DbO.SaveChanges();
+                int Ret = ManualDB.SP_SetPaylessNewDis(ref DbO, NewPe.Id, CodUser);
+                return new RetData<string> {
+                    Data = $"Se realizo el pedido, para la categoria mujeres: {txtWomanQty}, hombres: {txtManQty}, niñ@s: {txtKidQty}, Accesorios: {txtAccQty}. Número de pedido: {NewPe.Id}",
+                    Info = new RetInfo() {
+                        CodError = 0,
+                        Mensaje = $"Se realizo el pedido, para la categoria mujeres: {txtWomanQty}, hombres: {txtManQty}, niñ@s: {txtKidQty}, Accesorios: {txtAccQty}. Número de pedido: {NewPe.Id}",
                         ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
                     }
                 };

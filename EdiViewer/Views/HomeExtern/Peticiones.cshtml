@@ -99,8 +99,16 @@
                     { field: "id", caption: "Id orden", sortable: true },
                     //{ field: "periodo", caption: "Periodo", sortable: true },
                     { field: "fechaCreacion", caption: "Fecha de creación", sortable: true },
-                    { field: "fechaPedido", caption: "Fecha y hora esperada", sortable: true },                    
-                    { field: "cont", caption: "Cantidad total", sortable: true },                    
+                    { field: "fechaPedido", caption: "Fecha y hora esperada", sortable: true },
+                    { field: "womanQty", caption: "Mujeres", sortable: true, hidden: false, size: '80px' },
+                    { field: "manQty", caption: "Hombres", sortable: true, hidden: false, size: '80px' },
+                    { field: "kidQty", caption: "Niñ@s", sortable: true, hidden: false, size: '80px' },
+                    { field: "accQty", caption: "Accesorios", sortable: true, hidden: false, size: '80px' },
+                    { field: "womanQtyT", caption: "T Mujeres", sortable: true, hidden: false, size: '80px' },
+                    { field: "manQtyT", caption: "T Hombres", sortable: true, hidden: false, size: '80px' },
+                    { field: "kidQtyT", caption: "T Niñ@s", sortable: true, hidden: false, size: '80px' },
+                    { field: "accQtyT", caption: "T Accesorios", sortable: true, hidden: false, size: '80px' },
+                    { field: "cont", caption: "Cantidad total", sortable: true },
                     {
                         field: "idEstado", caption: "Estado", sortable: false, render: function (record) {
                             if (record.idEstado == 1) return '<span class="thisSpan" alt="' + record.id + '">Guardado</span>';

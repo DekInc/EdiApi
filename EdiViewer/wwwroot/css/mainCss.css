@@ -518,6 +518,7 @@ table.dataTable thead th, table.dataTable thead td {
 }
 .txtCantPedirT {
     width: 60px;
+    margin-top: 8px !important;
 }
 table.dataTable.dtr-inline.collapsed > tbody > tr.parent > td:first-child:before, table.dataTable.dtr-inline.collapsed > tbody > tr.parent > th:first-child:before {
     font-size: 18pt;

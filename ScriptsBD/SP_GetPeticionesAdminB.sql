@@ -139,6 +139,7 @@ END
 --truncate table EdiDB.dbo.ProductoUbicacion
 EXEC EdiDb.dbo.SP_GetPeticionesAdminB
 --2617 not in
+select distinct Typ from EdiDB.dbo.ProductoUbicacion 
 select distinct CodProducto, NomBodega, Rack, NombreRack, Departamento from EdiDB.dbo.ProductoUbicacion 
 WHERE Typ = 3 
 AND NomBodega = 'DAMAS'

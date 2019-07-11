@@ -96,7 +96,12 @@ BEGIN
 	FROM EdiDB.dbo.WmsProductoExistencia Wpe WITH(NOLOCK)
 	JOIN EdiDB.dbo.PAYLESS_ProdPrioriDet D WITH(NOLOCK)
 		ON Wpe.CodProducto = D.Barcode
-	WHERE Wpe.CodUser = @CodUser	
+	WHERE Wpe.CodUser = @CodUser
+	AND D.Producto NOT IN (SELECT DISTINCT Ppt.Producto FROM EdiDB.dbo.PaylessPedidosCpT Ppt WITH(NOLOCK) WHERE Ppt.Producto IS NOT NULL)
+	AND D.Talla NOT IN (SELECT DISTINCT Ppt.Talla FROM EdiDB.dbo.PaylessPedidosCpT Ppt WITH(NOLOCK) WHERE Ppt.Talla IS NOT NULL)
+	AND D.Lote NOT IN (SELECT DISTINCT Ppt.Lote FROM EdiDB.dbo.PaylessPedidosCpT Ppt WITH(NOLOCK) WHERE Ppt.Lote IS NOT NULL)
+	AND D.Categoria NOT IN (SELECT DISTINCT Ppt.Categoria FROM EdiDB.dbo.PaylessPedidosCpT Ppt WITH(NOLOCK) WHERE Ppt.Categoria IS NOT NULL)
+	AND D.Departamento NOT IN (SELECT DISTINCT Ppt.Departamento FROM EdiDB.dbo.PaylessPedidosCpT Ppt WITH(NOLOCK) WHERE Ppt.Departamento IS NOT NULL)
 	AND D.CP IN (SELECT DISTINCT Ppt.CP FROM EdiDB.dbo.PaylessPedidosCpT Ppt WITH(NOLOCK) WHERE Ppt.CP IS NOT NULL)
 	UNION
 	SELECT DISTINCT
@@ -118,19 +123,6 @@ BEGIN
 	AND D.Categoria NOT IN (SELECT DISTINCT Ppt.Categoria FROM EdiDB.dbo.PaylessPedidosCpT Ppt WITH(NOLOCK) WHERE Ppt.Categoria IS NOT NULL)
 	AND D.Departamento NOT IN (SELECT DISTINCT Ppt.Departamento FROM EdiDB.dbo.PaylessPedidosCpT Ppt WITH(NOLOCK) WHERE Ppt.Departamento IS NOT NULL)
 	AND D.CP NOT IN (SELECT DISTINCT Ppt.CP FROM EdiDB.dbo.PaylessPedidosCpT Ppt WITH(NOLOCK) WHERE Ppt.CP IS NOT NULL)
-	--SELECT DISTINCT
-	--	D.Barcode,
-	--	D.Categoria,
-	--	D.Cp,
-	--	D.Producto,
-	--	D.Talla,
-	--	D.Lote,
-	--	D.Departamento,
-	--	3
-	--FROM EdiDB.dbo.WmsProductoExistencia Wpe WITH(NOLOCK)
-	--JOIN EdiDB.dbo.PAYLESS_ProdPrioriDet D WITH(NOLOCK)
-	--	ON Wpe.CodProducto = D.Barcode
-	--WHERE Wpe.CodUser = @CodUser
 END
 
 EXEC EdiDb.dbo.SP_GetPaylessSellQtys 1432, '7393', 'Admin'
