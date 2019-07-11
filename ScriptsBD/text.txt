@@ -1,0 +1,505 @@
+\\192.168.20.245\ProjectDocs\diagramacion de procesos erp\DIAGRAMACION DE PROCESOS
+
+Extensión Hector Deodanes
+720
+
+roberto.aguilar.00001@gmail.com
+
+usuario SVN:  hcampos
+password: HCampos2019*/
+
+mail
+hilmer.campos@glcamerica.com
+Mog63994
+
+nuevo erp
+hcampos
+hcampos123456
+
+http://201.247.107.138/wms_cdr/login.aspx
+PLYMOUTHYT:PLY**2019
+
+192.168.20.245
+edisoftware:Editsoftware2019-*
+
+192.168.0.245
+developer:Hilmer2019
+OracleHome
+Sys:System:PDBAdmin:HilmerServer2019
+sa:HilmerServer2019
+ip pub: 201.247.151.91
+Destination Folder: C:\oraclexe\
+Oracle Home: C:\oraclexe\app\oracle\product\11.2.0\server\
+Oracle Base:C:\oraclexe\
+Port for 'Oracle Database Listener': 1521
+Port for 'Oracle Services for Microsoft Transaction Server': 2030
+Port for 'Oracle HTTP Listener': 8080
+usuario:password
+stjacks:glcpass123456
+XE3:1528 para Oracle Gateway ?
+
+Wms testing
+192.168.1.229
+mjaimes:mjaimes
+también esta la notebook 
+
+WMS Crystal Reports version
+10.2.3600.0
+692fbea5521e1304
+
+192.168.1.229
+Hilmer Campos:hcampos2019
+
+cloud server nube
+ftp admin port en tms 14147
+10.240.34.119
+186.190.248.108
+adminserverweb:Glc2019***///
+SQLServer sa:HilmerServer2019
+Oracle SYS:HilmerServer2019
+stjacks:glcpass123456
+glc:C0lumbu$2019
+SQLServer 114 tmsadmin:TmsAdmin$10
+10.240.34.117 -  isi - 76gb - 4 proc xeon e5-2667@3.3 - 16gb ram
+10.240.34.114 - CDRSMSILCE - 73gb - 12 proc xeon gold 6150@2.7 - 32gb ram
+10.240.34.115 - CDRSMWMS - 157gb - 1 proc xeon e5-2667@3.3 - 8gb ram
+10.240.34.118 - MTSILCE - 507gb - 4 proc xeon e5-2667@3.3 - 4gb ram
+10.240.34.119 - TMS - 0.99TB - 8 proc xeon e5-2667@3.3 - 8gb ram
+10.240.34.116 - ERP - 472GB - 4 proc xeon e5-2667@3.3 - 16gb ram
+
+Configurar ftp
+
+Server=127.0.0.1;Database=wms;  Connection Timeout=120;User Id=sa;Password=HilmerServer2019;
+
+http://201.247.151.89:25458/Account/
+http://192.168.20.245:45612/Account/?error=NO_AUTH testing
+http://201.247.151.89:45612/Account/
+
+201.247.151.91
+
+axosoft
+http://192.168.20.245:82/Axosoft/
+hilmer.campos
+Hc4mp0s2019
+H1lmer2019
+
+Edi
+https://www.iexchangeweb.com/ieweb/general/login
+ADMINVAN
+Software1919
+
+wms testing
+192.168.1.229
+53586
+WMS Producción
+Servidor: 192.168.1.227
+RDA: ITadmin2019
+20InfgLtransfer10
+User: user_read
+Pass: GLC2019//*$
+onlyread_user:read$$&&
+ediadmin:ediadminGlc$#*/
+201.247.107.139
+inventariosp / inventariosp
+
+CREATE PUBLIC DATABASE LINK "WMPROD"
+CONNECT TO user_read
+IDENTIFIED BY GLC2019//*$
+USING 'WMSPROD';
+
+CREATE PUBLIC DATABASE LINK "WMSPROD" USING 'WMSPROD';
+
+Data Source=192.168.20.245;Initial Catalog=EdiDB;user=developers;password=Dev2019$$*;
+Data Source=192.168.20.245;Initial Catalog=ReMPS_Global;user=developers;password=Dev2019$$*;
+developers:Dev2019$$*
+Server=192.168.20.245;Database=EdiDB;Connection Timeout=60;User Id=wmsadmin;Password=wms2018$;
+wmsadmin:wms2018$
+
+Data Source=10.240.34.118;Initial Catalog=ReMPS_Global;user=developers;password=Dev9821$$*;
+Scaffold-DbContext "Server=192.168.20.245;Database=EdiDB;Connection Timeout=60;User Id=wmsadmin;Password=wms2018$;" Microsoft.EntityFrameworkCore.SqlServer -OutputDir Models\EdiDB -Force -Project EdiApi
+Scaffold-DbContext "Server=192.168.1.227;Database=EdiDB;Connection Timeout=60;User Id=ediadmin;Password=ediadminGlc$#*/;" Microsoft.EntityFrameworkCore.SqlServer -OutputDir Models\EdiDB -Force -Project EdiApi
+Scaffold-DbContext "Server=10.240.34.114\SqlServer2008;Database=EdiDB;Connection Timeout=60;User Id=HilmerDba;Password=HilmerServer2019;" Microsoft.EntityFrameworkCore.SqlServer -OutputDir Models\EdiDB -Force -Project EdiApi
+
+7365822058 preguntar con Eluany
+
+SUkbqO2ycDo7QwpR25kfgmC7f8CoyrZy
+salt=935976DBF60A4B59
+key=5113B615B2FFA181108FA843A09F0775
+iv =509F59927C6D6B3502C4F98F45A60C32
+
+Milton.Gonzalez -> el que da los cheques
+Karla.Brand -> esposa del dueño
+Salvador Monico -> dueño principal con Amilcar
+
+
+Repo de código
+http://WIN-Q2F3DD5MA3Q:5000/svn/projects/ReMPS.WebSite
+http://WIN-Q2F3DD5MA3Q:5000/svn/projects/ReMPS.WebApi
+
+Comandos npm
+npm list
+npm install
+npm install -g @angular/cli
+
+TSLint
+https://medium.com/frontend-coach/7-must-have-visual-studio-code-extensions-for-angular-af9c476147fd
+
+ng serve
+
+http://192.168.20.245:1025/swagger/index.html
+
+Scaffold-DbContext "Server=.\SQLEXPRESS2;Database=ControlComidas;Trusted_Connection=True;" Microsoft.EntityFrameworkCore.SqlServer -OutputDir Models\ControlComidas
+
+
+
+
+
+
+
+
+18 / marzo  -> lead
+
+_------------------------
+
+
+
+
+192.168.20.245
+RDP
+Administrator:20InfgLtransfer2018*
+20InfgLtransfer2018
+20InfgLtransfer10
+2019:20InfgLtransfer2018*
+
+
+BDD
+sa
+glc2018$
+
+erpadmin
+erp2019$
+
+wmsadmin
+wms2018$
+
+Decameron
+9415497
+
+ACACCEANTEL
+RCRUZ
+
+Axosoft Email Account
+support.development@grupologistico.com.sv
+5=+R^Sp9ZII4
+
+EL NÚMERO DE TU PEDIDO ES: 1000037015
+
+https://192.168.20.227
+root
+VMware2018
+ncadmin
+glc2018$
+
+192.168.20.19
+
+SQLServer 2008 standard SPA
+https://msproduct.download.microsoft.com/pr/SW_DVD5_SQL_Svr_Standard_Edtn_2008_Spanish_MLF_X14-89183.ISO?t=15185846-28e2-4657-bb5f-ec3643f86c82&e=1557952890&h=fb196d5b2aba96d81ff72d703de772358b262161c9445d5576a4e1a8b7bd9b92
+
+SQLServer 2008 standard SP4 SPA
+https://msproduct.download.microsoft.com/pr/SW_DVD5_SQL_Svr_Standard_Edtn_2008SP4_Spanish_MVLS_X19-78401.ISO?t=f22e9660-19c5-49d8-9747-e314e55a9f74&e=1557952988&h=454ca8ce5805689068f54e5482e285225fd25840973dbe0258a78cdec69e6f38
+
+----------------------------------------------------------------------
+Angular forms
+Agregar a app.module.ts
+FormsModule
+HttpModule
+
+ng generate component {Nombre}
+
+----------------------------------------------------------------------
+
+
+RRHHPension
+RRHHDepartments
+
+
++- poner la fecha y hora actual
++- cambiar el color a gris de los mensajes pop
++- excel , cant a pedir no sale
+- hacer enlace automatico del estado del pedido vs WMS pedido (jueee)
+
+
+- Crear reglas para agrupación de Excel original con Ingrid, cada grupo debería de mostrar el detalle.
+- Hacer prueba de registro de productos para ver los primeros pasos del flujo, hablar con encargado wms
+para ver como podemos o como tienen pensado registrar los productos, la sugerencia es una concatenación
+de datos.
+- Agregar la información del contenedor para que pueda ser modificado, es un campo más.
+- Habrán varios usuarios: gerente de tienda que ya conocemos, 
+gerente de país que va a aprobar los pedidos de los gerentes de tienda, esto cambia los estados de ordenes,
+hay que agregar un estado más, el usuario del wms, también dejar la pantalla generica de consulta de pedidos o duplicarla
+para que otros puedan acceder (otro que no sea payless).
+- hacer el complicado enlace automatico del estado del pedido vs WMS pedido, evaluar la posible pantalla
+de consulta de que es un producto para los de bodega... (?)
+- Confirmar si realmente vamos a hacer una pantalla de carga de pedidos por Excel, para que de un solo introduzcan
+todo lo que van a pedir para cada tienda (?)
+- Una vez hecho el plan semanal o pedido individual hay que crear un link para aprobación para que los
+gerentes de país puedan aprobar los pedidos de Gerentes de tienda.
+- Hacer un correo electronico de confirmación de pedidos ingresados.
+- Hacer un correo electronico de confirmación de pedido aprobado.
+- Hacer un correo electronico de confirmación de pedido enviado.
+- Hacer un correo electronico de pedido realizado para GLC (?)
+- Hacer reportes de consolidación de pedidos semanales planificados y solicitados individualmente.
+
+
+
+
+Facebook de Justo
+justodaverio15@hotmail.com
+chustop1212
+u4l4h1zu4m
+
+----------------------
+- a segunda opcion, carga planilla admin ponerle "cargar archivo"
+- tercera opción, excel consolidado
+- cuarta, carga de archivo de escaners
+- al seleccionar un archivo rellenar textbox con algún texto
+- en vez de texto boton "Carga WMS" -> "Archivo WMS"
+- "En Excel y escaneado", en vez de la coma el "y".
+- "Escaneado y no encontrado en Excel".
+- Al hacer pedido mostrar solo el consolidado...
+- En lo reservado tomar el dato de los pedidos guardados y no del wms
+- en ordenes pendientes faltan las columnas: cliente, 
+**** No es necesario porque el cliente es el mismo logeado.
+- pantalla de bodega: cliente, fechas, cant solicitada, columnas del consolidado y un boton que exporte toda la información para la semana actual
+- Sin embargo dejar abierta la opcion de que el DL haga cambios de los pedidos en el app cuando lo requiera, 24 horas antes.
+- 2 reportes, consolidado de pedidos y consolidado de entregas:
+pedidos es cierre jueves, con correo a 
+JuanJose.Garcia@Payless.com
+Ronnie.Solis@Payless.com
+Lucrecia Calderon 
+Eluany Garcia
+Agregar estatus del pedido, si es pendiente o despachado (relacionado con el ejemplo de pedir de martes a miercoles productos
+de alta demanda, debería de aparecer en el reporte...)
+Un Excel enviado por correo...
+
+de entregas cierre domingo, con correo a 
+JuanJose.Garcia@Payless.com
+Ronnie.Solis@Payless.com
+Lucrecia Calderon
+Eluany Garcia
+- Agregar regla de 24 horas, no se puede pedir de martes a miercoles.
+
+15 y 16, el admin va a poder todas las tiendas, el de tienda solo el de la misma, los dos pueden hacer pedidos especificos y asincronos...
+
+consolidado de entregas
+en Excel solicitado y despachado y estatus...
+- En pedidos falla el ver detalle de lo despachado...
+-* El pedido de las tiendas debe ser el consolidado (es decir, por caja)
+el 5 de mayo nos vamos...
+
+
+
+
+- la pantalla de pedidos del gp o admin
+- el reporte de domingo
+- Pantalla de pedidos admin que pueda ver todos los clientes de payless y seleccionar a que tienda enviar...
+ y agrupar por caracteristicas...
+- Pantalla de agrupación consolidada, colocar 2 botones: uno para enviar todo lo que veo y está filtrado en una grilla a una sola tienda,
+y otro botón para enviar todo el "lote o lo que sea" a sus respectivas tiendas, nombres de botones:
+"Enviar a una tienda" y "Enviar a todas", y en detalle de pedido mostrar el cliente o tienda.
+- Solo el GP podrá realizar modificaciones a todos las cantidades solicitadas en todas las tiendas (no después de 24 hrs de la entrega programada)
+Salidas del WMS
+Reporte Consolidado de día Jueves y Domingo (pendiente nos envié por favor un ejemplo)
+
+- Mostrar un resumen de total de pares de niños, caballeros, damas, etc
+- regular es todo lo que tiene disponible
+- picking es 
+- porque razón estoy cambiando el pedido
+- FIFO por genders, no importa el genero., si quiere genero se va a la opción
+de Picking, muestra el total de cajas a pedir, es una pantalla por tienda.
+- CP code es una referencia que no debe de cambiar.
+- Razón por las que quiere cambiar el pedido, con comentarios.
+- Hay rutas establecidas pero pueden existir rutas para días especificos.
+- Muestra las razones, hay una auditoria, porque cambian los pedidos,
+una tienda siempre se entrega fuera de ruta? entonces podemos ver que tenemos
+que cambiar de ruta, las rutas ya eestàn.
+- Pedidos por ordenes especificas por lotes siempre vienen del DA.
+- Gerente de ventas solo puede cambiar pedido de 1pm a 2pm.
+- también podemos hacer un cambio el día de viernes, es como un día de gracia.
+(Averiguar eso).
+- Tiendas de mayor volumen al final de la bodega, tiendas que màs rotan al inicio
+de la bodega.
+- Las tiendas tienen volumen y porcentaje de rotación en tienda.
+- En volumen alto pueden tener 50 mil cajas.
+- Primera condición FIFO, segunda condición selección de productos.
+- a veces llega 100 cajas de dummy store y entonces ellos identifican a que tienda
+enviar, esto mediante un proceso llamado divert, entra con un código de entrada
+dummy y sale a cualquier otra tienda.
+- Los escaners se pueden setear para escanear para una tienda A y decir que se va
+a enviar a una tienda B... 7390 ?
+- Gerente de ventas decide para donde enviar los productos.
+- ILG Logistic.
+- Si el gerente de tienda pide como FIFO 300 cajas entonces sale lo más viejo.
+- El picking siempre se utiliza el FIFO, siempre se hace lo más viejo.
+- BTS = Back To School, CP = C.
+- CP = A y H no es negociable.
+- poner 4 colores.
+- Jueves para meter los pedidos en paralelo basado en una planeación manual.
+- 7366, 7368, 7369, 7381, 
+- Jueves es para hacerlo en TEGUCIGALPA.
+- 14 mil cajas pueden venir.
+- Agregar un analisis del numero de caja 7380872774 contra 7370872774, case status es
+short y over.
+- Los métodos que tienen de despacho son pool point o despachar a store (TEGUS), en el
+escaner tiene que escoger y setear el número de camión.
+- Si escojo pool point solo puedo despachar a 727. Si me voy a tienda miro las tiendas
+de honduras, SDR? 
+- 7370 es tienda Dummy, es la tienda de ajuste para San Pedro.
+- ##tienda ##contenedor para que al hacer el SDR no tenga que abrirlo todo.
+- 127 se hace un transito al 727
+- Si la caja tiene más de 90 días y no se han enviado se cobra un recargo flete,
+es decir se le cobra la caja completa porque se da como perdida.
+- Dejar las cajas en transito cuando se muevan las cajas de San Pedro Sola a TEGU.
+- Agregar una pantalla para control de volver a escanear lo que se envía a TEGU,
+esto es importante.
+- En el WMS no se maneja un estatus en transito.
+- Nos vamos a basar en la información de los escaners, hacer una segmentación por localidad.
+- Insertos de periodico.
+- Equipo de IT, material de construcción va a estar? debería de estar en el WMS.
+- Merchandise no tiene sistema, solo factura comercial, se puede crear un código o
+nomenclatura del código en base a lo que es, insertos de periodico es 2, equipo de IT viene
+de EEUU, sería código 3, el último es material de construcción para tiendas de apertura,
+habrá mucho material local, se ingresa al sistema pero no habrá importación, compras locales,
+luego suplementos de tienda van a venir en Panama, viene en el contenedor de mercaderia pero
+no en el Excel, de Panama fines de seguridad y los suplementos.
+- Las facturas vienen en Excel.
+- Goods Not For Retail y Goods For Retail.
+- En transito a border 16, 17, -11.25%
+- At border: 11 días, duraron 10 días, 8.6 promedio.
+- In transit to pool point, std 2 días, actual 3.5, los 2 días cuentan desde que la aduana
+libera, ya tengo DAY PASS, ahí se da clear.
+- At pool point: 20 días, actual 16, 19.87 es el promedio.
+- Intransit to stores: 2, 1.8 prom 10.94
+- KPI de delivery, 
+- Las fichas técnicas son el reporte de entrega, en base a ello se obtiene el KPI,
+se compone de 2 hojas, por un lado 
+- Quieren realizar la encuesta del KPI online, a veces llega ficha técnica incompleta,
+una encuesta de campos requeridos, para finalizar la encuentra al 100% para obtener el KPI.
+- SDR: Store Delivery Receipt
+- Es posible que eliminen este indicador.
+Segunda fase que viene post la primera necesidad, sería como un service.
+- Parte la llena el gerente de la tienda, lo puede recibir cualquier persona o un asociado.
+- Al final de mes se pide para crear el KPI.
+- Agregar comentarios para cada despacho... ?
+- BOL (Bill Of Lading) es validación entre lo que la tienda pidio y lo que la tienda recibe.
+- Entrega express son por ejemplo, lo que viene de GNFARM tiene asociada un número de tienda,
+- Acá van los productos que no son zapatos, # cajas, # de factura comercial.
+- Supply pueden ser las bolsas de las tiendas.
+- ¿Qué es Capital?
+- Over and Short Report 2019... se va a cambiar...
+- Control de cajas mojadas, dañadas????
+- Primera condición FIFO, segunda condición generos, cualquier otra condición la van a determinar... ?
+- ¿Qué es LIFO? Ha pasado en algunos paises, para tener una idea, últimas entradas primeras
+salidas, tener la flexibilidad para hacer ese cambio. Para cambiar de FIFO a LIFO.
+- ¿Identificar las cajas over y short?
+- Divert: es una solicitud del departamento de logistica, donde hacen el despacho desvio
+de una tienda X hacía otra tienda, ejemplo, viene producto para City Mall y resulta que
+la tienda de multiplaza no tiene producto que está en promoción o tiene producto resagado
+que estaría vendiendo mejor la otra tienda, a la hora de hacer el despacho nosotros asignamos
+la tienda de destino, sin embargo sale del producto de Multiplaza. Siempre aprobados por
+Lucrecia. Puede pasar mucho 3 veces al mes.
+- ¿Establecer observaciones por cada entrega?
+
+WSP:
+[14:31, 5/13/2019] Rudraksha: Agregar número de contenedor al detalle de validez
+[14:51, 5/13/2019] Rudraksha: Ver número total de cajas por contenedor
+[14:58, 5/13/2019] Rudraksha: Falló en filtros múltiples
+[14:58, 5/13/2019] Rudraksha: Verificar
+[19:20, 5/13/2019] Rudraksha: En la columna orden de compra en salida wms poner el idtransporte
+[22:34, 5/13/2019] Rudraksha: Verificar los límites de carga del campo de transporte
+[22:40, 5/13/2019] Rudraksha: Ver si se puede mover la exportación de Excel a algo asincrono
+[22:41, 5/13/2019] Rudraksha: Dos o más filtros simultáneamente
+[09:16, 5/15/2019] Rudraksha: Hacer una pantalla para la parte de salidas, ya que solo deberían de cargar 1 solo archivo....... pero como son 26 clientes se les va a dificultar
+[09:50, 5/15/2019] Rudraksha: Agregar NumeroTienda al Excel de pedidos para el usuario de bodega
+
+Tiendas TEGU
+7366
+7368
+7369
+7372
+7373
+7376
+7379
+7380
+7381
+7383
+7384
+7386
+7387
+7388
+7389
+
+Tiendas SP
+7365
+7367
+7370
+7371
+7374
+7375
+7377
+7378
+7382
+7385
+7392
+
+
+C:\Program Files\WindowsApps\22094SynapticsIncorporate.AudioControls_1.3.49.0_x64__qt57b6kdvhcfw\Flow\Flow2
+
+
+
+Estilo es PO
+Lote es Bodega
+Agregar filtro departamento y tienda y además en la grilla la tienda
+
+
+
+
+Entendido, se trabajara en base a esta planificación tomando en cuenta que para el final del mes debe esta completo:
+
+Encuesta digital __ Fecha de entrega: 08 Julio
+Sub categoría de productos de temporada __Fecha de entrega: 12 de Julio
+Configuración de pantallas y esquema de trabajo en ES __ Fecha de entrega 31 de Julio
+El 30% de los requerimientos totales es decir:
+                                                    i.     Cargar archivos del DC de panama para bodegas de ES
+
+                                                   ii.     Configuración de la pantalla para cargar ingresos al WMS de bodegas ES
+
+                                                  iii.     Configuración dela pantalla de salida WMS de bodegas ES
+
+                                                  iv.     Cargar archivos de escaner de la bodega
+
+ 
+
+ 
+
+Lo que quedaría pendiente para el siguiente mes seria:
+
+Configuración de pedidos de tiendas para bodegas de ES, estructuradas por inventario por tienda.
+Realizar pedidos Divert para ES
+Pedidos divert por lote para ES
+Reporte de inventario por tienda ES
+Reporte de ordenes pendientes ES
+Despachos WMS ES
+Corte de reportes semanal programacion y despachos para ES
+Despacho de factuas
+ 
+
+Por favor revisar el plan y si tienes alguna obsercacion, hacermela saber; ya que este plan es el que se le presentara al cliente
+
+
+
+
+- Reunión del 5 de julio 2019, para organizar la nueva estructura de TI. 9:30 a 11:00
+- Reunión del 8 de julio 2019, para organizar temas de TI. 10:00 a 11:30
+
+
