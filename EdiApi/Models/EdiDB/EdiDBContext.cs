@@ -82,7 +82,7 @@ namespace EdiApi.Models.EdiDB
         // Unable to generate entity type for table 'dbo.PedidosExternos_Bkp'. Please see the warning messages.
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {            
+        {
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -1529,12 +1529,30 @@ namespace EdiApi.Models.EdiDB
                 entity.Property(e => e.PedidoWms).HasColumnName("PedidoWMS");
 
                 entity.Property(e => e.Periodo).HasMaxLength(10);
+
+                entity.Property(e => e.TotalCp).HasColumnName("TotalCP");
             });
 
             modelBuilder.Entity<ProductoUbicacion>(entity =>
             {
+                entity.HasIndex(e => e.CodProducto)
+                    .HasName("IndexProductoUbicacionCodProducto");
+
+                entity.HasIndex(e => e.CodUser)
+                    .HasName("IndexProductoUbicacionUser");
+
+                entity.HasIndex(e => e.Rack)
+                    .HasName("IndexProductoUbicacionRack");
+
+                entity.HasIndex(e => e.Typ)
+                    .HasName("IndexProductoUbicacionTyp");
+
                 entity.Property(e => e.CodProducto)
                     .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.CodUser)
+                    .HasMaxLength(128)
                     .IsUnicode(false);
 
                 entity.Property(e => e.Departamento)

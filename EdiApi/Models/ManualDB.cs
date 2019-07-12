@@ -854,16 +854,24 @@ namespace EdiApi.Models
             }
             return ListProdDet;
         }
-        public static int SP_SetPaylessNewDis(ref Models.EdiDB.EdiDBContext _DbO, int PedidoId, string CodUser) {
-            int Ret = 0;
-            List<PaylessProdPrioriDetModel> ListProdDet = new List<PaylessProdPrioriDetModel>();
+        public static List<PedidosExternos> SP_SetPaylessNewDis(ref Models.EdiDB.EdiDBContext _DbO, int PedidoId, string CodUser) {            
+            List<PedidosExternos> ListProdDet = new List<PedidosExternos>();
             using (DbCommand Cmd = _DbO.Database.GetDbConnection().CreateCommand()) {
                 Cmd.CommandText = $"dbo.SP_SetPaylessNewDis {PedidoId}, '{CodUser}'";
                 _DbO.Database.OpenConnection();
-                Ret = Cmd.ExecuteNonQuery();
-                _DbO.Database.CloseConnection();                
+                DbDataReader Dr = Cmd.ExecuteReader();
+                if (Dr.HasRows) {
+                    while (Dr.Read()) {
+                        ListProdDet.Add(new PedidosExternos() {
+                            TotalCp = Dr.Gr<int>(0)                            
+                        });
+                    }
+                }
+                _DbO.Database.CloseConnection();
+                if (!Dr.IsClosed)
+                    Dr.Close();
             }
-            return Ret;
+            return ListProdDet;
         }
         public static List<PedidosPendientesAdmin> SP_GetPedidosPendientesAdmin(ref Models.EdiDB.EdiDBContext _DbO) {
             List<PedidosPendientesAdmin> ListProdDet = new List<PedidosPendientesAdmin>();

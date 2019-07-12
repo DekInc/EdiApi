@@ -1,4 +1,5 @@
 ﻿@using ComModels
+@model ErrorModel
 @{
     ViewData["Title"] = "Ordenes pendientes";
     Layout = "_Layout";
@@ -43,8 +44,8 @@
     }
     function reDrawObjects() {
         $('#spanClientName').css('display', 'block');
-        if (window.mobileAndTabletcheck()) {            
-            $('#spanClientName').css('text-align', 'center');            
+        if (window.mobileAndTabletcheck()) {
+            $('#spanClientName').css('text-align', 'center');
         } else {
             $('#spanClientName').css('margin-bottom', '10px');
         }
@@ -83,7 +84,7 @@
                 show: {
                     footer: true,
                     toolbar: true,
-                    expandColumn: window.mobileAndTabletcheck()                    
+                    expandColumn: window.mobileAndTabletcheck()
                 },
                 searches: [
                     { field: "id", caption: "Id orden", type: 'text' },
@@ -108,6 +109,7 @@
                     { field: "manQtyT", caption: "T Hombres", sortable: true, hidden: false, size: '80px' },
                     { field: "kidQtyT", caption: "T Niñ@s", sortable: true, hidden: false, size: '80px' },
                     { field: "accQtyT", caption: "T Accesorios", sortable: true, hidden: false, size: '80px' },
+                    { field: "totalCp", caption: "Total CP", sortable: true, hidden: false },
                     { field: "cont", caption: "Cantidad total", sortable: true },
                     {
                         field: "idEstado", caption: "Estado", sortable: false, render: function (record) {
@@ -175,7 +177,7 @@
         arrayGrids['gridOrdenesDet'] = gridOrdenesDet;
     }
     function verDetalle(pedidoId) {
-        $('#exampleModalLabel3').html('Detalle de orden');        
+        $('#exampleModalLabel3').html('Detalle de orden');
         ModalPopPeticionDet = $('#modalPopPeticionDet').modal();
         gridOrdenesDet.reload2('@this.Url.Action("GetPeticionDet", "Grids")?PedidoId=' + pedidoId);
     }
@@ -193,9 +195,13 @@
         });
     }
     $(document).ready(function () {
-        getClientName();        
+        getClientName();
         crearGrid();
         crearGridDet(1);
         reDrawObjects();
+        @if (!string.IsNullOrEmpty(Model.ErrorMessage))
+        {
+            @: menErrorEdi('@Html.Raw(Model.ErrorMessage.Replace(Environment.NewLine, "<br />"))');
+        }
     });
 </script>

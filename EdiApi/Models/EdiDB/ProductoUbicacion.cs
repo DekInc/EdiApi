@@ -12,5 +12,6 @@ namespace EdiApi.Models.EdiDB
         public int? Rack { get; set; }
         public string NombreRack { get; set; }
         public string Departamento { get; set; }
+        public string CodUser { get; set; }
     }
 }

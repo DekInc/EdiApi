@@ -125,7 +125,7 @@ BEGIN
 	AND D.CP NOT IN (SELECT DISTINCT Ppt.CP FROM EdiDB.dbo.PaylessPedidosCpT Ppt WITH(NOLOCK) WHERE Ppt.CP IS NOT NULL)
 END
 
-EXEC EdiDb.dbo.SP_GetPaylessSellQtys 1432, '7393', 'Admin'
+EXEC EdiDb.dbo.SP_GetPaylessSellQtys 1432, '7368', 'Admin'
 SELECT * FROM EdiDB.dbo.PaylessPedidosCpT
 SELECT * from EdiDB.dbo.WmsProductoExistencia where CodUser = 'Admin' AND CodProducto like '7386%'
 

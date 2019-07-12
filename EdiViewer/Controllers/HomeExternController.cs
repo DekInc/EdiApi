@@ -64,7 +64,7 @@ namespace EdiViewer.Controllers
         //}
         public IActionResult Peticiones()
         {
-            return View();
+            return View(new ErrorModel());
         }
         public IActionResult PeticionesAdmin() {
             return View();
@@ -133,7 +133,7 @@ namespace EdiViewer.Controllers
                 );
             RetData<string> Ret = await ApiClientFactory.Instance.SetNewDisPayless(dtpFechaEntrega, txtWomanQty, txtManQty, txtKidQty, txtAccQty, radInvType, HttpContext.Session.GetObjSession<int>("Session.ClientId"), HttpContext.Session.GetObjSession<int>("Session.TiendaId"), null, (FullPed == false? null : FullPed), null, txtWomanQtyT, txtManQtyT, txtKidQtyT, txtAccQtyT, HttpContext.Session.GetObjSession<string>("Session.CodUsr"));
             if (Ret.Info.CodError == 0) {
-                return View("PedidosPayless3", new ErrorModel() { Typ = 1, ErrorMessage = Ret.Data });
+                return View("Peticiones", new ErrorModel() { Typ = 1, ErrorMessage = Ret.Data });
             } else {
                 return View("PedidosPayless3", new ErrorModel() { ErrorMessage = Ret.Info.Mensaje });
             }

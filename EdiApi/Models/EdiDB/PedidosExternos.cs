@@ -26,5 +26,6 @@ namespace EdiApi.Models.EdiDB
         public int? ManQtyT { get; set; }
         public int? KidQtyT { get; set; }
         public int? AccQtyT { get; set; }
+        public int? TotalCp { get; set; }
     }
 }

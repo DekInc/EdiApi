@@ -429,7 +429,8 @@ namespace EdiViewer.Controllers
                     }                   
                 }
                 for (int i = 0; i < Records.Count; i++) {
-                    Records[i].Cont = ListCant.Where(O => O.PedidoId == Records[i].Id).Fod().Id;
+                    if (ListCant.Where(O => O.PedidoId == Records[i].Id).Count() > 0)
+                        Records[i].Cont = ListCant.Where(O => O.PedidoId == Records[i].Id).Fod().Id;
                 }
                 return Json(new { Total, Records, errorMessage = "", AllRecords });
             } catch (Exception e1) {

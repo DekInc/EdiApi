@@ -40,24 +40,26 @@ select * from EdiDB.dbo.PAYLESS_Reportes
 select * from EdiDB.dbo.PAYLESS_Reportes where Periodo = '09/06/2019'
 select * from EdiDB.dbo.PAYLESS_ReportesDet where IdM = 59 order by Id
 SELECT * FROM EdiDB.dbo.PedidosExternos order by FechaCreacion DESC
-SELECT * FROM EdiDB.dbo.PedidosExternos order by id DESC
+SELECT * FROM EdiDB.dbo.PedidosExternos order by id DESC --7382
 SELECT * FROM EdiDB.dbo.PedidosExternos order by FechaPedido DESC
-SELECT * FROM EdiDB.dbo.PedidosExternos where Id = 208
+SELECT * FROM EdiDB.dbo.PedidosExternos where Id = 210
 SELECT * FROM EdiDb.dbo.PedidosExternos_Bkp where TiendaId = 7372 AND SUBSTRING(FechaPedido, 1, 10) = '02/07/2019'
 SELECT * FROM EdiDb.dbo.PedidosExternos where TiendaId = 7382 AND SUBSTRING(FechaPedido, 1, 10) = '04/07/2019'
 SELECT * INTO EdiDb.dbo.PedidosExternos_Bkp FROM EdiDB.dbo.PedidosExternos 
 SELECT * FROM EdiDB.dbo.PedidosExternos where TiendaId = 7368 AND Id = 122
 SELECT * FROM EdiDB.dbo.PedidosExternos where FullPed = 0
 SELECT * FROM EdiDB.dbo.PedidosExternos where SUBSTRING(FechaPedido, 1, 10) = '02/07/2019'
-SELECT * FROM EdiDB.dbo.PedidosDetExternos where PedidoId = 207
---DELETE FROM EdiDB.dbo.PedidosDetExternos where PedidoId = 207
+SELECT * FROM EdiDB.dbo.PedidosDetExternos where PedidoId = 213
+---
+DELETE FROM EdiDB.dbo.PedidosExternos where Id = 213
+DELETE FROM EdiDB.dbo.PedidosDetExternos where PedidoId = 213
 delete from EdiDB.dbo.PedidosExternos where Id in (205, 206)
 delete from EdiDB.dbo.PedidosDetExternos where PedidoId in (205, 206)
 SELECT Ped.*, D.* 
 FROM EdiDB.dbo.PedidosDetExternos Ped
 JOIN EdiDB.dbo.PAYLESS_ProdPrioriDet D
 	ON D.Barcode = Ped.CodProducto
-where Ped.PedidoId = 126
+where Ped.PedidoId = 210
 select * from EdiDB.dbo.PAYLESS_ProdPrioriDet D where D.Barcode like '7368%' and 
 
 select top 10 * from EdiDB.dbo.WmsProductoExistencia
@@ -119,9 +121,15 @@ order by CodProducto, CantPedir
 select * from EdiDB.dbo.PAYLESS_ProdPrioriDet where Categoria = 'ACCESORIOS' and departamento in ('9', '10', '11')
 select * from EdiDB.dbo.PAYLESS_ProdPrioriDet where SUBSTRING(Barcode, 1, 4) = '7393' and cp = 'A' and departamento in ('9', '10', '11')
 select distinct barcode from EdiDB.dbo.PAYLESS_ProdPrioriDet where SUBSTRING(Barcode, 1, 4) = '7393' and cp != 'A' and departamento in ('9', '10', '11') AND Categoria = 'DAMAS'
+select * from EdiDB.dbo.PAYLESS_ProdPrioriM
+select * from EdiDB.[dbo].[PAYLESS_PeriodoTransporte]
+--UPDATE EdiDB.[dbo].[PAYLESS_PeriodoTransporte] SET Periodo = '06/07/2019' where id = 36
+select * from EdiDB.dbo.PAYLESS_ProdPrioriDet Ppd where Ppd.[IdPAYLESS_ProdPrioriM] = 16
+select * from EdiDB.dbo.PAYLESS_Transporte
 select * from EdiDB.dbo.PAYLESS_ProdPrioriDet where lote like '569862'
 select * from EdiDB.dbo.PAYLESS_ProdPrioriDet where barcode = '7392820104'
 select * from EdiDB.dbo.PAYLESS_ProdPrioriArchM
+update EdiDB.dbo.PAYLESS_ProdPrioriArchM SET Periodo = '06/07/2019' where Id = 47
 select * from EdiDB.dbo.PAYLESS_ProdPrioriArchDet where barcode = '7373824407'
 select DISTINCT Talla, Producto from EdiDB.dbo.PAYLESS_ProdPrioriDet order by 2
 select DISTINCT Talla, Producto from EdiDB.dbo.PAYLESS_ProdPrioriDet order by 2

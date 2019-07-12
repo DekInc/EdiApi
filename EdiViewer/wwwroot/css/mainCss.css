@@ -575,9 +575,11 @@ table.dataTable.dtr-inline.collapsed > tbody > tr[role="row"] > td:first-child:b
     border: unset !important;
 }
 .dropdown-item {
-    font-size: 11pt !important;
-    font-style: italic !important;
+    font-size: 13pt !important;
+    /*font-style: italic !important;*/
     color: #FFF !important;
+    margin-bottom: 6px;
+    margin-top: 6px;
 }
 .dropdown-item:hover, .dropdown-menu:hover {
     color: #F00 !important;

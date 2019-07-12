@@ -63,6 +63,24 @@ BEGIN
 		WHERE Pe.PedidoWMS IS NULL
 	)
 
+	UPDATE EdiDB.dbo.PedidosExternos
+	SET TotalCp = (
+		SELECT COUNT(*) FROM (
+		SELECT DISTINCT
+		D.Barcode
+	FROM EdiDB.dbo.WmsProductoExistencia Wpe WITH(NOLOCK)
+	JOIN EdiDB.dbo.PAYLESS_ProdPrioriDet D WITH(NOLOCK)
+		ON Wpe.CodProducto = D.Barcode
+	WHERE Wpe.CodUser = @CodUser
+	AND D.Producto NOT IN (SELECT DISTINCT Ppt.Producto FROM EdiDB.dbo.PaylessPedidosCpT Ppt WITH(NOLOCK) WHERE Ppt.Producto IS NOT NULL)
+	AND D.Talla NOT IN (SELECT DISTINCT Ppt.Talla FROM EdiDB.dbo.PaylessPedidosCpT Ppt WITH(NOLOCK) WHERE Ppt.Talla IS NOT NULL)
+	AND D.Lote NOT IN (SELECT DISTINCT Ppt.Lote FROM EdiDB.dbo.PaylessPedidosCpT Ppt WITH(NOLOCK) WHERE Ppt.Lote IS NOT NULL)
+	AND D.Categoria NOT IN (SELECT DISTINCT Ppt.Categoria FROM EdiDB.dbo.PaylessPedidosCpT Ppt WITH(NOLOCK) WHERE Ppt.Categoria IS NOT NULL)
+	AND D.Departamento NOT IN (SELECT DISTINCT Ppt.Departamento FROM EdiDB.dbo.PaylessPedidosCpT Ppt WITH(NOLOCK) WHERE Ppt.Departamento IS NOT NULL)
+	AND D.CP IN (SELECT DISTINCT Ppt.CP FROM EdiDB.dbo.PaylessPedidosCpT Ppt WITH(NOLOCK) WHERE Ppt.CP IS NOT NULL)
+	) SB1
+	) WHERE Id = @PedidoId
+
 	INSERT INTO EdiDB.dbo.PedidosDetExternos(PedidoId, CodProducto, CantPedir)
 	SELECT DISTINCT
 		@PedidoId,
@@ -215,6 +233,8 @@ BEGIN
 		OR D.Departamento IN (SELECT DISTINCT Ppt.Departamento FROM EdiDB.dbo.PaylessPedidosCpT Ppt WITH(NOLOCK) WHERE Ppt.Departamento IS NOT NULL)
 	)
 	AND D.CP NOT IN (SELECT DISTINCT Ppt.CP FROM EdiDB.dbo.PaylessPedidosCpT Ppt WITH(NOLOCK) WHERE Ppt.CP IS NOT NULL)		
+	
+	SELECT TotalCp FROM EdiDb.dbo.PedidosExternos where Id = @PedidoId
 END
 
 --truncate table EdiDB.dbo.ProductoUbicacion
@@ -236,3 +256,20 @@ and NombreRack in ('A', 'H')
 ORDER BY NomBodega
 
 --51
+UPDATE EdiDB.dbo.PedidosExternos
+	SET TotalCp = (
+		SELECT COUNT(*) FROM (
+		SELECT DISTINCT
+		D.Barcode
+	FROM EdiDB.dbo.WmsProductoExistencia Wpe WITH(NOLOCK)
+	JOIN EdiDB.dbo.PAYLESS_ProdPrioriDet D WITH(NOLOCK)
+		ON Wpe.CodProducto = D.Barcode
+	WHERE Wpe.CodUser = 'Admin'
+	AND D.Producto NOT IN (SELECT DISTINCT Ppt.Producto FROM EdiDB.dbo.PaylessPedidosCpT Ppt WITH(NOLOCK) WHERE Ppt.Producto IS NOT NULL)
+	AND D.Talla NOT IN (SELECT DISTINCT Ppt.Talla FROM EdiDB.dbo.PaylessPedidosCpT Ppt WITH(NOLOCK) WHERE Ppt.Talla IS NOT NULL)
+	AND D.Lote NOT IN (SELECT DISTINCT Ppt.Lote FROM EdiDB.dbo.PaylessPedidosCpT Ppt WITH(NOLOCK) WHERE Ppt.Lote IS NOT NULL)
+	AND D.Categoria NOT IN (SELECT DISTINCT Ppt.Categoria FROM EdiDB.dbo.PaylessPedidosCpT Ppt WITH(NOLOCK) WHERE Ppt.Categoria IS NOT NULL)
+	AND D.Departamento NOT IN (SELECT DISTINCT Ppt.Departamento FROM EdiDB.dbo.PaylessPedidosCpT Ppt WITH(NOLOCK) WHERE Ppt.Departamento IS NOT NULL)
+	AND D.CP IN (SELECT DISTINCT Ppt.CP FROM EdiDB.dbo.PaylessPedidosCpT Ppt WITH(NOLOCK) WHERE Ppt.CP IS NOT NULL)
+	) SB1
+	) WHERE Id = 218

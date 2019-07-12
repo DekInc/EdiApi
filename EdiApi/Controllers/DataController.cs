@@ -3898,12 +3898,12 @@ SET XACT_ABORT OFF
                     };
                 DbO.PedidosExternos.Add(NewPe);
                 DbO.SaveChanges();
-                int Ret = ManualDB.SP_SetPaylessNewDis(ref DbO, NewPe.Id, CodUser);
+                List<PedidosExternos> Ret = ManualDB.SP_SetPaylessNewDis(ref DbO, NewPe.Id, CodUser);
                 return new RetData<string> {
-                    Data = $"Se realizo el pedido, para la categoria mujeres: {txtWomanQty}, hombres: {txtManQty}, niñ@s: {txtKidQty}, Accesorios: {txtAccQty}. Número de pedido: {NewPe.Id}",
+                    Data = $"Se realizo el pedido, para la categoria mujeres: {txtWomanQty}, hombres: {txtManQty}, niñ@s: {txtKidQty}, Accesorios: {txtAccQty}. Total CP = {Ret.Fod().TotalCp}, y para la temporada mujeres T: {txtWomanQtyT}, hombres T: {txtManQtyT}, niñ@s T: {txtKidQtyT}, Accesorios T: {txtAccQtyT}. Número de pedido: {NewPe.Id}",
                     Info = new RetInfo() {
                         CodError = 0,
-                        Mensaje = $"Se realizo el pedido, para la categoria mujeres: {txtWomanQty}, hombres: {txtManQty}, niñ@s: {txtKidQty}, Accesorios: {txtAccQty}. Número de pedido: {NewPe.Id}",
+                        Mensaje = $"Se realizo el pedido, para la categoria mujeres: {txtWomanQty}, hombres: {txtManQty}, niñ@s: {txtKidQty}, Accesorios: {txtAccQty}. Total CP = {Ret.Fod().TotalCp}. Número de pedido: {NewPe.Id}",
                         ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
                     }
                 };
