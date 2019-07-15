@@ -60,8 +60,8 @@ SELECT CodProducto FROM EdiDB.dbo.PedidosDetExternos where PedidoId = 235
 SELECT * FROM EdiDB.dbo.PAYLESS_ProdPrioriDet WHERE Barcode = '7393801132'
 SELECT * FROM wms.dbo.Producto WHERE CodProducto = '7393801132'
 ---
-DELETE FROM EdiDB.dbo.PedidosExternos where Id = 235
-DELETE FROM EdiDB.dbo.PedidosDetExternos where PedidoId = 235
+--DELETE FROM EdiDB.dbo.PedidosExternos where Id = 236
+--DELETE FROM EdiDB.dbo.PedidosDetExternos where PedidoId = 236
 delete from EdiDB.dbo.PedidosExternos where Id in (205, 206)
 delete from EdiDB.dbo.PedidosDetExternos where PedidoId in (205, 206)
 SELECT Ped.*, D.* 

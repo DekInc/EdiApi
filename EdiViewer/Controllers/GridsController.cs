@@ -696,13 +696,14 @@ namespace EdiViewer.Controllers
             }
         }
         private void AddCat(ref List<PaylessProdPrioriDetModel> Records, ref List<PaylessProdPrioriDetModel> Exclude, string Cat, string CatN, string Cp, string Est, int Typ) {
+            IEnumerable<string> ListBa = Exclude.Where(D => D.Existencia == Typ && D.Categoria == CatN).Select(O => O.Barcode).Distinct();
             Records.Add(new PaylessProdPrioriDetModel() {
                 Categoria = Cat,
                 Cp = Cp,
                 Estado = Est,
-                Existencia = Exclude.Where(D => D.Existencia == Typ && D.Categoria == CatN).Select(O => O.Barcode).Distinct().Count()
+                Existencia = ListBa.Count()
             });
-            Exclude.RemoveAll(D => D.Existencia == Typ && D.Categoria == CatN);
+            Exclude.RemoveAll(D2 => ListBa.Where(D => D == D2.Barcode).Count() > 0);
         }
         public async Task<IActionResult> GetPaylessProdPrioriInventario3(string tiendaId = null) {
             try {
@@ -718,14 +719,14 @@ namespace EdiViewer.Controllers
                     return Json(new { total = 0, records = "", errorMessage = (ListProdWithExists.Info.CodError != 0 ? ListProdWithExists.Info.Mensaje : "No hay productos en el WMS para la tienda") });
                 List<PaylessProdPrioriDetModel> Records = new List<PaylessProdPrioriDetModel>();
                 List<PaylessProdPrioriDetModel> Exclude = ListProdWithExists.Data.ToList();
-                AddCat(ref Records, ref Exclude, "0", "DAMAS", "1", "0", 2);
-                AddCat(ref Records, ref Exclude, "1", "CABALLEROS", "1", "0", 2);
-                AddCat(ref Records, ref Exclude, "2", "NIÑOS / AS", "1", "0", 2);
-                AddCat(ref Records, ref Exclude, "3", "ACCESORIOS", "1", "0", 2);
                 AddCat(ref Records, ref Exclude, "0", "DAMAS", "0", "1", 3);
                 AddCat(ref Records, ref Exclude, "1", "CABALLEROS", "0", "1", 3);
                 AddCat(ref Records, ref Exclude, "2", "NIÑOS / AS", "0", "1", 3);
-                AddCat(ref Records, ref Exclude, "3", "ACCESORIOS", "0", "1", 3);                
+                AddCat(ref Records, ref Exclude, "3", "ACCESORIOS", "0", "1", 3);
+                AddCat(ref Records, ref Exclude, "0", "DAMAS", "1", "0", 2);
+                AddCat(ref Records, ref Exclude, "1", "CABALLEROS", "1", "0", 2);
+                AddCat(ref Records, ref Exclude, "2", "NIÑOS / AS", "1", "0", 2);
+                AddCat(ref Records, ref Exclude, "3", "ACCESORIOS", "1", "0", 2);                
                 AddCat(ref Records, ref Exclude, "0", "DAMAS", "0", "0", 1);
                 AddCat(ref Records, ref Exclude, "1", "CABALLEROS", "0", "0", 1);
                 AddCat(ref Records, ref Exclude, "2", "NIÑOS / AS", "0", "0", 1);
