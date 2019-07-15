@@ -942,7 +942,9 @@ namespace EdiApi.Models
                             WomanQtyT = Dr.Gr<int?>(20),
                             ManQtyT = Dr.Gr<int?>(21),
                             KidQtyT = Dr.Gr<int?>(22),
-                            AccQtyT = Dr.Gr<int?>(23)
+                            AccQtyT = Dr.Gr<int?>(23),
+                            Total = Dr.Gr<int>(24),
+                            TotalEnv = Dr.Gr<int>(25)
                         });
                     }
                 }

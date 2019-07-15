@@ -340,6 +340,18 @@ namespace CoreApiClient
         public async Task<RetData<IEnumerable<PaylessProdPrioriDetModel>>> GetPaylessSellQtys(int ClienteId, string TiendaId, string CodUser) {
             return await GetAsync<RetData<IEnumerable<PaylessProdPrioriDetModel>>>(CreateRequestUri(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Data/GetPaylessSellQtys"), $"?ClienteId={ClienteId}&TiendaId={TiendaId}&CodUser={CodUser}"));
         }
+        public async Task<RetData<IEnumerable<PaylessPedidosCpT>>> GetTemporadas() {
+            return await GetAsync<RetData<IEnumerable<PaylessPedidosCpT>>>(CreateRequestUri(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Data/GetTemporadas")));
+        }
+        public async Task<RetData<IEnumerable<PaylessProdPrioriDet>>> GetFilterTemporada() {
+            return await GetAsync<RetData<IEnumerable<PaylessProdPrioriDet>>>(CreateRequestUri(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Cbo/GetFilterTemporada")));
+        }
+        public async Task<RetData<string>> PaylessAddTemporada(string CboProducto, string CboTalla, string CboLote, string CboCategoria, string CboDepartamento, string CboCp) {
+            return await GetAsync<RetData<string>>(CreateRequestUri(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Data/PaylessAddTemporada"), $"?CboProducto={CboProducto}&CboTalla={CboTalla}&CboLote={CboLote}&CboCategoria={CboCategoria}&CboDepartamento={CboDepartamento}&CboCp={CboCp}"));
+        }
+        public async Task<RetData<string>> PaylessDeleteTemporada(int Id) {
+            return await GetAsync<RetData<string>>(CreateRequestUri(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Data/PaylessDeleteTemporada"), $"?id={Id}"));
+        }
         /////////////////////////////////////////
         //public async Task<List<UsersModel>> GetUsers()
         //{

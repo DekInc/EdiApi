@@ -1,0 +1,267 @@
+﻿@using ComModels
+@{
+    ViewData["Title"] = "Crud mantenimiento de temporadas de Payless";
+    Layout = "_Layout";
+}
+<div id="mainDiv">
+    <div class="container">
+        <div class="card-deck cardMain">
+            <div class="card box-shadow">
+                <div class="card-header">
+                    <h4 class="my-0 font-weight-normal">Crud mantenimiento de temporadas de Payless</h4>
+                </div>
+                <div class="card-body">
+                    <div id="formSearch">
+                        <div class="row">
+                            <div class="col-sm">
+                                <label for="cboProducto">Producto</label>
+                                <div class="spinner-border spinner-border-sm text-danger" style="display: none" role="status">
+                                    <span class="sr-only">Loading...</span>
+                                </div>
+                                <select class="form-control" id="cboProducto"></select>
+                            </div>
+                            <div class="col-sm">
+                                <label for="cboTalla">Talla</label>
+                                <div class="spinner-border spinner-border-sm text-danger" style="display: none" role="status">
+                                    <span class="sr-only">Loading...</span>
+                                </div>
+                                <select class="form-control" id="cboTalla"></select>
+                            </div>
+                            <div class="col-sm">
+                                <label for="cboLote">Lote</label>
+                                <div class="spinner-border spinner-border-sm text-danger" style="display: none" role="status">
+                                    <span class="sr-only">Loading...</span>
+                                </div>
+                                <select class="form-control" id="cboLote"></select>
+                            </div>
+                            <div class="col-sm">
+                                <label for="cboCategoria">Categoría</label>
+                                <div class="spinner-border spinner-border-sm text-danger" style="display: none" role="status">
+                                    <span class="sr-only">Loading...</span>
+                                </div>
+                                <select class="form-control" id="cboCategoria"></select>
+                            </div>
+                            <div class="col-sm">
+                                <label for="cboDepartamento">Departamento</label>
+                                <div class="spinner-border spinner-border-sm text-danger" style="display: none" role="status">
+                                    <span class="sr-only">Loading...</span>
+                                </div>
+                                <select class="form-control" id="cboDepartamento"></select>
+                            </div>
+                            <div class="col-sm">
+                                <label for="cboCp">Cp</label>
+                                <div class="spinner-border spinner-border-sm text-danger" style="display: none" role="status">
+                                    <span class="sr-only">Loading...</span>
+                                </div>
+                                <select class="form-control" id="cboCp"></select>
+                            </div>
+                        </div>
+                        <div class="row marginTop10">
+                            <div class="col-sm">
+                                <button class="btn btn-primary" type="button" id="btnAdd">Agregar</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="clearfix"></div>
+                    <br />
+                    <div id="gridTemporadas" style="min-height: 460px; width: 100%;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    var gridTemporadas = null;
+    var foo = function () {
+    };
+    $.urlParam = function (name) {
+        var results = new RegExp('[\?&]' + name + '=([^&#]*)').exec(window.location.href);
+        if (results == null) {
+            return null;
+        }
+        return decodeURI(results[1]) || 0;
+    }
+    function refreshGrid(auto) {
+        w2ui.grid.autoLoad = auto;
+        w2ui.grid.skip(0);
+    }
+    var crearGrid = new Promise(function () {
+        var config = {
+            grid: {
+                name: 'gridTemporadas',
+                selectType: 'cell',
+                bResponsive: true,
+                bMobile: window.mobileAndTabletcheck(),
+                url: '@this.Url.Action("GetTemporadas", "Grids")',
+                show: {
+                    footer: true,
+                    toolbar: true,
+                    expandColumn: window.mobileAndTabletcheck()
+                },
+                searches: [
+                    { field: 'codUsr', caption: 'Cod. usuario', type: 'text' },
+                    { field: 'nomUsr', caption: 'Nombre usuario', type: 'text' },
+                    { field: 'tiendaId', caption: 'Tienda', type: 'text' },
+                    { field: 'cliente', caption: 'Cliente', type: 'text' }
+                ],
+                colShowResponsive: [
+                    { field: 'ienetGroup' },
+                    { field: 'codUsr' }
+                ],
+                columns: [
+                    { field: "id", caption: "Id", sortable: true, hidden: true },
+                    { field: "producto", caption: "Producto", sortable: false },
+                    { field: "talla", caption: "Talla", sortable: false },
+                    { field: "lote", caption: "Lote", sortable: false },
+                    { field: "categoria", caption: "Categoria", sortable: false },
+                    { field: "departamento", caption: "Departamento", sortable: false },
+                    { field: "cp", caption: "Cp", sortable: false },
+                    {
+                        field: "", caption: "", render: function (record) {
+                            return '<a href="javascript:deleteT(' + record.id + ')">Borrar</a>';
+                        }
+                    }
+                ]
+            }
+        };
+        gridTemporadas = $('#gridTemporadas').w2grid(config.grid);
+        arrayGrids['gridTemporadas'] = gridTemporadas;
+    });
+    var getFilterTemporada = new Promise(function () {
+        $('.spinner-border').show();
+        $.ajax({
+            method: "GET",
+            url: '@this.Url.Action("GetFilterTemporada", "HomeExtern")',
+            success: function (data) {                
+                if (data.info.codError != 0) {
+                    menErrorEdi(data.info.mensaje, 'Error');
+                    return;
+                }
+                if (data.data != null) {
+                    if (data.data.item1 != null) {                        
+                        $.each(data.data.item1, function (indexI, storeO) {
+                            $('#cboProducto').append($('<option>', {
+                                value: this,
+                                text: this
+                            }));
+                        });
+                        $('#cboProducto').append($('<option>', {
+                            value: '',
+                            text: ''
+                        }));
+                        $('#cboProducto').val('');
+                    }
+                }
+                if (data.data != null) {
+                    if (data.data.item2 != null) {                        
+                        $.each(data.data.item2, function (indexI, storeO) {
+                            $('#cboTalla').append($('<option>', {
+                                value: this,
+                                text: this
+                            }));
+                        });
+                        $('#cboTalla').append($('<option>', {
+                            value: '',
+                            text: ''
+                        }));
+                        $('#cboTalla').val('');
+                    }
+                }
+                if (data.data != null) {
+                    if (data.data.item3 != null) {                        
+                        $.each(data.data.item3, function (indexI, storeO) {
+                            $('#cboLote').append($('<option>', {
+                                value: this,
+                                text: this
+                            }));
+                        });
+                        $('#cboLote').append($('<option>', {
+                            value: '',
+                            text: ''
+                        }));
+                        $('#cboLote').val('');
+                    }
+                }
+                if (data.data != null) {
+                    if (data.data.item4 != null) {                        
+                        $.each(data.data.item4, function (indexI, storeO) {
+                            $('#cboCategoria').append($('<option>', {
+                                value: this,
+                                text: this
+                            }));
+                        });
+                        $('#cboCategoria').append($('<option>', {
+                            value: '',
+                            text: ''
+                        }));
+                        $('#cboCategoria').val('');
+                    }
+                }
+                if (data.data != null) {
+                    if (data.data.item5 != null) {                        
+                        $.each(data.data.item5, function (indexI, storeO) {
+                            $('#cboDepartamento').append($('<option>', {
+                                value: this,
+                                text: this
+                            }));
+                        });
+                        $('#cboDepartamento').append($('<option>', {
+                            value: '',
+                            text: ''
+                        }));
+                        $('#cboDepartamento').val('');
+                    }
+                }
+                if (data.data != null) {
+                    if (data.data.item6 != null) {                        
+                        $.each(data.data.item6, function (indexI, storeO) {
+                            $('#cboCp').append($('<option>', {
+                                value: this,
+                                text: this
+                            }));
+                        });
+                        $('#cboCp').append($('<option>', {
+                            value: '',
+                            text: ''
+                        }));
+                        $('#cboCp   ').val('');
+                    }
+                }                
+                $('.spinner-border').hide();
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                $('.spinner-border').hide();
+                menErrorEdi(xhr.status, 'Error throw in js');
+                menErrorEdi(thrownError, 'Error throw in js');
+            }
+        });
+    });
+    function deleteT(recId) {                
+        makeAjaxPost('@this.Url.Action("PaylessDeleteTemporada", "HomeExtern")?Id=' + recId, function (data) {
+            if (data.info.codError != 0) {
+                menErrorEdi(data.info.mensaje);
+                return;
+            } else {
+                menErrorEdi(data.data, 'Información');
+                gridTemporadas.reload2('@this.Url.Action("GetTemporadas", "Grids")');
+            }
+        });
+    }    
+    $(document).ready(function () {
+        crearGrid.then();
+        getFilterTemporada.then();
+        $('#btnAdd').on('click', function () {
+            makeAjaxPost('@this.Url.Action("PaylessAddTemporada", "HomeExtern")?CboProducto=' + $('#cboProducto').val() + '&CboTalla=' + $('#cboTalla').val() + '&CboLote=' + $('#cboLote').val() + '&CboCategoria=' + $('#cboCategoria').val() + '&CboDepartamento=' + $('#cboDepartamento').val() + '&CboCp=' + $('#cboCp').val(), function (data) {
+                if (data.info.codError != 0) {
+                    menErrorEdi(data.info.mensaje);
+                    return;
+                } else {
+                    menErrorEdi(data.data, 'Información');
+                    gridTemporadas.reload2('@this.Url.Action("GetTemporadas", "Grids")');
+                }
+            });
+        });
+    });
+</script>
+
+

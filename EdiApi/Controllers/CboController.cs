@@ -120,5 +120,27 @@ namespace EdiApi.Controllers
                 };
             }
         }
+        [HttpGet]
+        public RetData<IEnumerable<PaylessProdPrioriDet>> GetFilterTemporada() {
+            DateTime StartTime = DateTime.Now;
+            try {                
+                return new RetData<IEnumerable<PaylessProdPrioriDet>> {
+                    Data = DbO.PaylessProdPrioriDet.Take(3200),
+                    Info = new RetInfo() {
+                        CodError = 0,
+                        Mensaje = "ok",
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            } catch (Exception e1) {
+                return new RetData<IEnumerable<PaylessProdPrioriDet>> {
+                    Info = new RetInfo() {
+                        CodError = -1,
+                        Mensaje = e1.ToString(),
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            }
+        }
     }
 }

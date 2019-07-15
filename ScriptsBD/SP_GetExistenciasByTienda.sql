@@ -12,6 +12,7 @@ CREATE PROCEDURE dbo.SP_GetExistenciasByTienda
 @TiendaId VARCHAR(4)
 AS
 BEGIN
+	--INSERT INTO EdiDB.dbo.WmsProductoExistencia(BodegaId, CodProducto, Existencia, CodUser)
 	SELECT 
 		t.BodegaId,
 		ii.CodProducto,
@@ -49,5 +50,5 @@ BEGIN
 	ORDER BY t.BodegaId, ii.CodProducto
 END
 
-EXEC EdiDb.dbo.SP_GetExistenciasByTienda 1432, '7392'
+EXEC EdiDb.dbo.SP_GetExistenciasByTienda 1432, '7393'
 --657

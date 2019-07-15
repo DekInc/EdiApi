@@ -4608,8 +4608,7 @@ SET XACT_ABORT OFF
                     }
                 };
             }
-        }        
-
+        }
         [HttpGet]
         public RetData<Tuple<PaylessReportes, IEnumerable<PaylessReportesDet>, IEnumerable<PaylessTiendas>>> GetWeekReport(int Id, string Typ) {
             DateTime StartTime = DateTime.Now;
@@ -4626,6 +4625,84 @@ SET XACT_ABORT OFF
                 };
             } catch (Exception e1) {
                 return new RetData<Tuple<PaylessReportes, IEnumerable<PaylessReportesDet>, IEnumerable<PaylessTiendas>>> {
+                    Info = new RetInfo() {
+                        CodError = -1,
+                        Mensaje = e1.ToString(),
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            }
+        }
+        [HttpGet]
+        public RetData<IEnumerable<PaylessPedidosCpT>> GetTemporadas() {
+            DateTime StartTime = DateTime.Now;
+            try {                
+                return new RetData<IEnumerable<PaylessPedidosCpT>> {
+                    Data = DbO.PaylessPedidosCpT,
+                    Info = new RetInfo() {
+                        CodError = 0,
+                        Mensaje = "ok",
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            } catch (Exception e1) {
+                return new RetData<IEnumerable<PaylessPedidosCpT>> {
+                    Info = new RetInfo() {
+                        CodError = -1,
+                        Mensaje = e1.ToString(),
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            }
+        }
+        [HttpGet]
+        public RetData<string> PaylessAddTemporada(string CboProducto, string CboTalla, string CboLote, string CboCategoria, string CboDepartamento, string CboCp) {
+            DateTime StartTime = DateTime.Now;
+            try {
+                PaylessPedidosCpT NewT = new PaylessPedidosCpT {
+                    Producto = CboProducto,
+                    Talla = CboTalla,
+                    Lote = CboLote,
+                    Categoria = CboCategoria,
+                    Departamento = CboDepartamento,
+                    Cp = CboCp
+                };
+                DbO.PaylessPedidosCpT.Add(NewT);
+                DbO.SaveChanges();
+                return new RetData<string> {
+                    Data = "Se guardo la información.",
+                    Info = new RetInfo() {
+                        CodError = 0,
+                        Mensaje = "ok",
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            } catch (Exception e1) {
+                return new RetData<string> {
+                    Info = new RetInfo() {
+                        CodError = -1,
+                        Mensaje = e1.ToString(),
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            }
+        }
+        [HttpGet]
+        public RetData<string> PaylessDeleteTemporada(int Id) {
+            DateTime StartTime = DateTime.Now;
+            try {                
+                DbO.PaylessPedidosCpT.Remove(DbO.PaylessPedidosCpT.Where(O => O.Id == Id).Fod());
+                DbO.SaveChanges();
+                return new RetData<string> {
+                    Data = "Se borro la información.",
+                    Info = new RetInfo() {
+                        CodError = 0,
+                        Mensaje = "ok",
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            } catch (Exception e1) {
+                return new RetData<string> {
                     Info = new RetInfo() {
                         CodError = -1,
                         Mensaje = e1.ToString(),

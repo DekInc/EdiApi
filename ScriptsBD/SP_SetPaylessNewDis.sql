@@ -12,14 +12,14 @@ CREATE PROCEDURE dbo.SP_SetPaylessNewDis
 @CodUser VARCHAR(128)
 AS
 BEGIN
-	DELETE FROM EdiDB.dbo.WmsProductoExistencia WHERE CodUser = @CodUser
+	DELETE FROM EdiDB.dbo.WmsProductoExistencia WHERE CodUser = @CodUser + 'Cp'
 
 	INSERT INTO EdiDB.dbo.WmsProductoExistencia (BodegaId, CodProducto, Existencia, CodUser)
 	SELECT DISTINCT 
 		t.BodegaId,
 		ii.CodProducto,
 		1,
-		@CodUser
+		@CodUser + 'Cp'
 	FROM wms.dbo.ItemInventario AS ii WITH(NOLOCK)	
 	JOIN wms.dbo.inventario AS i WITH(NOLOCK)
 		ON i.InventarioID=ii.InventarioID
@@ -54,7 +54,7 @@ BEGIN
 	GROUP BY t.BodegaId, ii.CodProducto
 	ORDER BY t.BodegaId, ii.CodProducto
 
-	DELETE FROM EdiDB.dbo.WmsProductoExistencia WHERE CodUser = @CodUser 
+	DELETE FROM EdiDB.dbo.WmsProductoExistencia WHERE CodUser = @CodUser  + 'Cp'
 	AND CodProducto IN (
 		SELECT Ped.CodProducto
 		FROM EdiDB.dbo.PedidosExternos Pe WITH(NOLOCK)
@@ -71,7 +71,7 @@ BEGIN
 	FROM EdiDB.dbo.WmsProductoExistencia Wpe WITH(NOLOCK)
 	JOIN EdiDB.dbo.PAYLESS_ProdPrioriDet D WITH(NOLOCK)
 		ON Wpe.CodProducto = D.Barcode
-	WHERE Wpe.CodUser = @CodUser
+	WHERE Wpe.CodUser = @CodUser + 'Cp'
 	AND D.Producto NOT IN (SELECT DISTINCT Ppt.Producto FROM EdiDB.dbo.PaylessPedidosCpT Ppt WITH(NOLOCK) WHERE Ppt.Producto IS NOT NULL)
 	AND D.Talla NOT IN (SELECT DISTINCT Ppt.Talla FROM EdiDB.dbo.PaylessPedidosCpT Ppt WITH(NOLOCK) WHERE Ppt.Talla IS NOT NULL)
 	AND D.Lote NOT IN (SELECT DISTINCT Ppt.Lote FROM EdiDB.dbo.PaylessPedidosCpT Ppt WITH(NOLOCK) WHERE Ppt.Lote IS NOT NULL)
@@ -89,7 +89,7 @@ BEGIN
 	FROM EdiDB.dbo.WmsProductoExistencia Wpe WITH(NOLOCK)
 	JOIN EdiDB.dbo.PAYLESS_ProdPrioriDet D WITH(NOLOCK)
 		ON Wpe.CodProducto = D.Barcode
-	WHERE Wpe.CodUser = @CodUser
+	WHERE Wpe.CodUser = @CodUser + 'Cp'
 	AND D.Producto NOT IN (SELECT DISTINCT Ppt.Producto FROM EdiDB.dbo.PaylessPedidosCpT Ppt WITH(NOLOCK) WHERE Ppt.Producto IS NOT NULL)
 	AND D.Talla NOT IN (SELECT DISTINCT Ppt.Talla FROM EdiDB.dbo.PaylessPedidosCpT Ppt WITH(NOLOCK) WHERE Ppt.Talla IS NOT NULL)
 	AND D.Lote NOT IN (SELECT DISTINCT Ppt.Lote FROM EdiDB.dbo.PaylessPedidosCpT Ppt WITH(NOLOCK) WHERE Ppt.Lote IS NOT NULL)
@@ -104,7 +104,7 @@ BEGIN
 	FROM EdiDB.dbo.WmsProductoExistencia Wpe WITH(NOLOCK)
 	JOIN EdiDB.dbo.PAYLESS_ProdPrioriDet D WITH(NOLOCK)
 		ON Wpe.CodProducto = D.Barcode
-	WHERE Wpe.CodUser = @CodUser
+	WHERE Wpe.CodUser = @CodUser + 'Cp'
 	AND D.Categoria = 'DAMAS'
 	AND D.Producto NOT IN (SELECT DISTINCT Ppt.Producto FROM EdiDB.dbo.PaylessPedidosCpT Ppt WITH(NOLOCK) WHERE Ppt.Producto IS NOT NULL)
 	AND D.Talla NOT IN (SELECT DISTINCT Ppt.Talla FROM EdiDB.dbo.PaylessPedidosCpT Ppt WITH(NOLOCK) WHERE Ppt.Talla IS NOT NULL)
@@ -120,7 +120,7 @@ BEGIN
 	FROM EdiDB.dbo.WmsProductoExistencia Wpe WITH(NOLOCK)
 	JOIN EdiDB.dbo.PAYLESS_ProdPrioriDet D WITH(NOLOCK)
 		ON Wpe.CodProducto = D.Barcode
-	WHERE Wpe.CodUser = @CodUser
+	WHERE Wpe.CodUser = @CodUser + 'Cp'
 	AND D.Categoria = 'CABALLEROS'
 	AND D.Producto NOT IN (SELECT DISTINCT Ppt.Producto FROM EdiDB.dbo.PaylessPedidosCpT Ppt WITH(NOLOCK) WHERE Ppt.Producto IS NOT NULL)
 	AND D.Talla NOT IN (SELECT DISTINCT Ppt.Talla FROM EdiDB.dbo.PaylessPedidosCpT Ppt WITH(NOLOCK) WHERE Ppt.Talla IS NOT NULL)
@@ -136,7 +136,7 @@ BEGIN
 	FROM EdiDB.dbo.WmsProductoExistencia Wpe WITH(NOLOCK)
 	JOIN EdiDB.dbo.PAYLESS_ProdPrioriDet D WITH(NOLOCK)
 		ON Wpe.CodProducto = D.Barcode
-	WHERE Wpe.CodUser = @CodUser
+	WHERE Wpe.CodUser = @CodUser + 'Cp'
 	AND D.Categoria = 'NIÑOS / AS'
 	AND D.Producto NOT IN (SELECT DISTINCT Ppt.Producto FROM EdiDB.dbo.PaylessPedidosCpT Ppt WITH(NOLOCK) WHERE Ppt.Producto IS NOT NULL)
 	AND D.Talla NOT IN (SELECT DISTINCT Ppt.Talla FROM EdiDB.dbo.PaylessPedidosCpT Ppt WITH(NOLOCK) WHERE Ppt.Talla IS NOT NULL)
@@ -152,7 +152,7 @@ BEGIN
 	FROM EdiDB.dbo.WmsProductoExistencia Wpe WITH(NOLOCK)
 	JOIN EdiDB.dbo.PAYLESS_ProdPrioriDet D WITH(NOLOCK)
 		ON Wpe.CodProducto = D.Barcode
-	WHERE Wpe.CodUser = @CodUser
+	WHERE Wpe.CodUser = @CodUser + 'Cp'
 	AND D.Categoria = 'ACCESORIOS'
 	AND D.Producto NOT IN (SELECT DISTINCT Ppt.Producto FROM EdiDB.dbo.PaylessPedidosCpT Ppt WITH(NOLOCK) WHERE Ppt.Producto IS NOT NULL)
 	AND D.Talla NOT IN (SELECT DISTINCT Ppt.Talla FROM EdiDB.dbo.PaylessPedidosCpT Ppt WITH(NOLOCK) WHERE Ppt.Talla IS NOT NULL)
@@ -169,7 +169,7 @@ BEGIN
 	FROM EdiDB.dbo.WmsProductoExistencia Wpe WITH(NOLOCK)
 	JOIN EdiDB.dbo.PAYLESS_ProdPrioriDet D WITH(NOLOCK)
 		ON Wpe.CodProducto = D.Barcode
-	WHERE Wpe.CodUser = @CodUser
+	WHERE Wpe.CodUser = @CodUser + 'Cp'
 	AND D.Categoria = 'DAMAS'
 	AND (
 		D.Producto IN (SELECT DISTINCT Ppt.Producto FROM EdiDB.dbo.PaylessPedidosCpT Ppt WITH(NOLOCK) WHERE Ppt.Producto IS NOT NULL)
@@ -187,7 +187,7 @@ BEGIN
 	FROM EdiDB.dbo.WmsProductoExistencia Wpe WITH(NOLOCK)
 	JOIN EdiDB.dbo.PAYLESS_ProdPrioriDet D WITH(NOLOCK)
 		ON Wpe.CodProducto = D.Barcode
-	WHERE Wpe.CodUser = @CodUser
+	WHERE Wpe.CodUser = @CodUser + 'Cp'
 	AND D.Categoria = 'CABALLEROS'
 	AND (
 		D.Producto IN (SELECT DISTINCT Ppt.Producto FROM EdiDB.dbo.PaylessPedidosCpT Ppt WITH(NOLOCK) WHERE Ppt.Producto IS NOT NULL)
@@ -205,7 +205,7 @@ BEGIN
 	FROM EdiDB.dbo.WmsProductoExistencia Wpe WITH(NOLOCK)
 	JOIN EdiDB.dbo.PAYLESS_ProdPrioriDet D WITH(NOLOCK)
 		ON Wpe.CodProducto = D.Barcode
-	WHERE Wpe.CodUser = @CodUser
+	WHERE Wpe.CodUser = @CodUser + 'Cp'
 	AND D.Categoria = 'NIÑOS / AS'
 	AND (
 		D.Producto IN (SELECT DISTINCT Ppt.Producto FROM EdiDB.dbo.PaylessPedidosCpT Ppt WITH(NOLOCK) WHERE Ppt.Producto IS NOT NULL)
@@ -223,7 +223,7 @@ BEGIN
 	FROM EdiDB.dbo.WmsProductoExistencia Wpe WITH(NOLOCK)
 	JOIN EdiDB.dbo.PAYLESS_ProdPrioriDet D WITH(NOLOCK)
 		ON Wpe.CodProducto = D.Barcode
-	WHERE Wpe.CodUser = @CodUser
+	WHERE Wpe.CodUser = @CodUser + 'Cp'
 	AND D.Categoria = 'ACCESORIOS'
 	AND (
 		D.Producto IN (SELECT DISTINCT Ppt.Producto FROM EdiDB.dbo.PaylessPedidosCpT Ppt WITH(NOLOCK) WHERE Ppt.Producto IS NOT NULL)

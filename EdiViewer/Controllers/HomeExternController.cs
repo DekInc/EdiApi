@@ -37,6 +37,9 @@ namespace EdiViewer.Controllers
         {
             return View();
         }
+        public IActionResult CrudPaylessTemporadas() {
+            return View();
+        }        
         public IActionResult PedidosFacturas() {
             return View();
         }
@@ -1922,6 +1925,65 @@ namespace EdiViewer.Controllers
                 return List;
             } catch (Exception e2) {
                 return new RetData<IEnumerable<CboValuesModel>>() {
+                    Info = new RetInfo() {
+                        CodError = -1,
+                        Mensaje = e2.ToString(),
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            }
+        }
+        public async Task<RetData<Tuple<IEnumerable<string>, IEnumerable<string>, IEnumerable<string>, IEnumerable<string>, IEnumerable<string>, IEnumerable<string>>>> GetFilterTemporada() {
+            DateTime StartTime = DateTime.Now;
+            try {
+                RetData<IEnumerable<PaylessProdPrioriDet>> ListFilter = await ApiClientFactory.Instance.GetFilterTemporada();
+                IEnumerable<string> ListProducts = ListFilter.Data.Select(D1 => D1.Producto).Distinct().Where(O2 => !string.IsNullOrEmpty(O2)).OrderBy(O1 => O1);
+                IEnumerable<string> ListTalla = ListFilter.Data.Select(D1 => D1.Talla).Distinct().Where(O2 => !string.IsNullOrEmpty(O2)).OrderBy(O1 => O1);
+                IEnumerable<string> ListLote = ListFilter.Data.Select(D1 => D1.Lote).Distinct().Where(O2 => !string.IsNullOrEmpty(O2)).OrderBy(O1 => O1);
+                IEnumerable<string> ListCategoria = ListFilter.Data.Select(D1 => D1.Categoria).Distinct().Where(O2 => !string.IsNullOrEmpty(O2)).OrderBy(O1 => O1);
+                IEnumerable<string> ListDepartamento = ListFilter.Data.Select(D1 => D1.Departamento).Distinct().Where(O2 => !string.IsNullOrEmpty(O2)).OrderBy(O1 => O1);
+                IEnumerable<string> ListCp = ListFilter.Data.Select(D1 => D1.Cp).Distinct().Where(O2 => !string.IsNullOrEmpty(O2)).OrderBy(O1 => O1);
+                return new RetData<Tuple<IEnumerable<string>, IEnumerable<string>, IEnumerable<string>, IEnumerable<string>, IEnumerable<string>, IEnumerable<string>>> {
+                    Data = new Tuple<IEnumerable<string>, IEnumerable<string>, IEnumerable<string>, IEnumerable<string>, IEnumerable<string>, IEnumerable<string>>(
+                        ListProducts, ListTalla, ListLote, ListCategoria, ListDepartamento, ListCp),
+                    Info = new RetInfo() {
+                        CodError = 0,
+                        Mensaje = "ok",
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            } catch (Exception e2) {
+                return new RetData<Tuple<IEnumerable<string>, IEnumerable<string>, IEnumerable<string>, IEnumerable<string>, IEnumerable<string>, IEnumerable<string>>> {
+                    Info = new RetInfo() {
+                        CodError = -1,
+                        Mensaje = e2.ToString(),
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            }
+        }
+        public async Task<RetData<string>> PaylessAddTemporada(string CboProducto, string CboTalla, string CboLote, string CboCategoria, string CboDepartamento, string CboCp) {
+            DateTime StartTime = DateTime.Now;
+            try {
+                RetData<string> Ret = await ApiClientFactory.Instance.PaylessAddTemporada(CboProducto, CboTalla, CboLote, CboCategoria, CboDepartamento, CboCp);
+                return Ret;                
+            } catch (Exception e2) {
+                return new RetData<string>() {
+                    Info = new RetInfo() {
+                        CodError = -1,
+                        Mensaje = e2.ToString(),
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            }
+        }
+        public async Task<RetData<string>> PaylessDeleteTemporada(int Id) {
+            DateTime StartTime = DateTime.Now;
+            try {
+                RetData<string> Ret = await ApiClientFactory.Instance.PaylessDeleteTemporada(Id);
+                return Ret;
+            } catch (Exception e2) {
+                return new RetData<string>() {
                     Info = new RetInfo() {
                         CodError = -1,
                         Mensaje = e2.ToString(),

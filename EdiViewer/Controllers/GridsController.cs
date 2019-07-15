@@ -448,8 +448,8 @@ namespace EdiViewer.Controllers
                     return Json(new { total = 0, records = "", errorMessage = (ListPe.Info.CodError != 0 ? ListPe.Info.Mensaje : string.Empty) });
                 List<PeticionesAdminBGModel> Records = new List<PeticionesAdminBGModel>();
                 foreach (PeticionesAdminBGModel Pe in ListPe.Data) {
-                    Pe.Total = Pe.WomanQty + Pe.ManQty + Pe.KidQty + Pe.AccQty + Pe.TotalCp + (Pe.WomanQtyT ?? 0) + (Pe.ManQtyT ?? 0) + (Pe.KidQtyT ?? 0) + (Pe.AccQtyT ?? 0);
-                    Pe.TotalEnv = Pe.WomanQtyEnv + Pe.ManQtyEnv + Pe.KidQtyEnv + Pe.AccQtyEnv + Pe.TotalCpEnv;
+                    //Pe.Total = Pe.WomanQty + Pe.ManQty + Pe.KidQty + Pe.AccQty + (Pe.WomanQtyT ?? 0) + (Pe.ManQtyT ?? 0) + (Pe.KidQtyT ?? 0) + (Pe.AccQtyT ?? 0); //Pe.TotalCp
+                    //Pe.TotalEnv = Pe.WomanQtyEnv + Pe.ManQtyEnv + Pe.KidQtyEnv + Pe.AccQtyEnv; // + Pe.TotalCpEnv
                     if (Pe.TotalEnv != 0)
                         Pe.PorcValid = Math.Round((1.0 - (double)(Math.Abs((double)Pe.Total - (double)Pe.TotalEnv)/(double)Pe.Total)) * 100.0, 2);
                     Records.Add(Pe);
@@ -695,13 +695,14 @@ namespace EdiViewer.Controllers
                 return Json(new { draw = 0, recordsFiltered = 0, recordsTotal = 0, errorMessage = e1.ToString(), data = "" });
             }
         }
-        private void AddCat(ref List<PaylessProdPrioriDetModel> Records, ref RetData<IEnumerable<PaylessProdPrioriDetModel>> ListProdWithExists, string Cat, string CatN, string Cp, string Est, int Typ) {
+        private void AddCat(ref List<PaylessProdPrioriDetModel> Records, ref List<PaylessProdPrioriDetModel> Exclude, string Cat, string CatN, string Cp, string Est, int Typ) {
             Records.Add(new PaylessProdPrioriDetModel() {
                 Categoria = Cat,
                 Cp = Cp,
                 Estado = Est,
-                Existencia = ListProdWithExists.Data.Where(D => D.Existencia == Typ && D.Categoria == CatN).Select(O => O.Barcode).Distinct().Count()
+                Existencia = Exclude.Where(D => D.Existencia == Typ && D.Categoria == CatN).Select(O => O.Barcode).Distinct().Count()
             });
+            Exclude.RemoveAll(D => D.Existencia == Typ && D.Categoria == CatN);
         }
         public async Task<IActionResult> GetPaylessProdPrioriInventario3(string tiendaId = null) {
             try {
@@ -716,18 +717,19 @@ namespace EdiViewer.Controllers
                 if (ListProdWithExists.Data.Count() == 0)
                     return Json(new { total = 0, records = "", errorMessage = (ListProdWithExists.Info.CodError != 0 ? ListProdWithExists.Info.Mensaje : "No hay productos en el WMS para la tienda") });
                 List<PaylessProdPrioriDetModel> Records = new List<PaylessProdPrioriDetModel>();
-                AddCat(ref Records, ref ListProdWithExists, "0", "DAMAS", "0", "0", 1);
-                AddCat(ref Records, ref ListProdWithExists, "1", "CABALLEROS", "0", "0", 1);
-                AddCat(ref Records, ref ListProdWithExists, "2", "NIÑOS / AS", "0", "0", 1);
-                AddCat(ref Records, ref ListProdWithExists, "3", "ACCESORIOS", "0", "0", 1);
-                AddCat(ref Records, ref ListProdWithExists, "0", "DAMAS", "1", "0", 2);
-                AddCat(ref Records, ref ListProdWithExists, "1", "CABALLEROS", "1", "0", 2);
-                AddCat(ref Records, ref ListProdWithExists, "2", "NIÑOS / AS", "1", "0", 2);
-                AddCat(ref Records, ref ListProdWithExists, "3", "ACCESORIOS", "1", "0", 2);
-                AddCat(ref Records, ref ListProdWithExists, "0", "DAMAS", "0", "1", 3);
-                AddCat(ref Records, ref ListProdWithExists, "1", "CABALLEROS", "0", "1", 3);
-                AddCat(ref Records, ref ListProdWithExists, "2", "NIÑOS / AS", "0", "1", 3);
-                AddCat(ref Records, ref ListProdWithExists, "3", "ACCESORIOS", "0", "1", 3);
+                List<PaylessProdPrioriDetModel> Exclude = ListProdWithExists.Data.ToList();
+                AddCat(ref Records, ref Exclude, "0", "DAMAS", "1", "0", 2);
+                AddCat(ref Records, ref Exclude, "1", "CABALLEROS", "1", "0", 2);
+                AddCat(ref Records, ref Exclude, "2", "NIÑOS / AS", "1", "0", 2);
+                AddCat(ref Records, ref Exclude, "3", "ACCESORIOS", "1", "0", 2);
+                AddCat(ref Records, ref Exclude, "0", "DAMAS", "0", "1", 3);
+                AddCat(ref Records, ref Exclude, "1", "CABALLEROS", "0", "1", 3);
+                AddCat(ref Records, ref Exclude, "2", "NIÑOS / AS", "0", "1", 3);
+                AddCat(ref Records, ref Exclude, "3", "ACCESORIOS", "0", "1", 3);                
+                AddCat(ref Records, ref Exclude, "0", "DAMAS", "0", "0", 1);
+                AddCat(ref Records, ref Exclude, "1", "CABALLEROS", "0", "0", 1);
+                AddCat(ref Records, ref Exclude, "2", "NIÑOS / AS", "0", "0", 1);
+                AddCat(ref Records, ref Exclude, "3", "ACCESORIOS", "0", "0", 1);                
                 int Total = Records.Count;
                 HttpContext.Session.SetObjSession("Session.StoreQtys", Records);                
                 return Json(new { Total, Records, errorMessage = "" });
@@ -1021,7 +1023,6 @@ namespace EdiViewer.Controllers
         public async Task<IActionResult> GetPedidosWmsByStore(int ClienteId, int TiendaId) {
             if (ClienteId == 0 || TiendaId == 0)
                 return Json(new { total = 0, records = "", errorMessage = "" });
-            DateTime StartTime = DateTime.Now;
             try {
                 RetData<IEnumerable<PedidosWmsModel>> ListDis = await ApiClientFactory.Instance.GetPedidosMWmsByTienda(ClienteId, TiendaId);
                 if (ListDis.Info.CodError != 0)
@@ -1048,7 +1049,35 @@ namespace EdiViewer.Controllers
             } catch (Exception e1) {
                 return Json(new { total = 0, records = "", errorMessage = e1.ToString() });
             }
-
+        }
+        public async Task<IActionResult> GetTemporadas() {            
+            DateTime StartTime = DateTime.Now;
+            try {
+                RetData<IEnumerable<PaylessPedidosCpT>> List = await ApiClientFactory.Instance.GetTemporadas();
+                if (List.Info.CodError != 0)
+                    return Json(new { total = 0, records = "", errorMessage = List.Info.Mensaje });
+                if (List.Data.Count() == 0) {
+                    return Json(new { total = 0, records = "", errorMessage = "" });
+                }
+                List<PaylessPedidosCpT> Records = List.Data.ToList();
+                List<PaylessPedidosCpT> AllRecords = new List<PaylessPedidosCpT>();
+                int Total = Records.Count;
+                bool HaveForm = true;
+                try {
+                    if (Request.Form != null) {
+                        IFormCollection GridForm = Request.Form;
+                    }
+                } catch {
+                    HaveForm = false;
+                }
+                if (Records.Count() > 0 && HaveForm) {
+                    AllRecords = Utility.ExpressionBuilderHelper.W2uiSearchNoSkip(Records, Request.Form);
+                    Records = Utility.ExpressionBuilderHelper.W2uiSearch(Records, Request.Form);
+                }
+                return Json(new { Total, Records, errorMessage = "", AllRecords });
+            } catch (Exception e1) {
+                return Json(new { total = 0, records = "", errorMessage = e1.ToString() });
+            }
         }
     }
 }

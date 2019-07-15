@@ -42,24 +42,33 @@ select * from EdiDB.dbo.PAYLESS_ReportesDet where IdM = 59 order by Id
 SELECT * FROM EdiDB.dbo.PedidosExternos order by FechaCreacion DESC
 SELECT * FROM EdiDB.dbo.PedidosExternos order by id DESC --7382
 SELECT * FROM EdiDB.dbo.PedidosExternos order by FechaPedido DESC
-SELECT * FROM EdiDB.dbo.PedidosExternos where Id = 210
+SELECT * FROM EdiDB.dbo.PedidosExternos where Id = 158
+SELECT * FROM EdiDB.dbo.PedidosExternos where TiendaId = 7393
 SELECT * FROM EdiDb.dbo.PedidosExternos_Bkp where TiendaId = 7372 AND SUBSTRING(FechaPedido, 1, 10) = '02/07/2019'
 SELECT * FROM EdiDb.dbo.PedidosExternos where TiendaId = 7382 AND SUBSTRING(FechaPedido, 1, 10) = '04/07/2019'
 SELECT * INTO EdiDb.dbo.PedidosExternos_Bkp FROM EdiDB.dbo.PedidosExternos 
 SELECT * FROM EdiDB.dbo.PedidosExternos where TiendaId = 7368 AND Id = 122
 SELECT * FROM EdiDB.dbo.PedidosExternos where FullPed = 0
 SELECT * FROM EdiDB.dbo.PedidosExternos where SUBSTRING(FechaPedido, 1, 10) = '02/07/2019'
-SELECT * FROM EdiDB.dbo.PedidosDetExternos where PedidoId = 213
+SELECT * FROM EdiDB.dbo.PedidosDetExternos where PedidoId = 235
+
+SELECT * FROM EdiDB.dbo.WmsProductoExistencia
+where CodUser = 'FailCon'
+AND CodProducto NOT IN (
+SELECT CodProducto FROM EdiDB.dbo.PedidosDetExternos where PedidoId = 235
+)
+SELECT * FROM EdiDB.dbo.PAYLESS_ProdPrioriDet WHERE Barcode = '7393801132'
+SELECT * FROM wms.dbo.Producto WHERE CodProducto = '7393801132'
 ---
-DELETE FROM EdiDB.dbo.PedidosExternos where Id = 213
-DELETE FROM EdiDB.dbo.PedidosDetExternos where PedidoId = 213
+DELETE FROM EdiDB.dbo.PedidosExternos where Id = 235
+DELETE FROM EdiDB.dbo.PedidosDetExternos where PedidoId = 235
 delete from EdiDB.dbo.PedidosExternos where Id in (205, 206)
 delete from EdiDB.dbo.PedidosDetExternos where PedidoId in (205, 206)
 SELECT Ped.*, D.* 
 FROM EdiDB.dbo.PedidosDetExternos Ped
 JOIN EdiDB.dbo.PAYLESS_ProdPrioriDet D
 	ON D.Barcode = Ped.CodProducto
-where Ped.PedidoId = 210
+where Ped.PedidoId = 158
 select * from EdiDB.dbo.PAYLESS_ProdPrioriDet D where D.Barcode like '7368%' and 
 
 select top 10 * from EdiDB.dbo.WmsProductoExistencia
@@ -143,6 +152,7 @@ select DISTINCT Talla, Producto from EdiDB.dbo.PAYLESS_ProdPrioriDet order by 2
 --7384817053
 --7385876330
 select * from wms.dbo.DtllPedido where CodProducto = '7383810131'
+select * from wms.dbo.DtllPedido where PedidoID = 71808
 select * from EdiDB.dbo.PAYLESS_ProdPrioriDet WHERE BarCode = '7383810131'
 select * from EdiDB.dbo.PAYLESS_ProdPrioriM where Id = 4
 select * from EdiDb.dbo.Payless_Transporte

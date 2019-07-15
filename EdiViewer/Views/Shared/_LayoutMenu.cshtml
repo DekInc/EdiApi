@@ -24,6 +24,9 @@
                             @if (Context.Session.GetObjSession<List<string>>("ListPermits").Where(O => O == "Admin_Grupos_Permisos").Count() > 0) {
                                 <a class="dropdown-item" asp-area="" asp-controller="Account" asp-action="CrudGrupoAccesos">Grupos y accesos</a>
                             }
+                            @if (Context.Session.GetObjSession<List<string>>("ListPermits").Where(O => O == "Admin_Payless_Temporadas").Count() > 0) {
+                                <a class="dropdown-item" asp-area="" asp-controller="HomeExtern" asp-action="CrudPaylessTemporadas">Payless temporadas</a>
+                            }
                         </div>
                     </li>
                     <li class="nav-item dropdown">
