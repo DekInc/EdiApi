@@ -63,3 +63,7 @@ BEGIN
 END
 
 EXEC EdiDb.dbo.SP_GetPedidosPendientesAdmin
+
+select * from EdiDB.dbo.ProductoUbicacion
+select distinct Typ from select * from EdiDB.dbo.ProductoUbicacion
+truncate table EdiDB.dbo.ProductoUbicacion

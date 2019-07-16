@@ -71,10 +71,12 @@
                             }
                             @if (Context.Session.GetObjSession<List<string>>("ListPermits").Where(O => O == "Usuario_HacerPedidos_Payless").Count() > 0) {
                                 @*<a class="dropdown-item" asp-area="" asp-controller="HomeExtern" asp-action="PedidosPayless">Realizar pedidos Payless</a>
-                                    <a class="dropdown-item" asp-area="" asp-controller="HomeExtern" asp-action="PedidosPayless2">Realizar pedidos Payless v2</a>*@
+            <a class="dropdown-item" asp-area="" asp-controller="HomeExtern" asp-action="PedidosPayless2">Realizar pedidos Payless v2</a>*@
                                 <a class="dropdown-item" asp-area="" asp-controller="HomeExtern" asp-action="PedidosPayless3">Realizar pedidos Payless</a>
                             }
-                            @*<a class="dropdown-item" asp-area="" asp-controller="HomeExtern" asp-action="Inventario">Realizar pedidos WMS</a>*@
+                            @if (Context.Session.GetObjSession<List<string>>("ListPermits").Where(O => O == "Usuario_Payless_Encuesta").Count() > 0) {
+                                <a class="dropdown-item" asp-area="" asp-controller="HomeExtern" asp-action="PaylessEncuesta">Encuesta entrega</a>
+                            }
                             @if (Context.Session.GetObjSession<List<string>>("ListPermits").Where(O => O == "Admin_Payless_Divert").Count() > 0) {
                                 <a class="dropdown-item" asp-area="" asp-controller="HomeExtern" asp-action="PedidosPaylessDivert">Pedidos Payless Divert</a>
                                 <a class="dropdown-item" asp-area="" asp-controller="HomeExtern" asp-action="PedidosPayless">Pedidos Payless Divert por lote</a>

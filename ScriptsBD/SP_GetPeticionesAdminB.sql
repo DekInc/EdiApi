@@ -176,9 +176,10 @@ BEGIN
 	LEFT JOIN EdiDB.dbo.PAYLESS_Tiendas T WITH(NOLOCK)
 		ON T.TiendaId = Pe.TiendaId	
 	
-	--DELETE FROM EdiDB.dbo.ProductoUbicacion WHERE Typ IN (2)
+	DELETE FROM EdiDB.dbo.ProductoUbicacion WHERE Typ IN (2)
 END
 
+select * from EdiDB.dbo.ProductoUbicacion with(nolock)
 --truncate table EdiDB.dbo.ProductoUbicacion
 EXEC EdiDb.dbo.SP_GetPeticionesAdminB
 --2617 not in

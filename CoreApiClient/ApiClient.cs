@@ -86,6 +86,6 @@ namespace CoreApiClient
                     DateFormatHandling = DateFormatHandling.MicrosoftDateFormat
                 };
             }
-        }        
+        }
     }
 }

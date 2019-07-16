@@ -5,10 +5,13 @@ select * from wms_test_29_01_2019.dbo.Paises where NomPais like'%pana%'
 select * from wms.dbo.Clientes with(nolock) where nombre like '%payl%' OR ClienteID = 610 order by ClienteID asc
 select * from edidb.dbo.IEnetUsers where Id > 4 order by CodUsr
 select * from edidb.dbo.IEnetUsers order by CodUsr
-select * from edidb.dbo.IEnetUsers where HashId like '%0407201916%' order by HashId desc
+select * from edidb.dbo.IEnetUsers where HashId like '%160720%' order by HashId desc
+select * from edidb.dbo.IEnetGroupsAccesses
+select * from edidb.dbo.IEnetAccesses
+--delete from edidb.dbo.IEnetAccesses where Id = 23
 select * from edidb.dbo.IEnetGroupsAccesses
 select * from EdiDb.dbo.Trasladado1
-
+select * from EdiDb.dbo.PaylessPedidosCpT
 
 --delete from edidb.dbo.IEnetGroupsAccesses where Id = 40
 --37	4	19
@@ -41,8 +44,9 @@ select * from EdiDB.dbo.PAYLESS_Reportes where Periodo = '09/06/2019'
 select * from EdiDB.dbo.PAYLESS_ReportesDet where IdM = 59 order by Id
 SELECT * FROM EdiDB.dbo.PedidosExternos order by FechaCreacion DESC
 SELECT * FROM EdiDB.dbo.PedidosExternos order by id DESC --7382
+--delete from EdiDB.dbo.PedidosDetExternos WHERE PedidoId > 240
 SELECT * FROM EdiDB.dbo.PedidosExternos order by FechaPedido DESC
-SELECT * FROM EdiDB.dbo.PedidosExternos where Id = 158
+SELECT * FROM EdiDB.dbo.PedidosExternos where Id = 227
 SELECT * FROM EdiDB.dbo.PedidosExternos where TiendaId = 7393
 SELECT * FROM EdiDb.dbo.PedidosExternos_Bkp where TiendaId = 7372 AND SUBSTRING(FechaPedido, 1, 10) = '02/07/2019'
 SELECT * FROM EdiDb.dbo.PedidosExternos where TiendaId = 7382 AND SUBSTRING(FechaPedido, 1, 10) = '04/07/2019'
@@ -50,7 +54,7 @@ SELECT * INTO EdiDb.dbo.PedidosExternos_Bkp FROM EdiDB.dbo.PedidosExternos
 SELECT * FROM EdiDB.dbo.PedidosExternos where TiendaId = 7368 AND Id = 122
 SELECT * FROM EdiDB.dbo.PedidosExternos where FullPed = 0
 SELECT * FROM EdiDB.dbo.PedidosExternos where SUBSTRING(FechaPedido, 1, 10) = '02/07/2019'
-SELECT * FROM EdiDB.dbo.PedidosDetExternos where PedidoId = 235
+SELECT * FROM EdiDB.dbo.PedidosDetExternos where PedidoId = 227
 
 SELECT * FROM EdiDB.dbo.WmsProductoExistencia
 where CodUser = 'FailCon'
@@ -68,7 +72,7 @@ SELECT Ped.*, D.*
 FROM EdiDB.dbo.PedidosDetExternos Ped
 JOIN EdiDB.dbo.PAYLESS_ProdPrioriDet D
 	ON D.Barcode = Ped.CodProducto
-where Ped.PedidoId = 158
+where Ped.PedidoId = 227
 select * from EdiDB.dbo.PAYLESS_ProdPrioriDet D where D.Barcode like '7368%' and 
 
 select top 10 * from EdiDB.dbo.WmsProductoExistencia

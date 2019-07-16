@@ -17,7 +17,13 @@
                 </div>
                 <div class="card-body">
                     <div class="container">
-                        <form id="frmEncuesta">
+                        <form id="frmEncuesta" enctype="multipart/form-data">
+                            <div class="row">
+                                <div class="col">
+                                    <label for="preg0">Consecutivo ficha técnica</label>
+                                    <input class="form-control" id="preg0" name="preg0" maxlength="12" autocorrect="off" autocapitalize="off" autocomplete="off" />
+                                </div>
+                            </div>
                             <div class="row">
                                 <div class="col">
                                     <label for="cboPedido">1. Seleccione el número de pedido</label>
@@ -239,12 +245,12 @@
                                 </div>
                             </div>
                             <div class="row margin5">
-                                <div class="col-sm">
-                                    <button class="btn btn-primary noShow" type="button" id="btnAnt" onclick="window.location.href = window.location.href;">
-                                        &nbsp;&nbsp;&nbsp;Anterior&nbsp;&nbsp;&nbsp;
-                                    </button>
-                                    <button class="btn btn-primary" type="button" id="btnSig">
+                                <div class="col-sm">                                    
+                                    <button class="btn btn-primary" type="button" id="btnSave">
                                         &nbsp;&nbsp;&nbsp;Guardar encuesta&nbsp;&nbsp;&nbsp;
+                                        <div id="divSpinbtnSave" class="spinner-border spinner-border-sm text-danger" style="display: none" role="status">
+                                            <span class="sr-only">Loading...</span>
+                                        </div>
                                     </button>
                                 </div>
                             </div>
@@ -284,5 +290,27 @@
         hideShowPreg('#preg5', '#divPreg5a');
         hideShowPreg('#preg7', '#divPreg7a');
         hideShowPreg('#preg17', '#divPreg17a');
+        $('#btnSave').on('click', function (event) {            
+            $('#btnSave').prop('disabled', true);            
+            $('#divSpinbtnSave').show();
+            $.ajax({
+                url: '@this.Url.Action("SetPaylessEncuestaPedidos", "HomeExtern")',
+                data: $('#frmEncuesta').serialize(),
+                type: 'POST',
+                dataType: 'JSON',
+                success: function (json) {                    
+                    if (json.info.codError != 0) {
+                        menErrorEdi(json.info.mensaje);
+                        return json.data;
+                    }
+                    $('#divSpinCboTransporte').hide();
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    menErrorEdi(xhr.status, '');
+                    menErrorEdi(thrownError, '');
+                    $('#divSpinCboTransporte').hide();
+                }
+            });
+        });
     });
 </script>

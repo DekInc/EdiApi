@@ -129,10 +129,10 @@ namespace EdiViewer.Controllers
             List<PaylessProdPrioriDetModel> ListQtys = HttpContext.Session.GetObjSession<List<PaylessProdPrioriDetModel>>("Session.StoreQtys");
             bool? FullPed = null;
             FullPed = (
-                ListQtys.Where(O => O.Cp == "0" && O.Categoria.ToUpper() == "0").Fod().Existencia == txtWomanQty
-                && ListQtys.Where(O => O.Cp == "0" && O.Categoria.ToUpper() == "1").Fod().Existencia == txtManQty
-                && ListQtys.Where(O => O.Cp == "0" && O.Categoria.ToUpper() == "2").Fod().Existencia == txtKidQty
-                && ListQtys.Where(O => O.Cp == "0" && O.Categoria.ToUpper() == "3").Fod().Existencia == txtAccQty
+                ListQtys.Where(O => O.Cp == "0" && O.Categoria == "0" && O.Estado == "0").Fod().Existencia == txtWomanQty
+                && ListQtys.Where(O => O.Cp == "0" && O.Categoria == "1" && O.Estado == "0").Fod().Existencia == txtManQty
+                && ListQtys.Where(O => O.Cp == "0" && O.Categoria == "2" && O.Estado == "0").Fod().Existencia == txtKidQty
+                && ListQtys.Where(O => O.Cp == "0" && O.Categoria == "3" && O.Estado == "0").Fod().Existencia == txtAccQty
                 );
             RetData<string> Ret = await ApiClientFactory.Instance.SetNewDisPayless(dtpFechaEntrega, txtWomanQty, txtManQty, txtKidQty, txtAccQty, radInvType, HttpContext.Session.GetObjSession<int>("Session.ClientId"), HttpContext.Session.GetObjSession<int>("Session.TiendaId"), null, (FullPed == false? null : FullPed), null, txtWomanQtyT, txtManQtyT, txtKidQtyT, txtAccQtyT, HttpContext.Session.GetObjSession<string>("Session.CodUsr"));
             if (Ret.Info.CodError == 0) {
@@ -160,10 +160,10 @@ namespace EdiViewer.Controllers
             List<PaylessProdPrioriDetModel> ListQtys = HttpContext.Session.GetObjSession<List<PaylessProdPrioriDetModel>>("Session.StoreQtys");
             bool? FullPed = null;
             FullPed = (
-                ListQtys.Where(O => O.Cp == "0" && O.Categoria.ToUpper() == "0").Fod().Existencia == txtWomanQty
-                && ListQtys.Where(O => O.Cp == "0" && O.Categoria.ToUpper() == "1").Fod().Existencia == txtManQty
-                && ListQtys.Where(O => O.Cp == "0" && O.Categoria.ToUpper() == "2").Fod().Existencia == txtKidQty
-                && ListQtys.Where(O => O.Cp == "0" && O.Categoria.ToUpper() == "3").Fod().Existencia == txtAccQty
+                ListQtys.Where(O => O.Cp == "0" && O.Categoria == "0" && O.Estado == "0").Fod().Existencia == txtWomanQty
+                && ListQtys.Where(O => O.Cp == "0" && O.Categoria == "1" && O.Estado == "0").Fod().Existencia == txtManQty
+                && ListQtys.Where(O => O.Cp == "0" && O.Categoria == "2" && O.Estado == "0").Fod().Existencia == txtKidQty
+                && ListQtys.Where(O => O.Cp == "0" && O.Categoria == "3" && O.Estado == "0").Fod().Existencia == txtAccQty
                 );
             RetData<string> Ret = new RetData<string>();
             Ret = await ApiClientFactory.Instance.SetNewDisPayless(dtpFechaEntrega, txtWomanQty, txtManQty, txtKidQty, txtAccQty, radInvType, HttpContext.Session.GetObjSession<int>("Session.ClientId"), HttpContext.Session.GetObjSession<int>("Session.TiendaId"), true, (FullPed == false ? null : FullPed), Convert.ToInt32(cboTiendaDest), null, null, null, null, HttpContext.Session.GetObjSession<string>("Session.CodUsr"));
@@ -1992,5 +1992,82 @@ namespace EdiViewer.Controllers
                 };
             }
         }
+        public async Task<RetData<string>> SetPaylessEncuestaPedidos(
+            string preg0, 
+            string cboPedido,
+            string preg2,
+            string preg2a,
+            string preg2b,
+            string preg2c,
+            string preg3,
+            string preg3a,
+            string preg4,
+            string preg4a,
+            string preg5,
+            string preg5a,
+            string preg6,
+            string preg7,
+            string preg7a,
+            string preg8,
+            string preg9,
+            string preg10,
+            string preg11,
+            string preg12,
+            string preg13,
+            string preg14,
+            string preg15,
+            string preg16,
+            string preg17,
+            string preg17a,
+            string preg18
+            ) {
+            DateTime StartTime = DateTime.Now;
+            try {
+                RetData<string> Ret = await ApiClientFactory.Instance.SetPaylessEncuestaPedidos(HttpContext.Session.GetObjSession<int>("Session.TiendaId"),
+                    preg0,
+                    cboPedido,
+                    preg2,
+                    preg2a,
+                    preg2b,
+                    preg2c,
+                    preg3,
+                    preg3a,
+                    preg4,
+                    preg4a,
+                    preg5,
+                    preg5a,
+                    preg6,
+                    preg7,
+                    preg7a,
+                    preg8,
+                    preg9,
+                    preg10,
+                    preg11,
+                    preg12,
+                    preg13,
+                    preg14,
+                    preg15,
+                    preg16,
+                    preg17,
+                    preg17a,
+                    preg18
+                    );
+                return new RetData<string>() {
+                    Info = new RetInfo() {
+                        CodError = 0,
+                        Mensaje = "ok",
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            } catch (Exception e2) {
+                return new RetData<string>() {
+                    Info = new RetInfo() {
+                        CodError = -1,
+                        Mensaje = e2.ToString(),
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            }
+        }        
     }
 }

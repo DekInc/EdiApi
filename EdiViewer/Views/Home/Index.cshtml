@@ -13,10 +13,18 @@
         /*background-size: cover;*/
     }
 </style>
-<div class="container">
-    @*<div id="divLogoIndex">
-
-    </div>*@
+<script>
+    Push.create("Biendenido a GLC Web", {
+    body: "Biendenido a GLC Web",
+    icon: '/images/profile.png',
+    timeout: 5000,
+    onClick: function () {
+        window.focus();
+        this.close();
+    }
+});
+</script>
+<div class="container">    
     <div class="jumbotron mainJumbo indexJumbo">
         <h1 class="text-center"><b>Bienvenido al sistema GLC Web</b></h1>
         <div class="divLogo"><img class="imgLogo" src="~/images/logo4Trans.png" /></div>
