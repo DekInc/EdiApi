@@ -791,3 +791,13 @@ label {
 .rowEncuesta {
     width: 100%;
 }
+.divCenter {
+    /*border: 1px solid;*/
+    position: relative;
+    margin: 0 auto;
+    text-align: center;
+    font-size: 12pt;
+}
+.textNotice {
+    border: 1px dashed;    
+}

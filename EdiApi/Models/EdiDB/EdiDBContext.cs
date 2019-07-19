@@ -61,6 +61,12 @@ namespace EdiApi.Models.EdiDB
         public virtual DbSet<LearTd3856> LearTd3856 { get; set; }
         public virtual DbSet<LearTd5856> LearTd5856 { get; set; }
         public virtual DbSet<LearUit830> LearUit830 { get; set; }
+        public virtual DbSet<PaylessEncuestaRepDet> PaylessEncuestaRepDet { get; set; }
+        public virtual DbSet<PaylessEncuestaRepDet1> PaylessEncuestaRepDet1 { get; set; }
+        public virtual DbSet<PaylessEncuestaRepDet2> PaylessEncuestaRepDet2 { get; set; }
+        public virtual DbSet<PaylessEncuestaRepMm> PaylessEncuestaRepMm { get; set; }
+        public virtual DbSet<PaylessEncuestaResDet> PaylessEncuestaResDet { get; set; }
+        public virtual DbSet<PaylessEncuestaResM> PaylessEncuestaResM { get; set; }
         public virtual DbSet<PaylessPedidosCpT> PaylessPedidosCpT { get; set; }
         public virtual DbSet<PaylessPeriodoTransporte> PaylessPeriodoTransporte { get; set; }
         public virtual DbSet<PaylessProdPrioriArchDet> PaylessProdPrioriArchDet { get; set; }
@@ -1260,6 +1266,171 @@ namespace EdiApi.Models.EdiDB
                 entity.Property(e => e.UnitOfMeasure).HasMaxLength(2);
             });
 
+            modelBuilder.Entity<PaylessEncuestaRepDet>(entity =>
+            {
+                entity.Property(e => e.Rv)
+                    .HasMaxLength(1)
+                    .IsUnicode(false);
+            });
+
+            modelBuilder.Entity<PaylessEncuestaRepDet1>(entity =>
+            {
+                entity.HasIndex(e => e.IdM)
+                    .HasName("PaylessEncuestaRepDet1IdM");
+
+                entity.Property(e => e.TiendaId)
+                    .HasMaxLength(4)
+                    .IsUnicode(false);
+            });
+
+            modelBuilder.Entity<PaylessEncuestaRepDet2>(entity =>
+            {
+                entity.HasIndex(e => e.IdM)
+                    .HasName("PaylessEncuestaRepDet2IdM");
+
+                entity.HasIndex(e => e.IdQ)
+                    .HasName("PaylessEncuestaRepDet2IdQ");
+
+                entity.Property(e => e.Rv)
+                    .HasMaxLength(1)
+                    .IsUnicode(false);
+            });
+
+            modelBuilder.Entity<PaylessEncuestaRepMm>(entity =>
+            {
+                entity.ToTable("PaylessEncuestaRepMM");
+
+                entity.HasIndex(e => e.Anio)
+                    .HasName("PaylessEncuestaRepMMAnio");
+
+                entity.HasIndex(e => e.Mes)
+                    .HasName("PaylessEncuestaRepMMMes");
+
+                entity.Property(e => e.CodUser)
+                    .HasMaxLength(128)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.FechaCreacion)
+                    .HasMaxLength(16)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.FechaF)
+                    .HasMaxLength(16)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.FechaI)
+                    .HasMaxLength(16)
+                    .IsUnicode(false);
+            });
+
+            modelBuilder.Entity<PaylessEncuestaResDet>(entity =>
+            {
+                entity.Property(e => e.Preg0)
+                    .HasColumnName("preg0")
+                    .HasMaxLength(32)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.Preg10).HasColumnName("preg10");
+
+                entity.Property(e => e.Preg11).HasColumnName("preg11");
+
+                entity.Property(e => e.Preg12).HasColumnName("preg12");
+
+                entity.Property(e => e.Preg13).HasColumnName("preg13");
+
+                entity.Property(e => e.Preg14).HasColumnName("preg14");
+
+                entity.Property(e => e.Preg15).HasColumnName("preg15");
+
+                entity.Property(e => e.Preg16).HasColumnName("preg16");
+
+                entity.Property(e => e.Preg17).HasColumnName("preg17");
+
+                entity.Property(e => e.Preg17a)
+                    .HasColumnName("preg17a")
+                    .HasMaxLength(1024)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.Preg18)
+                    .HasColumnName("preg18")
+                    .HasMaxLength(1024)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.Preg2).HasColumnName("preg2");
+
+                entity.Property(e => e.Preg2a)
+                    .HasColumnName("preg2a")
+                    .HasMaxLength(8)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.Preg2b)
+                    .HasColumnName("preg2b")
+                    .HasMaxLength(8)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.Preg2c)
+                    .HasColumnName("preg2c")
+                    .HasMaxLength(8)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.Preg3).HasColumnName("preg3");
+
+                entity.Property(e => e.Preg3a)
+                    .HasColumnName("preg3a")
+                    .HasMaxLength(8)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.Preg4).HasColumnName("preg4");
+
+                entity.Property(e => e.Preg4a)
+                    .HasColumnName("preg4a")
+                    .HasMaxLength(8)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.Preg5).HasColumnName("preg5");
+
+                entity.Property(e => e.Preg5a)
+                    .HasColumnName("preg5a")
+                    .HasMaxLength(8)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.Preg6).HasColumnName("preg6");
+
+                entity.Property(e => e.Preg7).HasColumnName("preg7");
+
+                entity.Property(e => e.Preg7a)
+                    .HasColumnName("preg7a")
+                    .HasMaxLength(8)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.Preg8).HasColumnName("preg8");
+
+                entity.Property(e => e.Preg9).HasColumnName("preg9");
+            });
+
+            modelBuilder.Entity<PaylessEncuestaResM>(entity =>
+            {
+                entity.Property(e => e.CodUser)
+                    .HasMaxLength(128)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.FechaCreacion)
+                    .HasMaxLength(16)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.Pedido)
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.Sdr)
+                    .HasMaxLength(128)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.TiendaId)
+                    .HasMaxLength(4)
+                    .IsUnicode(false);
+            });
+
             modelBuilder.Entity<PaylessPedidosCpT>(entity =>
             {
                 entity.Property(e => e.Categoria)
@@ -1334,6 +1505,9 @@ namespace EdiApi.Models.EdiDB
 
                 entity.HasIndex(e => e.Barcode)
                     .HasName("PAYLESS_ProdPrioriDetIdxBarcode");
+
+                entity.HasIndex(e => e.Cp)
+                    .HasName("IndexPaylessProdPrioriDetCp");
 
                 entity.HasIndex(e => e.IdPaylessProdPrioriM)
                     .HasName("IndexPaylessProdPrioriDetIdF");
@@ -1438,7 +1612,7 @@ namespace EdiApi.Models.EdiDB
                 entity.ToTable("PAYLESS_ReportesMails");
 
                 entity.HasIndex(e => e.MailDir)
-                    .HasName("UQ__PAYLESS___7E7D34CC79C80F94")
+                    .HasName("UQ__PAYLESS___7E7D34CC09FE775D")
                     .IsUnique();
 
                 entity.Property(e => e.MailDir)
@@ -1449,6 +1623,9 @@ namespace EdiApi.Models.EdiDB
             modelBuilder.Entity<PaylessTiendas>(entity =>
             {
                 entity.ToTable("PAYLESS_Tiendas");
+
+                entity.HasIndex(e => e.TiendaId)
+                    .HasName("IndexPaylessTiendas");
 
                 entity.Property(e => e.Cel)
                     .HasMaxLength(32)

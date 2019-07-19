@@ -33,6 +33,9 @@ namespace EdiViewer.Controllers
         public IActionResult PaylessEncuesta() {
             return View();
         }
+        public IActionResult PaylessEncuestaRep() {
+            return View();
+        }        
         public IActionResult Pedidos()
         {
             return View();
@@ -1857,34 +1860,34 @@ namespace EdiViewer.Controllers
                                 ExcelO.CreateCell(CellType.String);
                                 switch (Z) {
                                     case 0:
-                                        ExcelO.SetCellValue(RowO.PedidoBarcode);
+                                        ExcelO.SetCellValue(string.IsNullOrEmpty(RowO.PedidoBarcode)? "" : RowO.PedidoBarcode);
                                         break;
                                     case 1:
                                         ExcelO.SetCellValue(RowO.TransaccionId);
                                         break;
                                     case 2:
-                                        ExcelO.SetCellValue(RowO.Destino);
+                                        ExcelO.SetCellValue(string.IsNullOrEmpty(RowO.Destino)? "" : RowO.Destino);
                                         break;
                                     case 3:
-                                        ExcelO.SetCellValue(RowO.FechaPedido);
+                                        ExcelO.SetCellValue(string.IsNullOrEmpty(RowO.FechaPedido)? "" : RowO.FechaPedido);
                                         break;
                                     case 4:
-                                        ExcelO.SetCellValue(RowO.Estatus);
+                                        ExcelO.SetCellValue(string.IsNullOrEmpty(RowO.Estatus)? "" : RowO.Estatus);
                                         break;
                                     case 5:
-                                        ExcelO.SetCellValue(RowO.NomBodega);
+                                        ExcelO.SetCellValue(string.IsNullOrEmpty(RowO.NomBodega)? "" : RowO.NomBodega);
                                         break;
                                     case 6:
-                                        ExcelO.SetCellValue(RowO.Regimen);
+                                        ExcelO.SetCellValue(string.IsNullOrEmpty(RowO.Regimen)? "" : RowO.Regimen);
                                         break;
                                     case 7:
                                         ExcelO.SetCellValue(string.IsNullOrEmpty(RowO.Observacion)? "" : RowO.Observacion);
                                         break;
                                     case 8:
-                                        ExcelO.SetCellValue(RowO.CodProducto);
+                                        ExcelO.SetCellValue(string.IsNullOrEmpty(RowO.CodProducto)? "" : RowO.CodProducto);
                                         break;
                                     case 9:
-                                        ExcelO.SetCellValue(RowO.FactComercial);
+                                        ExcelO.SetCellValue(string.IsNullOrEmpty(RowO.FactComercial)? "" : RowO.FactComercial);
                                         break;
                                     default:
                                         break;
@@ -2022,10 +2025,28 @@ namespace EdiViewer.Controllers
             string preg18
             ) {
             DateTime StartTime = DateTime.Now;
+            if (string.IsNullOrEmpty(cboPedido))
+                return new RetData<string>() {
+                    Info = new RetInfo() {
+                        CodError = -1,
+                        Mensaje = "El pedido no ha sido seleccionado",
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            if (string.IsNullOrEmpty(preg0))
+                return new RetData<string>() {
+                    Info = new RetInfo() {
+                        CodError = -1,
+                        Mensaje = "El Consecutivo de ficha técnica está vacio",
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
             try {
-                RetData<string> Ret = await ApiClientFactory.Instance.SetPaylessEncuestaPedidos(HttpContext.Session.GetObjSession<int>("Session.TiendaId"),
-                    preg0,
+                RetData<string> Ret = await ApiClientFactory.Instance.SetPaylessEncuestaPedidos(
+                    HttpContext.Session.GetObjSession<int>("Session.TiendaId"),
                     cboPedido,
+                    HttpContext.Session.GetObjSession<string>("Session.CodUsr"),
+                    preg0,                    
                     preg2,
                     preg2a,
                     preg2b,
@@ -2052,13 +2073,7 @@ namespace EdiViewer.Controllers
                     preg17a,
                     preg18
                     );
-                return new RetData<string>() {
-                    Info = new RetInfo() {
-                        CodError = 0,
-                        Mensaje = "ok",
-                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
-                    }
-                };
+                return Ret;
             } catch (Exception e2) {
                 return new RetData<string>() {
                     Info = new RetInfo() {

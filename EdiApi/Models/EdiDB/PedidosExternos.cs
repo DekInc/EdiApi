@@ -22,10 +22,10 @@ namespace EdiApi.Models.EdiDB
         public bool? FullPed { get; set; }
         public bool? Divert { get; set; }
         public int? TiendaIdDestino { get; set; }
+        public int? TotalCp { get; set; }
         public int? WomanQtyT { get; set; }
         public int? ManQtyT { get; set; }
         public int? KidQtyT { get; set; }
         public int? AccQtyT { get; set; }
-        public int? TotalCp { get; set; }
     }
 }

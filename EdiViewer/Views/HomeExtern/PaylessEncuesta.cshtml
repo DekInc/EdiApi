@@ -7,6 +7,9 @@
         /*margin-top: 15px;*/
         margin-bottom: 15px;
     }
+    .row {
+        margin-left: unset;
+    }
 </style>
 <div id="mainDiv">
     <div class="container">
@@ -17,6 +20,11 @@
                 </div>
                 <div class="card-body">
                     <div class="container">
+                        <span id="spanClientName">
+                            <span id="divSpinClientName" class="spinner-border spinner-border-sm text-danger" style="display: none" role="status">
+                                <span class="sr-only">Loading...</span>
+                            </span>
+                        </span>
                         <form id="frmEncuesta" enctype="multipart/form-data">
                             <div class="row">
                                 <div class="col">
@@ -235,13 +243,13 @@
                             <div id="divPreg17a" class="row noShow">
                                 <div class="col">
                                     <label for="preg17a">17a. Motivo</label>
-                                    <textarea class="form-control" id="preg17a" name="preg17a" rows="3"></textarea>
+                                    <textarea class="form-control" id="preg17a" name="preg17a" rows="3" maxlength="1024"></textarea>
                                 </div>
                             </div>
                             <div class="row">
                                 <div class="col">
                                     <label for="preg18">Observaciones Asociado</label>
-                                    <textarea class="form-control" id="preg18" name="preg18" rows="4"></textarea>
+                                    <textarea class="form-control" id="preg18" name="preg18" rows="4" maxlength="1024"></textarea>
                                 </div>
                             </div>
                             <div class="row margin5">
@@ -280,6 +288,25 @@
             $('#btnSig').removeClass('btn-block');
         }
     }
+    var getClientSchedule = new Promise(function () {
+        $('#divSpinClientName').show();
+        $.ajax({
+            method: "GET",
+            url: "@this.Url.Action("GetClientNameScheduleById", "HomeExtern")",
+            success: function (data) {
+                if (data.info.codError != 0) {
+                    menErrorEdi(data.info.mensaje, 'Error');
+                    return;
+                }
+                $('#spanClientName').html(data.data.item1);
+                $('#divSpinClientName').hide();
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                menErrorEdi(xhr.status, 'Error throw in js');
+                menErrorEdi(thrownError, 'Error throw in js');
+            }
+        });
+    });
     $(document).ready(function () {
         $('.imgHeaderHelp').tooltip();
         reDrawObjects();
@@ -290,6 +317,7 @@
         hideShowPreg('#preg5', '#divPreg5a');
         hideShowPreg('#preg7', '#divPreg7a');
         hideShowPreg('#preg17', '#divPreg17a');
+        getClientSchedule.then();
         $('#btnSave').on('click', function (event) {            
             $('#btnSave').prop('disabled', true);            
             $('#divSpinbtnSave').show();
@@ -301,14 +329,18 @@
                 success: function (json) {                    
                     if (json.info.codError != 0) {
                         menErrorEdi(json.info.mensaje);
-                        return json.data;
+                        return;
                     }
-                    $('#divSpinCboTransporte').hide();
+                    if (json.info.codError == 0) {
+                        menErrorEdi(json.data);
+                        return;
+                    }
+                    $('#divSpinbtnSave').show();
                 },
                 error: function (xhr, ajaxOptions, thrownError) {
                     menErrorEdi(xhr.status, '');
                     menErrorEdi(thrownError, '');
-                    $('#divSpinCboTransporte').hide();
+                    $('#divSpinbtnSave').show();
                 }
             });
         });

@@ -68,32 +68,35 @@ namespace EdiApi.Controllers
                 int DaysToAdd = 0;
                 switch (StartTime.DayOfWeek) {                    
                     case DayOfWeek.Monday:
-                        DaysToAdd = -1;
-                        break;
-                    case DayOfWeek.Tuesday:
-                        DaysToAdd = -2;
-                        break;
-                    case DayOfWeek.Wednesday:
-                        DaysToAdd = -3;
-                        break;
-                    case DayOfWeek.Thursday:
-                        DaysToAdd = -4;
-                        break;
-                    case DayOfWeek.Friday:
                         DaysToAdd = -5;
                         break;
-                    case DayOfWeek.Saturday:
+                    case DayOfWeek.Tuesday:
                         DaysToAdd = -6;
                         break;
-                    case DayOfWeek.Sunday:
+                    case DayOfWeek.Wednesday:
                         DaysToAdd = -7;
+                        break;
+                    case DayOfWeek.Thursday:
+                        DaysToAdd = -8;
+                        break;
+                    case DayOfWeek.Friday:
+                        DaysToAdd = -9;
+                        break;
+                    case DayOfWeek.Saturday:
+                        DaysToAdd = -10;
+                        break;
+                    case DayOfWeek.Sunday:
+                        DaysToAdd = -11;
                         break;                    
                     default:
                         break;
                 }
-                IEnumerable<CboValuesModel> ListOrders = (
+                List<CboValuesModel> ListOrders = (
                     from Pe in DbO.PedidosExternos
+                    //from E in DbO.PaylessEncuestaResM
                     where Pe.TiendaId == TiendaId
+                    && Pe.PedidoWms != null
+                    //&& Pe.Id != Convert.ToInt32(E.Pedido)
                     && Pe.FechaPedido.ToDateEsp() >= StartTime.AddDays(DaysToAdd)
                     && Pe.FechaPedido.ToDateEsp() <= StartTime.AddDays(DaysToAdd + 7)
                     orderby Pe.Id
@@ -101,7 +104,11 @@ namespace EdiApi.Controllers
                         V = Pe.Id.ToString(),
                         T = $"# {Pe.Id} - {Pe.FechaPedido} "
                     }
-                    );
+                    ).Distinct().ToList();
+                foreach (PaylessEncuestaResM ResM in DbO.PaylessEncuestaResM) {
+                    if (ListOrders.Where(O => O.V == ResM.Pedido.ToString()).Count() > 0)
+                        ListOrders.RemoveAll(O => O.V == ResM.Pedido.ToString());
+                }
                 return new RetData<IEnumerable<CboValuesModel>> {
                     Data = ListOrders,
                     Info = new RetInfo() {

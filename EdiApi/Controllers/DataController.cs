@@ -16,6 +16,7 @@ using System.Net;
 using System.IO;
 using NPOI.HSSF.UserModel;
 using NPOI.SS.UserModel;
+using System.Globalization;
 
 namespace EdiApi.Controllers
 {
@@ -4747,11 +4748,50 @@ SET XACT_ABORT OFF
             }
         }
         [HttpGet]
-        public RetData<IEnumerable<PaylessProdPrioriDet>> SetPaylessEncuestaPedidos() {
+        public RetData<string> SetPaylessEncuestaPedidos(string TiendaId, string cboPedido, string CodUser, string preg0, string preg2, string preg2a, string preg2b, string preg2c, string preg3, string preg3a, string preg4, string preg4a, string preg5, string preg5a, string preg6, string preg7, string preg7a, string preg8, string preg9, string preg10, string preg11, string preg12, string preg13, string preg14, string preg15, string preg16, string preg17, string preg17a, string preg18) {
             DateTime StartTime = DateTime.Now;
             try {
-                return new RetData<IEnumerable<PaylessProdPrioriDet>> {
-                    Data = DbO.PaylessProdPrioriDet.Take(3200),
+                PaylessEncuestaResM NewEnc = new PaylessEncuestaResM {
+                    TiendaId = TiendaId,
+                    Pedido = cboPedido.Replace("PD", ""),
+                    CodUser = CodUser,
+                    FechaCreacion = StartTime.ToString(ApplicationSettings.DateTimeFormat),
+                    Sdr = preg0
+                };
+                DbO.PaylessEncuestaResM.Add(NewEnc);
+                DbO.SaveChanges();
+                PaylessEncuestaResDet NewRes = new PaylessEncuestaResDet {
+                    IdM = NewEnc.Id,
+                    Preg2 = preg2 == "0" ? false : true,
+                    Preg2a = preg2a,
+                    Preg2b = preg2b,
+                    Preg2c = preg2c,
+                    Preg3 = preg3 == "0" ? false : true,
+                    Preg3a = preg3a,
+                    Preg4 = preg4 == "0" ? false : true,
+                    Preg4a = preg4a,
+                    Preg5 = preg5 == "0" ? false : true,
+                    Preg5a = preg5a,
+                    Preg6 = preg6 == "0" ? false : true,
+                    Preg7 = preg7 == "0" ? false : true,
+                    Preg7a = preg7a,
+                    Preg8 = preg8 == "0" ? false : true,
+                    Preg9 = preg9 == "0" ? false : true,
+                    Preg10 = preg10 == "0" ? false : true,
+                    Preg11 = preg11 == "0" ? false : true,
+                    Preg12 = preg12 == "0" ? false : true,
+                    Preg13 = preg13 == "0" ? false : true,
+                    Preg14 = preg14 == "0" ? false : true,
+                    Preg15 = preg15 == "0" ? false : true,
+                    Preg16 = preg16 == "0" ? false : true,
+                    Preg17 = preg17 == "0" ? false : true,
+                    Preg17a = preg17a,
+                    Preg18 = preg18
+                };
+                DbO.PaylessEncuestaResDet.Add(NewRes);                
+                DbO.SaveChanges();
+                return new RetData<string> {
+                    Data = "Se ha guardado la encuesta",
                     Info = new RetInfo() {
                         CodError = 0,
                         Mensaje = "ok",
@@ -4759,7 +4799,77 @@ SET XACT_ABORT OFF
                     }
                 };
             } catch (Exception e1) {
-                return new RetData<IEnumerable<PaylessProdPrioriDet>> {
+                return new RetData<string> {
+                    Info = new RetInfo() {
+                        CodError = -1,
+                        Mensaje = e1.ToString(),
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            }
+        }
+        [HttpGet]
+        public RetData<IEnumerable<PaylessEncuestaRepMm>> GetPaylessEncuestaRepM(int Anio, int Mes, string CodUser) {
+            DateTime StartTime = DateTime.Now;
+            try {
+                IEnumerable<PaylessEncuestaRepMm> ListSearch = DbO.PaylessEncuestaRepMm.Where(O => O.Anio == Anio);
+                List<PaylessEncuestaRepMm> ListRet = new List<PaylessEncuestaRepMm>();
+                if (ListSearch.Count() == 0) {
+                    DateTime StartDayMonth = new DateTime(Anio, 1, 1);
+                    Calendar Cal = (new CultureInfo("en-US")).Calendar;
+                    int RestDays = 0;
+                    for (int i = 0; i < 55; i++) {
+                        try {
+                            int FirstWeek = Cal.GetWeekOfYear(StartDayMonth, CalendarWeekRule.FirstDay, StartDayMonth.DayOfWeek);
+                            switch (StartDayMonth.DayOfWeek) {
+                                case DayOfWeek.Monday:
+                                    RestDays = -1;
+                                    break;
+                                case DayOfWeek.Tuesday:
+                                    RestDays = -2;
+                                    break;
+                                case DayOfWeek.Wednesday:
+                                    RestDays = -3;
+                                    break;
+                                case DayOfWeek.Thursday:
+                                    RestDays = -4;
+                                    break;
+                                case DayOfWeek.Friday:
+                                    RestDays = -5;
+                                    break;
+                                case DayOfWeek.Saturday:
+                                    RestDays = -5;
+                                    break;
+                                case DayOfWeek.Sunday:
+                                    RestDays = -6;
+                                    break;
+                            }
+                            ListRet.Add(new PaylessEncuestaRepMm {
+                                Anio = Anio,
+                                Mes = StartDayMonth.Month,
+                                WeekOfYear = FirstWeek,
+                                FechaCreacion = StartTime.ToString(ApplicationSettings.DateTimeFormat),
+                                FechaI = StartDayMonth.AddDays(RestDays).ToString(ApplicationSettings.DateTimeFormat),
+                                FechaF = StartDayMonth.AddDays(Math.Abs(RestDays)).ToString(ApplicationSettings.DateTimeFormat),
+                                CodUser = CodUser
+                            });
+                            StartDayMonth = StartDayMonth.AddDays(7);
+                        } catch {
+                        }
+                    }
+                }
+                DbO.PaylessEncuestaRepMm.AddRange(ListRet);
+                DbO.SaveChanges();
+                return new RetData<IEnumerable<PaylessEncuestaRepMm>> {
+                    Data = DbO.PaylessEncuestaRepMm.Where(O => O.Anio == Anio && O.Mes == Mes),
+                    Info = new RetInfo() {
+                        CodError = 0,
+                        Mensaje = "ok",
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            } catch (Exception e1) {
+                return new RetData<IEnumerable<PaylessEncuestaRepMm>> {
                     Info = new RetInfo() {
                         CodError = -1,
                         Mensaje = e1.ToString(),

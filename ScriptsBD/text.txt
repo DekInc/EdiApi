@@ -2,6 +2,8 @@
 
 Extensión Hector Deodanes
 720
+Extensión Raúl
+748
 
 roberto.aguilar.00001@gmail.com
 
@@ -67,6 +69,11 @@ SQLServer 114 tmsadmin:TmsAdmin$10
 10.240.34.119 - TMS - 0.99TB - 8 proc xeon e5-2667@3.3 - 8gb ram
 10.240.34.116 - ERP - 472GB - 4 proc xeon e5-2667@3.3 - 16gb ram
 
+192.168.0.230 - 201.247.151.91 - Administrador:20InfgLtransfer10 - SERVIDOR SILCE MT
+192.168.1.12 - 201.247.107.139 - Informatica:20InfgLtransfer10 - Terminal Remota WMS
+192.168.1.227 - 201.247.107.138 - Administrador:ITadmin2019$$&& - Servidor CDRSM SILCE
+192.168.1.63 - Informatica:20InfgLtransfer10 - TMS
+
 Configurar ftp
 
 Server=127.0.0.1;Database=wms;  Connection Timeout=120;User Id=sa;Password=HilmerServer2019;
@@ -131,6 +138,8 @@ Milton.Gonzalez -> el que da los cheques
 Karla.Brand -> esposa del dueño
 Salvador Monico -> dueño principal con Amilcar
 
+Arquitecto
+Nestor.Chavez
 
 Repo de código
 http://WIN-Q2F3DD5MA3Q:5000/svn/projects/ReMPS.WebSite

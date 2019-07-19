@@ -1,0 +1,219 @@
+﻿@using ComModels
+@{
+    ViewData["Title"] = "Reportes de encuestas";
+    Layout = "_Layout";
+}
+<div id="mainDiv">
+    <div class="container">
+        <div class="card-deck cardMain">
+            <div class="card box-shadow">
+                <div class="card-header">
+                    <h4 class="my-0 font-weight-normal">Reportes de encuestas</h4>
+                </div>
+                <div class="card-body">
+                    <form id="formSearch">
+                        <div class="container">
+                            <div class="row">
+                                <div class="col-sm">
+                                    <label for="cboAnio">Año</label>
+                                    <select class="form-control" id="cboAnio" name="cboAnio">
+                                        <option value="2019">2019</option>
+                                        <option value="2020">2020</option>
+                                        <option value="2021">2021</option>
+                                        <option value="2022">2022</option>
+                                        <option value="2023">2023</option>
+                                    </select>
+                                </div>
+                                <div class="col-sm">
+                                    <label for="cboMes">Mes</label>
+                                    <select class="form-control" id="cboMes" name="cboMes">
+                                        <option value="1">Enero</option>
+                                        <option value="2">Febrero</option>
+                                        <option value="3">Marzo</option>
+                                        <option value="4">Abril</option>
+                                        <option value="5">Mayo</option>
+                                        <option value="6">Junio</option>
+                                        <option value="7">Julio</option>
+                                        <option value="8">Agosto</option>
+                                        <option value="9">Septiembre</option>
+                                        <option value="10">Octubre</option>
+                                        <option value="11">Noviembre</option>
+                                        <option value="12">Diciembre</option>
+                                    </select>
+                                </div>
+                            </div>                            
+                        </div>
+                    </form>
+                    <div class="clearfix"></div>
+                    <br />
+                    <div id="gridEncuestaRep" style="min-height: 460px; width: 100%;"></div>
+                </div>
+            </div>
+        </div>        
+    </div>
+</div>
+@await Html.PartialAsync("_PopChangePedido")
+<script>
+    var ModalPopPeticionDet = null;
+    var domtblReportes = null;
+    var domtblPeticionDet = null;
+    var HashId = '';
+    var gridEncuestaRep = null;
+    var gridEncuestaRepDet = null;
+    var foo = function () {
+    };
+    $.urlParam = function (name) {
+        var results = new RegExp('[\?&]' + name + '=([^&#]*)').exec(window.location.href);
+        if (results == null) {
+            return null;
+        }
+        return decodeURI(results[1]) || 0;
+    }
+    function refreshGrid(auto) {
+        w2ui.grid.autoLoad = auto;
+        w2ui.grid.skip(0);
+    }        
+    function crearGrid() {
+        var config = {
+            grid: {
+                name: 'gridEncuestaRep',
+                selectType: 'cell',
+                bResponsive: true,
+                bMobile: window.mobileAndTabletcheck(),
+                url: '@this.Url.Action("GetPeticionesAdminB", "Grids")?dtp1=' + $('#dtp1').val() + '&chkPending=' + $('#chkPending').prop('checked'),
+                show: {
+                    footer: true,
+                    toolbar: true,
+                    expandColumn: window.mobileAndTabletcheck()
+                },
+                searches: [
+                    { field: "id", caption: "Id orden", type: 'text' },
+                    { field: "tiendaId", caption: "Tienda", type: 'text' },
+                    { field: "fechaPedido", caption: "Fecha y hora esperada", type: 'text' }
+                ],
+                colShowResponsive: [
+                    { field: 'id' },
+                    { field: 'tiendaId' },
+                    { field: 'cont' }
+                ],
+                columns: [
+                    { field: "id", caption: "Id orden", sortable: true, hidden: false, size: '60px' },
+                    {
+                        field: "periodo", caption: "Ped WMS", sortable: true, render: function (record) {
+                            var l1 = '', l2 = '';
+                            if (!(record.pedidoWMS == 0 || record.pedidoWMS == null)) {
+                                l2 = '<a target="_new" href="@this.Url.Action("PedidosDet", "HomeExtern")?PedidoId=' + record.pedidoWMS + '">' + record.pedidoWMS + '</a>';
+                                l1 = ' | ';
+                            }                            
+                            l1 = l1 + '<span class="w2ui-buttons"><a href="javascript:assignDis(' + $('#cbClient').val() + ', ' + record.tiendaId + ', ' + record.id + ')">Asignar</a></span>';                            
+                            return l2 + l1;
+                        }
+                    },
+                    { field: "tiendaId", caption: "TiendaId", sortable: true, hidden: false, size: '60px' },
+                    { field: "tienda", caption: "Tienda", sortable: true, hidden: true },
+                    { field: "fechaPedido", caption: "Fecha y hora esperada", sortable: true, size: '120px' },
+                    { field: "tiendaIdDestino", caption: "Tienda Destino", sortable: true, size: '80px' },
+                    {
+                        field: "idEstado", caption: "Estado", sortable: false, render: function (record) {
+                            if (record.idEstado == 1) return '<span class="thisSpan" alt="' + record.id + '">Guardado</span>';
+                            if (record.idEstado == 2) return '<span class="thisSpan" alt="' + record.id + '">Pendiente</span>';
+                            if (record.idEstado == 3) return '<span class="thisSpan" alt="' + record.id + '">Despachado</span>';
+                        }
+                    },
+                    { field: "womanQty", caption: "Mujeres", sortable: true, hidden: false, size: '80px' },
+                    { field: "manQty", caption: "Hombres", sortable: true, hidden: false, size: '80px' },
+                    { field: "kidQty", caption: "Niñ@s", sortable: true, hidden: false, size: '80px' },
+                    { field: "accQty", caption: "Accesorios", sortable: true, hidden: false, size: '80px' },
+                    { field: "womanQtyT", caption: "T Mujeres", sortable: true, hidden: false, size: '80px' },
+                    { field: "manQtyT", caption: "T Hombres", sortable: true, hidden: false, size: '80px' },
+                    { field: "kidQtyT", caption: "T Niñ@s", sortable: true, hidden: false, size: '80px' },
+                    { field: "accQtyT", caption: "T Accesorios", sortable: true, hidden: false, size: '80px' },
+                    { field: "totalCp", caption: "Total CP", sortable: true, hidden: false },
+                    { field: "total", caption: "Cantidad total", sortable: true },
+                    { field: "womanQtyEnv", caption: "Mujeres Env", sortable: true, hidden: true },
+                    { field: "manQtyEnv", caption: "Hombres Env", sortable: true, hidden: true },
+                    { field: "kidQtyEnv", caption: "Niñ@s Env", sortable: true, hidden: true },
+                    { field: "accQtyEnv", caption: "Accesorios Env", sortable: true, hidden: true },
+                    { field: "totalCpEnv", caption: "Total CP Env", sortable: true, hidden: true },
+                    { field: "totalEnv", caption: "Cantidad total Env", sortable: true },
+                    { field: "porcValid", caption: "Porc validez", sortable: true },
+                    { field: "divert", caption: "Divert", sortable: true, size: '60px' },
+                    { field: "fullPed", caption: "Full", sortable: true, size: '60px' },                    
+                    { field: "fechaCreacion", caption: "Fecha de creación", sortable: true, hidden: true }                    
+                ]
+            }
+        };
+        gridEncuestaRep = $('#gridEncuestaRep').w2grid(config.grid);
+        arrayGrids['gridEncuestaRep'] = gridEncuestaRep;
+    }    
+    $(document).ready(function () {
+        $('#cboAnio').on('', function () {
+            if (gridEncuestaRep == null)
+                crearGrid(clienteId, tiendaId);
+            else
+                gridEncuestaRepDet.reload2('@this.Url.Action("GetPedidosWmsByStore", "Grids")?ClienteId=' + clienteId + '&tiendaId=' + tiendaId);
+        });
+        $('#cboMes').on('', function () {
+            crearGrid();
+        });
+        fillCombobox('#divSpinCliente', '@this.Url.Action("GetClientsOrders", "Home")', '#cbClient', 'clienteId', 'nombre', 1432);
+        $('#dtp1').datepicker();
+        
+        $('#btnFiltrar').on("click", function () {
+            gridEncuestaRep.clear();
+            gridEncuestaRep.reload2('@this.Url.Action("GetPeticionesAdminB", "Grids")?ClienteId=' + $('#cbClient').val() + '&dtp1=' + $('#dtp1').val() + '&chkPending=' + $('#chkPending').prop('checked'));
+        });
+        $('#btnLimpiar').on("click", function () {
+            window.location.href = window.location.href;
+        });
+        $('#btnPrintAll').on("click", function () {
+            $('#divSpinPrintAll').show();
+            var arrayPedidosNorep = [];
+            $.ajax({
+                method: "GET",
+                dataType: 'json',
+                contentType: 'application/x-www-form-urlencoded',
+                xhrFields: { withCredentials: true },
+                url: '@this.Url.Action("GetPedidosExternosPendientesAdmin", "Home")',
+                timeout: 1200000,
+                success: function (data) {
+                    $('#divSpinPrintAll').hide();
+                    if (data.codError != 0) {
+                        menErrorEdi(data.errorMessage, 'Error');
+                        return;
+                    }
+                    $($("#tblExport1").find('tbody')).html('');                    
+                    $.each(data.data, function (i, pedido) {
+                        $("#tblExport1").find('tbody')
+                            .append($('<tr>')
+                            .append($('<td>').append(pedido.pedidoId))
+                            .append($('<td>').append(pedido.bodega))
+                            .append($('<td>').append(pedido.tiendaId))
+                            .append($('<td>').append(pedido.fechaPedido))
+                            .append($('<td>').append(pedido.periodo))
+                            .append($('<td>').append(pedido.categoria))
+                            .append($('<td>').append(pedido.barcode))
+                            .append($('<td>').append(pedido.cp))
+                            .append($('<td>').append(pedido.departamento))
+                            .append($('<td>').append(pedido.producto))
+                            .append($('<td>').append(pedido.lote))
+                            .append($('<td>').append(pedido.talla))
+                            .append($('<td>').append(pedido.fullPed))
+                            .append($('<td>').append(pedido.divert))
+                            .append($('<td>').append(pedido.tiendaIdDestino))
+                            .append($('<td>').append(pedido.idRack))
+                            .append($('<td>').append(pedido.nombreRack))
+                            .append($('<td>').append(1))
+                        );
+                    });
+                    $("#tblExport1").tblToExcel();
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    $('#divSpinPrintAll').hide();
+                    menErrorEdi(xhr.status, 'Error throw in js');
+                    menErrorEdi(thrownError, 'Error throw in js');
+                }
+            });
+        });
+    });
+</script>

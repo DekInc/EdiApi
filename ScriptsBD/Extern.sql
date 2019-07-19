@@ -39,6 +39,10 @@ select * from EdiDB.dbo.PAYLESS_ReportesMails order by Id
 select * from EdiDB.dbo.AsyncStates
 --delete from EdiDB.dbo.AsyncStates where Id = 29
 select * from EdiDB.dbo.PAYLESS_Reportes
+select * from EdiDB.dbo.PaylessEncuestaResM
+select * from EdiDB.dbo.PaylessEncuestaResDet
+SELECT DATEPART(wk, GETDATE())
+SELECT DATEPART(wk, '2019-01-01')
 --delete from EdiDB.dbo.PAYLESS_ReportesDet where IdM = 60
 select * from EdiDB.dbo.PAYLESS_Reportes where Periodo = '09/06/2019'
 select * from EdiDB.dbo.PAYLESS_ReportesDet where IdM = 59 order by Id
@@ -46,8 +50,11 @@ SELECT * FROM EdiDB.dbo.PedidosExternos order by FechaCreacion DESC
 SELECT * FROM EdiDB.dbo.PedidosExternos order by id DESC --7382
 --delete from EdiDB.dbo.PedidosDetExternos WHERE PedidoId > 240
 SELECT * FROM EdiDB.dbo.PedidosExternos order by FechaPedido DESC
-SELECT * FROM EdiDB.dbo.PedidosExternos where Id = 227
-SELECT * FROM EdiDB.dbo.PedidosExternos where TiendaId = 7393
+SELECT * FROM EdiDB.dbo.PedidosExternos where Id = 265 -- H 23, N 40
+SELECT * FROM EdiDB.dbo.PedidosDetExternos where PedidoId = 265
+SELECT * FROM EdiDB.dbo.PedidosExternos where TiendaId = 7389
+
+SELECT * FROM EdiDB.dbo.PedidosExternos where TiendaId = 7389
 SELECT * FROM EdiDb.dbo.PedidosExternos_Bkp where TiendaId = 7372 AND SUBSTRING(FechaPedido, 1, 10) = '02/07/2019'
 SELECT * FROM EdiDb.dbo.PedidosExternos where TiendaId = 7382 AND SUBSTRING(FechaPedido, 1, 10) = '04/07/2019'
 SELECT * INTO EdiDb.dbo.PedidosExternos_Bkp FROM EdiDB.dbo.PedidosExternos 
@@ -72,10 +79,14 @@ SELECT Ped.*, D.*
 FROM EdiDB.dbo.PedidosDetExternos Ped
 JOIN EdiDB.dbo.PAYLESS_ProdPrioriDet D
 	ON D.Barcode = Ped.CodProducto
-where Ped.PedidoId = 227
-select * from EdiDB.dbo.PAYLESS_ProdPrioriDet D where D.Barcode like '7368%' and 
-
-select top 10 * from EdiDB.dbo.WmsProductoExistencia
+where Ped.PedidoId = 265
+select * from EdiDB.dbo.PAYLESS_ProdPrioriDet D where D.Barcode like '7373%'
+select * from EdiDB.dbo.WmsProductoExistencia where CodUser = 'Admin'
+SELECT Wpe.*, D.* 
+FROM EdiDB.dbo.WmsProductoExistencia Wpe
+JOIN EdiDB.dbo.PAYLESS_ProdPrioriDet D
+	ON D.Barcode = Wpe.CodProducto
+where Wpe.CodUser = 'Admin'
 
 EXEC EdiDb.dbo.SP_GetSetExistenciasByCliente 1432, 'Admin'
 select distinct
@@ -1013,3 +1024,4 @@ SELECT
 	ORDER BY t.BodegaId, ii.CodProducto
 
 
+ SELECT CONVERT(VARCHAR(4),getdate(),108) 
