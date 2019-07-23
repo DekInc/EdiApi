@@ -55,11 +55,12 @@ BEGIN
 	DELETE FROM EdiDB.dbo.WmsProductoExistencia WHERE CodUser = @CodUser
 	AND CodProducto IN (
 		SELECT DISTINCT
-			CodProducto
+			Pde.CodProducto
 		FROM EdiDB.dbo.PedidosExternos Pe WITH(NOLOCK)
 		JOIN EdiDB.dbo.PedidosDetExternos Pde WITH(NOLOCK)
 			ON Pde.PedidoId = Pe.Id
 		WHERE Pe.PedidoWMS IS NULL
+		AND Pde.CodProducto like @TiendaId + '%'
 	)
 
 	SELECT DISTINCT
@@ -125,9 +126,9 @@ BEGIN
 	AND D.CP NOT IN (SELECT DISTINCT Ppt.CP FROM EdiDB.dbo.PaylessPedidosCpT Ppt WITH(NOLOCK) WHERE Ppt.CP IS NOT NULL)
 END
 
-EXEC EdiDb.dbo.SP_GetPaylessSellQtys 1432, '7393', 'Admin'
+EXEC EdiDb.dbo.SP_GetPaylessSellQtys 1432, '7373', 'Admin'
 SELECT * FROM EdiDB.dbo.PaylessPedidosCpT
-SELECT * from EdiDB.dbo.WmsProductoExistencia where CodUser = 'Admin' AND CodProducto like '7386%'
+SELECT * from EdiDB.dbo.WmsProductoExistencia where CodUser = 'Admin' AND CodProducto like '7373%'
 
 
 

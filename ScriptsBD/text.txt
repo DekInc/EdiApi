@@ -74,6 +74,9 @@ SQLServer 114 tmsadmin:TmsAdmin$10
 192.168.1.227 - 201.247.107.138 - Administrador:ITadmin2019$$&& - Servidor CDRSM SILCE
 192.168.1.63 - Informatica:20InfgLtransfer10 - TMS
 
+GitBucket
+root:Glcr00t
+
 Configurar ftp
 
 Server=127.0.0.1;Database=wms;  Connection Timeout=120;User Id=sa;Password=HilmerServer2019;
@@ -175,10 +178,13 @@ _------------------------
 
 192.168.20.245
 RDP
+Administrador:Glc2019**//
 Administrator:20InfgLtransfer2018*
 20InfgLtransfer2018
 20InfgLtransfer10
 2019:20InfgLtransfer2018*
+last one:
+Administrator:20InfgLtransfer10*
 
 
 BDD
@@ -510,5 +516,18 @@ Por favor revisar el plan y si tienes alguna obsercacion, hacermela saber; ya qu
 
 - Reunión del 5 de julio 2019, para organizar la nueva estructura de TI. 9:30 a 11:00
 - Reunión del 8 de julio 2019, para organizar temas de TI. 10:00 a 11:30
+
+
+
+- El reporte de inventario
+- el caso 7373 que permitia pedir más de lo que hay en bodega - fixed, 1 día y medio
+- Otro de eliminar un pedido pero agregar link de borrado de pedido...
+- La puta encuesta digital :s
+
+
+
+
+
+
 
 

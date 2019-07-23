@@ -1080,5 +1080,33 @@ namespace EdiViewer.Controllers
                 return Json(new { total = 0, records = "", errorMessage = e1.ToString() });
             }
         }
+        public async Task<IActionResult> GetPaylessEncuestaRepM(int Anio, int Mes) {
+            DateTime StartTime = DateTime.Now;
+            try {
+                RetData<IEnumerable<PaylessEncuestaRepMmGModel>> List = await ApiClientFactory.Instance.GetPaylessEncuestaRepM(Anio, Mes, HttpContext.Session.GetObjSession<string>("Session.CodUsr"));
+                if (List.Info.CodError != 0)
+                    return Json(new { total = 0, records = "", errorMessage = List.Info.Mensaje });
+                if (List.Data.Count() == 0)
+                    return Json(new { total = 0, records = "", errorMessage = "" });
+                List<PaylessEncuestaRepMmGModel> Records = List.Data.ToList();
+                List<PaylessEncuestaRepMmGModel> AllRecords = new List<PaylessEncuestaRepMmGModel>();
+                int Total = Records.Count;
+                bool HaveForm = true;
+                try {
+                    if (Request.Form != null) {
+                        IFormCollection GridForm = Request.Form;
+                    }
+                } catch {
+                    HaveForm = false;
+                }
+                if (Records.Count() > 0 && HaveForm) {
+                    AllRecords = Utility.ExpressionBuilderHelper.W2uiSearchNoSkip(Records, Request.Form);
+                    Records = Utility.ExpressionBuilderHelper.W2uiSearch(Records, Request.Form);
+                }
+                return Json(new { Total, Records, errorMessage = "", AllRecords });
+            } catch (Exception e1) {
+                return Json(new { total = 0, records = "", errorMessage = e1.ToString() });
+            }
+        }
     }
 }

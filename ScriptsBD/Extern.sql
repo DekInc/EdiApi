@@ -39,10 +39,15 @@ select * from EdiDB.dbo.PAYLESS_ReportesMails order by Id
 select * from EdiDB.dbo.AsyncStates
 --delete from EdiDB.dbo.AsyncStates where Id = 29
 select * from EdiDB.dbo.PAYLESS_Reportes
-select * from EdiDB.dbo.PaylessEncuestaResM
+--update EdiDB.dbo.PAYLESS_Reportes SET FechaGen = '21/07/2019 07:02' WHERE Id = 72
+select * from EdiDB.dbo.PaylessEncuesta
 select * from EdiDB.dbo.PaylessEncuestaResDet
 SELECT DATEPART(wk, GETDATE())
 SELECT DATEPART(wk, '2019-01-01')
+--truncate table EdiDB.dbo.PaylessEncuestaRepMm
+select * from EdiDB.dbo.PaylessEncuestaRepMm order by Anio, Mes, WeekOfYear
+select * from EdiDB.dbo.PaylessEncuestaRepDet1
+select * from EdiDB.dbo.PaylessEncuestaRepDet2
 --delete from EdiDB.dbo.PAYLESS_ReportesDet where IdM = 60
 select * from EdiDB.dbo.PAYLESS_Reportes where Periodo = '09/06/2019'
 select * from EdiDB.dbo.PAYLESS_ReportesDet where IdM = 59 order by Id
@@ -50,7 +55,7 @@ SELECT * FROM EdiDB.dbo.PedidosExternos order by FechaCreacion DESC
 SELECT * FROM EdiDB.dbo.PedidosExternos order by id DESC --7382
 --delete from EdiDB.dbo.PedidosDetExternos WHERE PedidoId > 240
 SELECT * FROM EdiDB.dbo.PedidosExternos order by FechaPedido DESC
-SELECT * FROM EdiDB.dbo.PedidosExternos where Id = 265 -- H 23, N 40
+SELECT * FROM EdiDB.dbo.PedidosExternos where Id = 277 -- H 23, N 40
 SELECT * FROM EdiDB.dbo.PedidosDetExternos where PedidoId = 265
 SELECT * FROM EdiDB.dbo.PedidosExternos where TiendaId = 7389
 
@@ -61,7 +66,7 @@ SELECT * INTO EdiDb.dbo.PedidosExternos_Bkp FROM EdiDB.dbo.PedidosExternos
 SELECT * FROM EdiDB.dbo.PedidosExternos where TiendaId = 7368 AND Id = 122
 SELECT * FROM EdiDB.dbo.PedidosExternos where FullPed = 0
 SELECT * FROM EdiDB.dbo.PedidosExternos where SUBSTRING(FechaPedido, 1, 10) = '02/07/2019'
-SELECT * FROM EdiDB.dbo.PedidosDetExternos where PedidoId = 227
+SELECT * FROM EdiDB.dbo.PedidosDetExternos where PedidoId = 277
 
 SELECT * FROM EdiDB.dbo.WmsProductoExistencia
 where CodUser = 'FailCon'
@@ -71,10 +76,11 @@ SELECT CodProducto FROM EdiDB.dbo.PedidosDetExternos where PedidoId = 235
 SELECT * FROM EdiDB.dbo.PAYLESS_ProdPrioriDet WHERE Barcode = '7393801132'
 SELECT * FROM wms.dbo.Producto WHERE CodProducto = '7393801132'
 ---
---DELETE FROM EdiDB.dbo.PedidosExternos where Id = 236
---DELETE FROM EdiDB.dbo.PedidosDetExternos where PedidoId = 236
-delete from EdiDB.dbo.PedidosExternos where Id in (205, 206)
-delete from EdiDB.dbo.PedidosDetExternos where PedidoId in (205, 206)
+--DELETE FROM EdiDB.dbo.PedidosExternos where Id = 281
+--DELETE FROM EdiDB.dbo.PedidosDetExternos where PedidoId = 281
+--7373 265
+--delete from EdiDB.dbo.PedidosExternos where Id in (205, 206)
+--delete from EdiDB.dbo.PedidosDetExternos where PedidoId in (205, 206)
 SELECT Ped.*, D.* 
 FROM EdiDB.dbo.PedidosDetExternos Ped
 JOIN EdiDB.dbo.PAYLESS_ProdPrioriDet D
@@ -87,6 +93,7 @@ FROM EdiDB.dbo.WmsProductoExistencia Wpe
 JOIN EdiDB.dbo.PAYLESS_ProdPrioriDet D
 	ON D.Barcode = Wpe.CodProducto
 where Wpe.CodUser = 'Admin'
+and D.BarCode like'7373%'
 
 EXEC EdiDb.dbo.SP_GetSetExistenciasByCliente 1432, 'Admin'
 select distinct
@@ -105,8 +112,8 @@ OR D.Departamento in ('9', '10', '11'))
 --truncate table EdiDB.dbo.PAYLESS_Reportes
 --truncate table EdiDB.dbo.PAYLESS_ReportesDet
 --delete from EdiDB.dbo.AsyncStates where Id = 2
---delete from EdiDB.dbo.PAYLESS_Reportes where Id in (35, 36, 38)
---delete from EdiDB.dbo.PAYLESS_ReportesDet where IdM in (35, 36, 38)
+--delete from EdiDB.dbo.PAYLESS_Reportes where Id in (70)
+--delete from EdiDB.dbo.PAYLESS_ReportesDet where IdM in (70)
 select * from EdiDB.dbo.EdiComs order by Id DESC
 
 select * from wms_test_29_01_2019.dbo.Transacciones where pais_orig = 90
@@ -319,14 +326,15 @@ select top 20 * from wms.dbo.Despachos where DocumentoFiscal = 'SA120103' order 
 select top 20 * from wms.dbo.Transacciones where NoTransaccion = 'SA120106'
 select top 20 * from wms.dbo.DetalleTransacciones where TransaccionID = 120106
 select top 20 * from wms.dbo.DtllDespacho Dd where Dd.DespachoID = 51953
-SELECT TOP 200 * FROM wms.dbo.Transacciones WHERE PedidoId = 70920
-select * from wms.dbo.DtllPedido where PedidoId = 71908
+SELECT TOP 200 * FROM wms.dbo.Transacciones WHERE PedidoId = 72784
+select * from wms.dbo.Pedido where PedidoId = 72784
 SELECT * FROM wms.dbo.SysTempSalidas S WHERE S.DtllPedidoID in (
-	select DtllPedidoID from wms.dbo.DtllPedido where PedidoId = 71908
+	select DtllPedidoID from wms.dbo.DtllPedido where PedidoId = 72784
 ) 
 AND S.CodProducto NOT IN (
 select CodProducto from wms.dbo.DtllPedido where PedidoId = 71908
 )
+SELECT top 10 * FROM wms.dbo.SysTempSalidas S WHERE S.Usuario = 'HCAMPOS' order by IDTempSalida DESC
 
 --IN (
 --	SELECT CodProducto FROM EdiDB.dbo.PedidosDetExternos where PedidoId = 40

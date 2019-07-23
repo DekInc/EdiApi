@@ -1408,7 +1408,7 @@ namespace EdiApi.Controllers
         public RetData<IEnumerable<PedidosWmsModel>> GetWmsGroupDispatchs(int ClienteId) {
             DateTime StartTime = DateTime.Now;
             try {
-                IEnumerable<PedidosWmsModel> ListDis = ManualDB.GetWmsGroupDispatchs(ref DbO, ClienteId);
+                IEnumerable<PedidosWmsModel> ListDis = ManualDB.GetWmsGroupDispatchs(ref DbOLong, ClienteId);
                 ListDis = (
                     from Ld in ListDis
                     group Ld by new { Ld.PedidoId } into G
@@ -4328,8 +4328,11 @@ SET XACT_ABORT OFF
                 if ((StartTime.DayOfWeek == DayOfWeek.Thursday && StartTime.Hour >= 17)
                     || StartTime.DayOfWeek == DayOfWeek.Friday
                     || StartTime.DayOfWeek == DayOfWeek.Saturday
-                    || StartTime.DayOfWeek == DayOfWeek.Sunday) {
-                    List<DateTime> ListThurs = Utility.Funcs.AllThursdaysInMonth(StartTime.Year, StartTime.Month).Where(D => D <= (new DateTime(StartTime.Year, StartTime.Month, StartTime.Day, 23, 59, 59)).AddDays(8)).ToList();
+                    || StartTime.DayOfWeek == DayOfWeek.Sunday
+                    //|| StartTime.DayOfWeek == DayOfWeek.Monday
+                    ) {
+                    //.Where(D => D <= (new DateTime(StartTime.Year, StartTime.Month, StartTime.Day, 23, 59, 59)).AddDays(7)
+                    List<DateTime> ListThurs = Utility.Funcs.AllThursdaysInMonth(StartTime.Year, StartTime.Month).ToList();
                     if ((new DateTime(StartTime.Year, StartTime.Month, StartTime.Day, 23, 59, 59)).AddDays(8).Month != StartTime.Month
                         && (new DateTime(StartTime.Year, StartTime.Month, StartTime.Day, 23, 59, 59)).AddDays(8).Year == StartTime.Year) {
                         List<DateTime> ListThursNext = Utility.Funcs.AllThursdaysInMonth(StartTime.Year, StartTime.Month + 1).ToList();
@@ -4503,7 +4506,10 @@ SET XACT_ABORT OFF
                     }
                 }
                 //Fin jueves
-                if ((StartTime.DayOfWeek == DayOfWeek.Saturday && StartTime.Hour >= 10)) {
+                if (StartTime.DayOfWeek == DayOfWeek.Saturday 
+                    && StartTime.Hour >= 10
+                    //|| StartTime.DayOfWeek == DayOfWeek.Monday
+                    ) {
                     List<DateTime> ListSaturdays = Utility.Funcs.AllSaturdayInMonth(StartTime.Year, StartTime.Month).Where(D => D <= (new DateTime(StartTime.Year, StartTime.Month, StartTime.Day, 23, 59, 59)).AddDays(1)).ToList();
                     for (int i = 0; i < ListSaturdays.Count; i++) {
                         List<PaylessReportes> ListRep = (
@@ -4820,48 +4826,74 @@ SET XACT_ABORT OFF
                     int RestDays = 0;
                     for (int i = 0; i < 55; i++) {
                         try {
-                            int FirstWeek = Cal.GetWeekOfYear(StartDayMonth, CalendarWeekRule.FirstDay, StartDayMonth.DayOfWeek);
+                            int FirstWeek = Cal.GetWeekOfYear(StartDayMonth, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
                             switch (StartDayMonth.DayOfWeek) {
                                 case DayOfWeek.Monday:
-                                    RestDays = -1;
+                                    RestDays = 7;
                                     break;
                                 case DayOfWeek.Tuesday:
-                                    RestDays = -2;
+                                    RestDays = 6;
                                     break;
                                 case DayOfWeek.Wednesday:
-                                    RestDays = -3;
+                                    RestDays = 5;
                                     break;
                                 case DayOfWeek.Thursday:
-                                    RestDays = -4;
+                                    RestDays = 4;
                                     break;
                                 case DayOfWeek.Friday:
-                                    RestDays = -5;
+                                    RestDays = 3;
                                     break;
                                 case DayOfWeek.Saturday:
-                                    RestDays = -5;
+                                    RestDays = 2;
                                     break;
                                 case DayOfWeek.Sunday:
-                                    RestDays = -6;
+                                    RestDays = 1;
                                     break;
                             }
+                            if (StartDayMonth.AddDays(Math.Abs(RestDays)).Year > Anio)
+                                RestDays = Convert.ToInt32(Math.Round(((new DateTime(StartDayMonth.AddDays(Math.Abs(RestDays)).Year, 1, 1)) - StartDayMonth).TotalDays, 0));
                             ListRet.Add(new PaylessEncuestaRepMm {
                                 Anio = Anio,
                                 Mes = StartDayMonth.Month,
                                 WeekOfYear = FirstWeek,
                                 FechaCreacion = StartTime.ToString(ApplicationSettings.DateTimeFormat),
-                                FechaI = StartDayMonth.AddDays(RestDays).ToString(ApplicationSettings.DateTimeFormat),
+                                FechaI = StartDayMonth.ToString(ApplicationSettings.DateTimeFormat),
                                 FechaF = StartDayMonth.AddDays(Math.Abs(RestDays)).ToString(ApplicationSettings.DateTimeFormat),
                                 CodUser = CodUser
                             });
-                            StartDayMonth = StartDayMonth.AddDays(7);
+                            if (StartDayMonth.AddDays(Math.Abs(RestDays)).Year > Anio)
+                                break;
+                            StartDayMonth = StartDayMonth.AddDays(RestDays);
                         } catch {
                         }
                     }
+                    DbO.PaylessEncuestaRepMm.AddRange(ListRet);
+                    DbO.SaveChanges();
                 }
-                DbO.PaylessEncuestaRepMm.AddRange(ListRet);
-                DbO.SaveChanges();
+                ListRet.Clear();
+                ListRet = DbO.PaylessEncuestaRepMm.Where(O => O.Anio == Anio && O.Mes == Mes).ToList();
+                if (ListRet.Count > 0) {
+                    ListRet.ForEach(M => {
+                        M.CantPedidos = (
+                        from Mp in DbO.PedidosExternos
+                        where Mp.FechaPedido.ToDateEsp() >= M.FechaI.ToDateEsp()
+                        && Mp.FechaPedido.ToDateEsp() < M.FechaF.ToDateEsp()
+                        select Mp.PedidoWms
+                        ).Distinct().Count();
+                        M.CantEncuestas = (
+                        from Mr in DbO.PaylessEncuestaResM
+                        from Mp in DbO.PedidosExternos
+                        where Mp.Id == Convert.ToInt32(Mr.Pedido)
+                        && Mp.FechaPedido.ToDateEsp() >= M.FechaI.ToDateEsp()
+                        && Mp.FechaPedido.ToDateEsp() < M.FechaF.ToDateEsp()
+                        select Mr.Id
+                        ).Distinct().Count();
+                    });
+                    DbO.PaylessEncuestaRepMm.UpdateRange(ListRet);
+                    DbO.SaveChanges();
+                }
                 return new RetData<IEnumerable<PaylessEncuestaRepMm>> {
-                    Data = DbO.PaylessEncuestaRepMm.Where(O => O.Anio == Anio && O.Mes == Mes),
+                    Data = ListRet.OrderBy(O2 => O2.WeekOfYear),
                     Info = new RetInfo() {
                         CodError = 0,
                         Mensaje = "ok",

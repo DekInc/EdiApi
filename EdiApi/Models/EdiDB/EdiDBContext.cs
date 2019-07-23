@@ -61,7 +61,6 @@ namespace EdiApi.Models.EdiDB
         public virtual DbSet<LearTd3856> LearTd3856 { get; set; }
         public virtual DbSet<LearTd5856> LearTd5856 { get; set; }
         public virtual DbSet<LearUit830> LearUit830 { get; set; }
-        public virtual DbSet<PaylessEncuestaRepDet> PaylessEncuestaRepDet { get; set; }
         public virtual DbSet<PaylessEncuestaRepDet1> PaylessEncuestaRepDet1 { get; set; }
         public virtual DbSet<PaylessEncuestaRepDet2> PaylessEncuestaRepDet2 { get; set; }
         public virtual DbSet<PaylessEncuestaRepMm> PaylessEncuestaRepMm { get; set; }
@@ -1266,13 +1265,6 @@ namespace EdiApi.Models.EdiDB
                 entity.Property(e => e.UnitOfMeasure).HasMaxLength(2);
             });
 
-            modelBuilder.Entity<PaylessEncuestaRepDet>(entity =>
-            {
-                entity.Property(e => e.Rv)
-                    .HasMaxLength(1)
-                    .IsUnicode(false);
-            });
-
             modelBuilder.Entity<PaylessEncuestaRepDet1>(entity =>
             {
                 entity.HasIndex(e => e.IdM)
@@ -1712,18 +1704,6 @@ namespace EdiApi.Models.EdiDB
 
             modelBuilder.Entity<ProductoUbicacion>(entity =>
             {
-                entity.HasIndex(e => e.CodProducto)
-                    .HasName("IndexProductoUbicacionCodProducto");
-
-                entity.HasIndex(e => e.CodUser)
-                    .HasName("IndexProductoUbicacionUser");
-
-                entity.HasIndex(e => e.Rack)
-                    .HasName("IndexProductoUbicacionRack");
-
-                entity.HasIndex(e => e.Typ)
-                    .HasName("IndexProductoUbicacionTyp");
-
                 entity.Property(e => e.CodProducto)
                     .HasMaxLength(50)
                     .IsUnicode(false);

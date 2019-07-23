@@ -105,10 +105,10 @@ namespace EdiApi.Controllers
                         T = $"# {Pe.Id} - {Pe.FechaPedido} "
                     }
                     ).Distinct().ToList();
-                foreach (PaylessEncuestaResM ResM in DbO.PaylessEncuestaResM) {
-                    if (ListOrders.Where(O => O.V == ResM.Pedido.ToString()).Count() > 0)
-                        ListOrders.RemoveAll(O => O.V == ResM.Pedido.ToString());
-                }
+                //foreach (PaylessEncuestaResM ResM in DbO.PaylessEncuestaResM) {
+                //    if (ListOrders.Where(O => O.V == ResM.Pedido.ToString()).Count() > 0)
+                //        ListOrders.RemoveAll(O => O.V == ResM.Pedido.ToString());
+                //}
                 return new RetData<IEnumerable<CboValuesModel>> {
                     Data = ListOrders,
                     Info = new RetInfo() {

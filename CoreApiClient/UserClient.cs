@@ -355,6 +355,9 @@ namespace CoreApiClient
         public async Task<RetData<string>> SetPaylessEncuestaPedidos(int TiendaId, string cboPedido, string CodUser, string preg0, string preg2, string preg2a, string preg2b, string preg2c, string preg3, string preg3a, string preg4, string preg4a, string preg5, string preg5a, string preg6, string preg7, string preg7a, string preg8, string preg9, string preg10, string preg11, string preg12, string preg13, string preg14, string preg15, string preg16, string preg17, string preg17a, string preg18) {
             return await GetAsync<RetData<string>>(CreateRequestUri(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Data/SetPaylessEncuestaPedidos"), $"?TiendaId={TiendaId}&preg0={preg0}&cboPedido={cboPedido}&preg2={preg2}&preg2a={preg2a}&preg2b={preg2b}&preg2c={preg2c}&preg3={preg3}&preg3a={preg3a}&preg4={preg4}&preg4a={preg4a}&preg5={preg5}&preg5a={preg5a}&preg6={preg6}&preg7={preg7}&preg7a={preg7a}&preg8={preg8}&preg9={preg9}&preg10={preg10}&preg11={preg11}&preg12={preg12}&preg13={preg13}&preg14={preg14}&preg15={preg15}&preg16={preg16}&preg17={preg17}&preg17a={preg17a}&preg18={preg18}&CodUser={CodUser}"));
         }
+        public async Task<RetData<IEnumerable<PaylessEncuestaRepMmGModel>>> GetPaylessEncuestaRepM(int Anio, int Mes, string CodUser) {
+            return await GetAsync<RetData<IEnumerable<PaylessEncuestaRepMmGModel>>>(CreateRequestUri(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Data/GetPaylessEncuestaRepM"), $"?Anio={Anio}&Mes={Mes}&CodUser={CodUser}"));
+        }
         /////////////////////////////////////////
         //public async Task<List<UsersModel>> GetUsers()
         //{

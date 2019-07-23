@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace EdiApi.Models.EdiDB
+namespace ComModels
 {
     public partial class PaylessEncuestaRepMm
     {
@@ -16,4 +16,7 @@ namespace EdiApi.Models.EdiDB
         public string CodUser { get; set; }
         public string FechaCreacion { get; set; }
     }
+    public partial class PaylessEncuestaRepMmGModel : PaylessEncuestaRepMm {
+        public int Recid { get { return Id; } }
+    }    
 }

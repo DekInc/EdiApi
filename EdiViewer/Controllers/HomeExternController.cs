@@ -137,6 +137,24 @@ namespace EdiViewer.Controllers
                 && ListQtys.Where(O => O.Cp == "0" && O.Categoria == "2" && O.Estado == "0").Fod().Existencia == txtKidQty
                 && ListQtys.Where(O => O.Cp == "0" && O.Categoria == "3" && O.Estado == "0").Fod().Existencia == txtAccQty
                 );
+            if (txtWomanQty > ListQtys.Where(O => O.Cp == "0" && O.Categoria == "0" && O.Estado == "0").Fod().Existencia)
+                return View("PedidosPayless3", new ErrorModel() { ErrorMessage = $"La cantidad de cajas de dama sin temporada es mayor a la existente. Pedido = {txtWomanQty}, existente = {ListQtys.Where(O => O.Cp == "0" && O.Categoria == "0" && O.Estado == "0").Fod().Existencia}." });
+            if (txtManQty > ListQtys.Where(O => O.Cp == "0" && O.Categoria == "1" && O.Estado == "0").Fod().Existencia)
+                return View("PedidosPayless3", new ErrorModel() { ErrorMessage = $"La cantidad de cajas de caballero sin temporada es mayor a la existente. Pedido = {txtManQty}, existente = {ListQtys.Where(O => O.Cp == "0" && O.Categoria == "1" && O.Estado == "0").Fod().Existencia}." });
+            if (txtKidQty > ListQtys.Where(O => O.Cp == "0" && O.Categoria == "2" && O.Estado == "0").Fod().Existencia)
+                return View("PedidosPayless3", new ErrorModel() { ErrorMessage = $"La cantidad de cajas de niñ@s sin temporada es mayor a la existente. Pedido = {txtKidQty}, existente = {ListQtys.Where(O => O.Cp == "0" && O.Categoria == "2" && O.Estado == "0").Fod().Existencia}." });
+            if (txtAccQty > ListQtys.Where(O => O.Cp == "0" && O.Categoria == "3" && O.Estado == "0").Fod().Existencia)
+                return View("PedidosPayless3", new ErrorModel() { ErrorMessage = $"La cantidad de cajas de accesorios sin temporada es mayor a la existente. Pedido = {txtAccQty}, existente = {ListQtys.Where(O => O.Cp == "0" && O.Categoria == "3" && O.Estado == "0").Fod().Existencia}." });
+
+            if (txtWomanQtyT > ListQtys.Where(O => O.Cp == "0" && O.Categoria == "0" && O.Estado == "1").Fod().Existencia)
+                return View("PedidosPayless3", new ErrorModel() { ErrorMessage = $"La cantidad de cajas de dama de temporada es mayor a la existente. Pedido = {txtWomanQtyT}, existente = {ListQtys.Where(O => O.Cp == "0" && O.Categoria == "0" && O.Estado == "1").Fod().Existencia}." });
+            if (txtManQtyT > ListQtys.Where(O => O.Cp == "0" && O.Categoria == "1" && O.Estado == "1").Fod().Existencia)
+                return View("PedidosPayless3", new ErrorModel() { ErrorMessage = $"La cantidad de cajas de caballero de temporada es mayor a la existente. Pedido = {txtManQtyT}, existente = {ListQtys.Where(O => O.Cp == "0" && O.Categoria == "1" && O.Estado == "1").Fod().Existencia}." });
+            if (txtKidQtyT > ListQtys.Where(O => O.Cp == "0" && O.Categoria == "2" && O.Estado == "1").Fod().Existencia)
+                return View("PedidosPayless3", new ErrorModel() { ErrorMessage = $"La cantidad de cajas de niñ@s de temporada es mayor a la existente. Pedido = {txtKidQtyT}, existente = {ListQtys.Where(O => O.Cp == "0" && O.Categoria == "2" && O.Estado == "1").Fod().Existencia}." });
+            if (txtAccQtyT > ListQtys.Where(O => O.Cp == "0" && O.Categoria == "3" && O.Estado == "1").Fod().Existencia)
+                return View("PedidosPayless3", new ErrorModel() { ErrorMessage = $"La cantidad de cajas de accesorios de temporada es mayor a la existente. Pedido = {txtAccQtyT}, existente = {ListQtys.Where(O => O.Cp == "0" && O.Categoria == "3" && O.Estado == "1").Fod().Existencia}." });
+
             RetData<string> Ret = await ApiClientFactory.Instance.SetNewDisPayless(dtpFechaEntrega, txtWomanQty, txtManQty, txtKidQty, txtAccQty, radInvType, HttpContext.Session.GetObjSession<int>("Session.ClientId"), HttpContext.Session.GetObjSession<int>("Session.TiendaId"), null, (FullPed == false? null : FullPed), null, txtWomanQtyT, txtManQtyT, txtKidQtyT, txtAccQtyT, HttpContext.Session.GetObjSession<string>("Session.CodUsr"));
             if (Ret.Info.CodError == 0) {
                 return View("Peticiones", new ErrorModel() { Typ = 1, ErrorMessage = Ret.Data });
