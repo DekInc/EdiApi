@@ -47,7 +47,7 @@ namespace EdiViewer
                 options.InputFormatters.Insert(0, new RawJsonBodyInputFormatter());                
             }).AddJsonOptions(options2 => {
                 options2.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
-            }) .SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+            }) .SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
             ApplicationSettings.ApiUri = (string)Configuration.GetSection("EdiWebApi").GetValue(typeof(string), "ApiUri");
             services.AddSingleton<Utility.Scheduling.Interfaces.IScheduledTask, Utility.Scheduling.GetEdi830Task>();
             services.AddSingleton<Utility.Scheduling.Interfaces.IScheduledTask, Utility.Scheduling.AutoSendInventary830Task>();
