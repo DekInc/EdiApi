@@ -72,7 +72,10 @@
     function refreshGrid(auto) {
         w2ui.grid.autoLoad = auto;
         w2ui.grid.skip(0);
-    }        
+    }
+    function downloadWmsFile(recid) {
+        window.open('@this.Url.Action("MakeExcelEncuestaMatrix", "HomeExtern")?Id=' + recid);
+    }
     function crearGrid() {
         var config = {
             grid: {

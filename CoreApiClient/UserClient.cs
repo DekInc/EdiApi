@@ -358,6 +358,9 @@ namespace CoreApiClient
         public async Task<RetData<IEnumerable<PaylessEncuestaRepMmGModel>>> GetPaylessEncuestaRepM(int Anio, int Mes, string CodUser) {
             return await GetAsync<RetData<IEnumerable<PaylessEncuestaRepMmGModel>>>(CreateRequestUri(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Data/GetPaylessEncuestaRepM"), $"?Anio={Anio}&Mes={Mes}&CodUser={CodUser}"));
         }
+        public async Task<RetData<Tuple<IEnumerable<PaylessEncuestaResM>, IEnumerable<PaylessEncuestaResDet>>>> GetExcelEncuestaMatrix(int Id) {
+            return await GetAsync<RetData<Tuple<IEnumerable<PaylessEncuestaResM>, IEnumerable<PaylessEncuestaResDet>>>>(CreateRequestUri(string.Format(System.Globalization.CultureInfo.InvariantCulture, "Data/GetExcelEncuestaMatrix"), $"?Id={Id}"));
+        }
         /////////////////////////////////////////
         //public async Task<List<UsersModel>> GetUsers()
         //{

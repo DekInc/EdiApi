@@ -4879,18 +4879,40 @@ SET XACT_ABORT OFF
                         where Mp.FechaPedido.ToDateEsp() >= M.FechaI.ToDateEsp()
                         && Mp.FechaPedido.ToDateEsp() < M.FechaF.ToDateEsp()
                         select Mp.PedidoWms
-                        ).Distinct().Count();
+                        ).Distinct().Count();                        
                         M.CantEncuestas = (
-                        from Mr in DbO.PaylessEncuestaResM
-                        from Mp in DbO.PedidosExternos
-                        where Mp.Id == Convert.ToInt32(Mr.Pedido)
-                        && Mp.FechaPedido.ToDateEsp() >= M.FechaI.ToDateEsp()
-                        && Mp.FechaPedido.ToDateEsp() < M.FechaF.ToDateEsp()
-                        select Mr.Id
-                        ).Distinct().Count();
+                            from Mr in DbO.PaylessEncuestaResM
+                            from Mp in DbO.PedidosExternos
+                            where Mp.Id == Convert.ToInt32(Mr.Pedido)
+                            && Mp.FechaPedido.ToDateEsp() >= M.FechaI.ToDateEsp()
+                            && Mp.FechaPedido.ToDateEsp() < M.FechaF.ToDateEsp()
+                            select Mr.Id
+                        ).Distinct().Count();                        
                     });
                     DbO.PaylessEncuestaRepMm.UpdateRange(ListRet);
                     DbO.SaveChanges();
+                    foreach (PaylessEncuestaRepMm Rep in ListRet) {
+                        IEnumerable<PaylessEncuestaResM> ListEncuestas = (
+                            from Mr in DbO.PaylessEncuestaResM
+                            from Mp in DbO.PedidosExternos
+                            where Mp.Id == Convert.ToInt32(Mr.Pedido)
+                            && Mp.FechaPedido.ToDateEsp() >= Rep.FechaI.ToDateEsp()
+                            && Mp.FechaPedido.ToDateEsp() < Rep.FechaF.ToDateEsp()
+                            select Mr
+                        );
+                        foreach (PaylessEncuestaResM Res in ListEncuestas) {
+                            PaylessEncuestaRepDet1 D1 = new PaylessEncuestaRepDet1 {
+                                IdM = Rep.Id,
+                                TiendaId = Res.TiendaId                                
+                            };
+                            foreach (PaylessEncuestaResDet ResD in DbO.PaylessEncuestaResDet.Where(Erd => Erd.IdM == Res.Id)) {
+                                PaylessEncuestaRepDet2 D2 = new PaylessEncuestaRepDet2 {
+                                    IdM = Rep.Id,
+                                    C0 = ResD.Preg0 == "1"
+                                };
+                            }
+                        }
+                    }
                 }
                 return new RetData<IEnumerable<PaylessEncuestaRepMm>> {
                     Data = ListRet.OrderBy(O2 => O2.WeekOfYear),
@@ -4902,6 +4924,31 @@ SET XACT_ABORT OFF
                 };
             } catch (Exception e1) {
                 return new RetData<IEnumerable<PaylessEncuestaRepMm>> {
+                    Info = new RetInfo() {
+                        CodError = -1,
+                        Mensaje = e1.ToString(),
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            }
+        }
+        [HttpGet]
+        public RetData<Tuple<IEnumerable<PaylessEncuestaResM>, IEnumerable<PaylessEncuestaResDet>>> GetExcelEncuestaMatrix(int Id) {
+            DateTime StartTime = DateTime.Now;
+            try {                
+                return new RetData<Tuple<IEnumerable<PaylessEncuestaResM>, IEnumerable<PaylessEncuestaResDet>>> {
+                    Data = new Tuple<IEnumerable<PaylessEncuestaResM>, IEnumerable<PaylessEncuestaResDet>>(
+                        DbO.PaylessEncuestaResM.Where(O => O.Id == Id),
+                        DbO.PaylessEncuestaResDet.Where(O2 => O2.IdM == Id)
+                        ),
+                    Info = new RetInfo() {
+                        CodError = 0,
+                        Mensaje = "ok",
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            } catch (Exception e1) {
+                return new RetData<Tuple<IEnumerable<PaylessEncuestaResM>, IEnumerable<PaylessEncuestaResDet>>> {
                     Info = new RetInfo() {
                         CodError = -1,
                         Mensaje = e1.ToString(),

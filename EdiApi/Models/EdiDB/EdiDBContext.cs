@@ -92,6 +92,8 @@ namespace EdiApi.Models.EdiDB
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.HasAnnotation("ProductVersion", "2.2.6-servicing-10079");
+
             modelBuilder.Entity<AsyncStates>(entity =>
             {
                 entity.Property(e => e.CodUser)
@@ -135,7 +137,8 @@ namespace EdiApi.Models.EdiDB
 
             modelBuilder.Entity<EdiSegName>(entity =>
             {
-                entity.HasKey(e => e.Segment);
+                entity.HasKey(e => e.Segment)
+                    .HasName("PK_EdiSegNombres");
 
                 entity.Property(e => e.Segment)
                     .HasMaxLength(16)
@@ -203,7 +206,8 @@ namespace EdiApi.Models.EdiDB
 
             modelBuilder.Entity<LearAth830>(entity =>
             {
-                entity.HasKey(e => e.HashId);
+                entity.HasKey(e => e.HashId)
+                    .HasName("PK_ATH830");
 
                 entity.ToTable("LEAR_ATH830");
 
@@ -557,7 +561,8 @@ namespace EdiApi.Models.EdiDB
 
             modelBuilder.Entity<LearHlsl856>(entity =>
             {
-                entity.HasKey(e => e.HashId);
+                entity.HasKey(e => e.HashId)
+                    .HasName("PK_HLSL856");
 
                 entity.ToTable("LEAR_HLSL856");
 
@@ -581,7 +586,8 @@ namespace EdiApi.Models.EdiDB
 
             modelBuilder.Entity<LearIsa830>(entity =>
             {
-                entity.HasKey(e => e.HashId);
+                entity.HasKey(e => e.HashId)
+                    .HasName("PK_ISA830");
 
                 entity.ToTable("LEAR_ISA830");
 
@@ -631,7 +637,8 @@ namespace EdiApi.Models.EdiDB
 
             modelBuilder.Entity<LearIsa856>(entity =>
             {
-                entity.HasKey(e => e.HashId);
+                entity.HasKey(e => e.HashId)
+                    .HasName("PK_ISA856");
 
                 entity.ToTable("LEAR_ISA856");
 
@@ -875,7 +882,8 @@ namespace EdiApi.Models.EdiDB
 
             modelBuilder.Entity<LearN4830>(entity =>
             {
-                entity.HasKey(e => e.HashId);
+                entity.HasKey(e => e.HashId)
+                    .HasName("PK__LEAR_N48__646AA34330F848ED");
 
                 entity.ToTable("LEAR_N4830");
 
@@ -907,7 +915,8 @@ namespace EdiApi.Models.EdiDB
 
             modelBuilder.Entity<LearNte830>(entity =>
             {
-                entity.HasKey(e => e.HashId);
+                entity.HasKey(e => e.HashId)
+                    .HasName("PK_NTE830");
 
                 entity.ToTable("LEAR_NTE830");
 
@@ -1103,7 +1112,8 @@ namespace EdiApi.Models.EdiDB
 
             modelBuilder.Entity<LearSn1856>(entity =>
             {
-                entity.HasKey(e => e.HashId);
+                entity.HasKey(e => e.HashId)
+                    .HasName("PK__LEAR_SN1__646AA343440B1D61");
 
                 entity.ToTable("LEAR_SN1856");
 
@@ -1247,7 +1257,8 @@ namespace EdiApi.Models.EdiDB
 
             modelBuilder.Entity<LearUit830>(entity =>
             {
-                entity.HasKey(e => e.HashId);
+                entity.HasKey(e => e.HashId)
+                    .HasName("PK__LEAR_UIT__646AA3435165187F");
 
                 entity.ToTable("LEAR_UIT830");
 
@@ -1280,12 +1291,43 @@ namespace EdiApi.Models.EdiDB
                 entity.HasIndex(e => e.IdM)
                     .HasName("PaylessEncuestaRepDet2IdM");
 
-                entity.HasIndex(e => e.IdQ)
-                    .HasName("PaylessEncuestaRepDet2IdQ");
+                entity.Property(e => e.C0).HasColumnName("c0");
 
-                entity.Property(e => e.Rv)
-                    .HasMaxLength(1)
-                    .IsUnicode(false);
+                entity.Property(e => e.C1).HasColumnName("c1");
+
+                entity.Property(e => e.C10).HasColumnName("c10");
+
+                entity.Property(e => e.C11).HasColumnName("c11");
+
+                entity.Property(e => e.C12).HasColumnName("c12");
+
+                entity.Property(e => e.C13).HasColumnName("c13");
+
+                entity.Property(e => e.C14).HasColumnName("c14");
+
+                entity.Property(e => e.C15).HasColumnName("c15");
+
+                entity.Property(e => e.C16).HasColumnName("c16");
+
+                entity.Property(e => e.C17).HasColumnName("c17");
+
+                entity.Property(e => e.C18).HasColumnName("c18");
+
+                entity.Property(e => e.C2).HasColumnName("c2");
+
+                entity.Property(e => e.C3).HasColumnName("c3");
+
+                entity.Property(e => e.C4).HasColumnName("c4");
+
+                entity.Property(e => e.C5).HasColumnName("c5");
+
+                entity.Property(e => e.C6).HasColumnName("c6");
+
+                entity.Property(e => e.C7).HasColumnName("c7");
+
+                entity.Property(e => e.C8).HasColumnName("c8");
+
+                entity.Property(e => e.C9).HasColumnName("c9");
             });
 
             modelBuilder.Entity<PaylessEncuestaRepMm>(entity =>

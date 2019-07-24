@@ -2101,6 +2101,124 @@ namespace EdiViewer.Controllers
                     }
                 };
             }
-        }        
+        }
+        public async Task<IActionResult> MakeExcelEncuestaMatrix(int Id) {
+            DateTime StartTime = DateTime.Now;
+            try {
+                RetData<Tuple<IEnumerable<PaylessEncuestaResM>, IEnumerable<PaylessEncuestaResDet>>> ListInfo = await ApiClientFactory.Instance.GetExcelEncuestaMatrix(Id);
+                if (ListInfo.Info.CodError != 0)
+                    return Json(ListInfo.Info);
+                if (ListInfo.Data.Item1 == null)
+                    return Json("ERROR. No existe información del reporte.");
+                if (ListInfo.Data.Item2 == null)
+                    return Json("ERROR. No existe información del detalle del reporte 1.");
+                if (ListInfo.Data.Item2.Count() == 0)
+                    return Json("ERROR. No existe información del detalle del reporte 2.");
+                string Plantilla = "plantillaencuestasrep.xls";                
+                Utility.ExceL ExcelO = new Utility.ExceL();
+                using (FileStream FilePlantilla = new FileStream(Plantilla, FileMode.Open, FileAccess.Read, FileShare.ReadWrite)) {
+                    MemoryStream Ms = new MemoryStream();
+                    FilePlantilla.CopyTo(Ms);
+                    try {
+                        ExcelO.ExcelWorkBook = new HSSFWorkbook(Ms);
+                        ExcelO.CurrentSheet = ExcelO.ExcelWorkBook.GetSheetAt(0);
+                    } catch (Exception e2) {
+                        throw new Exception("El archivo no es de Excel. Utilice un formato propio de Microsoft Excel. " + e2.ToString());
+                    }
+                    //ExcelO.SetRow(1);
+                    //ExcelO.SetCell(4);
+                    //ExcelO.SetCellValue(ListInfo.Data.Item1.Periodo);
+                    //ExcelO.SetRow(2);
+                    //ExcelO.SetCell(4);
+                    //ExcelO.SetCellValue(ListInfo.Data.Item1.PeriodoF);
+                    //IEnumerable<PaylessReportesDet> ListDetOrd = ListInfo.Data.Item2.OrderByDescending(O1 => O1.Fecha1.ToDateFromEspDate());
+                    //for (int i = 0; i < ListDetOrd.Count(); i++) {
+                    //    ExcelO.CreateRow(i + 4);
+                    //    ExcelO.CreateCell(1, CellType.String);
+                    //    ExcelO.SetCellValue(ListDetOrd.ElementAt(i).TiendaId);
+                    //    ExcelO.CreateCell(2, CellType.String);
+                    //    ExcelO.SetCellValue(ListInfo.Data.Item3.Where(T => T.TiendaId == ListDetOrd.ElementAt(i).TiendaId).Fod().Direc);
+                    //    ExcelO.CreateCell(3, CellType.String);
+                    //    ExcelO.SetCellValue(ListInfo.Data.Item3.Where(T => T.TiendaId == ListDetOrd.ElementAt(i).TiendaId).Fod().Lider);
+                    //    ExcelO.CreateCell(4, CellType.String);
+                    //    ExcelO.SetCellValue(ListInfo.Data.Item3.Where(T => T.TiendaId == ListDetOrd.ElementAt(i).TiendaId).Fod().Tel);
+
+                    //    ExcelO.CreateCell(5, CellType.String);
+                    //    ExcelO.SetCellValue(ListDetOrd.ElementAt(i).Total);
+                    //    ExcelO.CreateCell(11, CellType.String);
+                    //    ExcelO.SetCellValue(ListDetOrd.ElementAt(i).TotalAccQty);
+                    //    ExcelO.CreateCell(12, CellType.String);
+                    //    ExcelO.SetCellValue(ListDetOrd.ElementAt(i).TotalKidQty);
+                    //    ExcelO.CreateCell(13, CellType.String);
+                    //    ExcelO.SetCellValue(ListDetOrd.ElementAt(i).TotalManQty);
+                    //    ExcelO.CreateCell(14, CellType.String);
+                    //    ExcelO.SetCellValue(ListDetOrd.ElementAt(i).TotalWomanQty);
+                    //    ExcelO.CreateCell(15, CellType.String);
+                    //    ExcelO.SetCellValue(ListDetOrd.ElementAt(i).Total);
+                    //    if (!string.IsNullOrEmpty(ListDetOrd.ElementAt(i).Fecha1)) {
+                    //        ExcelO.CreateCell(16, CellType.String);
+                    //        ExcelO.SetCellValue(ListDetOrd.ElementAt(i).Fecha1.Substring(0, 10));
+                    //        ExcelO.CreateCell(17, CellType.String);
+                    //        ExcelO.SetCellValue(ListDetOrd.ElementAt(i).Cant1);
+                    //        ExcelO.CreateCell(18, CellType.String);
+                    //        if (ListInfo.Data.Item1.Tipo == "0")
+                    //            ExcelO.SetCellValue(ListDetOrd.ElementAt(i).Fecha1.Substring(12));
+                    //    }
+                    //    if (!string.IsNullOrEmpty(ListDetOrd.ElementAt(i).Fecha2)) {
+                    //        ExcelO.CreateCell(19, CellType.String);
+                    //        ExcelO.SetCellValue(ListDetOrd.ElementAt(i).Fecha2.Substring(0, 10));
+                    //        ExcelO.CreateCell(20, CellType.String);
+                    //        ExcelO.SetCellValue(ListDetOrd.ElementAt(i).Cant2);
+                    //        ExcelO.CreateCell(21, CellType.String);
+                    //        if (ListInfo.Data.Item1.Tipo == "0")
+                    //            ExcelO.SetCellValue(ListDetOrd.ElementAt(i).Fecha2.Substring(12));
+                    //    }
+                    //    if (!string.IsNullOrEmpty(ListDetOrd.ElementAt(i).Fecha3)) {
+                    //        ExcelO.CreateCell(22, CellType.String);
+                    //        ExcelO.SetCellValue(ListDetOrd.ElementAt(i).Fecha3.Substring(0, 10));
+                    //        ExcelO.CreateCell(23, CellType.String);
+                    //        ExcelO.SetCellValue(ListDetOrd.ElementAt(i).Cant3);
+                    //        ExcelO.CreateCell(24, CellType.String);
+                    //        if (ListInfo.Data.Item1.Tipo == "0")
+                    //            ExcelO.SetCellValue(ListDetOrd.ElementAt(i).Fecha3.Substring(12));
+                    //    }
+                    //    if (!string.IsNullOrEmpty(ListDetOrd.ElementAt(i).Fecha4)) {
+                    //        ExcelO.CreateCell(25, CellType.String);
+                    //        ExcelO.SetCellValue(ListDetOrd.ElementAt(i).Fecha4.Substring(0, 10));
+                    //        ExcelO.CreateCell(26, CellType.String);
+                    //        ExcelO.SetCellValue(ListDetOrd.ElementAt(i).Cant4);
+                    //        ExcelO.CreateCell(27, CellType.String);
+                    //        if (ListInfo.Data.Item1.Tipo == "0")
+                    //            ExcelO.SetCellValue(ListDetOrd.ElementAt(i).Fecha4.Substring(12));
+                    //    }
+                    //    if (!string.IsNullOrEmpty(ListDetOrd.ElementAt(i).Fecha5)) {
+                    //        ExcelO.CreateCell(28, CellType.String);
+                    //        ExcelO.SetCellValue(ListDetOrd.ElementAt(i).Fecha5.Substring(0, 10));
+                    //        ExcelO.CreateCell(29, CellType.String);
+                    //        ExcelO.SetCellValue(ListDetOrd.ElementAt(i).Cant5);
+                    //        ExcelO.CreateCell(30, CellType.String);
+                    //        if (ListInfo.Data.Item1.Tipo == "0")
+                    //            ExcelO.SetCellValue(ListDetOrd.ElementAt(i).Fecha5.Substring(12));
+                    //    }
+                    //    if (!string.IsNullOrEmpty(ListDetOrd.ElementAt(i).Fecha6)) {
+                    //        ExcelO.CreateCell(31, CellType.String);
+                    //        ExcelO.SetCellValue(ListDetOrd.ElementAt(i).Fecha6.Substring(0, 10));
+                    //        ExcelO.CreateCell(32, CellType.String);
+                    //        ExcelO.SetCellValue(ListDetOrd.ElementAt(i).Cant6);
+                    //        ExcelO.CreateCell(33, CellType.String);
+                    //        if (ListInfo.Data.Item1.Tipo == "0")
+                    //            ExcelO.SetCellValue(ListDetOrd.ElementAt(i).Fecha6.Substring(12));
+                    //    }
+                    //}
+                    MemoryStream Ms2 = new MemoryStream();
+                    ExcelO.ExcelWorkBook.Write(Ms2);
+                    //string ExcelName = ListInfo.Data.Item1.Tipo == "0" ? "Archivo_RepJuevesPedidos_" : "Archivo_RepDomingoEnvios_";
+                    string ExcelName = "";
+                    return File(Ms2.ToArray(), "application/octet-stream", ExcelName + DateTime.Now.ToString("ddMMyyyy") + ".xls");
+                }
+            } catch (Exception e1) {
+                return Json(JsonConvert.SerializeObject(e1));
+            }
+        }
     }
 }
