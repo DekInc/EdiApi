@@ -4329,7 +4329,7 @@ SET XACT_ABORT OFF
                     || StartTime.DayOfWeek == DayOfWeek.Friday
                     || StartTime.DayOfWeek == DayOfWeek.Saturday
                     || StartTime.DayOfWeek == DayOfWeek.Sunday
-                    //|| StartTime.DayOfWeek == DayOfWeek.Monday
+                    || StartTime.DayOfWeek == DayOfWeek.Wednesday
                     ) {
                     //.Where(D => D <= (new DateTime(StartTime.Year, StartTime.Month, StartTime.Day, 23, 59, 59)).AddDays(7)
                     List<DateTime> ListThurs = Utility.Funcs.AllThursdaysInMonth(StartTime.Year, StartTime.Month).ToList();
@@ -4352,7 +4352,7 @@ SET XACT_ABORT OFF
                             && R.Tipo == "0"
                             select R
                             ).ToList();
-                        if (I == ListThurs.Count() - 1)
+                        if ((I == ListThurs.Count() - 1) && ListRep.Count() > 0)
                         {
                             bool TheSame = true;
                             List<PeticionesAdminBGModel> ListOrders = ManualDB.SP_GetPeticionesAdminB(ref DbOLong).ToList();

@@ -38,9 +38,9 @@ SELECT * FROM EdiDB.dbo.ProductoUbicacion
 select * from EdiDB.dbo.PAYLESS_ReportesMails order by Id
 select * from EdiDB.dbo.AsyncStates
 --delete from EdiDB.dbo.AsyncStates where Id = 29
-select * from EdiDB.dbo.PAYLESS_Reportes
+select * from EdiDB.dbo.PAYLESS_Reportes order by id desc
 --update EdiDB.dbo.PAYLESS_Reportes SET FechaGen = '21/07/2019 07:02' WHERE Id = 72
-select * from EdiDB.dbo.PaylessEncuesta
+select * from EdiDB.dbo.PaylessEncuestaResM
 select * from EdiDB.dbo.PaylessEncuestaResDet
 SELECT DATEPART(wk, GETDATE())
 SELECT DATEPART(wk, '2019-01-01')
@@ -55,7 +55,7 @@ SELECT * FROM EdiDB.dbo.PedidosExternos order by FechaCreacion DESC
 SELECT * FROM EdiDB.dbo.PedidosExternos order by id DESC --7382
 --delete from EdiDB.dbo.PedidosDetExternos WHERE PedidoId > 240
 SELECT * FROM EdiDB.dbo.PedidosExternos order by FechaPedido DESC
-SELECT * FROM EdiDB.dbo.PedidosExternos where Id = 277 -- H 23, N 40
+SELECT * FROM EdiDB.dbo.PedidosExternos where Id = 249 -- H 23, N 40
 SELECT * FROM EdiDB.dbo.PedidosDetExternos where PedidoId = 265
 SELECT * FROM EdiDB.dbo.PedidosExternos where TiendaId = 7389
 

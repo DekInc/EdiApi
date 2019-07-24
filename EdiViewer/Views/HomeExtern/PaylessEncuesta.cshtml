@@ -326,7 +326,8 @@
                 data: $('#frmEncuesta').serialize(),
                 type: 'POST',
                 dataType: 'JSON',
-                success: function (json) {                    
+                success: function (json) {
+                    $('#divSpinbtnSave').hide();
                     if (json.info.codError != 0) {
                         menErrorEdi(json.info.mensaje);
                         return;
@@ -334,13 +335,12 @@
                     if (json.info.codError == 0) {
                         menErrorEdi(json.data);
                         return;
-                    }
-                    $('#divSpinbtnSave').show();
+                    }                    
                 },
                 error: function (xhr, ajaxOptions, thrownError) {
                     menErrorEdi(xhr.status, '');
                     menErrorEdi(thrownError, '');
-                    $('#divSpinbtnSave').show();
+                    $('#divSpinbtnSave').hide();
                 }
             });
         });
