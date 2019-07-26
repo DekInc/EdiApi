@@ -66,6 +66,8 @@ namespace EdiApi.Models.EdiDB
         public virtual DbSet<PaylessEncuestaRepMm> PaylessEncuestaRepMm { get; set; }
         public virtual DbSet<PaylessEncuestaResDet> PaylessEncuestaResDet { get; set; }
         public virtual DbSet<PaylessEncuestaResM> PaylessEncuestaResM { get; set; }
+        public virtual DbSet<PaylessInvSnapshotDet> PaylessInvSnapshotDet { get; set; }
+        public virtual DbSet<PaylessInvSnapshotM> PaylessInvSnapshotM { get; set; }
         public virtual DbSet<PaylessPedidosCpT> PaylessPedidosCpT { get; set; }
         public virtual DbSet<PaylessPeriodoTransporte> PaylessPeriodoTransporte { get; set; }
         public virtual DbSet<PaylessProdPrioriArchDet> PaylessProdPrioriArchDet { get; set; }
@@ -87,7 +89,7 @@ namespace EdiApi.Models.EdiDB
         // Unable to generate entity type for table 'dbo.PedidosExternos_Bkp'. Please see the warning messages.
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
+        {   
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -1462,6 +1464,28 @@ namespace EdiApi.Models.EdiDB
 
                 entity.Property(e => e.TiendaId)
                     .HasMaxLength(4)
+                    .IsUnicode(false);
+            });
+
+            modelBuilder.Entity<PaylessInvSnapshotDet>(entity =>
+            {
+                entity.Property(e => e.Bodega)
+                    .HasMaxLength(150)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.Tienda)
+                    .HasMaxLength(256)
+                    .IsUnicode(false);
+            });
+
+            modelBuilder.Entity<PaylessInvSnapshotM>(entity =>
+            {
+                entity.Property(e => e.Cp)
+                    .HasMaxLength(64)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.Periodo)
+                    .HasMaxLength(16)
                     .IsUnicode(false);
             });
 

@@ -52,6 +52,7 @@ namespace EdiViewer
             services.AddSingleton<Utility.Scheduling.Interfaces.IScheduledTask, Utility.Scheduling.GetEdi830Task>();
             services.AddSingleton<Utility.Scheduling.Interfaces.IScheduledTask, Utility.Scheduling.AutoSendInventary830Task>();
             services.AddSingleton<Utility.Scheduling.Interfaces.IScheduledTask, Utility.Scheduling.MakeAutoReportsPaylessTask>();
+            services.AddSingleton<Utility.Scheduling.Interfaces.IScheduledTask, Utility.Scheduling.MakePaylessInvSnapshotTask>();
             services.AddScheduler();
         }
 

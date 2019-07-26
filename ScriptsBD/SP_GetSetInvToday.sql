@@ -4,10 +4,10 @@ SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-IF OBJECT_ID('SP_GetSetExistenciasByCliente', 'P') IS NOT NULL
-	DROP PROC dbo.SP_GetSetExistenciasByCliente
+IF OBJECT_ID('SP_GetSetInvToday', 'P') IS NOT NULL
+	DROP PROC SP_GetSetInvToday
 GO
-CREATE PROCEDURE dbo.SP_GetSetExistenciasByCliente
+CREATE PROCEDURE SP_GetSetInvToday
 @ClienteId int,
 @CodUser VARCHAR(128)
 AS
@@ -47,20 +47,22 @@ BEGIN
 	GROUP BY t.BodegaId, ii.CodProducto
 	ORDER BY t.BodegaId, ii.CodProducto
 
+	SELECT DISTINCT
+		Wpe.BodegaId,
+		D.Barcode,
+		D.Categoria,
+		D.Cp
+	FROM EdiDB.dbo.WmsProductoExistencia Wpe WITH(NOLOCK)
+	JOIN EdiDB.dbo.PAYLESS_ProdPrioriDet D WITH(NOLOCK)
+		ON Wpe.CodProducto = D.Barcode
+	WHERE Wpe.CodUser = @CodUser
+
 	DELETE FROM EdiDB.dbo.WmsProductoExistencia WHERE CodUser = @CodUser
-	AND CodProducto IN (
-		SELECT DISTINCT
-			CodProducto
-		FROM EdiDB.dbo.PedidosExternos Pe WITH(NOLOCK)
-		JOIN EdiDB.dbo.PedidosDetExternos Pde WITH(NOLOCK)
-			ON Pde.PedidoId = Pe.Id
-		WHERE Pe.PedidoWMS IS NULL
-	)
 END
 
-EXEC EdiDb.dbo.SP_GetSetExistenciasByCliente 1432, 'Admin'
+EXEC EdiDb.dbo.SP_GetSetInvToday 1432, 'BOT'
 
-SELECT * from EdiDB.dbo.WmsProductoExistencia where CodUser = 'Admin' AND Existencia = 1 AND CodProducto like '7%'
+SELECT * from EdiDB.dbo.WmsProductoExistencia where CodUser = 'Admin' AND CodProducto like '7386%'
 
 SELECT DISTINCT
 CodProducto

@@ -48,6 +48,9 @@ namespace EdiViewer.Controllers
         }
         public IActionResult InvPaylessTienda() {
             return View();
+        }
+        public IActionResult SnapshootInvPayless() {
+            return View();
         }        
         public IActionResult PaylessReportes() {
             return View();
@@ -1859,12 +1862,12 @@ namespace EdiViewer.Controllers
                 RetData<IEnumerable<PedidosWmsModel>> ListInfo = await ApiClientFactory.Instance.GetWmsDetDispatchsBills(HttpContext.Session.GetObjSession<int>("Session.ClientId"));
                 if (ListInfo.Info.CodError != 0)
                     return Json(ListInfo.Info);
-                Utility.ExceL ExcelO = new Utility.ExceL();                
+                Utility.ExceLx ExcelO = new Utility.ExceLx();                
                 using (FileStream FilePlantilla = new FileStream("plantillaWms3.xls", FileMode.Open, FileAccess.Read, FileShare.ReadWrite)) {
                     MemoryStream Ms = new MemoryStream();
-                    FilePlantilla.CopyTo(Ms);
+                    //FilePlantilla.CopyTo(Ms);
                     try {
-                        ExcelO.ExcelWorkBook = new HSSFWorkbook(Ms);
+                        ExcelO.ExcelWorkBook = new HSSFWorkbook(FilePlantilla);
                         ExcelO.CurrentSheet = ExcelO.ExcelWorkBook.GetSheetAt(0);
                     } catch (Exception e2) {
                         throw new Exception("El archivo no es de Excel. Utilice un formato propio de Microsoft Excel. " + e2.ToString());
@@ -1916,6 +1919,7 @@ namespace EdiViewer.Controllers
                             throw e2;
                         }                        
                     }
+                    Ms.Close();
                     MemoryStream Ms2 = new MemoryStream();
                     ExcelO.ExcelWorkBook.Write(Ms2);
                     return File(Ms2.ToArray(), "application/octet-stream", "PedidosFacturas_WMS_" + DateTime.Now.ToString("ddMMyyyy") + ".xls");

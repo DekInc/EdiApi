@@ -1,0 +1,122 @@
+﻿@using ComModels
+@{
+    ViewData["Title"] = "Payless - Inventario por bodega-tienda y periodo";
+    Layout = "_Layout";
+}
+<style>
+.div856Search {    
+    padding-left: 6px !important;
+}
+</style>
+<div id="mainDiv">
+    <div class="container">
+        <div class="card-deck cardMain">
+            <div class="card box-shadow">
+                <div class="card-header">
+                    <h4 class="my-0 font-weight-normal">Payless - Inventario por bodega-tienda y periodo&nbsp;<img class="imgHeaderHelp" src="~/images/help.png" title="Pantalla que muestra el inventario por bodega y tienda" alt="Pantalla que muestra el inventario por bodega y tienda"></h4>
+                </div>
+                <div class="card-body">
+                    <div class="container div856Search">
+                        <div class="row">
+                            <div class="col-sm">
+                                <label>Cliente</label>
+                                <div id="divSpinCliente" class="spinner-border spinner-border-sm text-danger" style="display: none" role="status">
+                                    <span class="sr-only">Loading...</span>
+                                </div>
+                                <br />
+                                <select class="form-control" id="cbClient" name="cbClient"></select>
+                            </div>
+                            <div class="col-sm">
+                                <label for="dtpPeriodo">Periodo</label>
+                                <input class="form-control datepicker" data-date-format="dd/mm/yyyy" id="dtpPeriodo" placeholder="dd/mm/yyyy" maxlength="10" autocorrect="off" autocapitalize="off" autocomplete="off" />
+                            </div>
+                        </div>
+                        <div class="row margin5">
+                            <div class="col-sm">
+                                <button class="btn btn-primary" type="button" id="btnShow">
+                                    &nbsp;&nbsp;&nbsp;Mostrar&nbsp;&nbsp;&nbsp;
+                                    <div id="divSpinGenSalidaWms" class="spinner-border spinner-border-sm text-danger" style="display: none" role="status">
+                                        <span class="sr-only">Loading...</span>
+                                    </div>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="clear"></div>
+                    <br />
+                    <div id="gridInv" style="min-height: 460px; width: 100%;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>    
+    var HashId = '';
+    var gridInv = null;
+    var foo = function () {
+    };
+    $.urlParam = function (name) {
+        var results = new RegExp('[\?&]' + name + '=([^&#]*)').exec(window.location.href);
+        if (results == null) {
+            return null;
+        }
+        return decodeURI(results[1]) || 0;
+    }
+    function refreshGrid(auto) {
+        w2ui.grid.autoLoad = auto;
+        w2ui.grid.skip(0);
+    }
+    function afterFillCombobox() { }
+    var crearGrid = new Promise(function (resolve, reject) {
+        var config = {
+            grid: {
+                name: 'gridInv',
+                selectType: 'cell',
+                bResponsive: true,
+                bMobile: window.mobileAndTabletcheck(),
+                url: '@this.Url.Action("GetSnapshootInvByStore", "Grids")?Periodo=' + $('#dtpPeriodo').val(),
+                show: {
+                    footer: true,
+                    toolbar: true,
+                    expandColumn: window.mobileAndTabletcheck()
+                },
+                searches: [
+                    { field: "tienda", caption: "Tienda", type: 'text' }
+                ],
+                colShowResponsive: [
+                    { field: 'tiendaId' },
+                    { field: 'total' }
+                ],
+                columns: [                    
+                    { field: "bodegaId", caption: "BodegaId", sortable: true, hidden: true },
+                    { field: "bodega", caption: "Bodega", sortable: true },
+                    { field: "tiendaId", caption: "TiendaId", sortable: true, size: '80px' },
+                    { field: "tienda", caption: "Tienda", sortable: true },
+                    { field: "womanQty", caption: "Mujeres", sortable: true, size: '100px' },
+                    { field: "manQty", caption: "Hombres", sortable: true, size: '100px' },
+                    { field: "kidsQty", caption: "Niñ@s", sortable: true, size: '100px' },
+                    { field: "accQty", caption: "Accesorios", sortable: true, size: '100px' },
+                    { field: "totalSinCp", caption: "Total sin CP", sortable: true, size: '100px' },
+                    { field: "totalCp", caption: "Total CP", sortable: true, size: '100px' },
+                    { field: "total", caption: "Total", sortable: true, size: '100px' },
+                    { field: "totalSolicitado", caption: "Solicitado", sortable: true, size: '100px' },
+                    { field: "totalDisponible", caption: "Disponible", sortable: true, size: '100px' }                    
+                ]
+            }
+        };
+        gridInv = $('#gridInv').w2grid(config.grid);
+        arrayGrids['gridInv'] = gridInv;
+    });
+    $(document).ready(function () {
+        $('.datepicker').datepicker();
+        fillCombobox('#divSpinCliente', '@this.Url.Action("GetClientsOrders", "Home")', '#cbClient', 'clienteId', 'nombre', 1432);
+        //crearGrid();
+        $('#btnShow').on('click', function () {
+            if (gridInv == null)
+                crearGrid.then();
+            else
+                gridInv.reload2('@this.Url.Action("GetSnapshootInvByStore", "Grids")?Periodo=' + $('#dtpPeriodo').val());
+        });
+    });
+</script>

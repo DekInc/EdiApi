@@ -1108,5 +1108,35 @@ namespace EdiViewer.Controllers
                 return Json(new { total = 0, records = "", errorMessage = e1.ToString() });
             }
         }
+        public async Task<IActionResult> GetSnapshootInvByStore(string Periodo) {
+            DateTime StartTime = DateTime.Now;
+            try {
+                RetData<Tuple<IEnumerable<PaylessInvSnapshotM>, IEnumerable<PaylessInvSnapshotDet>>> List = await ApiClientFactory.Instance.GetSnapshootInvByStore(HttpContext.Session.GetObjSession<int>("Session.ClientId"), Periodo);
+                if (List.Info.CodError != 0)
+                    return Json(new { total = 0, records = "", errorMessage = List.Info.Mensaje });
+                if (List.Data.Item1 == null)
+                    return Json(new { total = 0, records = "", errorMessage = "" });
+                if (List.Data.Item1.Count() == 0)
+                    return Json(new { total = 0, records = "", errorMessage = "" });
+                List<PaylessInvSnapshotDetGModel> Records = List.Data.Item2.Select(O => Utility.Funcs.Reflect(O, new PaylessInvSnapshotDetGModel())).ToList();
+                List<PaylessInvSnapshotDetGModel> AllRecords = new List<PaylessInvSnapshotDetGModel>();
+                int Total = Records.Count;
+                bool HaveForm = true;
+                try {
+                    if (Request.Form != null) {
+                        IFormCollection GridForm = Request.Form;
+                    }
+                } catch {
+                    HaveForm = false;
+                }
+                if (Records.Count() > 0 && HaveForm) {
+                    AllRecords = Utility.ExpressionBuilderHelper.W2uiSearchNoSkip(Records, Request.Form);
+                    Records = Utility.ExpressionBuilderHelper.W2uiSearch(Records, Request.Form);
+                }
+                return Json(new { Total, Records, errorMessage = "", AllRecords });
+            } catch (Exception e1) {
+                return Json(new { total = 0, records = "", errorMessage = e1.ToString() });
+            }
+        }
     }
 }

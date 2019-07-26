@@ -12,7 +12,18 @@ select * from edidb.dbo.IEnetAccesses
 select * from edidb.dbo.IEnetGroupsAccesses
 select * from EdiDb.dbo.Trasladado1
 select * from EdiDb.dbo.PaylessPedidosCpT
+select * from EdiDB.dbo.PaylessInvSnapshotM
+select * from EdiDB.dbo.PaylessInvSnapshotDet order by TiendaId, BodegaId
+select * from wms.dbo.Bodegas b where BodegaId in (81, 82)
+--delete from EdiDB.dbo.PaylessInvSnapshotDet  where TiendaId = 1
+--update EdiDB.dbo.PaylessInvSnapshotDet
+--SET Bodega = 'GLC-TGU' where BodegaId = 82
+--update EdiDB.dbo.PaylessInvSnapshotM SET ClienteId = 1432
+--truncate table EdiDB.dbo.PaylessInvSnapshotDet
 
+select * from wms.[dbo].[DocumentosxTransaccion] order by IdDocxTransaccion DESC
+select * from wms.[dbo].[DocumentoxTipoTransaccion]
+select * from wms.[dbo].Estatus
 --delete from edidb.dbo.IEnetGroupsAccesses where Id = 40
 --37	4	19
 --Hbbb2fdd1866c4212a9f99a0d040620190936
@@ -55,7 +66,7 @@ SELECT * FROM EdiDB.dbo.PedidosExternos order by FechaCreacion DESC
 SELECT * FROM EdiDB.dbo.PedidosExternos order by id DESC --7382
 --delete from EdiDB.dbo.PedidosDetExternos WHERE PedidoId > 240
 SELECT * FROM EdiDB.dbo.PedidosExternos order by FechaPedido DESC
-SELECT * FROM EdiDB.dbo.PedidosExternos where Id = 249 -- H 23, N 40
+SELECT * FROM EdiDB.dbo.PedidosExternos where PedidoWms = 73470 -- H 23, N 40
 SELECT * FROM EdiDB.dbo.PedidosDetExternos where PedidoId = 265
 SELECT * FROM EdiDB.dbo.PedidosExternos where TiendaId = 7389
 
@@ -279,6 +290,7 @@ where Ii.CodProducto like '7376840999%'
 and Ii.Descripcion = 'CABALLEROS'
 order by CodProducto, ItemInventarioID desc
 select * from wms.dbo.Bodegas
+select * from wms.dbo.locations
 select * from EdiDb.dbo.PAYLESS_ProdPrioriDet where Barcode = '7373823622'
 select distinct BarCode from EdiDb.dbo.PAYLESS_ProdPrioriDet
 --2559 - 554 CP + 293 CP = 2298
@@ -322,8 +334,10 @@ select * from wms.dbo.Pedido where PedidoId = 71915
 select * from wms.dbo.DtllPedido where PedidoId = 71908
 --70246, despacho 51633
 select * from wms.dbo.usrsystem where idusr = 'EPALACIOS'
+select * from EdiDB.dbo.PedidosExternos where PedidoWms in (73470, 73283)
 select top 20 * from wms.dbo.Despachos where DocumentoFiscal = 'SA120103' order by DespachoID DESC
-select top 20 * from wms.dbo.Transacciones where NoTransaccion = 'SA120106'
+select top 20 * from wms.dbo.Transacciones where TransaccionID = '122183'
+select top 20 * from wms.dbo.Transacciones where TransaccionID = '121960'
 select top 20 * from wms.dbo.DetalleTransacciones where TransaccionID = 120106
 select top 20 * from wms.dbo.DtllDespacho Dd where Dd.DespachoID = 51953
 SELECT TOP 200 * FROM wms.dbo.Transacciones WHERE PedidoId = 72784
@@ -726,7 +740,7 @@ select max(InventarioID) from wms.dbo.Inventario
 ---1821022
 --1821028
 select count(*)
-select * from wms.dbo.DocumentosxTransaccion where INFORME_ALMACEN like'%GLCHN33-5-008%' order by IDDocxTransaccion desc
+select * from wms.dbo.DocumentosxTransaccion where INFORME_ALMACEN like'%GLCHN33-5-001%' order by IDDocxTransaccion desc
 select top 100 * from wms.dbo.Bodegas
 select top 10 * from wms.dbo.Regimen
 select top 10 * from wms.dbo.Producto where CodProducto = '7380872774'

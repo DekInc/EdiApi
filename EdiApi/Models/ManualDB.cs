@@ -1065,5 +1065,28 @@ namespace EdiApi.Models
                 _DbO.Database.CloseConnection();
             }
         }
+
+        public static IEnumerable<PaylessProdPrioriDet> SP_GetSetInvToday(ref EdiDBContext _DbO, int ClienteId) {
+            List<PaylessProdPrioriDet> ListExists = new List<PaylessProdPrioriDet>();
+            using (DbCommand Cmd = _DbO.Database.GetDbConnection().CreateCommand()) {
+                Cmd.CommandText = $"SP_GetSetInvToday {ClienteId}, 'BOT'";
+                _DbO.Database.OpenConnection();
+                DbDataReader Dr = Cmd.ExecuteReader();
+                if (Dr.HasRows) {
+                    while (Dr.Read()) {
+                        ListExists.Add(new PaylessProdPrioriDet() {
+                            IdTransporte = Dr.Gr<int?>(0),
+                            Barcode = Dr.Gr<string>(1),
+                            Categoria = Dr.Gr<string>(2),
+                            Cp = Dr.Gr<string>(3)
+                        });
+                    }
+                }
+                _DbO.Database.CloseConnection();
+                if (!Dr.IsClosed)
+                    Dr.Close();
+            }
+            return ListExists;
+        }
     }
 }
