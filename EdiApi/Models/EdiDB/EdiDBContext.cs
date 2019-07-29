@@ -89,7 +89,7 @@ namespace EdiApi.Models.EdiDB
         // Unable to generate entity type for table 'dbo.PedidosExternos_Bkp'. Please see the warning messages.
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {   
+        {
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -1384,19 +1384,19 @@ namespace EdiApi.Models.EdiDB
 
                 entity.Property(e => e.Preg17a)
                     .HasColumnName("preg17a")
-                    .HasMaxLength(1024)
+                    .HasMaxLength(2028)
                     .IsUnicode(false);
 
                 entity.Property(e => e.Preg18)
                     .HasColumnName("preg18")
-                    .HasMaxLength(1024)
+                    .HasMaxLength(2028)
                     .IsUnicode(false);
 
                 entity.Property(e => e.Preg2).HasColumnName("preg2");
 
                 entity.Property(e => e.Preg2a)
                     .HasColumnName("preg2a")
-                    .HasMaxLength(8)
+                    .HasMaxLength(128)
                     .IsUnicode(false);
 
                 entity.Property(e => e.Preg2b)
@@ -1413,35 +1413,50 @@ namespace EdiApi.Models.EdiDB
 
                 entity.Property(e => e.Preg3a)
                     .HasColumnName("preg3a")
-                    .HasMaxLength(8)
+                    .HasMaxLength(128)
                     .IsUnicode(false);
 
                 entity.Property(e => e.Preg4).HasColumnName("preg4");
 
                 entity.Property(e => e.Preg4a)
                     .HasColumnName("preg4a")
-                    .HasMaxLength(8)
+                    .HasMaxLength(128)
                     .IsUnicode(false);
 
                 entity.Property(e => e.Preg5).HasColumnName("preg5");
 
                 entity.Property(e => e.Preg5a)
                     .HasColumnName("preg5a")
-                    .HasMaxLength(8)
+                    .HasMaxLength(128)
                     .IsUnicode(false);
 
                 entity.Property(e => e.Preg6).HasColumnName("preg6");
+
+                entity.Property(e => e.Preg6a)
+                    .HasColumnName("preg6a")
+                    .HasMaxLength(128)
+                    .IsUnicode(false);
 
                 entity.Property(e => e.Preg7).HasColumnName("preg7");
 
                 entity.Property(e => e.Preg7a)
                     .HasColumnName("preg7a")
-                    .HasMaxLength(8)
+                    .HasMaxLength(128)
                     .IsUnicode(false);
 
                 entity.Property(e => e.Preg8).HasColumnName("preg8");
 
+                entity.Property(e => e.Preg8a)
+                    .HasColumnName("preg8a")
+                    .HasMaxLength(128)
+                    .IsUnicode(false);
+
                 entity.Property(e => e.Preg9).HasColumnName("preg9");
+
+                entity.Property(e => e.Preg9a)
+                    .HasColumnName("preg9a")
+                    .HasMaxLength(128)
+                    .IsUnicode(false);
             });
 
             modelBuilder.Entity<PaylessEncuestaResM>(entity =>

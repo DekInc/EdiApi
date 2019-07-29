@@ -4762,7 +4762,8 @@ SET XACT_ABORT OFF
                     Pedido = cboPedido.Replace("PD", ""),
                     CodUser = CodUser,
                     FechaCreacion = StartTime.ToString(ApplicationSettings.DateTimeFormat),
-                    Sdr = preg0
+                    Sdr = preg0,
+                    Typ = 0
                 };
                 DbO.PaylessEncuestaResM.Add(NewEnc);
                 DbO.SaveChanges();
@@ -4795,6 +4796,58 @@ SET XACT_ABORT OFF
                     Preg18 = preg18
                 };
                 DbO.PaylessEncuestaResDet.Add(NewRes);                
+                DbO.SaveChanges();
+                return new RetData<string> {
+                    Data = "Se ha guardado la encuesta",
+                    Info = new RetInfo() {
+                        CodError = 0,
+                        Mensaje = "ok",
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            } catch (Exception e1) {
+                return new RetData<string> {
+                    Info = new RetInfo() {
+                        CodError = -1,
+                        Mensaje = e1.ToString(),
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            }
+        }
+        [HttpGet]
+        public RetData<string> SetPaylessEncuestaPedidos2(string CboPedido, string CodUser, string Preg2, string Preg2a, string Preg3, string Preg3a, string Preg4, string Preg4a, string Preg5, string Preg5a, string Preg6, string Preg6a, string Preg7, string Preg7a, string Preg8, string Preg8a, string Preg9, string Preg9a, string Preg18) {
+            DateTime StartTime = DateTime.Now;
+            try {
+                PaylessEncuestaResM NewEnc = new PaylessEncuestaResM {
+                    Pedido = CboPedido.Replace("PD", ""),
+                    CodUser = CodUser,
+                    FechaCreacion = StartTime.ToString(ApplicationSettings.DateTimeFormat),
+                    Typ = 1
+                };
+                DbO.PaylessEncuestaResM.Add(NewEnc);
+                DbO.SaveChanges();
+                PaylessEncuestaResDet NewRes = new PaylessEncuestaResDet {
+                    IdM = NewEnc.Id,
+                    Preg2 = Preg2 == "0" ? false : true,
+                    Preg2a = Preg2a,
+                    Preg3 = Preg3 == "0" ? false : true,
+                    Preg3a = Preg3a,
+                    Preg4 = Preg4 == "0" ? false : true,
+                    Preg4a = Preg4a,
+                    Preg5 = Preg5 == "0" ? false : true,
+                    Preg5a = Preg5a,
+                    Preg6 = Preg6 == "0" ? false : true,
+                    Preg6a = Preg6a,
+                    Preg7 = Preg7 == "0" ? false : true,
+                    Preg7a = Preg7a,
+                    Preg8 = Preg8 == "0" ? false : true,
+                    Preg8a = Preg8a,
+                    Preg9 = Preg9 == "0" ? false : true,
+                    Preg9a = Preg9a,
+                    Preg18 = Preg18
+                };
+                DbO.PaylessEncuestaResDet.Add(NewRes);
                 DbO.SaveChanges();
                 return new RetData<string> {
                     Data = "Se ha guardado la encuesta",
@@ -4973,7 +5026,7 @@ SET XACT_ABORT OFF
                 //DbO.AsyncStates.Add(As1);
                 //DbO.SaveChanges();
                 IEnumerable<PaylessInvSnapshotM> ListSnapM = DbO.PaylessInvSnapshotM.Where(M => M.Periodo.Substring(0, 10) == StartTime.ToString(ApplicationSettings.DateTimeFormatShort));
-                if (ListSnapM.Count() == 0 && StartTime.Hour > 9) {
+                if (ListSnapM.Count() == 0 && StartTime.Hour >= 9) {
                     List<PaylessProdPrioriDet> ListProd = ManualDB.SP_GetSetInvToday(ref DbOLong, ClienteId).ToList();
                     List<PaylessPedidosCpT> ListTemporadaConfig = DbO.PaylessPedidosCpT.ToList();
                     PaylessInvSnapshotM SnapM = new PaylessInvSnapshotM {

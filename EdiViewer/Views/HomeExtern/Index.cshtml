@@ -8,3 +8,13 @@
         <div class="divLogo"><img class="imgLogo" src="~/images/logo4Trans.png" /></div>
     </div>
 </div>
+<style>
+    $.ajax({
+        method: "GET",
+        url: '@this.Url.Action("MakePaylessInvSnapshot", "HomeExtern")'
+    });
+    $.ajax({
+        method: "GET",
+        url: '@this.Url.Action("MakeAutoReportsPayless", "HomeExtern")'
+    });
+</style>

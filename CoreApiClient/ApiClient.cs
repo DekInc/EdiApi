@@ -52,6 +52,7 @@ namespace CoreApiClient
             string data = await response.Content.ReadAsStringAsync();
             return JsonConvert.DeserializeObject<T>(data);
         }
+
         //private async Task<Message<T>> PostAsync<T>(Uri requestUrl, T content)
         //{
         //    var response = await _httpClient.PostAsync(requestUrl.ToString(), CreateHttpContent<T>(content));

@@ -5,10 +5,11 @@ select * from wms_test_29_01_2019.dbo.Paises where NomPais like'%pana%'
 select * from wms.dbo.Clientes with(nolock) where nombre like '%payl%' OR ClienteID = 610 order by ClienteID asc
 select * from edidb.dbo.IEnetUsers where Id > 4 order by CodUsr
 select * from edidb.dbo.IEnetUsers order by CodUsr
-select * from edidb.dbo.IEnetUsers where HashId like '%240720%' order by HashId desc
+select * from edidb.dbo.IEnetUsers where HashId like '%290720%' order by HashId desc
 select * from edidb.dbo.IEnetGroupsAccesses
 select * from edidb.dbo.IEnetAccesses
---delete from edidb.dbo.IEnetAccesses where Id = 23
+--delete from edidb.dbo.IEnetAccesses where Id = 24
+--delete from edidb.dbo.IEnetGroupsAccesses where Id = 46
 select * from edidb.dbo.IEnetGroupsAccesses
 select * from EdiDb.dbo.Trasladado1
 select * from EdiDb.dbo.PaylessPedidosCpT
@@ -53,6 +54,7 @@ select * from EdiDB.dbo.PAYLESS_Reportes order by id desc
 --update EdiDB.dbo.PAYLESS_Reportes SET FechaGen = '21/07/2019 07:02' WHERE Id = 72
 select * from EdiDB.dbo.PaylessEncuestaResM
 select * from EdiDB.dbo.PaylessEncuestaResDet
+--delete from EdiDB.dbo.PaylessEncuestaResDet where IdM = 1
 SELECT DATEPART(wk, GETDATE())
 SELECT DATEPART(wk, '2019-01-01')
 --truncate table EdiDB.dbo.PaylessEncuestaRepMm
@@ -64,6 +66,8 @@ select * from EdiDB.dbo.PAYLESS_Reportes where Periodo = '09/06/2019'
 select * from EdiDB.dbo.PAYLESS_ReportesDet where IdM = 59 order by Id
 SELECT * FROM EdiDB.dbo.PedidosExternos order by FechaCreacion DESC
 SELECT * FROM EdiDB.dbo.PedidosExternos order by id DESC --7382
+SELECT * FROM EdiDB.dbo.PedidosExternos where id = 303
+--update EdiDB.dbo.PedidosExternos SET FechaPedido = '31/07/2019 09:00' where id = 303
 --delete from EdiDB.dbo.PedidosDetExternos WHERE PedidoId > 240
 SELECT * FROM EdiDB.dbo.PedidosExternos order by FechaPedido DESC
 SELECT * FROM EdiDB.dbo.PedidosExternos where PedidoWms = 73470 -- H 23, N 40
@@ -881,7 +885,8 @@ order by Dt.TransaccionID DESC
 --7365821972
 --7381831861 tiene dos entradas pero no la salida...
 select * from wms.dbo.Racks where Rack = 11759
-select * from wms.dbo.Transacciones where usuarioCrea = 'RPERDOMO' and IDTipoTransaccion = 'IN' and ClienteID = 1432 order by FechaCrea DESC
+select * from wms.dbo.Transacciones where --usuarioCrea = 'RPERDOMO' and 
+IDTipoTransaccion = 'IN' and ClienteID = 1432 order by TransaccionID DESC
 select * from wms.dbo.Transacciones WITH(NOLOCK) where usuarioCrea = 'Hilmer' order by FechaCrea DESC
 select * from wms.dbo.Transacciones WITH(NOLOCK) where-- IDTipoTransaccion = 'IN' and 
 ClienteID = 1432 order by FechaCrea DESC

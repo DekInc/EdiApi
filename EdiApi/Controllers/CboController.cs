@@ -62,7 +62,7 @@ namespace EdiApi.Controllers
             yield return new TsqlDespachosWmsComplex() { ErrorMessage = E1.ToString() };
         }
         [HttpGet]
-        public RetData<IEnumerable<CboValuesModel>> GetPaylessEncuestaCboPedidos(int TiendaId) {
+        public RetData<IEnumerable<CboValuesModel>> GetPaylessEncuestaCboPedidos(int TiendaId, int Typ) {
             DateTime StartTime = DateTime.Now;
             try {
                 int DaysToAdd = 0;
@@ -105,7 +105,7 @@ namespace EdiApi.Controllers
                         T = $"# {Pe.Id} - {Pe.FechaPedido} "
                     }
                     ).Distinct().ToList();
-                foreach (PaylessEncuestaResM ResM in DbO.PaylessEncuestaResM) {
+                foreach (PaylessEncuestaResM ResM in DbO.PaylessEncuestaResM.Where(Per => Per.Typ == Typ)) {
                     if (ListOrders.Where(O => O.V == ResM.Pedido.ToString()).Count() > 0)
                         ListOrders.RemoveAll(O => O.V == ResM.Pedido.ToString());
                 }

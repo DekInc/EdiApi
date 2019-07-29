@@ -33,6 +33,9 @@ namespace EdiViewer.Controllers
         public IActionResult PaylessEncuesta() {
             return View();
         }
+        public IActionResult PaylessEncuestaConductor() {
+            return View();
+        }
         public IActionResult PaylessEncuestaRep() {
             return View();
         }        
@@ -49,12 +52,26 @@ namespace EdiViewer.Controllers
         public IActionResult InvPaylessTienda() {
             return View();
         }
-        public IActionResult SnapshootInvPayless() {
+        public IActionResult SnapshotInvPayless() {
             return View();
         }        
         public IActionResult PaylessReportes() {
             return View();
-        }        
+        }
+        [HttpGet]
+        public async Task<string> MakePaylessInvSnapshot() {            
+            try {
+                RetData<string> Ret = await ApiClientFactory.Instance.MakePaylessInvSnapshot(1432);
+            } catch { }
+            return "";
+        }
+        [HttpGet]
+        public async Task<string> MakeAutoReportsPayless() {
+            try {
+                RetData<string> Ret = await ApiClientFactory.Instance.MakeAutoReportsPayless();
+            } catch { }
+            return "";
+        }
         public async Task<IActionResult> PedidosDet(int PedidoId)
         {
             RetData<IEnumerable<TsqlDespachosWmsComplex>> ListPe = await ApiClientFactory.Instance.GetPedidosDet(PedidoId);
@@ -1943,10 +1960,10 @@ namespace EdiViewer.Controllers
                 };
             }
         }
-        public async Task<RetData<IEnumerable<CboValuesModel>>> GetPaylessEncuestaCboPedidos() {
+        public async Task<RetData<IEnumerable<CboValuesModel>>> GetPaylessEncuestaCboPedidos(int Typ) {
             DateTime StartTime = DateTime.Now;
             try {
-                RetData<IEnumerable<CboValuesModel>> List = await ApiClientFactory.Instance.GetPaylessEncuestaCboPedidos(HttpContext.Session.GetObjSession<int>("Session.TiendaId"));
+                RetData<IEnumerable<CboValuesModel>> List = await ApiClientFactory.Instance.GetPaylessEncuestaCboPedidos(HttpContext.Session.GetObjSession<int>("Session.TiendaId"), Typ);
                 return List;
             } catch (Exception e2) {
                 return new RetData<IEnumerable<CboValuesModel>>() {
@@ -2093,6 +2110,68 @@ namespace EdiViewer.Controllers
                     preg16,
                     preg17,
                     preg17a,
+                    preg18
+                    );
+                return Ret;
+            } catch (Exception e2) {
+                return new RetData<string>() {
+                    Info = new RetInfo() {
+                        CodError = -1,
+                        Mensaje = e2.ToString(),
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            }
+        }
+        public async Task<RetData<string>> SetPaylessEncuestaPedidos2(
+            string cboPedido,
+            string preg2,
+            string preg2a,
+            string preg3,
+            string preg3a,
+            string preg4,
+            string preg4a,
+            string preg5,
+            string preg5a,
+            string preg6,
+            string preg6a,
+            string preg7,
+            string preg7a,
+            string preg8,
+            string preg8a,
+            string preg9,
+            string preg9a,
+            string preg18
+            ) {
+            DateTime StartTime = DateTime.Now;
+            if (string.IsNullOrEmpty(cboPedido))
+                return new RetData<string>() {
+                    Info = new RetInfo() {
+                        CodError = -1,
+                        Mensaje = "El pedido no ha sido seleccionado",
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };            
+            try {
+                RetData<string> Ret = await ApiClientFactory.Instance.SetPaylessEncuestaPedidos2(
+                    cboPedido,
+                    HttpContext.Session.GetObjSession<string>("Session.CodUsr"),
+                    preg2,
+                    preg2a,
+                    preg3,
+                    preg3a,
+                    preg4,
+                    preg4a,
+                    preg5,
+                    preg5a,
+                    preg6,
+                    preg6a,
+                    preg7,
+                    preg7a,
+                    preg8,
+                    preg8a,
+                    preg9,
+                    preg9a,
                     preg18
                     );
                 return Ret;

@@ -11,5 +11,6 @@ namespace EdiApi.Models.EdiDB
         public string Sdr { get; set; }
         public string CodUser { get; set; }
         public string FechaCreacion { get; set; }
+        public int? Typ { get; set; }
     }
 }

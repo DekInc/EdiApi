@@ -19,10 +19,13 @@ namespace EdiApi.Models.EdiDB
         public bool? Preg5 { get; set; }
         public string Preg5a { get; set; }
         public bool? Preg6 { get; set; }
+        public string Preg6a { get; set; }
         public bool? Preg7 { get; set; }
         public string Preg7a { get; set; }
         public bool? Preg8 { get; set; }
+        public string Preg8a { get; set; }
         public bool? Preg9 { get; set; }
+        public string Preg9a { get; set; }
         public bool? Preg10 { get; set; }
         public bool? Preg11 { get; set; }
         public bool? Preg12 { get; set; }
