@@ -1,0 +1,85 @@
+﻿@using ComModels
+@{
+    ViewData["Title"] = "Pedidos borrados";
+    Layout = "_Layout";
+}
+<div id="mainDiv">
+    <div class="container">
+        <div class="card-deck cardMain">
+            <div class="card box-shadow">
+                <div class="card-header">
+                    <h4 class="my-0 font-weight-normal">Pedidos borrados</h4>
+                </div>
+                <div class="card-body">
+                    <div id="gridPedidosHist" style="min-height: 460px; width: 100%;">
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    var mainGrid = null;
+    var foo = function () {
+    };
+    $.urlParam = function (name) {
+        var results = new RegExp('[\?&]' + name + '=([^&#]*)').exec(window.location.href);
+        if (results == null) {
+            return null;
+        }
+        return decodeURI(results[1]) || 0;
+    }
+    function refreshGrid(auto) {
+        w2ui.grid.autoLoad = auto;
+        w2ui.grid.skip(0);
+    }
+    function crearGrid() {
+        var config = {
+            grid: {
+                name: 'gridPedidosHist',
+                selectType: 'cell',
+                bResponsive: true,
+                bMobile: window.mobileAndTabletcheck(),
+                url: "@this.Url.Action("GetPedidosHist", "Grids")",
+                show: {
+                    footer: true,
+                    toolbar: true,
+                    expandColumn: window.mobileAndTabletcheck()
+                },
+                searches: [
+                    { field: "id", caption: "Id orden", type: 'text' },
+                    //{ field: "periodo", caption: "Periodo", type: 'text' },
+                    { field: "fechaCreacion", caption: "Fecha de creación", type: 'text' },
+                    { field: "fechaPedido", caption: "Fecha y hora esperada", type: 'text' }
+                ],
+                colShowResponsive: [
+                    { field: 'id' },
+                    { field: 'fechaPedido' }
+                ],
+                columns: [
+                    { field: "id", caption: "Id orden", sortable: true },
+                    //{ field: "periodo", caption: "Periodo", sortable: true },
+                    { field: "fechaCreacion", caption: "Fecha de creación", sortable: true },
+                    { field: "fechaBorrado", caption: "Fecha de borrado", sortable: true },
+                    { field: "fechaPedido", caption: "Fecha y hora esperada", sortable: true },
+                    { field: "womanQty", caption: "Mujeres", sortable: true, hidden: false, size: '80px' },
+                    { field: "manQty", caption: "Hombres", sortable: true, hidden: false, size: '80px' },
+                    { field: "kidQty", caption: "Niñ@s", sortable: true, hidden: false, size: '80px' },
+                    { field: "accQty", caption: "Accesorios", sortable: true, hidden: false, size: '80px' },
+                    { field: "womanQtyT", caption: "T Mujeres", sortable: true, hidden: false, size: '80px' },
+                    { field: "manQtyT", caption: "T Hombres", sortable: true, hidden: false, size: '80px' },
+                    { field: "kidQtyT", caption: "T Niñ@s", sortable: true, hidden: false, size: '80px' },
+                    { field: "accQtyT", caption: "T Accesorios", sortable: true, hidden: false, size: '80px' },
+                    { field: "totalCp", caption: "Total CP", sortable: true, hidden: false },
+                    { field: "cont", caption: "Cantidad total", sortable: true }                    
+                ]
+            }
+        };
+        mainGrid = $('#gridPedidosHist').w2grid(config.grid);
+        arrayGrids['gridPedidosHist'] = mainGrid;
+    }
+    $(document).ready(function () {
+        crearGrid();
+    });
+</script>

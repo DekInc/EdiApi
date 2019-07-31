@@ -4953,17 +4953,60 @@ SET XACT_ABORT OFF
                             && Mp.FechaPedido.ToDateEsp() < Rep.FechaF.ToDateEsp()
                             select Mr
                         );
-                        foreach (PaylessEncuestaResM Res in ListEncuestas) {
-                            PaylessEncuestaRepDet1 D1 = new PaylessEncuestaRepDet1 {
-                                IdM = Rep.Id,
-                                TiendaId = Res.TiendaId                                
-                            };
-                            foreach (PaylessEncuestaResDet ResD in DbO.PaylessEncuestaResDet.Where(Erd => Erd.IdM == Res.Id)) {
-                                PaylessEncuestaRepDet2 D2 = new PaylessEncuestaRepDet2 {
+                        IEnumerable<string> ListPedidos = ListEncuestas.OrderBy(E2 => E2.Pedido).Select(E => E.Pedido).Distinct();
+                        DbO.PaylessEncuestaRepDet2.RemoveRange(
+                            from D1 in DbO.PaylessEncuestaRepDet1
+                            from D2 in DbO.PaylessEncuestaRepDet2
+                            where D2.IdM == D1.Id
+                            && D1.IdM == Rep.Id
+                            select D2
+                            );
+                        DbO.PaylessEncuestaRepDet1.RemoveRange(DbO.PaylessEncuestaRepDet1.Where(Rd => Rd.IdM == Rep.Id));                        
+                        foreach (string PedidoId in ListPedidos) {
+                            IEnumerable<PaylessEncuestaResM> ListEncuestaResM = DbO.PaylessEncuestaResM.Where(R => R.Pedido == PedidoId);
+                            if (ListEncuestaResM.Count() > 0) {
+                                PaylessEncuestaRepDet1 D1 = new PaylessEncuestaRepDet1 {
                                     IdM = Rep.Id,
-                                    C0 = ResD.Preg2,
-                                    C1 = ResD.Preg4
+                                    TiendaId = ListEncuestaResM.Fod().TiendaId
+                                };                                
+                                DbO.PaylessEncuestaRepDet1.Add(D1);
+                                DbO.SaveChanges();
+                                PaylessEncuestaRepDet2 D2 = new PaylessEncuestaRepDet2 {
+                                    IdM = D1.Id
                                 };
+                                IEnumerable<PaylessEncuestaResM> Typ0 = ListEncuestaResM.Where(R1 => R1.Typ == 0);
+                                IEnumerable<PaylessEncuestaResM> Typ1 = ListEncuestaResM.Where(R1 => R1.Typ == 1);
+                                if (Typ0.Count() > 0) {
+                                    PaylessEncuestaResDet ResD = DbO.PaylessEncuestaResDet.Where(R2 => R2.IdM == Typ0.Fod().Id).Fod();
+                                    D2.C0 = ResD.Preg2;
+                                    D2.C1 = ResD.Preg4;
+                                    D2.C2 = ResD.Preg5;
+                                    D2.C4 = ResD.Preg6;
+                                    D2.C5 = ResD.Preg7;
+                                    D2.C6 = ResD.Preg11;
+                                    D2.C7 = ResD.Preg11;
+                                    D2.C8 = ResD.Preg12;
+                                    D2.C9 = ResD.Preg13;
+                                    D2.C10 = (ResD.Preg8 ?? false)
+                                             && (ResD.Preg9 ?? false)
+                                             && (ResD.Preg10 ?? false)
+                                             && (ResD.Preg14 ?? false)
+                                             && (ResD.Preg15 ?? false)
+                                             && (ResD.Preg17 ?? false);
+                                    D2.C11 = ResD.Preg16;
+                                }
+                                if (Typ1.Count() > 0) {
+                                    PaylessEncuestaResDet ResD = DbO.PaylessEncuestaResDet.Where(R2 => R2.IdM == Typ1.Fod().Id).Fod();
+                                    D2.C12 = ResD.Preg8;
+                                    D2.C13 = ResD.Preg9;
+                                    D2.C14 = ResD.Preg6;
+                                    D2.C15 = ResD.Preg2;
+                                    D2.C16 = ResD.Preg3;
+                                    D2.C17 = (ResD.Preg4 ?? false) && (ResD.Preg5 ?? false);
+                                    D2.C18 = ResD.Preg7;
+                                }
+                                DbO.PaylessEncuestaRepDet2.Add(D2);
+                                DbO.SaveChanges();
                             }
                         }
                     }
@@ -4987,13 +5030,24 @@ SET XACT_ABORT OFF
             }
         }
         [HttpGet]
-        public RetData<Tuple<IEnumerable<PaylessEncuestaResM>, IEnumerable<PaylessEncuestaResDet>>> GetExcelEncuestaMatrix(int Id) {
+        public RetData<Tuple<PaylessEncuestaRepMm, IEnumerable<PaylessEncuestaRepDet1>, IEnumerable<PaylessEncuestaRepDet2>>> GetExcelEncuestaMatrix(int Id) {
             DateTime StartTime = DateTime.Now;
-            try {                
-                return new RetData<Tuple<IEnumerable<PaylessEncuestaResM>, IEnumerable<PaylessEncuestaResDet>>> {
-                    Data = new Tuple<IEnumerable<PaylessEncuestaResM>, IEnumerable<PaylessEncuestaResDet>>(
-                        DbO.PaylessEncuestaResM.Where(O => O.Id == Id),
-                        DbO.PaylessEncuestaResDet.Where(O2 => O2.IdM == Id)
+            try {
+                return new RetData<Tuple<PaylessEncuestaRepMm, IEnumerable<PaylessEncuestaRepDet1>, IEnumerable<PaylessEncuestaRepDet2>>> {
+                    Data = new Tuple<PaylessEncuestaRepMm, IEnumerable<PaylessEncuestaRepDet1>, IEnumerable<PaylessEncuestaRepDet2>>(
+                        DbO.PaylessEncuestaRepMm.Where(O1 => O1.Id == Id).Fod(),
+                        (from M in DbO.PaylessEncuestaRepMm
+                         from D in DbO.PaylessEncuestaRepDet1
+                         where D.IdM == M.Id
+                         select D
+                         ),
+                        (from M in DbO.PaylessEncuestaRepMm
+                         from D in DbO.PaylessEncuestaRepDet1
+                         from D2 in DbO.PaylessEncuestaRepDet2
+                         where D.IdM == M.Id
+                         && D2.IdM == D.Id
+                         select D2
+                         )
                         ),
                     Info = new RetInfo() {
                         CodError = 0,
@@ -5002,7 +5056,7 @@ SET XACT_ABORT OFF
                     }
                 };
             } catch (Exception e1) {
-                return new RetData<Tuple<IEnumerable<PaylessEncuestaResM>, IEnumerable<PaylessEncuestaResDet>>> {
+                return new RetData<Tuple<PaylessEncuestaRepMm, IEnumerable<PaylessEncuestaRepDet1>, IEnumerable<PaylessEncuestaRepDet2>>> {
                     Info = new RetInfo() {
                         CodError = -1,
                         Mensaje = e1.ToString(),
@@ -5137,6 +5191,157 @@ SET XACT_ABORT OFF
                 };
             } catch (Exception e1) {
                 return new RetData<Tuple<IEnumerable<PaylessInvSnapshotM>, IEnumerable<PaylessInvSnapshotDet>>> {
+                    Info = new RetInfo() {
+                        CodError = -1,
+                        Mensaje = e1.ToString(),
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            }
+        }
+        [HttpGet]
+        public RetData<string> SetChangeDis(int PedidoId) {
+            DateTime StartTime = DateTime.Now;
+            if (PedidoId == 0)
+                return new RetData<string> {
+                    Info = new RetInfo() {
+                        CodError = -1,
+                        Mensaje = "Error desconocido, no se enviaron parámetros.",
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            try {
+                IEnumerable<PedidosExternos> ListPed = (from P in DbO.PedidosExternos where P.Id == PedidoId select P);
+                if (ListPed.Count() > 0) {
+                    PedidosExternos Pedido = ListPed.Fod();
+                    Pedido.IdEstado = 4;
+                    DbO.PedidosExternos.Update(Pedido);
+                    DbO.SaveChanges();
+                    return new RetData<string> {
+                        Data = "Se ha marcado el pedido para ser borrado, bodega tendrá que confirmar la eliminación para que ya no aparezca.",
+                        Info = new RetInfo() {
+                            CodError = 0,
+                            Mensaje = "ok",
+                            ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                        }
+                    };
+                } else {
+                    return new RetData<string> {
+                        Info = new RetInfo() {
+                            CodError = -1,
+                            Mensaje = "Error desconocido al cambiar el despacho del pedido web",
+                            ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                        }
+                    };
+                }
+            } catch (Exception e1) {
+                return new RetData<string> {
+                    Info = new RetInfo() {
+                        CodError = -1,
+                        Mensaje = e1.ToString(),
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            }
+        }
+        [HttpGet]
+        public RetData<string> SetDeleteDis(int PedidoId) {
+            DateTime StartTime = DateTime.Now;
+            if (PedidoId == 0)
+                return new RetData<string> {
+                    Info = new RetInfo() {
+                        CodError = -1,
+                        Mensaje = "Error desconocido, no se enviaron parámetros.",
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            try {
+                PedidosExternosDel Ped = (from P in DbO.PedidosExternos where P.Id == PedidoId select P).Select(O => Utility.Funcs.Reflect(O, new PedidosExternosDel())).Fod();
+                Ped.FechaBorrado = StartTime.ToString(ApplicationSettings.DateTimeFormat);
+                DbO.PedidosExternosDel.AddRange(Ped);
+                IEnumerable<PedidosDetExternosDel> ListPedDet = (
+                    from Pd in DbO.PedidosDetExternos
+                    where Pd.PedidoId == PedidoId
+                    select new PedidosDetExternosDel {
+                        Id = Pd.Id,
+                        CantPedir = Pd.CantPedir,
+                        CodProducto = Pd.CodProducto,
+                        PedidoId = Pd.PedidoId,
+                        Producto = Pd.Producto
+                    }
+                    );
+                DbO.PedidosDetExternosDel.AddRange(ListPedDet);
+                DbO.SaveChanges();
+                DbO.PedidosExternos.RemoveRange((from P in DbO.PedidosExternos where P.Id == PedidoId select P));
+                DbO.PedidosDetExternos.RemoveRange(from Pd in DbO.PedidosDetExternos
+                                              where Pd.PedidoId == PedidoId select Pd);
+                DbO.SaveChanges();
+                return new RetData<string> {
+                    Data = "El pedido ha sido borrado.",
+                    Info = new RetInfo() {
+                        CodError = 0,
+                        Mensaje = "ok",
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            } catch (Exception e1) {
+                return new RetData<string> {
+                    Info = new RetInfo() {
+                        CodError = -1,
+                        Mensaje = e1.ToString(),
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            }
+        }
+        [HttpGet]
+        public RetData<string> SetRestoreDis(int PedidoId) {
+            DateTime StartTime = DateTime.Now;
+            if (PedidoId == 0)
+                return new RetData<string> {
+                    Info = new RetInfo() {
+                        CodError = -1,
+                        Mensaje = "Error desconocido, no se enviaron parámetros.",
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            try {
+                PedidosExternos Ped = (from P in DbO.PedidosExternos where P.Id == PedidoId select P).Fod();
+                Ped.IdEstado = 3;
+                DbO.PedidosExternos.Update(Ped);
+                DbO.SaveChanges();
+                return new RetData<string> {
+                    Data = "El pedido ha sido restaurado.",
+                    Info = new RetInfo() {
+                        CodError = 0,
+                        Mensaje = "ok",
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            } catch (Exception e1) {
+                return new RetData<string> {
+                    Info = new RetInfo() {
+                        CodError = -1,
+                        Mensaje = e1.ToString(),
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            }
+        }
+        [HttpGet]
+        public RetData<IEnumerable<PedidosExternosDel>> GetPedidosHist(int ClienteId) {
+            DateTime StartTime = DateTime.Now;
+            try {
+                return new RetData<IEnumerable<PedidosExternosDel>> {
+                    Data = DbO.PedidosExternosDel.Where(O => O.ClienteId == ClienteId),
+                    Info = new RetInfo() {
+                        CodError = 0,
+                        Mensaje = "ok",
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            } catch (Exception e1) {
+                return new RetData<IEnumerable<PedidosExternosDel>> {
                     Info = new RetInfo() {
                         CodError = -1,
                         Mensaje = e1.ToString(),

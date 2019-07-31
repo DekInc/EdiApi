@@ -80,8 +80,10 @@ namespace EdiApi.Models.EdiDB
         public virtual DbSet<PaylessTiendas> PaylessTiendas { get; set; }
         public virtual DbSet<PaylessTransporte> PaylessTransporte { get; set; }
         public virtual DbSet<PedidosDetExternos> PedidosDetExternos { get; set; }
+        public virtual DbSet<PedidosDetExternosDel> PedidosDetExternosDel { get; set; }
         public virtual DbSet<PedidosEstadosExternos> PedidosEstadosExternos { get; set; }
         public virtual DbSet<PedidosExternos> PedidosExternos { get; set; }
+        public virtual DbSet<PedidosExternosDel> PedidosExternosDel { get; set; }
         public virtual DbSet<ProductoUbicacion> ProductoUbicacion { get; set; }
         public virtual DbSet<UsuariosExternos> UsuariosExternos { get; set; }
         public virtual DbSet<WmsProductoExistencia> WmsProductoExistencia { get; set; }
@@ -1751,6 +1753,15 @@ namespace EdiApi.Models.EdiDB
                 entity.Property(e => e.Producto).HasMaxLength(1);
             });
 
+            modelBuilder.Entity<PedidosDetExternosDel>(entity =>
+            {
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.Property(e => e.CodProducto).HasMaxLength(50);
+
+                entity.Property(e => e.Producto).HasMaxLength(1);
+            });
+
             modelBuilder.Entity<PedidosEstadosExternos>(entity =>
             {
                 entity.Property(e => e.Id).ValueGeneratedNever();
@@ -1777,6 +1788,29 @@ namespace EdiApi.Models.EdiDB
                     .IsUnicode(false);
 
                 entity.Property(e => e.PedidoWms).HasColumnName("PedidoWMS");
+
+                entity.Property(e => e.Periodo).HasMaxLength(10);
+
+                entity.Property(e => e.TotalCp).HasColumnName("TotalCP");
+            });
+
+            modelBuilder.Entity<PedidosExternosDel>(entity =>
+            {
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.Property(e => e.ClienteId).HasColumnName("ClienteID");
+
+                entity.Property(e => e.FechaBorrado).HasMaxLength(16);
+
+                entity.Property(e => e.FechaCreacion).HasMaxLength(16);
+
+                entity.Property(e => e.FechaPedido).HasMaxLength(16);
+
+                entity.Property(e => e.FechaUltActualizacion).HasMaxLength(10);
+
+                entity.Property(e => e.InvType)
+                    .HasMaxLength(4)
+                    .IsUnicode(false);
 
                 entity.Property(e => e.Periodo).HasMaxLength(10);
 

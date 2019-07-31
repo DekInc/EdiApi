@@ -132,6 +132,42 @@
                 }
             });
         });
+    }    
+    function borrarPedido(pedidoId) {
+        var confirm1 = confirm('¿Está seguro/a  de borrar el pedido?');
+        if (confirm1 === true) {
+            $.ajax({
+                method: "GET",
+                url: "@this.Url.Action("SetDeleteDis", "HomeExtern")?PedidoId=" + pedidoId,
+                success: function (json) {
+                    if (json.info.codError != 0)
+                        menErrorEdi(json.info.mensaje, 'Error en petición');
+                    else
+                        menErrorEdi(json.data, 'Información');
+                    gridOrdenes.reload2('@this.Url.Action("GetPeticionesAdminB", "Grids")?ClienteId=' + $('#cbClient').val() + '&dtp1=' + $('#dtp1').val() + '&chkPending=' + $('#chkPending').prop('checked'));
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    menErrorEdi(xhr.status, 'Error throw in js');
+                    menErrorEdi(thrownError, 'Error throw in js');
+                }
+            });
+        } else {
+            $.ajax({
+                method: "GET",
+                url: "@this.Url.Action("SetRestoreDis", "HomeExtern")?PedidoId=" + pedidoId,
+                success: function (json) {
+                    if (json.info.codError != 0)
+                        menErrorEdi(json.info.mensaje, 'Error en petición');
+                    else
+                        menErrorEdi(json.data, 'Información');
+                    gridOrdenes.reload2('@this.Url.Action("GetPeticionesAdminB", "Grids")?ClienteId=' + $('#cbClient').val() + '&dtp1=' + $('#dtp1').val() + '&chkPending=' + $('#chkPending').prop('checked'));
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    menErrorEdi(xhr.status, 'Error throw in js');
+                    menErrorEdi(thrownError, 'Error throw in js');
+                }
+            });
+        }
     }
     function crearGrid() {
         var config = {
@@ -178,6 +214,7 @@
                             if (record.idEstado == 1) return '<span class="thisSpan" alt="' + record.id + '">Guardado</span>';
                             if (record.idEstado == 2) return '<span class="thisSpan" alt="' + record.id + '">Pendiente</span>';
                             if (record.idEstado == 3) return '<span class="thisSpan" alt="' + record.id + '">Despachado</span>';
+                            if (record.idEstado == 4) return '<span class="thisSpan" alt="' + record.id + '"><a href="javascript:borrarPedido(' + record.id + ')">¿BORRAR?</a></span>';
                         }
                     },
                     { field: "womanQty", caption: "Mujeres", sortable: true, hidden: false, size: '80px' },

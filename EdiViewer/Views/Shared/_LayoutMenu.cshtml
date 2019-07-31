@@ -50,6 +50,7 @@
                             }
                             @if (Context.Session.GetObjSession<List<string>>("ListPermits").Where(O => O == "Admin_Pedidos_Payless").Count() > 0) {
                                 <a class="dropdown-item" asp-area="" asp-controller="HomeExtern" asp-action="PeticionesAdminB">Pedidos Payless</a>
+                                <a class="dropdown-item" asp-area="" asp-controller="HomeExtern" asp-action="PaylessPedidosHist">Pedidos borrados</a>
                             }
                         </div>
                     </li>

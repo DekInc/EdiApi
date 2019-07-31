@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 
 namespace EdiApi.Utility {
@@ -18,6 +19,25 @@ namespace EdiApi.Utility {
                 if ((new DateTime(year, month, day)).DayOfWeek == DayOfWeek.Saturday)
                     yield return new DateTime(year, month, day, 10, 0, 0);
             }
+        }
+        /// <summary>
+        /// Copia todo lo del origen al destino, pero deben ser iguales
+        /// </summary>
+        /// <typeparam name="T1"></typeparam>
+        /// <typeparam name="T2"></typeparam>
+        /// <param name="Or"></param>
+        /// <param name="Dest"></param>
+        /// <returns></returns>
+        public static T2 Reflect<T1, T2>(T1 Or, T2 Dest) {
+            foreach (PropertyInfo PropertyInfoO in Or.GetType().GetProperties()) {
+                try {
+                    if (Dest.GetType().GetProperty(PropertyInfoO.Name) != null && Dest.GetType().GetProperty(PropertyInfoO.Name).CanWrite)
+                        Dest.GetType().GetProperty(PropertyInfoO.Name).SetValue(Dest, Or.GetType().GetProperty(PropertyInfoO.Name).GetValue(Or));
+                } catch (Exception er1) {
+                    throw er1;
+                }
+            }
+            return Dest;
         }
     }
 }

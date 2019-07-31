@@ -116,13 +116,14 @@
                             if (record.idEstado == 1) return '<span class="thisSpan" alt="' + record.id + '">Guardado</span>';
                             if (record.idEstado == 2) return '<span class="thisSpan" alt="' + record.id + '">Pendiente</span>';
                             if (record.idEstado == 3) return '<span class="thisSpan" alt="' + record.id + '">Despachado</span>';
+                            if (record.idEstado == 4) return '<span class="thisSpan" alt="' + record.id + '">Petición de borrado</span>';
                         }
                     },
                     {
                         field: "periodo", caption: "", sortable: true, render: function (record) {
                             var strBtn = '<div class="w2ui-buttons"><a href="javascript:verDetalle(' + record.id + ')">Ver detalle</a>';
-                            //if (record.idEstado == 2 && record.changeState)
-                            //    strBtn += ' | <a href="javascript:ModifyDis(' + record.id + ')">Modificar</a>';
+                            if (record.idEstado == 2 && record.changeState)
+                                strBtn += ' | <a href="javascript:ModifyDis(' + record.id + ')">Borrar</a>';
                             strBtn += '</div>';
                             return strBtn;
                         }
@@ -175,18 +176,17 @@
         };
         gridOrdenesDet = $('#gridOrdenesDet').w2grid(config.grid);
         arrayGrids['gridOrdenesDet'] = gridOrdenesDet;
-    }
-    function verDetalle(pedidoId) {
-        $('#exampleModalLabel3').html('Detalle de orden');
-        ModalPopPeticionDet = $('#modalPopPeticionDet').modal();
-        gridOrdenesDet.reload2('@this.Url.Action("GetPeticionDet", "Grids")?PedidoId=' + pedidoId);
-    }
+    }    
     function ModifyDis(pedidoId) {
         $.ajax({
             method: "GET",
             url: "@this.Url.Action("SetChangeDis", "HomeExtern")?PedidoId=" + pedidoId,
-            success: function (data) {
-                window.location.href = '@this.Url.Action("PedidosPayless3", "HomeExtern")';
+            success: function (json) {
+                if (json.info.codError != 0)
+                        menErrorEdi(json.info.mensaje, 'Error en petición');                        
+                    else
+                        menErrorEdi(json.data, 'Información');                    
+                    gridOrdenes.reload2('@this.Url.Action("GetPeticiones", "Grids")');
             },
             error: function (xhr, ajaxOptions, thrownError) {
                 menErrorEdi(xhr.status, 'Error throw in js');

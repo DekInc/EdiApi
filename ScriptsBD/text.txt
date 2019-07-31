@@ -78,6 +78,7 @@ SQLServer 114 tmsadmin:TmsAdmin$10
 
 GitBucket
 root:Glcr00t
+root:Glcr00t
 
 Configurar ftp
 
