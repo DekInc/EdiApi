@@ -8,6 +8,7 @@ IF OBJECT_ID('SP_GetPedidosPendientesAdmin', 'P') IS NOT NULL
 	DROP PROC dbo.SP_GetPedidosPendientesAdmin
 GO
 CREATE PROCEDURE dbo.SP_GetPedidosPendientesAdmin
+@ClienteId INT
 AS
 BEGIN
 	DELETE FROM EdiDB.dbo.ProductoUbicacion WHERE Typ = 1
@@ -28,7 +29,7 @@ BEGIN
 			ON R.Rack = I.Rack
 		JOIN wms.dbo.Bodegas B WITH(NOLOCK)
 			ON B.BodegaID = Tr.BodegaID
-		where I.ClienteID = 1432
+		where I.ClienteID = @ClienteId
 		AND Ii.Existencia > 0
 
 	SELECT DISTINCT
@@ -58,11 +59,12 @@ BEGIN
 		ON M.Id = D.IdPAYLESS_ProdPrioriM
 	LEFT JOIN EdiDB.dbo.ProductoUbicacion Pu WITH(NOLOCK)
 		ON Pu.CodProducto = PeD.CodProducto AND Pu.Typ = 1
-	WHERE Pe.IdEstado = 2
+	WHERE Pe.IdEstado IN (2, 4)
+	AND Pe.ClienteID = @ClienteId
 	ORDER BY Pe.Id, Pe.TiendaId, M.Periodo, D.Categoria, D.Barcode
 END
 
-EXEC EdiDb.dbo.SP_GetPedidosPendientesAdmin
+EXEC EdiDb.dbo.SP_GetPedidosPendientesAdmin 1432
 
 select * from EdiDB.dbo.ProductoUbicacion
 select distinct Typ from select * from EdiDB.dbo.ProductoUbicacion

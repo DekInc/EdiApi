@@ -616,6 +616,11 @@ table.dataTable.dtr-inline.collapsed > tbody > tr[role="row"] > td:first-child:b
     font-weight: bold !important;
     padding-bottom: 26px;
 }
+#spanClientName2 {
+    font-size: 16pt !important;
+    font-weight: bold !important;
+    padding-bottom: 16px;
+}
 #tblReportes_paginate {
     /*max-width: 460px;*/
 }

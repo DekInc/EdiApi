@@ -72,10 +72,10 @@
         var config = {
             grid: {
                 name: 'gridInv',
-                selectType: 'cell',
+                selectType: 'row',
                 bResponsive: true,
                 bMobile: window.mobileAndTabletcheck(),
-                url: '@this.Url.Action("GetSnapshootInvByStore", "Grids")?Periodo=' + $('#dtpPeriodo').val(),
+                url: '@this.Url.Action("GetSnapshootInvByStore", "Grids")?Periodo=' + $('#dtpPeriodo').val() + '&ClienteId=' + $('#cbClient').val(),
                 show: {
                     footer: true,
                     toolbar: true,
@@ -93,10 +93,14 @@
                     { field: "bodega", caption: "Bodega", sortable: true },
                     { field: "tiendaId", caption: "TiendaId", sortable: true, size: '80px' },
                     { field: "tienda", caption: "Tienda", sortable: true },
-                    { field: "womanQty", caption: "Mujeres", sortable: true, size: '100px' },
-                    { field: "manQty", caption: "Hombres", sortable: true, size: '100px' },
+                    { field: "womanQty", caption: "Mujer", sortable: true, size: '100px' },
+                    { field: "avaWomanQty", caption: "Dis mujer", sortable: true, size: '100px' },
+                    { field: "manQty", caption: "Caballeros", sortable: true, size: '100px' },
+                    { field: "avaManQty", caption: "Dis Caballeros", sortable: true, size: '100px' },
                     { field: "kidsQty", caption: "Niñ@s", sortable: true, size: '100px' },
+                    { field: "avaKidsQty", caption: "Dis Niñ@s", sortable: true, size: '100px' },
                     { field: "accQty", caption: "Accesorios", sortable: true, size: '100px' },
+                    { field: "avaAccQty", caption: "Dis Accesorios", sortable: true, size: '100px' },
                     { field: "totalSinCp", caption: "Total sin CP", sortable: true, size: '100px' },
                     { field: "totalCp", caption: "Total CP", sortable: true, size: '100px' },
                     { field: "total", caption: "Total", sortable: true, size: '100px' },
@@ -110,13 +114,13 @@
     });
     $(document).ready(function () {
         $('.datepicker').datepicker();
-        fillCombobox('#divSpinCliente', '@this.Url.Action("GetClientsOrders", "Home")', '#cbClient', 'clienteId', 'nombre', 1432);
+        fillComboboxPromise('#divSpinCliente', '@this.Url.Action("getClients", "HomeExtern")', '#cbClient', 'clienteId', 'nombre', 1432);
         //crearGrid();
         $('#btnShow').on('click', function () {
             if (gridInv == null)
                 crearGrid.then();
             else
-                gridInv.reload2('@this.Url.Action("GetSnapshootInvByStore", "Grids")?Periodo=' + $('#dtpPeriodo').val());
+                gridInv.reload2('@this.Url.Action("GetSnapshootInvByStore", "Grids")?Periodo=' + $('#dtpPeriodo').val() + '&ClienteId=' + $('#cbClient').val());
         });
     });
 </script>

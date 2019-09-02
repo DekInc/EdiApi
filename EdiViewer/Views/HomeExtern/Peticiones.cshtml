@@ -194,6 +194,11 @@
             }
         });
     }
+    function verDetalle(pedidoId) {
+        $('#exampleModalLabel3').html('Detalle de orden');        
+        ModalPopPeticionDet = $('#modalPopPeticionDet').modal();
+        gridOrdenesDet.reload2('@this.Url.Action("GetPeticionDet", "Grids")?PedidoId=' + pedidoId);
+    }
     $(document).ready(function () {
         getClientName();
         crearGrid();

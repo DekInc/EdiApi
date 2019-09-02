@@ -11,11 +11,17 @@
                     <h4 class="my-0 font-weight-normal">Carga de planilla de productos&nbsp;<img class="imgHeaderHelp" src="~/images/help.png" title="Pantalla utilizada para cargar el excel inicial de productos a enviar" alt="Pantalla utilizada para cargar el excel inicial de productos a enviar"></h4>
                 </div>
                 <div class="card-body">
-                    <div class="divPaso">
-                        Paso 1. Cargar archivos de Excel que vienen de Payless, estos van a ser los productos que van a entrar en la bodega de SPS, el periodo es la fecha que ingresa.
-                    </div>
                     <form id="formSearch">
                         <div class="container div856Search">
+                            <div class="row">
+                                <div class="col-sm">
+                                    <span id="spanClientName">
+                                        <span id="divSpinClientName" class="spinner-border spinner-border-sm text-danger" style="display: none" role="status">
+                                            <span class="sr-only">Loading...</span>
+                                        </span>
+                                    </span>
+                                </div>
+                            </div>
                             <div class="row">
                                 <div class="col-sm">
                                     <label for="dtpPeriodoBuscar">Periodo</label>
@@ -80,6 +86,25 @@
         w2ui.grid.autoLoad = auto;
         w2ui.grid.skip(0);
     }
+    var getClientName = new Promise(function (resolve, reject) {
+        $('#divSpinClientName').show();
+        $.ajax({
+            method: "GET",
+            url: "@this.Url.Action("GetClientNow", "HomeExtern")",
+            success: function (data) {
+                if (data.info.codError != 0) {
+                    menErrorEdi(data.info.mensaje, 'Error');
+                    return;
+                }
+                $('#spanClientName').html(data.data);
+                $('#divSpinClientName').hide();
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                menErrorEdi(xhr.status, 'Error throw in js');
+                menErrorEdi(thrownError, 'Error throw in js');
+            }
+        });
+    });
     function getTransportes() {
         if ($('#dtpPeriodoBuscar').val() == '') return;
         $('#divSpinCboTransporte').show();
@@ -191,11 +216,16 @@
     $(document).ready(function () {
         $('#dtpPeriodoBuscar').datepicker();
         $('.imgHeaderHelp').tooltip();
+        getClientName.then();
         crearGrid();
         $('#btnNewUpload').on('click', function (Event) {
             $('#modalPopNewProdUpload').modal();
         });
         $('#btnFiltrar').on("click", function (Event) {
+            if ($('#cboLocation').val() == '') {
+                menErrorEdi('El lugar es necesario para una búsqueda', 'Error');
+                return;
+            }
             if ($('#dtpPeriodoBuscar').val() == '') {
                 menErrorEdi('El periodo es necesario para una búsqueda', 'Error');
                 return;
@@ -217,9 +247,10 @@
         });
         $('#btnShowPeriods').on('click', function (Event) {
             $('#modalPeriods').modal();
-            if (gridPeriods == null) {
+            if (gridPeriods == null)
                 crearGridPeriods();
-            }
+            else
+                gridPeriods.reload2('@this.Url.Action("GetAllPeriods", "Grids")');
         });
         $('#dtpPeriodoBuscar').on('change', function (Event) {
             getTransportes();

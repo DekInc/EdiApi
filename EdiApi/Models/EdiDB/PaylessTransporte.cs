@@ -7,5 +7,6 @@ namespace EdiApi.Models.EdiDB
     {
         public int Id { get; set; }
         public string Transporte { get; set; }
+        public int? ClienteId { get; set; }
     }
 }

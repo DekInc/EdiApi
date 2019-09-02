@@ -86,6 +86,7 @@ namespace EdiApi.Models.EdiDB
         public virtual DbSet<PedidosExternosDel> PedidosExternosDel { get; set; }
         public virtual DbSet<ProductoUbicacion> ProductoUbicacion { get; set; }
         public virtual DbSet<UsuariosExternos> UsuariosExternos { get; set; }
+        public virtual DbSet<WmsInOut> WmsInOut { get; set; }
         public virtual DbSet<WmsProductoExistencia> WmsProductoExistencia { get; set; }
 
         // Unable to generate entity type for table 'dbo.PedidosExternos_Bkp'. Please see the warning messages.
@@ -1394,6 +1395,8 @@ namespace EdiApi.Models.EdiDB
                     .HasMaxLength(2028)
                     .IsUnicode(false);
 
+                entity.Property(e => e.Preg19).HasColumnName("preg19");
+
                 entity.Property(e => e.Preg2).HasColumnName("preg2");
 
                 entity.Property(e => e.Preg2a)
@@ -1469,6 +1472,10 @@ namespace EdiApi.Models.EdiDB
 
                 entity.Property(e => e.FechaCreacion)
                     .HasMaxLength(16)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.Nombre)
+                    .HasMaxLength(2048)
                     .IsUnicode(false);
 
                 entity.Property(e => e.Pedido)
@@ -1687,7 +1694,7 @@ namespace EdiApi.Models.EdiDB
                 entity.ToTable("PAYLESS_ReportesMails");
 
                 entity.HasIndex(e => e.MailDir)
-                    .HasName("UQ__PAYLESS___7E7D34CC09FE775D")
+                    .HasName("UQ__PAYLESS___7E7D34CC49AEE81E")
                     .IsUnique();
 
                 entity.Property(e => e.MailDir)
@@ -1800,6 +1807,10 @@ namespace EdiApi.Models.EdiDB
 
                 entity.Property(e => e.ClienteId).HasColumnName("ClienteID");
 
+                entity.Property(e => e.CodUser)
+                    .HasMaxLength(128)
+                    .IsUnicode(false);
+
                 entity.Property(e => e.FechaBorrado).HasMaxLength(16);
 
                 entity.Property(e => e.FechaCreacion).HasMaxLength(16);
@@ -1851,6 +1862,61 @@ namespace EdiApi.Models.EdiDB
                 entity.Property(e => e.NomUsr).HasMaxLength(128);
 
                 entity.Property(e => e.UsrPassword).HasMaxLength(256);
+            });
+
+            modelBuilder.Entity<WmsInOut>(entity =>
+            {
+                entity.HasIndex(e => e.BodegaId)
+                    .HasName("WmsInOutBodegaId");
+
+                entity.HasIndex(e => e.ClienteId)
+                    .HasName("WmsInOutIdCliente");
+
+                entity.HasIndex(e => e.RegimenId)
+                    .HasName("WmsInOutRegimenId");
+
+                entity.Property(e => e.Estatus)
+                    .HasMaxLength(100)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.FechaTransaccion).HasColumnType("datetime");
+
+                entity.Property(e => e.IdTipoTransaccion)
+                    .HasMaxLength(3)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.InformeAlmacen)
+                    .HasColumnName("INFORME_ALMACEN")
+                    .HasMaxLength(100)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.NoTransaccion)
+                    .HasMaxLength(25)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.NomBodega)
+                    .HasMaxLength(150)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.Nombre)
+                    .HasMaxLength(150)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.Observacion).IsUnicode(false);
+
+                entity.Property(e => e.Regimen)
+                    .HasMaxLength(150)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.TipoIngreso)
+                    .HasMaxLength(3)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.TipoTransaccion)
+                    .HasMaxLength(7)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.TransaccionId).HasColumnName("TransaccionID");
             });
 
             modelBuilder.Entity<WmsProductoExistencia>(entity =>

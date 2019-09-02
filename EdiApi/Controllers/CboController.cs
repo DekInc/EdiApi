@@ -62,43 +62,45 @@ namespace EdiApi.Controllers
             yield return new TsqlDespachosWmsComplex() { ErrorMessage = E1.ToString() };
         }
         [HttpGet]
-        public RetData<IEnumerable<CboValuesModel>> GetPaylessEncuestaCboPedidos(int TiendaId, int Typ) {
+        public RetData<IEnumerable<CboValuesModel>> GetPaylessEncuestaCboPedidos(int ClienteId, int TiendaId, int Typ) {
             DateTime StartTime = DateTime.Now;
             try {
-                int DaysToAdd = 0;
-                switch (StartTime.DayOfWeek) {                    
-                    case DayOfWeek.Monday:
-                        DaysToAdd = -5;
-                        break;
-                    case DayOfWeek.Tuesday:
-                        DaysToAdd = -6;
-                        break;
-                    case DayOfWeek.Wednesday:
-                        DaysToAdd = -7;
-                        break;
-                    case DayOfWeek.Thursday:
-                        DaysToAdd = -8;
-                        break;
-                    case DayOfWeek.Friday:
-                        DaysToAdd = -9;
-                        break;
-                    case DayOfWeek.Saturday:
-                        DaysToAdd = -10;
-                        break;
-                    case DayOfWeek.Sunday:
-                        DaysToAdd = -11;
-                        break;                    
-                    default:
-                        break;
-                }
+                int DaysToAdd = -14;
+                //switch (StartTime.DayOfWeek) {                    
+                //    case DayOfWeek.Monday:
+                //        DaysToAdd = -5;
+                //        break;
+                //    case DayOfWeek.Tuesday:
+                //        DaysToAdd = -6;
+                //        break;
+                //    case DayOfWeek.Wednesday:
+                //        DaysToAdd = -7;
+                //        break;
+                //    case DayOfWeek.Thursday:
+                //        DaysToAdd = -8;
+                //        break;
+                //    case DayOfWeek.Friday:
+                //        DaysToAdd = -9;
+                //        break;
+                //    case DayOfWeek.Saturday:
+                //        DaysToAdd = -10;
+                //        break;
+                //    case DayOfWeek.Sunday:
+                //        DaysToAdd = -11;
+                //        break;                    
+                //    default:
+                //        break;
+                //}
                 List<CboValuesModel> ListOrders = (
                     from Pe in DbO.PedidosExternos
                     //from E in DbO.PaylessEncuestaResM
                     where Pe.TiendaId == TiendaId
-                    && Pe.PedidoWms != null
+                    //&& Pe.PedidoWms != null
+                    && Pe.ClienteId == ClienteId
                     //&& Pe.Id != Convert.ToInt32(E.Pedido)
                     && Pe.FechaPedido.ToDateEsp() >= StartTime.AddDays(DaysToAdd)
-                    && Pe.FechaPedido.ToDateEsp() <= StartTime.AddDays(DaysToAdd + 7)
+                    && Pe.FechaPedido.ToDateEsp() <= StartTime
+                    //&& Pe.FechaPedido.ToDateEsp() <= StartTime.AddDays(DaysToAdd + 7)
                     orderby Pe.Id
                     select new CboValuesModel {
                         V = Pe.Id.ToString(),

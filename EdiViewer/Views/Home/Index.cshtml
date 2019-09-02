@@ -22,7 +22,19 @@
         window.focus();
         this.close();
     }
-});
+    });
+    $.ajax({
+        method: "GET",
+        url: '@this.Url.Action("MakePaylessInvSnapshot", "HomeExtern")?ClienteId=1432'
+    });
+    $.ajax({
+        method: "GET",
+        url: '@this.Url.Action("MakePaylessInvSnapshot", "HomeExtern")?ClienteId=385'
+    });
+    $.ajax({
+        method: "GET",
+        url: '@this.Url.Action("MakeAutoReportsPayless", "HomeExtern")'
+    });
 </script>
 <div class="container">    
     <div class="jumbotron mainJumbo indexJumbo">

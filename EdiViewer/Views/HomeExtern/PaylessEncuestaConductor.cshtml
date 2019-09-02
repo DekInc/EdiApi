@@ -6,6 +6,7 @@
     .form-control{
         /*margin-top: 15px;*/
         margin-bottom: 15px;
+        background-color: lavender !important;
     }
     .row {
         margin-left: unset;
@@ -28,6 +29,12 @@
                         <form id="frmEncuesta" enctype="multipart/form-data">
                             <div class="row">
                                 <div class="col">
+                                    <label for="txtNombre">Nombre</label>                                    
+                                    <input class="form-control" id="txtNombre" name="txtNombre" maxlength="2028" autocorrect="off" autocapitalize="off" autocomplete="off">
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col">
                                     <label for="cboPedido">1. Seleccione el número de pedido</label>
                                     <div id="divSpincboPedido" class="spinner-border spinner-border-sm text-danger" style="display: none" role="status">
                                         <span class="sr-only">Loading...</span>
@@ -41,6 +48,7 @@
                                     <select class="form-control" id="preg2" name="preg2">
                                         <option value="1">Si</option>
                                         <option value="0">No</option>
+                                        <option value="-">N/A</option>
                                     </select>
                                 </div>
                             </div>
@@ -58,6 +66,7 @@
                                     <select class="form-control" id="preg3" name="preg3">
                                         <option value="1">Si</option>
                                         <option value="0">No</option>
+                                        <option value="-">N/A</option>
                                     </select>
                                 </div>
                             </div>
@@ -75,6 +84,7 @@
                                     <select class="form-control" id="preg4" name="preg4">
                                         <option value="1">Si</option>
                                         <option value="0">No</option>
+                                        <option value="-">N/A</option>
                                     </select>
                                 </div>
                             </div>
@@ -92,6 +102,7 @@
                                     <select class="form-control" id="preg5" name="preg5">
                                         <option value="1">Si</option>
                                         <option value="0">No</option>
+                                        <option value="-">N/A</option>
                                     </select>
                                 </div>
                             </div>
@@ -109,6 +120,7 @@
                                     <select class="form-control" id="preg6" name="preg6">
                                         <option value="1">Si</option>
                                         <option value="0">No</option>
+                                        <option value="-">N/A</option>
                                     </select>
                                 </div>
                             </div>
@@ -126,6 +138,7 @@
                                     <select class="form-control" id="preg7" name="preg7">
                                         <option value="1">Si</option>
                                         <option value="0">No</option>
+                                        <option value="-">N/A</option>
                                     </select>
                                 </div>
                             </div>
@@ -141,6 +154,7 @@
                                     <select class="form-control" id="preg8" name="preg8">
                                         <option value="1">Si</option>
                                         <option value="0">No</option>
+                                        <option value="-">N/A</option>
                                     </select>
                                 </div>
                             </div>
@@ -156,6 +170,7 @@
                                     <select class="form-control" id="preg9" name="preg9">
                                         <option value="1">Si</option>
                                         <option value="0">No</option>
+                                        <option value="-">N/A</option>
                                     </select>
                                 </div>
                             </div>

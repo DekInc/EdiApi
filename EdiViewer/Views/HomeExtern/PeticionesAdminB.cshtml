@@ -176,7 +176,7 @@
                 selectType: 'cell',
                 bResponsive: true,
                 bMobile: window.mobileAndTabletcheck(),
-                url: '@this.Url.Action("GetPeticionesAdminB", "Grids")?dtp1=' + $('#dtp1').val() + '&chkPending=' + $('#chkPending').prop('checked'),
+                url: '@this.Url.Action("GetPeticionesAdminB", "Grids")?dtp1=' + $('#dtp1').val() + '&chkPending=' + $('#chkPending').prop('checked') + '&ClienteId=' + $('#cbClient').val(),
                 show: {
                     footer: true,
                     toolbar: true,
@@ -208,6 +208,7 @@
                     { field: "tiendaId", caption: "TiendaId", sortable: true, hidden: false, size: '60px' },
                     { field: "tienda", caption: "Tienda", sortable: true, hidden: true },
                     { field: "fechaPedido", caption: "Fecha y hora esperada", sortable: true, size: '120px' },
+                    { field: "fechaCreacion", caption: "Fecha de creación", sortable: true, hidden: true },
                     { field: "tiendaIdDestino", caption: "Tienda Destino", sortable: true, size: '80px' },
                     {
                         field: "idEstado", caption: "Estado", sortable: false, render: function (record) {
@@ -235,8 +236,7 @@
                     { field: "totalEnv", caption: "Cantidad total Env", sortable: true },
                     { field: "porcValid", caption: "Porc validez", sortable: true },
                     { field: "divert", caption: "Divert", sortable: true, size: '60px' },
-                    { field: "fullPed", caption: "Full", sortable: true, size: '60px' },                    
-                    { field: "fechaCreacion", caption: "Fecha de creación", sortable: true, hidden: true }                    
+                    { field: "fullPed", caption: "Full", sortable: true, size: '60px' }
                 ]
             }
         };
@@ -283,13 +283,16 @@
         gridOrdenesDet = $('#gridOrdenesDet').w2grid(config.grid);
         arrayGrids['gridOrdenesDet'] = gridOrdenesDet;
     }
-    $(document).ready(function () {
-        fillCombobox('#divSpinCliente', '@this.Url.Action("GetClientsOrders", "Home")', '#cbClient', 'clienteId', 'nombre', 1432);
-        $('#dtp1').datepicker();
-        crearGrid();        
+    $(document).ready(function () {        
+        fillComboboxPromise('#divSpinCliente', '@this.Url.Action("getClients", "HomeExtern")', '#cbClient', 'clienteId', 'nombre', 1432);
+        $('#dtp1').datepicker();        
         $('#btnFiltrar').on("click", function () {
-            gridOrdenes.clear();
-            gridOrdenes.reload2('@this.Url.Action("GetPeticionesAdminB", "Grids")?ClienteId=' + $('#cbClient').val() + '&dtp1=' + $('#dtp1').val() + '&chkPending=' + $('#chkPending').prop('checked'));
+            if (gridOrdenes == null)
+                crearGrid();
+            else {
+                gridOrdenes.clear();
+                gridOrdenes.reload2('@this.Url.Action("GetPeticionesAdminB", "Grids")?ClienteId=' + $('#cbClient').val() + '&dtp1=' + $('#dtp1').val() + '&chkPending=' + $('#chkPending').prop('checked'));
+            }
         });
         $('#btnLimpiar').on("click", function () {
             window.location.href = window.location.href;

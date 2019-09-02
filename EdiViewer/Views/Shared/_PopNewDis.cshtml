@@ -109,6 +109,7 @@
         } else {
             var checkDate = null;
             funcbtnOkMessageBox = function () {
+                $('#divSpinFiltrar').hide();
                 var regSend = mainGrid.allRecords.filter(Pr => Pr.cantPedir != 0);
                 $.each(regSend, function (i, Pr) {
                     Pr.dateProm = $('#dtp2').val();
@@ -126,10 +127,12 @@
                         else {                            
                             miAlive();
                             mainGrid.allRecords = [];
-                            $('#divSpinFiltrar').show();
+                            $('#divSpinFiltrar').hide();
                             mainGrid.searchReset(true);
                             //mainGrid.reload2("this.Url.Action("GetPaylessProdPrioriInventario", "Grids")?dtpPeriodoBuscar=" + $('#cboPeriod').val());
-                            menErrorEdi('Se ha creado el pedido.', 'Información');
+                            //menErrorEdi('Se ha creado el pedido.', 'Información');
+                            ModalPopNewDis.modal('toggle');
+                            menErrorEdi(json.info.mensaje);                            
                         }
                     },
                     error: function (json) {

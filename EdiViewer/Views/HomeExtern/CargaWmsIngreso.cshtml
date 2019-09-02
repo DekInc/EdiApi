@@ -21,7 +21,17 @@
                         <div class="container div856Search">
                             <div class="row">
                                 <div class="col-sm">
+                                    <label for="cboLocation">Lugar</label>
+                                    <div id="divSpinCboLocation" class="spinner-border spinner-border-sm text-danger" style="display: none" role="status">
+                                        <span class="sr-only">Loading...</span>
+                                    </div>
+                                    <select class="form-control" id="cboLocation" name="cboLocation"></select>
+                                </div>
+                                <div class="col-sm">
                                     <label for="cboBodegas">Bodega</label>
+                                    <div id="divSpinCboBodegas" class="spinner-border spinner-border-sm text-danger" style="display: none" role="status">
+                                        <span class="sr-only">Loading...</span>
+                                    </div>
                                     <select class="form-control" id="cboBodegas" name="cboBodegas"></select>
                                 </div>
                                 <div class="col-sm">
@@ -47,7 +57,7 @@
                                         </div>
                                         <span id="spanCont"></span>
                                     </button>
-                                    <button class="btn btn-primary" type="button" onclick="window.location.href = window.location.href;">
+                                    <button id="btnReload" class="btn btn-primary" type="button" onclick="window.location.href = window.location.href;">
                                         &nbsp;&nbsp;&nbsp;Recargar&nbsp;&nbsp;&nbsp;
                                     </button>
                                 </div>                                
@@ -64,65 +74,23 @@
     var tblReportes = null;
     var mainGrid = null;
     var stopAsync = false;
-    function getWmsBodegas() {
-        $.ajax({
-            url: '@this.Url.Action("GetWmsBodegas", "HomeExtern")',
-            type: 'GET',
-            dataType: 'JSON',
-            success: function (json) {
-                if (json.info.codError != 0) {
-                    menErrorEdi(json.info.mensaje);
-                    return json.data;
-                }
-                $('#cboBodegas').empty();
-                $.each(json.data, function (indexI, itemO) {
-                    $('#cboBodegas').append($('<option>', {
-                        value: this.bodegaId,
-                        text: this.nomBodega,
-                        selected: false
-                    }));
-                });                
-            },
-            error: function (xhr, ajaxOptions, thrownError) {
-                menErrorEdi(xhr.status, '');
-                menErrorEdi(thrownError, '');
-            }
-        });
-    }
-    function getWmsRegimen() {
-        if ($('#cboBodega').val() == '') return;
-        $('#divSpinCboRegimen').show();
-        $.ajax({
-            url: '@this.Url.Action("GetWmsRegimen", "HomeExtern")?BodegaId=' + $('#cboBodegas').val(),
-            type: 'GET',
-            dataType: 'JSON',
-            success: function (json) {
-                $('#divSpinCboRegimen').hide();
-                if (json.info.codError != 0) {
-                    menErrorEdi(json.info.mensaje);
-                    return json.data;
-                }
-                $('#cboRegimen').empty();
-                $.each(json.data, function (indexI, itemO) {
-                    $('#cboRegimen').append($('<option>', {
-                        value: this.idregimen,
-                        text: this.regimen1,
-                        selected: false
-                    }));
-                });
-            },
-            error: function (xhr, ajaxOptions, thrownError) {
-                menErrorEdi(xhr.status, '');
-                menErrorEdi(thrownError, '');
-            }
-        });
-    }
+    //function afterFillCombobox() {
+    //}
     $(document).ready(function () {
         $('.imgHeaderHelp').tooltip();
-        getWmsBodegas();
         $('#cboBodegas').on('change', function (Event) {
-            getWmsRegimen();
+            fillComboboxPromise('#divSpinCboRegimen', '@this.Url.Action("GetWmsRegimen", "HomeExtern")?BodegaId=' + $('#cboBodegas').val(), '#cboRegimen', 'idregimen', 'regimen1', 0).then();
         });
+        $('#cboLocation').on('change', function (Event) {            
+            fillComboboxPromise('#divSpinCboBodegas', '@this.Url.Action("GetWmsBodegas", "HomeExtern")?LocationId=' + $('#cboLocation').val(), '#cboBodegas', 'bodegaId', 'nomBodega', 0)
+                .then(function () {
+                    fillComboboxPromise('#divSpinCboRegimen', '@this.Url.Action("GetWmsRegimen", "HomeExtern")?BodegaId=' + $('#cboBodegas').val(), '#cboRegimen', 'idregimen', 'regimen1', 0).then();
+                });
+        });
+        fillComboboxPromise('#divSpinCboLocation', '@this.Url.Action("GetWmsLocations", "HomeExtern")', '#cboLocation', 'locationid', 'dsclocation', 7)
+            .then(function () {
+                fillComboboxPromise('#divSpinCboBodegas', '@this.Url.Action("GetWmsBodegas", "HomeExtern")?LocationId=' + $('#cboLocation').val(), '#cboBodegas', 'bodegaId', 'nomBodega', 0)
+            });
         $('#fUpload').on('change', function (event) {
             var fullPath = $('#fUpload').val();
             if (fullPath) {
@@ -157,6 +125,7 @@
                 }
             }
             $('#btnUpload').prop('disabled', true);
+            $('#btnReload').prop('disabled', true);            
             $('#divSpinUploadFile').show();
             var fdata = new FormData();
             var fileUpload = $("#fUpload").get(0);
@@ -165,7 +134,7 @@
             $.ajax({
                 type: "POST",
                 timeout: 600000,
-                url: '@this.Url.Action("SetIngresoExcelWms", "HomeExtern")?cboBodega=' + $('#cboBodegas').val() + '&cboRegimen=' + $('#cboRegimen').val(),
+                url: '@this.Url.Action("SetIngresoExcelWms", "HomeExtern")?cboBodega=' + $('#cboBodegas').val() + '&cboRegimen=' + $('#cboRegimen').val() + '&Typ=0',
                 beforeSend: function (xhr) {
                     xhr.setRequestHeader("XSRF-TOKEN",
                         $('input:hidden[name="__RequestVerificationToken"]').val());
@@ -174,10 +143,31 @@
                 contentType: false,
                 processData: false,
                 success: function (response) {
-                    if (response.info.codError == -2) {
+                    if (response.info.codError != 0) {
                         menErrorEdi(response.info.mensaje);
-                        return response.data;
+                        return;
                     }
+                    $.ajax({
+                        type: "POST",
+                        timeout: 600000,
+                        url: '@this.Url.Action("SetIngresoExcelWms", "HomeExtern")?cboBodega=' + $('#cboBodegas').val() + '&cboRegimen=' + $('#cboRegimen').val() + '&Typ=1',
+                        beforeSend: function (xhr) {
+                            xhr.setRequestHeader("XSRF-TOKEN",
+                                $('input:hidden[name="__RequestVerificationToken"]').val());
+                        },
+                        data: fdata,
+                        contentType: false,
+                        processData: false,
+                        success: function (response) {
+                            if (response.info.codError != 0) {
+                                menErrorEdi(response.info.mensaje);
+                                stopAsync = true;
+                                return;
+                            }
+                        },
+                        error: function (resp) {                            
+                        }
+                    });
                     setInterval(function () {
                         if (stopAsync)
                             return;
@@ -188,15 +178,21 @@
                             success: function (json) {                                
                                 if (json.info.codError != 0) {
                                     menErrorEdi(json.info.mensaje);
+                                    stopAsync = true;
                                     return json.data;
                                 }
                                 if (json.data) {
-                                    console.log(json.data);
-                                    $('#spanCont').text(json.data[0].val + ' / ' + json.data[0].maximum);
-                                    if (json.data[0].Mess != '') {
-                                        $('#divSpinUploadFile').hide();
-                                        menErrorEdi(json.data[0].mess, 'Información');
+                                    if (json.data.length == 0)
                                         stopAsync = true;
+                                    else {
+                                        $('#spanCont').text(json.data[0].val + ' / ' + json.data[0].maximum);
+                                        if (json.data[0].mess != null) {
+                                            if (json.data[0].mess != '') {
+                                                $('#divSpinUploadFile').hide();
+                                                menErrorEdi(json.data[0].mess, 'Información');
+                                                stopAsync = true;
+                                            }
+                                        }
                                     }
                                 }
                             },
@@ -205,21 +201,7 @@
                                 menErrorEdi(thrownError, '');
                             }
                         });
-                    }, 5000);
-                    //$('#divSpinUploadFile').hide();
-                    //console.log(response);
-                    //if (response.info.codError != null) {
-                    //    if (response.info.codError != 0) {
-                    //        menErrorEdi(response.info.mensaje, 'Error en el proceso');
-                    //        return;
-                    //    }
-                    //}
-                    //if (response.length == 0)
-                    //    menErrorEdi('Error al subir el archivo', 'Error');
-                    //else {
-                    //    if (response.info.codError == 0)
-                    //        menErrorEdi('Archivo cargado', 'Información');
-                    //}
+                    }, 6660);                    
                 },
                 error: function (resp) {
                     setInterval(function () {
@@ -245,7 +227,7 @@
                                 menErrorEdi(thrownError, '');
                             }
                         });
-                    }, 5000);
+                    }, 6660);
                     //$('#divSpinUploadFile').hide();
                     //if (resp.statusText != null)
                     //    menErrorEdi(resp.statusText, 'Error');

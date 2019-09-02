@@ -6,7 +6,8 @@ GO
 
 CREATE PROCEDURE [dbo].SP_GetPaylessProdPrioriFileDif 
 @IdData INT,
-@IdProdArch INT
+@IdProdArch INT,
+@ClienteId INT
 AS
 BEGIN
 	IF (@IdData = 1)
@@ -42,6 +43,7 @@ BEGIN
 		FROM EdiDb.dbo.PAYLESS_ProdPrioriDet Fud WITH(NOLOCK)
 		JOIN EdiDb.dbo.PAYLESS_ProdPrioriM Fu WITH(NOLOCK)
 			ON Fud.IdPAYLESS_ProdPrioriM = Fu.Id
+			AND Fu.ClienteId = @ClienteId
 		JOIN EdiDb.dbo.PAYLESS_ProdPrioriArchM Pe WITH(NOLOCK)
 			ON Pe.Periodo = Fu.Periodo AND Pe.IdTransporte = Fud.IdTransporte
 			AND Pe.Id = @IdProdArch
@@ -77,6 +79,7 @@ BEGIN
 	FROM EdiDb.dbo.PAYLESS_ProdPrioriDet D WITH(NOLOCK)	
 	JOIN EdiDb.dbo.PAYLESS_ProdPrioriM M WITH(NOLOCK)
 		ON M.Id = D.IdPAYLESS_ProdPrioriM
+		AND M.ClienteId = @ClienteId
 	JOIN (SELECT TOP 1 Am.Periodo, Am.IdTransporte 
 		FROM EdiDb.dbo.PAYLESS_ProdPrioriArchM Am
 		WHERE Am.Id = @IdProdArch) sb1

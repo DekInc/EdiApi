@@ -12,5 +12,7 @@ namespace EdiApi.Models.EdiDB
         public string CodUser { get; set; }
         public string FechaCreacion { get; set; }
         public int? Typ { get; set; }
+        public string Nombre { get; set; }
+        public int? ClienteId { get; set; }
     }
 }

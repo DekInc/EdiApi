@@ -35,21 +35,28 @@ BEGIN
 from EdiDb.dbo.PAYLESS_Tiendas T WITH(NOLOCK)
 join wms.dbo.Clientes C WITH(NOLOCK)
 	on C.ClienteID = T.ClienteID
-	AND T.TiendaId = SUBSTRING(Ad.BarCode, 1, 4)) NomCliente	
+	AND CONVERT(VARCHAR(4), T.TiendaId) = SUBSTRING(Ad.BarCode, 1, 4)) NomCliente	
 from EdiDb.dbo.PAYLESS_ProdPrioriArchDet Ad WITH(NOLOCK)
 join EdiDb.dbo.PAYLESS_ProdPrioriArchM Am WITH(NOLOCK) 
 	on Am.Id = Ad.IdM AND Am.Periodo = @Period
 join EdiDb.dbo.PAYLESS_ProdPrioriDet Ex WITH(NOLOCK) 
 	on Ex.Barcode = Ad.barcode AND Ex.IdTransporte = @IdTransport
 join EdiDb.dbo.PAYLESS_Tiendas Ti WITH(NOLOCK) 
-	ON Ti.TiendaId = SUBSTRING(Ex.Barcode, 1, 4)
+	ON CONVERT(VARCHAR(4), Ti.TiendaId) = SUBSTRING(Ex.Barcode, 1, 4)
 LEFT JOIN EdiDb.dbo.PAYLESS_Transporte T WITH(NOLOCK)
 		ON T.Id = Ex.IdTransporte
 ORDER BY Ex.Barcode
 END
 GO
 --1592
-exec SP_GetPaylessProdPrioriByPeriodAndIdTransport '17/05/2019', 8
+exec EdiDb.dbo.SP_GetPaylessProdPrioriByPeriodAndIdTransport '07/08/2019', 46
 --EXEC SP_GetPaylessProdPrioriByPeriodAndIdTransport '13/05/2019', 6
---select * from EdiDb.dbo.PAYLESS_ProdPrioriArchM
+--select * from EdiDb.dbo.PAYLESS_Transporte
 --select * from EdiDb.dbo.PAYLESS_Tiendas where TiendaId = 7366
+select top 20000 * from EdiDb.dbo.PAYLESS_ProdPrioriDet order by id desc
+update EdiDb.dbo.PAYLESS_ProdPrioriArchDet SET Barcode = REPLACE(Barcode, 'Hilm', '8000')
+select top 200 REPLACE(Barcode, 'Hilm', '8000') from EdiDb.dbo.PAYLESS_ProdPrioriDet order by id desc
+select * from PAYLESS_Transporte
+select * from EdiDb.dbo.PAYLESS_ProdPrioriArchM
+select * from EdiDb.dbo.PAYLESS_ProdPrioriM
+

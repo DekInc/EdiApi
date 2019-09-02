@@ -47,21 +47,31 @@ BEGIN
 	GROUP BY t.BodegaId, ii.CodProducto
 	ORDER BY t.BodegaId, ii.CodProducto
 
-	DELETE FROM EdiDB.dbo.WmsProductoExistencia WHERE CodUser = @CodUser
-	AND CodProducto IN (
-		SELECT DISTINCT
-			CodProducto
-		FROM EdiDB.dbo.PedidosExternos Pe WITH(NOLOCK)
-		JOIN EdiDB.dbo.PedidosDetExternos Pde WITH(NOLOCK)
-			ON Pde.PedidoId = Pe.Id
-		WHERE Pe.PedidoWMS IS NULL
-	)
+	--DELETE FROM EdiDB.dbo.WmsProductoExistencia WHERE CodUser = @CodUser
+	--AND CodProducto IN (
+	--	SELECT DISTINCT
+	--		CodProducto
+	--	FROM EdiDB.dbo.PedidosExternos Pe WITH(NOLOCK)
+	--	JOIN EdiDB.dbo.PedidosDetExternos Pde WITH(NOLOCK)
+	--		ON Pde.PedidoId = Pe.Id
+	--	WHERE Pe.PedidoWMS IS NULL
+	--)
 END
 
 EXEC EdiDb.dbo.SP_GetSetExistenciasByCliente 1432, 'Admin'
 
-SELECT * from EdiDB.dbo.WmsProductoExistencia where CodUser = 'Admin' AND Existencia = 1 AND CodProducto like '7%'
-
+SELECT distinct * from EdiDB.dbo.WmsProductoExistencia where CodUser = 'Admin' AND Existencia = 1 AND CodProducto like '7365%' --293
+--450 
+SELECT * from EdiDB.dbo.WmsProductoExistencia where CodUser = 'Admin' AND Existencia = 1 AND CodProducto like '7650%' --293
+SELECT * FROM wms.dbo.SysTempSalidas S where S.CodProducto like '7650%'
+select distinct barcode from EdiDb.dbo.PAYLESS_ProdPrioriDet D where D.Barcode like '7650%'
+--hay 463 sin descontar lo pendiente o solicitado
+-- 346 segun priori
+--306 - 48 =  258
+-- 48 salidas
+--306 segun existencia wms
+-- supuesto total web 346, solicitado 145, disponible 201
+-- 189 muestra a la tienda disponible para hacer pedido + 145 solicitado = 334
 SELECT DISTINCT
 CodProducto
 FROM EdiDB.dbo.PedidosExternos Pe
@@ -69,3 +79,11 @@ JOIN EdiDB.dbo.PedidosDetExternos Pde
 	ON Pde.PedidoId = Pe.Id
 WHERE Pe.PedidoWMS IS NULL
 
+SELECT distinct D.Barcode, D.Categoria 
+from EdiDB.dbo.WmsProductoExistencia Wpe
+JOIN EdiDb.dbo.PAYLESS_ProdPrioriDet D
+	ON D.BarCode = Wpe.CodProducto
+where Wpe.CodUser = 'Admin' 
+--AND Wpe.Existencia = 1 
+AND Wpe.CodProducto like '7365%' --293
+AND D.Categoria = 'NIÑOS / AS'

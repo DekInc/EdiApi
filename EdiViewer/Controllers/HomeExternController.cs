@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Linq.Dynamic.Core;
@@ -60,11 +61,17 @@ namespace EdiViewer.Controllers
         }
         public IActionResult PaylessPedidosHist() {
             return View();
-        }        
+        }
+        public IActionResult VerIngresosWMS() {
+            return View();
+        }
+        public IActionResult VerSalidasWMS() {
+            return View();
+        }
         [HttpGet]
-        public async Task<string> MakePaylessInvSnapshot() {            
+        public async Task<string> MakePaylessInvSnapshot(int ClienteId) {            
             try {
-                RetData<string> Ret = await ApiClientFactory.Instance.MakePaylessInvSnapshot(1432);
+                RetData<string> Ret = await ApiClientFactory.Instance.MakePaylessInvSnapshot(ClienteId);
             } catch { }
             return "";
         }
@@ -510,6 +517,21 @@ namespace EdiViewer.Controllers
                 };
             }
         }
+        public async Task<RetData<string>> GetClientNow() {
+            DateTime StartTime = DateTime.Now;
+            try {
+                RetData<string> ClienteP = await ApiClientFactory.Instance.GetClientById(HttpContext.Session.GetObjSession<int>("Session.ClientId"));
+                return ClienteP;
+            } catch (Exception e2) {
+                return new RetData<string>() {
+                    Info = new RetInfo() {
+                        CodError = -1,
+                        Mensaje = e2.ToString(),
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            }
+        }
         public async Task<RetData<Tuple<string, string>>> GetClientNameScheduleById() {
             DateTime StartTime = DateTime.Now;
             try {
@@ -781,7 +803,7 @@ namespace EdiViewer.Controllers
             DateTime StartTime = DateTime.Now;
             try
             {
-                RetData<IEnumerable<string>> ListProdPriori = await ApiClientFactory.Instance.GetPaylessPeriodPriori();
+                RetData<IEnumerable<string>> ListProdPriori = await ApiClientFactory.Instance.GetPaylessPeriodPriori(HttpContext.Session.GetObjSession<int>("Session.ClientId"));
                 return ListProdPriori;
             }
             catch (Exception e1)
@@ -799,7 +821,7 @@ namespace EdiViewer.Controllers
         public async Task<RetData<IEnumerable<string>>> GetPaylessPeriodPrioriByClient() {
             DateTime StartTime = DateTime.Now;
             try {
-                RetData<IEnumerable<string>> ListProdPriori = await ApiClientFactory.Instance.GetPaylessPeriodPriori();
+                RetData<IEnumerable<string>> ListProdPriori = await ApiClientFactory.Instance.GetPaylessPeriodPriori(HttpContext.Session.GetObjSession<int>("Session.ClientId"));
                 return ListProdPriori;
             } catch (Exception e1) {
                 return new RetData<IEnumerable<string>>() {
@@ -896,7 +918,7 @@ namespace EdiViewer.Controllers
                             }
                         }
                     }
-                    RetData<PaylessProdPrioriArchM> Ret = await ApiClientFactory.Instance.SetPaylessProdPrioriFile(ListBarcodesSalida, null, IdTransporte, CboPeriod, HttpContext.Session.GetObjSession<string>("Session.CodUsr"), cboTipo);
+                    RetData<PaylessProdPrioriArchM> Ret = await ApiClientFactory.Instance.SetPaylessProdPrioriFile(ListBarcodesSalida, null, IdTransporte, CboPeriod, HttpContext.Session.GetObjSession<string>("Session.CodUsr"), cboTipo, HttpContext.Session.GetObjSession<int>("Session.ClientId"));
                     return Ret;
                 } else if(cboTipo == "1") {
                     IFormFile FileUploadedSalida;
@@ -994,7 +1016,7 @@ namespace EdiViewer.Controllers
                             }
                         }
                     }
-                    RetData<PaylessProdPrioriArchM> Ret = await ApiClientFactory.Instance.SetPaylessProdPrioriFile(ListBarcodesSalida, ListBarcodesEntrada, IdTransporte, dtpPeriodo, HttpContext.Session.GetObjSession<string>("Session.CodUsr"), cboTipo);
+                    RetData<PaylessProdPrioriArchM> Ret = await ApiClientFactory.Instance.SetPaylessProdPrioriFile(ListBarcodesSalida, ListBarcodesEntrada, IdTransporte, dtpPeriodo, HttpContext.Session.GetObjSession<string>("Session.CodUsr"), cboTipo, HttpContext.Session.GetObjSession<int>("Session.ClientId"));
                     return Ret;
                 }
                 return new RetData<PaylessProdPrioriArchM>() {
@@ -1340,7 +1362,7 @@ namespace EdiViewer.Controllers
         public async Task<RetData<IEnumerable<PaylessPeriodoTransporteModel>>> GetTransportByPeriod(string Period) {
             DateTime StartTime = DateTime.Now;
             try {
-                RetData<IEnumerable<PaylessPeriodoTransporteModel>> ListTransport = await ApiClientFactory.Instance.GetTransportByPeriod(Period);
+                RetData<IEnumerable<PaylessPeriodoTransporteModel>> ListTransport = await ApiClientFactory.Instance.GetTransportByPeriod(Period, HttpContext.Session.GetObjSession<int>("Session.ClientId"));
                 return ListTransport;
             } catch (Exception e1) {
                 return new RetData<IEnumerable<PaylessPeriodoTransporteModel>> {
@@ -1352,10 +1374,10 @@ namespace EdiViewer.Controllers
                 };
             }
         }
-        public async Task<RetData<IEnumerable<Bodegas>>> GetWmsBodegas(string Period) {
+        public async Task<RetData<IEnumerable<Bodegas>>> GetWmsBodegas(int LocationId) {
             DateTime StartTime = DateTime.Now;
             try {
-                RetData<IEnumerable<Bodegas>> List = await ApiClientFactory.Instance.GetWmsBodegas(7);
+                RetData<IEnumerable<Bodegas>> List = await ApiClientFactory.Instance.GetWmsBodegas(LocationId);
                 return List;
             } catch (Exception e1) {
                 return new RetData<IEnumerable<Bodegas>> {
@@ -1382,7 +1404,22 @@ namespace EdiViewer.Controllers
                 };
             }
         }
-        public async Task<RetData<string>> SetIngresoExcelWms(int cboBodega, int cboRegimen) {
+        public async Task<RetData<IEnumerable<Locations>>> GetWmsLocations() {
+            DateTime StartTime = DateTime.Now;
+            try {
+                RetData<IEnumerable<Locations>> List = await ApiClientFactory.Instance.GetWmsLocations();
+                return List;
+            } catch (Exception e1) {
+                return new RetData<IEnumerable<Locations>> {
+                    Info = new RetInfo() {
+                        CodError = -1,
+                        Mensaje = e1.ToString(),
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            }
+        }
+        public async Task<RetData<string>> SetIngresoExcelWms(int cboBodega, int cboRegimen, int Typ) {
             DateTime StartTime = DateTime.Now;
             List<string> ListCols = new List<string>();
             List<WmsFileModel> ListExcelRows = new List<WmsFileModel>();
@@ -1552,7 +1589,18 @@ namespace EdiViewer.Controllers
                                                 NewRowInsert.Cliente = row.GetCell(j).ToString();
                                                 break;
                                             case "rackid":
-                                                NewRowInsert.RackId = Convert.ToInt32(row.GetCell(j).ToString());
+                                                try {
+                                                    NewRowInsert.RackId = Convert.ToInt32(row.GetCell(j).ToString());
+                                                } catch {
+                                                    return new RetData<string>() {
+                                                        Data = "",
+                                                        Info = new RetInfo() {
+                                                            CodError = -2,
+                                                            Mensaje = $"Error en conversión de tipo para el campo {ListCols[j]}, el RackId tiene que ser un número, en la fila {i}",
+                                                            ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                                                        }
+                                                    };
+                                                }                                                
                                                 break;
                                             case "fecha_im5":
                                                 NewRowInsert.FechaIm5 = row.GetCell(j).ToString();
@@ -1606,7 +1654,11 @@ namespace EdiViewer.Controllers
                         }
                     }
                 }
-                RetData<string> Ret = await ApiLongClientFactory.Instance.SetIngresoExcelWms2(ListExcelRows, cboBodega, cboRegimen, HttpContext.Session.GetObjSession<string>("Session.CodUsr"));
+                RetData<string> Ret = new RetData<string>();
+                if (Typ == 0)
+                    Ret = await ApiLongClientFactory.Instance.SetIngresoExcelWmsCheck(ListExcelRows, cboBodega, cboRegimen, HttpContext.Session.GetObjSession<string>("Session.CodUsr"), HttpContext.Session.GetObjSession<int>("Session.ClientId"));
+                else
+                    Ret = await ApiLongClientFactory.Instance.SetIngresoExcelWms2(ListExcelRows, cboBodega, cboRegimen, HttpContext.Session.GetObjSession<string>("Session.CodUsr"), HttpContext.Session.GetObjSession<int>("Session.ClientId"));
                 return Ret;
             } catch (Exception ex1) {
                 return new RetData<string>() {
@@ -1705,7 +1757,7 @@ namespace EdiViewer.Controllers
                 });
             }
         }
-        public async Task<RetData<string>> SetSalidaWmsFromEscaner(string dtpPeriodo, int cboBodegas, int cboRegimen) {
+        public async Task<RetData<string>> SetSalidaWmsFromEscaner(string dtpPeriodo, int cboBodegas, int cboRegimen, int cboLocation) {
             DateTime StartTime = DateTime.Now;
             List<string> ListBarcodes = new List<string>();
             try {
@@ -1753,7 +1805,7 @@ namespace EdiViewer.Controllers
                         }
                     }
                 }
-                RetData<string> Ret = await ApiLongClientFactory.Instance.SetSalidaWmsFromEscaner(ListBarcodes, dtpPeriodo, cboBodegas, cboRegimen);
+                RetData<string> Ret = await ApiLongClientFactory.Instance.SetSalidaWmsFromEscaner(ListBarcodes, dtpPeriodo, cboBodegas, cboRegimen, HttpContext.Session.GetObjSession<int>("Session.ClientId"), HttpContext.Session.GetObjSession<string>("Session.CodUsr"), cboLocation);
                 return Ret;
             } catch (Exception ex1) {
                 return new RetData<string> {
@@ -1765,10 +1817,10 @@ namespace EdiViewer.Controllers
                 };
             }
         }
-        public async Task<RetData<IEnumerable<PaylessTiendas>>> GetStores() {
+        public async Task<RetData<IEnumerable<PaylessTiendas>>> GetStores(int IdUser) {
             DateTime StartTime = DateTime.Now;
             try {
-                RetData<IEnumerable<PaylessTiendas>> ListStores = await ApiClientFactory.Instance.GetStores();
+                RetData<IEnumerable<PaylessTiendas>> ListStores = await ApiClientFactory.Instance.GetStores(HttpContext.Session.GetObjSession<int>("Session.IdUser"));
                 return ListStores;
             } catch (Exception e2) {
                 return new RetData<IEnumerable<PaylessTiendas>>() {
@@ -1844,6 +1896,7 @@ namespace EdiViewer.Controllers
             DateTime StartTime = DateTime.Now;
             try {
                 RetData<string> List = await ApiClientFactory.Instance.ChangeUserClient(IdUser, ClienteId);
+                HttpContext.Session.SetObjSession("Session.ClientId", ClienteId);
                 return List;
             } catch (Exception e2) {
                 return new RetData<string> {
@@ -1992,7 +2045,7 @@ namespace EdiViewer.Controllers
         public async Task<RetData<Tuple<IEnumerable<int>, IEnumerable<string>, IEnumerable<int>, IEnumerable<string>>>> GetProductoTallaLoteCategoria() {
             DateTime StartTime = DateTime.Now;
             try {
-                RetData<Tuple<IEnumerable<int>, IEnumerable<string>, IEnumerable<int>, IEnumerable<string>>> ListDis = await ApiClientFactory.Instance.GetProductoTallaLoteCategoria();
+                RetData<Tuple<IEnumerable<int>, IEnumerable<string>, IEnumerable<int>, IEnumerable<string>>> ListDis = await ApiClientFactory.Instance.GetProductoTallaLoteCategoria(HttpContext.Session.GetObjSession<int>("Session.ClientId"));
                 return ListDis;
             } catch (Exception e2) {
                 return new RetData<Tuple<IEnumerable<int>, IEnumerable<string>, IEnumerable<int>, IEnumerable<string>>> { 
@@ -2007,7 +2060,7 @@ namespace EdiViewer.Controllers
         public async Task<RetData<IEnumerable<CboValuesModel>>> GetPaylessEncuestaCboPedidos(int Typ) {
             DateTime StartTime = DateTime.Now;
             try {
-                RetData<IEnumerable<CboValuesModel>> List = await ApiClientFactory.Instance.GetPaylessEncuestaCboPedidos(HttpContext.Session.GetObjSession<int>("Session.TiendaId"), Typ);
+                RetData<IEnumerable<CboValuesModel>> List = await ApiClientFactory.Instance.GetPaylessEncuestaCboPedidos(HttpContext.Session.GetObjSession<int>("Session.ClientId"), HttpContext.Session.GetObjSession<int>("Session.TiendaId"), Typ);
                 return List;
             } catch (Exception e2) {
                 return new RetData<IEnumerable<CboValuesModel>>() {
@@ -2063,6 +2116,21 @@ namespace EdiViewer.Controllers
                 };
             }
         }
+        public async Task<RetData<string>> UpdateProductsLocal() {
+            DateTime StartTime = DateTime.Now;
+            try {
+                RetData<string> Ret = await ApiClientFactory.Instance.UpdateProductsLocal();
+                return Ret;
+            } catch (Exception e2) {
+                return new RetData<string>() {
+                    Info = new RetInfo() {
+                        CodError = -1,
+                        Mensaje = e2.ToString(),
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            }
+        }
         public async Task<RetData<string>> PaylessDeleteTemporada(int Id) {
             DateTime StartTime = DateTime.Now;
             try {
@@ -2105,7 +2173,9 @@ namespace EdiViewer.Controllers
             string preg16,
             string preg17,
             string preg17a,
-            string preg18
+            string preg18,
+            string txtNombre,
+            string preg19
             ) {
             DateTime StartTime = DateTime.Now;
             if (string.IsNullOrEmpty(cboPedido))
@@ -2154,7 +2224,10 @@ namespace EdiViewer.Controllers
                     preg16,
                     preg17,
                     preg17a,
-                    preg18
+                    preg18,
+                    txtNombre,
+                    preg19,
+                    HttpContext.Session.GetObjSession<int>("Session.ClientId")
                     );
                 return Ret;
             } catch (Exception e2) {
@@ -2185,7 +2258,8 @@ namespace EdiViewer.Controllers
             string preg8a,
             string preg9,
             string preg9a,
-            string preg18
+            string preg18,
+            string txtNombre            
             ) {
             DateTime StartTime = DateTime.Now;
             if (string.IsNullOrEmpty(cboPedido))
@@ -2216,7 +2290,9 @@ namespace EdiViewer.Controllers
                     preg8a,
                     preg9,
                     preg9a,
-                    preg18
+                    preg18,
+                    txtNombre,
+                    HttpContext.Session.GetObjSession<int>("Session.ClientId")
                     );
                 return Ret;
             } catch (Exception e2) {
@@ -2255,7 +2331,7 @@ namespace EdiViewer.Controllers
                     for (int i = 0; i < ListInfo.Data.Item2.Count(); i++) {
                         ExcelO.CreateRow(i + 3);
                         ExcelO.CreateCell(2, CellType.Numeric);
-                        ExcelO.SetCellValue(ListInfo.Data.Item1.Mes);
+                        ExcelO.SetCellValue(new DateTime(StartTime.Year, ListInfo.Data.Item1.Mes.Value, 1).ToString("MMMM", CultureInfo.CreateSpecificCulture("us")));
                         ExcelO.CreateCell(3, CellType.Numeric);
                         ExcelO.SetCellValue(ListInfo.Data.Item1.WeekOfYear);
                         ExcelO.CreateCell(4, CellType.String);
@@ -2265,60 +2341,95 @@ namespace EdiViewer.Controllers
                         ExcelO.CreateCell(6, CellType.Boolean);
                         if (ListInfo.Data.Item3.ElementAt(i).C0.HasValue)
                             ExcelO.SetCellValue(ListInfo.Data.Item3.ElementAt(i).C0);
+                        else
+                            ExcelO.SetCellValue("N/A");
                         ExcelO.CreateCell(7, CellType.Boolean);
                         if (ListInfo.Data.Item3.ElementAt(i).C1.HasValue)
                             ExcelO.SetCellValue(ListInfo.Data.Item3.ElementAt(i).C1);
+                        else
+                            ExcelO.SetCellValue("N/A");
                         ExcelO.CreateCell(8, CellType.Boolean);
                         if (ListInfo.Data.Item3.ElementAt(i).C2.HasValue)
                             ExcelO.SetCellValue(ListInfo.Data.Item3.ElementAt(i).C2);
+                        else
+                            ExcelO.SetCellValue("N/A");
                         //ExcelO.CreateCell(9, CellType.Boolean);
                         //ExcelO.SetCellValue(ListInfo.Data.Item3.ElementAt(i).C3);
                         ExcelO.CreateCell(10, CellType.Boolean);
                         if (ListInfo.Data.Item3.ElementAt(i).C4.HasValue)
                             ExcelO.SetCellValue(ListInfo.Data.Item3.ElementAt(i).C4);
+                        else
+                            ExcelO.SetCellValue("N/A");
                         ExcelO.CreateCell(11, CellType.Boolean);
                         if (ListInfo.Data.Item3.ElementAt(i).C5.HasValue)
                             ExcelO.SetCellValue(ListInfo.Data.Item3.ElementAt(i).C5);
+                        else
+                            ExcelO.SetCellValue("N/A");
                         ExcelO.CreateCell(12, CellType.Boolean);
                         if (ListInfo.Data.Item3.ElementAt(i).C6.HasValue)
                             ExcelO.SetCellValue(ListInfo.Data.Item3.ElementAt(i).C6);
+                        else
+                            ExcelO.SetCellValue("N/A");
                         ExcelO.CreateCell(13, CellType.Boolean);
                         if (ListInfo.Data.Item3.ElementAt(i).C7.HasValue)
                             ExcelO.SetCellValue(ListInfo.Data.Item3.ElementAt(i).C7);
+                        else
+                            ExcelO.SetCellValue("N/A");
                         ExcelO.CreateCell(14, CellType.Boolean);
                         if (ListInfo.Data.Item3.ElementAt(i).C8.HasValue)
                             ExcelO.SetCellValue(ListInfo.Data.Item3.ElementAt(i).C8);
+                        else
+                            ExcelO.SetCellValue("N/A");
                         ExcelO.CreateCell(15, CellType.Boolean);
                         if (ListInfo.Data.Item3.ElementAt(i).C9.HasValue)
                             ExcelO.SetCellValue(ListInfo.Data.Item3.ElementAt(i).C9);
+                        else
+                            ExcelO.SetCellValue("N/A");
                         ExcelO.CreateCell(16, CellType.Boolean);
                         if (ListInfo.Data.Item3.ElementAt(i).C10.HasValue)
                             ExcelO.SetCellValue(ListInfo.Data.Item3.ElementAt(i).C10);
+                        else
+                            ExcelO.SetCellValue("N/A");
                         ExcelO.CreateCell(17, CellType.Boolean);
                         if (ListInfo.Data.Item3.ElementAt(i).C11.HasValue)
                             ExcelO.SetCellValue(ListInfo.Data.Item3.ElementAt(i).C11);
-
+                        else
+                            ExcelO.SetCellValue("N/A");
                         ExcelO.CreateCell(18, CellType.Boolean);
                         if (ListInfo.Data.Item3.ElementAt(i).C12.HasValue)
                             ExcelO.SetCellValue(ListInfo.Data.Item3.ElementAt(i).C12);
+                        else
+                            ExcelO.SetCellValue("N/A");
                         ExcelO.CreateCell(19, CellType.Boolean);
                         if (ListInfo.Data.Item3.ElementAt(i).C13.HasValue)
                             ExcelO.SetCellValue(ListInfo.Data.Item3.ElementAt(i).C13);
+                        else
+                            ExcelO.SetCellValue("N/A");
                         ExcelO.CreateCell(20, CellType.Boolean);
                         if (ListInfo.Data.Item3.ElementAt(i).C14.HasValue)
                             ExcelO.SetCellValue(ListInfo.Data.Item3.ElementAt(i).C14);
+                        else
+                            ExcelO.SetCellValue("N/A");
                         ExcelO.CreateCell(21, CellType.Boolean);
                         if (ListInfo.Data.Item3.ElementAt(i).C15.HasValue)
                             ExcelO.SetCellValue(ListInfo.Data.Item3.ElementAt(i).C15);
+                        else
+                            ExcelO.SetCellValue("N/A");                        
                         ExcelO.CreateCell(22, CellType.Boolean);
                         if (ListInfo.Data.Item3.ElementAt(i).C16.HasValue)
                             ExcelO.SetCellValue(ListInfo.Data.Item3.ElementAt(i).C16);
+                        else
+                            ExcelO.SetCellValue("N/A");
                         ExcelO.CreateCell(23, CellType.Boolean);
                         if (ListInfo.Data.Item3.ElementAt(i).C17.HasValue)
                             ExcelO.SetCellValue(ListInfo.Data.Item3.ElementAt(i).C17);
+                        else
+                            ExcelO.SetCellValue("N/A");
                         ExcelO.CreateCell(24, CellType.Boolean);
                         if (ListInfo.Data.Item3.ElementAt(i).C18.HasValue)
                             ExcelO.SetCellValue(ListInfo.Data.Item3.ElementAt(i).C18);
+                        else
+                            ExcelO.SetCellValue("N/A");
                     }
                     MemoryStream Ms2 = new MemoryStream();
                     ExcelO.ExcelWorkBook.Write(Ms2);

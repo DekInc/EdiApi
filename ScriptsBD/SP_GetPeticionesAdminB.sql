@@ -8,12 +8,13 @@ IF OBJECT_ID('SP_GetPeticionesAdminB', 'P') IS NOT NULL
 	DROP PROC dbo.SP_GetPeticionesAdminB
 GO
 CREATE PROCEDURE dbo.SP_GetPeticionesAdminB
+@ClienteId INT
 AS
 BEGIN
 	DECLARE @Cont int
 
 	--DELETE FROM EdiDB.dbo.ProductoUbicacion WHERE Typ IN (3)
-	SELECT @Cont = COUNT(*) FROM EdiDB.dbo.ProductoUbicacion WHERE Typ = 2 AND CodUser = CONVERT(VARCHAR(4),getdate(),108)
+	SELECT @Cont = COUNT(*) FROM EdiDB.dbo.ProductoUbicacion WHERE Typ = 2 AND CodUser = CONVERT(VARCHAR(4), getdate(), 108)
 	--SELECT @Cont
 	IF (@Cont = 0)
 	BEGIN
@@ -38,6 +39,7 @@ BEGIN
 		FROM wms.dbo.DtllPedido Dp2 WITH(NOLOCK)			
 		JOIN EdiDB.dbo.PedidosExternos Pe WITH(NOLOCK)
 			ON Dp2.PedidoId = Pe.PedidoWMS
+		WHERE Pe.ClienteID = @ClienteId
 
 		INSERT INTO EdiDB.dbo.ProductoUbicacion (Typ, CodProducto, NomBodega, Rack, NombreRack, Departamento)
 		SELECT DISTINCT 3, 
@@ -58,6 +60,7 @@ BEGIN
 		FROM EdiDB.dbo.PedidosDetExternos Dp2 WITH(NOLOCK)			
 		JOIN EdiDB.dbo.PedidosExternos Pe WITH(NOLOCK)
 			ON Dp2.PedidoId = Pe.Id
+		WHERE Pe.ClienteId = @ClienteId
 	END
 
 	SELECT DISTINCT
@@ -184,13 +187,26 @@ BEGIN
 	FROM EdiDB.dbo.PedidosExternos Pe WITH(NOLOCK)
 	LEFT JOIN EdiDB.dbo.PAYLESS_Tiendas T WITH(NOLOCK)
 		ON T.TiendaId = Pe.TiendaId	
+	WHERE Pe.ClienteId = @ClienteId
 	
 	--DELETE FROM EdiDB.dbo.ProductoUbicacion WHERE Typ IN (2)
 END
 
+
+
+
+
+
+
+
+
+
+
+
+--DELETE FROM EdiDB.dbo.ProductoUbicacion
 select * from EdiDB.dbo.ProductoUbicacion with(nolock) where Typ = '2'
 --truncate table EdiDB.dbo.ProductoUbicacion
-EXEC EdiDb.dbo.SP_GetPeticionesAdminB
+EXEC EdiDb.dbo.SP_GetPeticionesAdminB 1432
 --2617 not in
 select distinct Typ from EdiDB.dbo.ProductoUbicacion 
 select distinct CodProducto, NomBodega, Rack, NombreRack, Departamento from EdiDB.dbo.ProductoUbicacion 

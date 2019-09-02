@@ -287,7 +287,7 @@ namespace EdiViewer.Controllers
         {
             try
             {
-                RetData<List<PedidosPendientesAdmin>> ListDis = await ApiLongClientFactory.Instance.GetPedidosPendientesAdmin();
+                RetData<List<PedidosPendientesAdmin>> ListDis = await ApiLongClientFactory.Instance.GetPedidosPendientesAdmin(HttpContext.Session.GetObjSession<int>("Session.ClientId"));
                 return Json(new { codError = ListDis.Info.CodError, errorMessage = ListDis.Info.Mensaje, data = ListDis.Data });
             }
             catch (Exception e1)

@@ -675,10 +675,10 @@ namespace EdiApi.Models
             }
             return List;
         }
-        public static IEnumerable<PaylessProdPrioriDetModel> SP_GetPaylessProdPrioriFileDif(ref Models.EdiDB.EdiDBContext _DbO, int IdData, int IdProdArch) {
+        public static IEnumerable<PaylessProdPrioriDetModel> SP_GetPaylessProdPrioriFileDif(ref Models.EdiDB.EdiDBContext _DbO, int IdData, int IdProdArch, int ClienteId) {
             List<PaylessProdPrioriDetModel> ListProdDet = new List<PaylessProdPrioriDetModel>();
             using (DbCommand Cmd = _DbO.Database.GetDbConnection().CreateCommand()) {
-                Cmd.CommandText = $"dbo.SP_GetPaylessProdPrioriFileDif {IdData}, {IdProdArch}";
+                Cmd.CommandText = $"dbo.SP_GetPaylessProdPrioriFileDif {IdData}, {IdProdArch}, {ClienteId}";
                 _DbO.Database.OpenConnection();
                 DbDataReader Dr = Cmd.ExecuteReader();
                 if (Dr.HasRows) {
@@ -716,10 +716,10 @@ namespace EdiApi.Models
             }
             return ListProdDet;
         }
-        public static IEnumerable<PaylessProdPrioriDetModel> SP_GetPaylessProdPrioriAll(ref Models.EdiDB.EdiDBContext _DbO, string TiendaId) {
+        public static IEnumerable<PaylessProdPrioriDetModel> SP_GetPaylessProdPrioriAll(ref Models.EdiDB.EdiDBContext _DbO, int ClienteId) {
             List<PaylessProdPrioriDetModel> ListProdDet = new List<PaylessProdPrioriDetModel>();
             using (DbCommand Cmd = _DbO.Database.GetDbConnection().CreateCommand()) {
-                Cmd.CommandText = $"[dbo].[SP_GetPaylessProdPrioriAll] '{TiendaId}'";
+                Cmd.CommandText = $"[dbo].[SP_GetPaylessProdPrioriAll] '{ClienteId}'";
                 _DbO.Database.OpenConnection();
                 DbDataReader Dr = Cmd.ExecuteReader();
                 if (Dr.HasRows) {
@@ -873,10 +873,10 @@ namespace EdiApi.Models
             }
             return ListProdDet;
         }
-        public static List<PedidosPendientesAdmin> SP_GetPedidosPendientesAdmin(ref Models.EdiDB.EdiDBContext _DbO) {
+        public static List<PedidosPendientesAdmin> SP_GetPedidosPendientesAdmin(ref Models.EdiDB.EdiDBContext _DbO, int ClienteId) {
             List<PedidosPendientesAdmin> ListProdDet = new List<PedidosPendientesAdmin>();
             using (DbCommand Cmd = _DbO.Database.GetDbConnection().CreateCommand()) {
-                Cmd.CommandText = $"dbo.SP_GetPedidosPendientesAdmin";
+                Cmd.CommandText = $"dbo.SP_GetPedidosPendientesAdmin {ClienteId}";
                 Cmd.CommandTimeout = 600;
                 _DbO.Database.OpenConnection();
                 DbDataReader Dr = Cmd.ExecuteReader();
@@ -909,10 +909,10 @@ namespace EdiApi.Models
             }
             return ListProdDet;
         }
-        public static List<PeticionesAdminBGModel> SP_GetPeticionesAdminB(ref Models.EdiDB.EdiDBContext _DbO) {
+        public static List<PeticionesAdminBGModel> SP_GetPeticionesAdminB(ref Models.EdiDB.EdiDBContext _DbO, int ClienteId) {
             List<PeticionesAdminBGModel> ListProdDet = new List<PeticionesAdminBGModel>();
             using (DbCommand Cmd = _DbO.Database.GetDbConnection().CreateCommand()) {
-                Cmd.CommandText = $"dbo.SP_GetPeticionesAdminB";
+                Cmd.CommandText = $"dbo.SP_GetPeticionesAdminB {ClienteId}";
                 Cmd.CommandTimeout = 600;
                 _DbO.Database.OpenConnection();
                 DbDataReader Dr = Cmd.ExecuteReader();
@@ -1066,10 +1066,10 @@ namespace EdiApi.Models
             }
         }
 
-        public static IEnumerable<PaylessProdPrioriDet> SP_GetSetInvToday(ref EdiDBContext _DbO, int ClienteId) {
+        public static IEnumerable<PaylessProdPrioriDet> SP_GetSetInvToday(ref EdiDBContext _DbO, int ClienteId, string CodUser) {
             List<PaylessProdPrioriDet> ListExists = new List<PaylessProdPrioriDet>();
             using (DbCommand Cmd = _DbO.Database.GetDbConnection().CreateCommand()) {
-                Cmd.CommandText = $"SP_GetSetInvToday {ClienteId}, 'BOT'";
+                Cmd.CommandText = $"SP_GetSetInvToday {ClienteId}, '{CodUser}'";
                 _DbO.Database.OpenConnection();
                 DbDataReader Dr = Cmd.ExecuteReader();
                 if (Dr.HasRows) {
@@ -1087,6 +1087,25 @@ namespace EdiApi.Models
                     Dr.Close();
             }
             return ListExists;
+        }
+
+        public static void GetEntradasSalidasWms(ref EdiDBContext _DbO, int ClienteId) {
+            List<PaylessProdPrioriDet> ListExists = new List<PaylessProdPrioriDet>();
+            using (DbCommand Cmd = _DbO.Database.GetDbConnection().CreateCommand()) {
+                Cmd.CommandText = $"SP_GetEntradasSalidasWms {ClienteId}";
+                _DbO.Database.OpenConnection();
+                Cmd.ExecuteNonQuery();
+                _DbO.Database.CloseConnection();
+            }
+        }
+
+        public static void PaylessDeleteRepeated(ref EdiDBContext _DbO) {
+            using (DbCommand Cmd = _DbO.Database.GetDbConnection().CreateCommand()) {
+                Cmd.CommandText = $"SP_PaylessDeleteRepeated";
+                _DbO.Database.OpenConnection();
+                Cmd.ExecuteNonQuery();
+                _DbO.Database.CloseConnection();
+            }
         }
     }
 }

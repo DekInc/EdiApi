@@ -1,4 +1,4 @@
-use edidb
+use master
 go
 IF OBJECT_ID('PAYLESS_ProdPrioriM', 'U') IS NOT NULL 
 	DROP TABLE PAYLESS_ProdPrioriM
@@ -54,12 +54,15 @@ CREATE TABLE PAYLESS_ProdPrioriArchM(
 	PorcValidez float,
 	CantExcel int null,
 	CantEscaner int null,
-	Typ int null
+	Typ int null,
+	ClienteId int
 )
 GO
 select * from EdiDb.dbo.PAYLESS_ProdPrioriArchM
---ALTER TABLE PAYLESS_ProdPrioriArchM
---ADD Typ int null
+--ALTER TABLE EdiDb.dbo.PAYLESS_ProdPrioriArchM
+--ADD ClienteId int
+--update EdiDb.dbo.PAYLESS_ProdPrioriArchM
+--SET ClienteId = 1432
 IF OBJECT_ID('PAYLESS_ProdPrioriArchDet', 'U') IS NOT NULL 
 	DROP TABLE PAYLESS_ProdPrioriArchDet
 GO

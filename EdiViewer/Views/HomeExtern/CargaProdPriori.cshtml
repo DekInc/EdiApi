@@ -15,6 +15,15 @@
                         <div class="container div856Search">
                             <div class="row">
                                 <div class="col-sm">
+                                    <span id="spanClientName">
+                                        <span id="divSpinClientName" class="spinner-border spinner-border-sm text-danger" style="display: none" role="status">
+                                            <span class="sr-only">Loading...</span>
+                                        </span>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm">
                                     <label for="dtpPeriodoBuscar">Periodo</label>
                                     <input class="form-control datepicker" data-date-format="dd/mm/yyyy" id="dtpPeriodoBuscar" placeholder="dd/mm/yyyy" maxlength="10" autocorrect="off" autocapitalize="off" autocomplete="off" />
                                 </div>
@@ -72,6 +81,25 @@
         }
         return decodeURI(results[1]) || 0;
     }
+    var getClientName = new Promise(function (resolve, reject) {
+        $('#divSpinClientName').show();
+        $.ajax({
+            method: "GET",
+            url: "@this.Url.Action("GetClientNow", "HomeExtern")",
+            success: function (data) {
+                if (data.info.codError != 0) {
+                    menErrorEdi(data.info.mensaje, 'Error');
+                    return;
+                }
+                $('#spanClientName').html(data.data);
+                $('#divSpinClientName').hide();
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                menErrorEdi(xhr.status, 'Error throw in js');
+                menErrorEdi(thrownError, 'Error throw in js');
+            }
+        });
+    });
     function getTransportes() {
         if ($('#dtpPeriodoBuscar').val() == '') return;
         $('#divSpinCboTransporte').show();
@@ -189,6 +217,7 @@
     $(document).ready(function () {
         $('#dtpPeriodoBuscar').datepicker();
         $('.imgHeaderHelp').tooltip();
+        getClientName.then();
         crearGrid();
         $('#btnFiltrar').on("click", function (Event) {
             miAlive();

@@ -15,7 +15,7 @@ namespace EdiViewer.Utility.Scheduling
         public static HttpClient httpClient = new HttpClient();        
         public async Task ExecuteAsync(CancellationToken cancellationToken)
         {
-            string MakeAutoReportsPaylessTaskUri = $"{ApplicationSettings.ApiUri}Data/MakeAutoReportsPayless";
+            string MakeAutoReportsPaylessTaskUri = $"{ApplicationSettings.ApiUri}Data/MakeAutoReportsPayless?ClienteId=1432";
             try
             {                
                 Uri Url = new Uri(MakeAutoReportsPaylessTaskUri);

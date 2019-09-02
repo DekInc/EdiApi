@@ -8,7 +8,7 @@
         <div class="card-deck cardMain">
             <div class="card box-shadow">
                 <div class="card-header">
-                    <h4 class="my-0 font-weight-normal">Estado de pedidos</h4>
+                    <h4 class="my-0 font-weight-normal">Estado de pedidos WMS</h4>
                 </div>
                 <div class="card-body">         
                     <div>
@@ -66,11 +66,11 @@
             $('#spanClientName').css('margin-bottom', '10px');
         }
     }
-    function getClientName() {
+    var getClientName = new Promise(function (resolve, reject) {
         $('#divSpinClientName').show();
         $.ajax({
             method: "GET",
-            url: "@this.Url.Action("GetClientName", "HomeExtern")",
+            url: "@this.Url.Action("GetClientNow", "HomeExtern")",
             success: function (data) {
                 if (data.info.codError != 0) {
                     menErrorEdi(data.info.mensaje, 'Error');
@@ -84,7 +84,7 @@
                 menErrorEdi(thrownError, 'Error throw in js');
             }
         });
-    }
+    });
     function fillTblReportes() {        
         domtblReportes = $("#tblReportes").DataTable({
             select: true,

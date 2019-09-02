@@ -36,5 +36,6 @@ namespace EdiApi.Models.EdiDB
         public bool? Preg17 { get; set; }
         public string Preg17a { get; set; }
         public string Preg18 { get; set; }
+        public bool? Preg19 { get; set; }
     }
 }

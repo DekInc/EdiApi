@@ -325,7 +325,7 @@ namespace EdiViewer.Controllers
         }
         public async Task<IActionResult> GetPaylessPeriodPrioriFile() {
             try {
-                RetData<Tuple<IEnumerable<PaylessProdPrioriArchMModel>, IEnumerable<PaylessProdPrioriArchDet>>> ListProdPrioriArch = await ApiClientFactory.Instance.GetPaylessPeriodPrioriFile();
+                RetData<Tuple<IEnumerable<PaylessProdPrioriArchMModel>, IEnumerable<PaylessProdPrioriArchDet>>> ListProdPrioriArch = await ApiClientFactory.Instance.GetPaylessPeriodPrioriFile(HttpContext.Session.GetObjSession<int>("Session.ClientId"));
                 if (ListProdPrioriArch.Info.CodError != 0)
                     return Json(new { total = 0, records = "", errorMessage = ListProdPrioriArch.Info.Mensaje });
                 if (ListProdPrioriArch.Data == null)
@@ -352,7 +352,7 @@ namespace EdiViewer.Controllers
         public async Task<IActionResult> GetPaylessFileDif(string idProdArch, int idData = 1) {
             try {
                 //if (idProdArch == "0") return null;
-                RetData<IEnumerable<PaylessProdPrioriDetModel>> ListProdPrioriArch = await ApiLongClientFactory.Instance.GetPaylessFileDif(idProdArch, idData);
+                RetData<IEnumerable<PaylessProdPrioriDetModel>> ListProdPrioriArch = await ApiLongClientFactory.Instance.GetPaylessFileDif(idProdArch, idData, HttpContext.Session.GetObjSession<int>("Session.ClientId"));
                 if (ListProdPrioriArch.Info.CodError != 0)
                     return Json(new { total = 0, records = "", errorMessage = ListProdPrioriArch.Info.Mensaje });
                 if (ListProdPrioriArch.Data == null)
@@ -437,9 +437,9 @@ namespace EdiViewer.Controllers
                 return Json(new { total = 0, records = "", errorMessage = e1.ToString() });
             }
         }
-        public async Task<IActionResult> GetPeticionesAdminB(string Dtp1 = "", string ChkPending = "") {
+        public async Task<IActionResult> GetPeticionesAdminB(int ClienteId, string Dtp1 = "", string ChkPending = "") {
             try {
-                RetData<IEnumerable<PeticionesAdminBGModel>> ListPe = await ApiClientFactory.Instance.GetPeticionesAdminB();
+                RetData<IEnumerable<PeticionesAdminBGModel>> ListPe = await ApiClientFactory.Instance.GetPeticionesAdminB(ClienteId);                
                 if (ListPe.Info.CodError != 0)
                     return Json(new { total = 0, records = "", errorMessage = ListPe.Info.Mensaje });
                 if (ListPe.Data == null)
@@ -532,7 +532,7 @@ namespace EdiViewer.Controllers
             DateTime StartTime = DateTime.Now;
             try {
                 IEnumerable<DateTime> ListMondays = Utility.Funcs.AllDatesInMonth(DateTime.Now.Year, DateTime.Now.Month).Where(i => i.DayOfWeek == DayOfWeek.Monday);
-                RetData<IEnumerable<PaylessReportes>> ListPaylessReportes = await ApiClientFactory.Instance.GetPaylessReportes();
+                RetData<IEnumerable<PaylessReportes>> ListPaylessReportes = await ApiClientFactory.Instance.GetPaylessReportes(HttpContext.Session.GetObjSession<int>("Session.ClientId"));
                 if (ListPaylessReportes.Info.CodError != 0)
                     return Json(new { total = 0, records = "", errorMessage = ListPaylessReportes.Info.Mensaje });
                 if (ListPaylessReportes.Data == null)
@@ -553,7 +553,7 @@ namespace EdiViewer.Controllers
         public async Task<IActionResult> GetAllPeriods() {
             DateTime StartTime = DateTime.Now;
             try {
-                RetData<IEnumerable<string>> ListPeriods = await ApiClientFactory.Instance.GetPaylessPeriodPriori();
+                RetData<IEnumerable<string>> ListPeriods = await ApiClientFactory.Instance.GetPaylessPeriodPriori(HttpContext.Session.GetObjSession<int>("Session.ClientId"));
                 if (ListPeriods.Info.CodError != 0)
                     return Json(new { total = 0, records = "", errorMessage = ListPeriods.Info.Mensaje });
                 if (ListPeriods.Data == null)
@@ -571,130 +571,7 @@ namespace EdiViewer.Controllers
                 return Json(new { total = 0, records = "", errorMessage = e1.ToString() });
             }
 
-        }
-        public async Task<IActionResult> GetPaylessProdPrioriInventario2(string tiendaId = null) {
-            try {
-                if (tiendaId != null)
-                    HttpContext.Session.SetObjSession("Session.TiendaId", tiendaId);
-                string TiendaId = string.IsNullOrEmpty(tiendaId)? HttpContext.Session.GetObjSession<string>("Session.TiendaId") : tiendaId;
-                RetData<IEnumerable<PaylessProdPrioriDetModel>> ListProd = await ApiLongClientFactory.Instance.GetPaylessProdPrioriAll(TiendaId);
-                if (ListProd.Info.CodError != 0)
-                    return Json(new { total = 0, records = "", errorMessage = ListProd.Info.Mensaje });
-                if (ListProd.Data == null)
-                    return Json(new { total = 0, records = "", errorMessage = (ListProd.Info.CodError != 0 ? ListProd.Info.Mensaje : string.Empty) });
-                if (ListProd.Data.Count() == 0)
-                    return Json(new { total = 0, records = "", errorMessage = (ListProd.Info.CodError != 0 ? ListProd.Info.Mensaje : "No hay productos en el WMS para la tienda") });                
-                List<PaylessProdPrioriDetModel> Records = ListProd.Data.Select(O => Utility.Funcs.Reflect(O, new PaylessProdPrioriDetModel())).ToList();
-                Records = (
-                    from Pp in Records
-                    group Pp by new { Pp.Barcode, Pp.Categoria, Pp.Cp }
-                    into Grp
-                    select new PaylessProdPrioriDetModel {
-                        Barcode = Grp.Fod().Barcode,
-                        //Producto = Grp.Fod().Producto,
-                        //Talla = Grp.Fod().Talla,
-                        Categoria = Grp.Fod().Categoria,
-                        //Lote = Grp.Fod().Lote,
-                        //Estado = Grp.Fod().Estado,
-                        //Pri = Grp.Fod().Pri,
-                        //PoolP = Grp.Fod().PoolP,
-                        //Departamento = Grp.Fod().Departamento,
-                        //Cp = Grp.Fod().Cp == "A"? "Si" : "No",
-                        Cp = ((Grp.Fod().Cp == "A" || Grp.Fod().Departamento == "9" || Grp.Fod().Departamento == "10" || Grp.Fod().Departamento == "11") ? "Si" : "No"),
-                        Id = Grp.Fod().Id
-                        //Peso = Grp.Count(),
-                        //IdTransporte = Grp.Fod().IdTransporte,
-                        //Transporte = Grp.Fod().Transporte
-                    }
-                    ).ToList();
-                List<PaylessProdPrioriDetModel> AllRecords = Records;
-                List<PaylessProdPrioriDetModel> ListProdWithStock = new List<PaylessProdPrioriDetModel>();
-                List<PaylessProdPrioriDetModel> FilteredRecords = Records;
-                RetData<Tuple<IEnumerable<PedidosExternos>, IEnumerable<PedidosDetExternos>>> TuplePextSent = await ApiClientFactory.Instance.GetPedidosExternosPendientesByTienda(HttpContext.Session.GetObjSession<int>("Session.ClientId"), Convert.ToInt32(TiendaId));
-                if (TuplePextSent.Info.CodError != 0)
-                    return Json(new { total = 0, records = "", errorMessage = TuplePextSent.Info.Mensaje });
-                List<PedidosDetExternos> ListPendientes = (
-                    from Pd in TuplePextSent.Data.Item2
-                    from P in TuplePextSent.Data.Item1
-                    where Pd.PedidoId == P.Id
-                    && P.PedidoWms == null
-                    select Pd
-                    ).ToList();
-                int Total = Records.Count;
-                List<string> ListBodegas = new List<string>();
-                string CodProductoFuera = string.Empty;
-                if (Records.Count() > 0) {
-                    RetData<IEnumerable<FE830DataAux>> StockData = await ApiLongClientFactory.Instance.GetStockByTienda(HttpContext.Session.GetObjSession<int>("Session.ClientId"), Convert.ToInt32(TiendaId));
-                    if (StockData.Info.CodError != 0)
-                        return Json(new { total = 0, records = "", errorMessage = StockData.Info.Mensaje });
-                    foreach (FE830DataAux Stock in StockData.Data) {
-                        foreach (PaylessProdPrioriDetModel Product in Records.Where(P => P.Barcode == Stock.CodProducto)) {
-                            if (!ListBodegas.Contains(Stock.CodProductoLear)) {
-                                ListBodegas.Add(Stock.CodProductoLear);
-                                if (ListBodegas.Count > 1)
-                                    CodProductoFuera = Product.Barcode;
-                            }
-                            Product.Existencia = Convert.ToInt32(Stock.Existencia);
-                            if (ListProdWithStock.Where(Ws => Ws.Barcode == Product.Barcode).Count() == 0 
-                                && Product.Existencia > 0
-                                && ListPendientes.Where(Lp => Lp.CodProducto == Product.Barcode).Count() == 0) {
-                                ListProdWithStock.Add(Product);
-                            }
-                        }
-                    }
-                    //if (ListBodegas.Count == 2) {
-                    //    return Json(new { total = 0, records = "", errorMessage = $"Hay un problema con los productos a pedir, el código de producto {CodProductoFuera} está en una bodega diferente." });
-                    //}                    
-                    Records.ForEach(R => {
-                        if (R.CantPedir < 0)
-                            R.CantPedir = 0;
-                    });
-                    bool HaveForm = true;
-                    try {
-                        if (Request.Form != null) {
-                            IFormCollection GridForm = Request.Form;
-                        }
-                    } catch {
-                        HaveForm = false;
-                    }                    
-                    int NRow = 0;
-                    Records = (
-                        from R in ListProdWithStock
-                        group R by new { R.Categoria, R.Cp }
-                        into Grp
-                        select new PaylessProdPrioriDetModel {
-                            Id = NRow++,
-                            Categoria = Grp.Fod().Categoria,
-                            Existencia = Grp.Sum(O1 => O1.Existencia),
-                            Reservado = Grp.Sum(O1 => O1.Reservado),
-                            CantPedir = Grp.Sum(O1 => O1.CantPedir),
-                            Cp = Grp.Fod().Cp
-                        }).ToList();
-                    Total = Records.Count;
-                    FilteredRecords = Records;
-                    if (HaveForm) {
-                        FilteredRecords = Utility.ExpressionBuilderHelper.W2uiSearchNoSkip<PaylessProdPrioriDetModel>(Records, Request.Form);
-                        Records = Utility.ExpressionBuilderHelper.W2uiSearch<PaylessProdPrioriDetModel>(Records, Request.Form);
-                    }
-                }                
-                AllRecords = Records;
-                if (Records.Where(O => O.Cp == "No" && O.Categoria.ToUpper() == "DAMAS").Count() == 0)
-                    Records.Add(new PaylessProdPrioriDetModel { Cp = "No", Categoria = "DAMAS" });
-                if (Records.Where(O => O.Cp == "No" && O.Categoria.ToUpper() == "CABALLEROS").Count() == 0)
-                    Records.Add(new PaylessProdPrioriDetModel { Cp = "No", Categoria = "CABALLEROS" });
-                if (Records.Where(O => O.Cp == "No" && O.Categoria.ToUpper() == "NIÑOS / AS").Count() == 0)
-                    Records.Add(new PaylessProdPrioriDetModel { Cp = "No", Categoria = "NIÑOS / AS" });
-                if (Records.Where(O => O.Cp == "No" && O.Categoria.ToUpper() == "ACCESORIOS").Count() == 0)
-                    Records.Add(new PaylessProdPrioriDetModel { Cp = "No", Categoria = "ACCESORIOS" });
-                HttpContext.Session.SetObjSession("Session.StoreQtys", Records);
-                if (TuplePextSent.Data.Item1.Count() > 0)
-                    return Json(new { Total, Records, errorMessage = "", AllRecords, FilteredRecords, pedidosPendientes = TuplePextSent.Data.Item1 });
-                else
-                    return Json(new { Total, Records, errorMessage = "", AllRecords, FilteredRecords });
-            } catch (Exception e1) {
-                return Json(new { draw = 0, recordsFiltered = 0, recordsTotal = 0, errorMessage = e1.ToString(), data = "" });
-            }
-        }
+        }        
         private void AddCat(ref List<PaylessProdPrioriDetModel> Records, ref List<PaylessProdPrioriDetModel> Exclude, string Cat, string CatN, string Cp, string Est, int Typ) {
             IEnumerable<string> ListBa = Exclude.Where(D => D.Existencia == Typ && D.Categoria == CatN).Select(O => O.Barcode).Distinct();
             Records.Add(new PaylessProdPrioriDetModel() {
@@ -781,10 +658,41 @@ namespace EdiViewer.Controllers
             }
         }
         public async Task<IActionResult> GetInvByStore() {
+            DateTime StartTime = DateTime.Now;
             try {
-                string ClienteId = HttpContext.Session.GetObjSession<string>("Session.ClientId");
-                RetData<IEnumerable<PaylessProdPrioriDetModel>> ListProd = await ApiLongClientFactory.Instance.GetPaylessProdPrioriAll();
-                RetData<IEnumerable<PaylessTiendas>> ListStores2 = await ApiClientFactory.Instance.GetStores();                
+                RetData<IEnumerable<PaylessInvSnapshotDet>> List = await ApiClientFactory.Instance.GetPaylessInv(HttpContext.Session.GetObjSession<int>("Session.ClientId"));
+                if (List.Info.CodError != 0)
+                    return Json(new { total = 0, records = "", errorMessage = List.Info.Mensaje });
+                if (List.Data == null)
+                    return Json(new { total = 0, records = "", errorMessage = "" });
+                if (List.Data.Count() == 0)
+                    return Json(new { total = 0, records = "", errorMessage = "" });
+                List<PaylessInvSnapshotDetGModel> Records = List.Data.Select(O => Utility.Funcs.Reflect(O, new PaylessInvSnapshotDetGModel())).ToList();
+                List<PaylessInvSnapshotDetGModel> AllRecords = new List<PaylessInvSnapshotDetGModel>();
+                int Total = Records.Count;
+                bool HaveForm = true;
+                try {
+                    if (Request.Form != null) {
+                        IFormCollection GridForm = Request.Form;
+                    }
+                } catch {
+                    HaveForm = false;
+                }
+                if (Records.Count() > 0 && HaveForm) {
+                    AllRecords = Utility.ExpressionBuilderHelper.W2uiSearchNoSkip(Records, Request.Form);
+                    Records = Utility.ExpressionBuilderHelper.W2uiSearch(Records, Request.Form);
+                }
+                return Json(new { Total, Records, errorMessage = "", AllRecords });
+            } catch (Exception e1) {
+                return Json(new { total = 0, records = "", errorMessage = e1.ToString() });
+            }
+        }
+        public async Task<IActionResult> GetInvByStore2() {
+            try {
+                int ClienteId = HttpContext.Session.GetObjSession<int>("Session.ClientId");
+                RetData<IEnumerable<PaylessProdPrioriDetModel>> ListProd = await ApiLongClientFactory.Instance.GetPaylessProdPrioriAll(ClienteId);
+                List<string> List7650 = ListProd.Data.Where(D => D.Barcode.StartsWith("7650")).Select(O => O.Barcode).Distinct().ToList();
+                RetData<IEnumerable<PaylessTiendas>> ListStores2 = await ApiClientFactory.Instance.GetStores(HttpContext.Session.GetObjSession<int>("Session.IdUser"));
                 if (ListProd.Info.CodError != 0)
                     return Json(new { total = 0, records = "", errorMessage = ListProd.Info.Mensaje });
                 if (ListProd.Data == null)
@@ -795,7 +703,7 @@ namespace EdiViewer.Controllers
                     return Json(new { total = 0, records = "", errorMessage = ListStores2.Info.Mensaje });
                 if (ListStores2.Data == null)
                     return Json(new { total = 0, records = "", errorMessage = (ListStores2.Info.CodError != 0 ? ListStores2.Info.Mensaje : string.Empty) });
-                List<PaylessTiendas> ListStores = ListStores2.Data.Where(S => S.ClienteId == Convert.ToInt32(ClienteId)).ToList();
+                List<PaylessTiendas> ListStores = ListStores2.Data.Where(S => S.ClienteId == ClienteId).ToList();
                 List<PaylessProdPrioriDetModel> Records = ListProd.Data.Select(O => Utility.Funcs.Reflect(O, new PaylessProdPrioriDetModel())).ToList();
                 List<StoreCatQtyGModel> GroupRecords = new List<StoreCatQtyGModel>();
                 string[] ListCpReal = { "A", "H" };
@@ -1083,7 +991,7 @@ namespace EdiViewer.Controllers
         public async Task<IActionResult> GetPaylessEncuestaRepM(int Anio, int Mes) {
             DateTime StartTime = DateTime.Now;
             try {
-                RetData<IEnumerable<PaylessEncuestaRepMmGModel>> List = await ApiClientFactory.Instance.GetPaylessEncuestaRepM(Anio, Mes, HttpContext.Session.GetObjSession<string>("Session.CodUsr"));
+                RetData<IEnumerable<PaylessEncuestaRepMmGModel>> List = await ApiClientFactory.Instance.GetPaylessEncuestaRepM(Anio, Mes, HttpContext.Session.GetObjSession<string>("Session.CodUsr"), HttpContext.Session.GetObjSession<int>("Session.ClientId"));
                 if (List.Info.CodError != 0)
                     return Json(new { total = 0, records = "", errorMessage = List.Info.Mensaje });
                 if (List.Data.Count() == 0)
@@ -1108,10 +1016,10 @@ namespace EdiViewer.Controllers
                 return Json(new { total = 0, records = "", errorMessage = e1.ToString() });
             }
         }
-        public async Task<IActionResult> GetSnapshootInvByStore(string Periodo) {
+        public async Task<IActionResult> GetSnapshootInvByStore(string Periodo, int ClienteId) {
             DateTime StartTime = DateTime.Now;
             try {
-                RetData<Tuple<IEnumerable<PaylessInvSnapshotM>, IEnumerable<PaylessInvSnapshotDet>>> List = await ApiClientFactory.Instance.GetSnapshootInvByStore(HttpContext.Session.GetObjSession<int>("Session.ClientId"), Periodo);
+                RetData<Tuple<IEnumerable<PaylessInvSnapshotM>, IEnumerable<PaylessInvSnapshotDet>>> List = await ApiClientFactory.Instance.GetSnapshootInvByStore(ClienteId, Periodo);
                 if (List.Info.CodError != 0)
                     return Json(new { total = 0, records = "", errorMessage = List.Info.Mensaje });
                 if (List.Data.Item1 == null)
@@ -1150,6 +1058,27 @@ namespace EdiViewer.Controllers
                 for (int i = 0; i < Records.Count; i++)
                     Records[i].Cont = (Records[i].WomanQty ?? 0) + (Records[i].ManQty ?? 0) + (Records[i].KidQty ?? 0) + (Records[i].AccQty ?? 0);
                 List<PedidosExternosGModel> AllRecords = new List<PedidosExternosGModel>();
+                int Total = Records.Count;
+                if (Records.Count() > 0) {
+                    AllRecords = Utility.ExpressionBuilderHelper.W2uiSearchNoSkip(Records, Request.Form);
+                    Records = Utility.ExpressionBuilderHelper.W2uiSearch(Records, Request.Form);
+                }
+                return Json(new { Total, Records, errorMessage = "", AllRecords });
+            } catch (Exception e1) {
+                return Json(new { total = 0, records = "", errorMessage = e1.ToString() });
+            }
+
+        }
+        public async Task<IActionResult> GetEntradasSalidasWms(int ClienteId, int BodegaId, int RegimenId) {
+            DateTime StartTime = DateTime.Now;
+            try {
+                RetData<IEnumerable<WmsInOutGModel>> List = await ApiClientFactory.Instance.GetEntradasSalidasWms(ClienteId, BodegaId, RegimenId);
+                if (List.Info.CodError != 0)
+                    return Json(new { total = 0, records = "", errorMessage = List.Info.Mensaje });
+                if (List.Data == null)
+                    return Json(new { total = 0, records = "", errorMessage = (List.Info.CodError != 0 ? List.Info.Mensaje : string.Empty) });
+                List<WmsInOutGModel> Records = List.Data.ToList();                
+                List<WmsInOutGModel> AllRecords = new List<WmsInOutGModel>();
                 int Total = Records.Count;
                 if (Records.Count() > 0) {
                     AllRecords = Utility.ExpressionBuilderHelper.W2uiSearchNoSkip(Records, Request.Form);

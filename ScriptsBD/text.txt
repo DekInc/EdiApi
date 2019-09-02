@@ -76,6 +76,13 @@ SQLServer 114 tmsadmin:TmsAdmin$10
 192.168.1.227 - 201.247.107.138 - Administrador:ITadmin2019$$&& - Servidor CDRSM SILCE
 192.168.1.63 - Informatica:20InfgLtransfer10 - TMS
 
+Informatica: ITadmin2018GLC
+
+Acceso a servidor Miramar + credenciales
+public ip; 190.86.248.212
+user: Servidor Miramar 
+pass: ITadmin2018GLC 
+
 GitBucket
 root:Glcr00t
 root:Glcr00t
@@ -535,3 +542,16 @@ Por favor revisar el plan y si tienes alguna obsercacion, hacermela saber; ya qu
 
 
 RequestForm
+
+Configuración de pedidos de tiendas para bodegas de ES, estructuradas por inventario por tienda.
+Realizar pedidos Divert para ES
+Pedidos divert por lote para ES
+Reporte de inventario por tienda ES
+Reporte de ordenes pendientes ES
+Corte de reportes semanal programación y despachos para ES
+Despacho de facturas
+
+mockup tracking
+https://www.justinmind.com/usernote/tests/36801127/41988524/41988526/index.html
+
+

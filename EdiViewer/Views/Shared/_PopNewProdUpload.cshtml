@@ -104,6 +104,10 @@
                 contentType: false,
                 processData: false,
                 success: function (response) {
+                    $.ajax({
+                        method: "GET",
+                        url: '@this.Url.Action("UpdateProductsLocal", "HomeExtern")'
+                    });
                     $('#divSpinUploadFile').hide();
                     if (response.info.codError != null) {
                         if (response.info.codError != 0) {
@@ -124,6 +128,10 @@
                 error: function (resp) {
                     $('#divSpinUploadFile').hide();
                     menErrorEdi(resp.info.mensaje);
+                    $.ajax({
+                        method: "GET",
+                        url: '@this.Url.Action("UpdateProductsLocal", "HomeExtern")'
+                    });
                 }
             });
         })

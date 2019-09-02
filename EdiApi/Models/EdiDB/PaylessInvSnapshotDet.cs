@@ -20,5 +20,9 @@ namespace EdiApi.Models.EdiDB
         public int? TotalSolicitado { get; set; }
         public int? TotalDisponible { get; set; }
         public string Bodega { get; set; }
+        public int? AvaWomanQty { get; set; }
+        public int? AvaManQty { get; set; }
+        public int? AvaKidsQty { get; set; }
+        public int? AvaAccQty { get; set; }
     }
 }

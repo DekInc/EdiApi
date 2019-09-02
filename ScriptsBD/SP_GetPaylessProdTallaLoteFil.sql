@@ -41,4 +41,6 @@ BEGIN
 END
 GO
 
-exec SP_GetPaylessProdTallaLoteFil '2670', '', '', '', '', 'Admin'
+exec EdiDB.dbo.SP_GetPaylessProdTallaLoteFil '', '', '', '', '', 'Admin', 81
+
+select * from EdiDB.dbo.WmsProductoExistencia where CodUser = 'Admin'

@@ -11,5 +11,6 @@ namespace EdiApi.Models.EdiDB
         public string FechaGen { get; set; }
         public string Tipo { get; set; }
         public bool? MailEnviado { get; set; }
+        public int? ClienteId { get; set; }
     }
 }

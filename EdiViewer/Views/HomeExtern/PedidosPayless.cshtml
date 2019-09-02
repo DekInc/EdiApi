@@ -21,11 +21,34 @@
                         <div class="container div856Search">
                             <div class="row">
                                 <div class="col-sm">
-                                    <label for="cboBodega">Lote</label>                                    
-                                    <select class="form-control" id="cboBodega" name="cboBodega">
-                                        <option value="81">GLC EL POLVORIN</option>
-                                        <option value="82">GLC-TGU</option>
-                                    </select>
+                                    <span id="spanClientName2">
+                                        <span id="divSpinClientName" class="spinner-border spinner-border-sm text-danger" style="display: none" role="status">
+                                            <span class="sr-only">Loading...</span>
+                                        </span>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm">
+                                    <label for="cboLocation">Lugar</label>
+                                    <div id="divSpinCboLocation" class="spinner-border spinner-border-sm text-danger" style="display: none" role="status">
+                                        <span class="sr-only">Loading...</span>
+                                    </div>
+                                    <select class="form-control" id="cboLocation" name="cboLocation"></select>
+                                </div>
+                                <div class="col-sm">
+                                    <label for="cboBodegas">Bodega</label>
+                                    <div id="divSpinCboBodegas" class="spinner-border spinner-border-sm text-danger" style="display: none" role="status">
+                                        <span class="sr-only">Loading...</span>
+                                    </div>
+                                    <select class="form-control" id="cboBodegas" name="cboBodegas"></select>
+                                </div>
+                                <div class="col-sm">
+                                    <label for="cboRegimen">Regimen</label>
+                                    <div id="divSpinCboRegimen" class="spinner-border spinner-border-sm text-danger" style="display: none" role="status">
+                                        <span class="sr-only">Loading...</span>
+                                    </div>
+                                    <select class="form-control" id="cboRegimen" name="cboRegimen"></select>
                                 </div>
                                 <div class="col-sm">
                                     <label for="TxtBarcode">Barcode</label>
@@ -112,6 +135,25 @@
         }
         return decodeURI(results[1]) || 0;
     }
+    var getClientName = new Promise(function (resolve, reject) {
+        $('#divSpinClientName').show();
+        $.ajax({
+            method: "GET",
+            url: "@this.Url.Action("GetClientNow", "HomeExtern")",
+            success: function (data) {
+                if (data.info.codError != 0) {
+                    menErrorEdi(data.info.mensaje, 'Error');
+                    return;
+                }
+                $('#spanClientName2').html(data.data);
+                $('#divSpinClientName').hide();
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                menErrorEdi(xhr.status, 'Error throw in js');
+                menErrorEdi(thrownError, 'Error throw in js');
+            }
+        });
+    });
     function reDrawObjects() {
         $('#spanClientName').css('display', 'block');
         if (window.mobileAndTabletcheck()) {
@@ -172,7 +214,7 @@
                 selectType: 'cell',
                 bResponsive: true,
                 bMobile: window.mobileAndTabletcheck(),
-                url: '@this.Url.Action("GetPaylessProdTallaLoteFil", "Grids")?TxtBarcode=321553&CboProducto=' + $('#cboProducto').val() + '&CboTalla=' + $('#cboTalla').val() + '&CboLote=' + $('#cboLote').val() + '&CboCategoria=' + $('#cboCategoria').val() + '&CboBodega=' + $('#cboBodega').val(),
+                url: '@this.Url.Action("GetPaylessProdTallaLoteFil", "Grids")?TxtBarcode=' + $('#TxtBarcode').val() + '&CboProducto=' + $('#cboProducto').val() + '&CboTalla=' + $('#cboTalla').val() + '&CboLote=' + $('#cboLote').val() + '&CboCategoria=' + $('#cboCategoria').val() + '&CboBodega=' + $('#cboBodegas').val(),
                 show: {
                     footer: true,
                     toolbar: false,
@@ -229,7 +271,7 @@
         $('#modalPopCargaProdPrioriDet').modal();
         detGrid.reload2("@this.Url.Action("GetPaylessProdPrioriDet", "Grids")?barcode=" + barcode + '&talla=' + talla);
     }
-    var fillProductoTallaLote = new Promise(function (resolve, reject) {
+    function fillProductoTallaLote() {
         $('#divSpincboProducto').show();
         $('#divSpincboTalla').show();
         $('#divSpincboLote').show();
@@ -238,6 +280,7 @@
         $('#divSpincboTalla').empty();
         $('#divSpincboLote').empty();
         $('#divSpincboCategoria').empty();
+        console.log(1);
         $.ajax({
             method: "GET",
             url: '@this.Url.Action("GetProductoTallaLoteCategoria", "HomeExtern")',
@@ -252,6 +295,7 @@
                 }
                 if (data.data != null) {
                     if (data.data.item1 != null) {
+                        $('#cboProducto').empty();
                         $.each(data.data.item1, function (indexI, storeO) {
                             $('#cboProducto').append($('<option>', {
                                 value: this,
@@ -265,6 +309,7 @@
                         $('#cboProducto').val(0);
                     }
                     if (data.data.item2 != null) {
+                        $('#cboTalla').empty();
                         $.each(data.data.item2, function (indexI, storeO) {
                             $('#cboTalla').append($('<option>', {
                                 value: this,
@@ -278,6 +323,7 @@
                         $('#cboTalla').val(0);
                     }
                     if (data.data.item3 != null) {
+                        $('#cboLote').empty();
                         $.each(data.data.item3, function (indexI, storeO) {
                             $('#cboLote').append($('<option>', {
                                 value: this,
@@ -292,6 +338,7 @@
                     }
                     if (data.data.item4 != null) {
                         var contI = 0;
+                        $('#cboCategoria').empty();
                         $.each(data.data.item4, function (indexI, storeO) {
                             $('#cboCategoria').append($('<option>', {
                                 value: contI++,
@@ -311,23 +358,37 @@
                 menErrorEdi(thrownError, 'Error throw in js');
             }
         });
-        if (resolve) resolve();
-    });
+    }
     $(document).ready(function () {
         $('.imgHeaderHelp').tooltip();
-        crearGrid();        
-        reDrawObjects();
-        fillProductoTallaLote.then();
+        getClientName.then();
+        $('#cboBodegas').on('change', function (Event) {
+            fillProductoTallaLote();
+            fillComboboxPromise('#divSpinCboRegimen', '@this.Url.Action("GetWmsRegimen", "HomeExtern")?BodegaId=' + $('#cboBodegas').val(), '#cboRegimen', 'idregimen', 'regimen1', 0).then();
+        });
+        $('#cboLocation').on('change', function (Event) {            
+            fillComboboxPromise('#divSpinCboBodegas', '@this.Url.Action("GetWmsBodegas", "HomeExtern")?LocationId=' + $('#cboLocation').val(), '#cboBodegas', 'bodegaId', 'nomBodega', 0)
+                .then(function () {                    
+                    fillComboboxPromise('#divSpinCboRegimen', '@this.Url.Action("GetWmsRegimen", "HomeExtern")?BodegaId=' + $('#cboBodegas').val(), '#cboRegimen', 'idregimen', 'regimen1', 0).then();
+                });
+        });
+        fillComboboxPromise('#divSpinCboLocation', '@this.Url.Action("GetWmsLocations", "HomeExtern")', '#cboLocation', 'locationid', 'dsclocation', 7)
+            .then(function () {
+                fillComboboxPromise('#divSpinCboBodegas', '@this.Url.Action("GetWmsBodegas", "HomeExtern")?LocationId=' + $('#cboLocation').val(), '#cboBodegas', 'bodegaId', 'nomBodega', 0)
+            });        
+        reDrawObjects();        
         $('#btnNewDis').on('click', function (e) {
             $('#exampleModalLabel2').html('Crear pedido');
             ModalPopNewDis = $('#modalPopNewDis').modal();
             if (gridPedidoDet == null) {
                 crearGridDet();
+                $('#divSpinFiltrar').hide();
             }
             else {
                 gridPedidoDet.clear();
                 gridPedidoDet.records = mainGrid.allRecords.filter(O => O.cantPedir != 0);
                 gridPedidoDet.refresh();
+                $('#divSpinFiltrar').hide();
             }
         });
         $('#btnAddFiltered').on('click', function (e) {
@@ -344,14 +405,20 @@
                 }
                 mainGrid.refresh2();
                 mainGrid.refresh();
+                $('#divSpinFiltrar').hide();
             }
         });        
         $('#btnFiltrar').on("click", function (Event) {
-            miAlive();
-            mainGrid.allRecords = [];
-            $('#divSpinFiltrar').show();
-            mainGrid.searchReset(true);
-            mainGrid.reload2('@this.Url.Action("GetPaylessProdTallaLoteFil", "Grids")?TxtBarcode=' + $('#TxtBarcode').val() + '&CboProducto=' + $('#cboProducto').val() + '&CboTalla=' + $('#cboTalla').val() + '&CboLote=' + $('#cboLote').val() + '&CboCategoria=' + $('#cboCategoria').val() + '&CboBodega=' + $('#cboBodega').val());
+            miAlive();            
+            $('#divSpinFiltrar').show();            
+            if (mainGrid == null)
+                crearGrid();
+            else {
+                mainGrid.searchReset(true);
+                mainGrid.allRecords = [];
+                mainGrid.reload2('@this.Url.Action("GetPaylessProdTallaLoteFil", "Grids")?TxtBarcode=' + $('#TxtBarcode').val() + '&CboProducto=' + $('#cboProducto').val() + '&CboTalla=' + $('#cboTalla').val() + '&CboLote=' + $('#cboLote').val() + '&CboCategoria=' + $('#cboCategoria').val() + '&CboBodega=' + $('#cboBodegas').val());
+            }
+            $('#divSpinFiltrar').hide();
         });
         $('#btnLimpiar').on("click", function (Event) {
             $('#divSpinFiltrar').hide();

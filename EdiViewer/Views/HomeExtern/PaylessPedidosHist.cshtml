@@ -11,6 +11,17 @@
                     <h4 class="my-0 font-weight-normal">Pedidos borrados</h4>
                 </div>
                 <div class="card-body">
+                    <div class="row">
+                        <div class="col-sm">
+                            <span id="spanClientName">
+                                <span id="divSpinClientName" class="spinner-border spinner-border-sm text-danger" style="display: none" role="status">
+                                    <span class="sr-only">Loading...</span>
+                                </span>
+                            </span>
+                        </div>
+                    </div>
+                    <br />
+                    <div class="clearfix"></div>
                     <div id="gridPedidosHist" style="min-height: 460px; width: 100%;">
 
                     </div>
@@ -34,6 +45,25 @@
         w2ui.grid.autoLoad = auto;
         w2ui.grid.skip(0);
     }
+    var getClientName = new Promise(function (resolve, reject) {
+        $('#divSpinClientName').show();
+        $.ajax({
+            method: "GET",
+            url: "@this.Url.Action("GetClientNow", "HomeExtern")",
+            success: function (data) {
+                if (data.info.codError != 0) {
+                    menErrorEdi(data.info.mensaje, 'Error');
+                    return;
+                }
+                $('#spanClientName').html(data.data);
+                $('#divSpinClientName').hide();
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                menErrorEdi(xhr.status, 'Error throw in js');
+                menErrorEdi(thrownError, 'Error throw in js');
+            }
+        });
+    });
     function crearGrid() {
         var config = {
             grid: {
@@ -80,6 +110,7 @@
         arrayGrids['gridPedidosHist'] = mainGrid;
     }
     $(document).ready(function () {
+        getClientName.then();
         crearGrid();
     });
 </script>

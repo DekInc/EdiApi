@@ -15,5 +15,6 @@ namespace EdiApi.Models.EdiDB
         public int? CantExcel { get; set; }
         public int? CantEscaner { get; set; }
         public int? Typ { get; set; }
+        public int? ClienteId { get; set; }
     }
 }

@@ -27,5 +27,6 @@ namespace EdiApi.Models.EdiDB
         public int? TiendaIdDestino { get; set; }
         public int? TotalCp { get; set; }
         public string FechaBorrado { get; set; }
+        public string CodUser { get; set; }
     }
 }

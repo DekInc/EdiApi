@@ -15,6 +15,15 @@
                         <div class="container">
                             <div class="row">
                                 <div class="col-sm">
+                                    <span id="spanClientName2">
+                                        <span id="divSpinClientName" class="spinner-border spinner-border-sm text-danger" style="display: none" role="status">
+                                            <span class="sr-only">Loading...</span>
+                                        </span>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm">
                                     <label for="cboAnio">Año</label>
                                     <select class="form-control" id="cboAnio" name="cboAnio">
                                         <option value="2019">2019</option>
@@ -79,6 +88,25 @@
     function downloadWmsFile(recid) {
         window.open('@this.Url.Action("MakeExcelEncuestaMatrix", "HomeExtern")?Id=' + recid);
     }
+    var getClientName = new Promise(function (resolve, reject) {
+        $('#divSpinClientName').show();
+        $.ajax({
+            method: "GET",
+            url: "@this.Url.Action("GetClientNow", "HomeExtern")",
+            success: function (data) {
+                if (data.info.codError != 0) {
+                    menErrorEdi(data.info.mensaje, 'Error');
+                    return;
+                }
+                $('#spanClientName2').html(data.data);
+                $('#divSpinClientName').hide();
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                menErrorEdi(xhr.status, 'Error throw in js');
+                menErrorEdi(thrownError, 'Error throw in js');
+            }
+        });
+    });
     function crearGrid() {
         var config = {
             grid: {
@@ -121,6 +149,7 @@
         arrayGrids['gridEncuestaRep'] = gridEncuestaRep;
     }
     $(document).ready(function () {
+        getClientName.then();
         if (gridEncuestaRep == null)
             crearGrid();
         else

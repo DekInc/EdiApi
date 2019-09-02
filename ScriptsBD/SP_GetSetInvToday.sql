@@ -56,13 +56,36 @@ BEGIN
 	JOIN EdiDB.dbo.PAYLESS_ProdPrioriDet D WITH(NOLOCK)
 		ON Wpe.CodProducto = D.Barcode
 	WHERE Wpe.CodUser = @CodUser
+	AND Wpe.Existencia > 0
 
 	DELETE FROM EdiDB.dbo.WmsProductoExistencia WHERE CodUser = @CodUser
 END
 
-EXEC EdiDb.dbo.SP_GetSetInvToday 1432, 'BOT'
+EXEC EdiDb.dbo.SP_GetSetInvToday 1432, 'BOTO2'
 
-SELECT * from EdiDB.dbo.WmsProductoExistencia where CodUser = 'Admin' AND CodProducto like '7386%'
+SELECT distinct CodProducto from EdiDB.dbo.WmsProductoExistencia where CodUser = 'BOTO2' AND CodProducto like '7365%' and Existencia > 0
+
+select distinct Categoria from EdiDB.dbo.PAYLESS_ProdPrioriDet
+select distinct IdTransporte, BarCode, Categoria from EdiDb.dbo.PAYLESS_ProdPrioriDet where Categoria in ('WOMEN', 'MEN')
+
+SELECT distinct D.Barcode
+from EdiDB.dbo.WmsProductoExistencia Wpe
+JOIN EdiDb.dbo.PAYLESS_ProdPrioriDet D
+	ON D.Barcode = Wpe.CodProducto
+where Wpe.CodUser = 'BOTO2' 
+AND Wpe.CodProducto like '7365%' 
+AND D.Categoria = 'ACCESORIOS'
+AND Wpe.Existencia > 0
+-- Pedido 200
+-- M 229 MAN 111 K 198 a 77, t = 615
+-- D M 169, Man 81, K 98, A 67 = 415
+select top 10 * from EdiDB.dbo.PedidosExternos Pe where Pe.ClienteID = 1432 and Pe.TiendaId = 7366
+--and Pe.PedidoWMS IS NULL
+order by Pe.Id Desc
+select sum(Pe.WomanQty + Pe.ManQty + Pe.KidQty + Pe.AccQty) from EdiDB.dbo.PedidosExternos Pe where Pe.ClienteID = 1432 and Pe.TiendaId = 7366
+and Pe.PedidoWMS IS NULL
+--200
+
 
 SELECT DISTINCT
 CodProducto

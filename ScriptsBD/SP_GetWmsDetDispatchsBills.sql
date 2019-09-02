@@ -72,8 +72,8 @@ BEGIN
 		WHERE SB1.MinItemInventarioId = SB1.ItemInventarioID
 	) SB2
 		ON SB2.CodProducto = Dp.CodProducto
-	WHERE P.ClienteID = @ClienteId
-	AND MONTH(P.fechapedido) >= (MONTH(GETDATE()) - 1)
+	WHERE T3.ClienteID = @ClienteId
+	and T3.Fechacrea > = (GETDATE() - 62)
 	ORDER BY P.PedidoID, Dp.CodProducto DESC
 END
 GO

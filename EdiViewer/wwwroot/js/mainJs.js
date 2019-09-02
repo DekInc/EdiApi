@@ -85,6 +85,39 @@ function fillCombobox(divSpin, serverUrl, comboName, valueName, textName, valueD
     });
 }
 
+var fillComboboxPromise = function (divSpin, serverUrl, comboName, valueName, textName, valueDef) {
+    return new Promise(function (resolve, reject) {
+        $(divSpin).show();
+        $(comboName).empty();
+        $.ajax({
+            method: "GET",
+            url: serverUrl,
+            success: function (data) {
+                $(divSpin).hide();
+                if (data.info.codError != 0) {
+                    menErrorEdi(data.info.mensaje, 'Error');
+                    return;
+                }
+                if (data.data != null) {
+                    $.each(data.data, function (indexI, storeO) {
+                        $(comboName).append($('<option>', {
+                            value: this[valueName],
+                            text: this[textName],
+                            selected: this[valueName] == valueDef ? true : false
+                        }));
+                    });
+                    if (resolve)
+                        resolve();
+                }
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                menErrorEdi(xhr.status, 'Error throw in js');
+                menErrorEdi(thrownError, 'Error throw in js');
+            }
+        });
+    });
+};
+
 function fillComboboxWithValue(divSpin, serverUrl, comboName, valueName, textName, valueDef) {
     $(divSpin).show();
     $(comboName).empty();

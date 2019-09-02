@@ -80,6 +80,7 @@
         $('#modalPopChangeStoreLabel').html('Cambio de cliente');
         $('#modalPopChangeStore').modal();
         fillComboboxWithValue('#divSpinList', '@this.Url.Action("getClients", "HomeExtern")', '#cboList', 'clienteId', 'nombre', clienteId);
+        $('#btnPopChangeStoreLabelOk').unbind('click');
         $('#btnPopChangeStoreLabelOk').on('click', function () {
             makeAjaxPost('@this.Url.Action("ChangeUserClient", "HomeExtern")?IdUser=' + recId + '&ClienteId=' + $('#cboList').val(), function (data) {
                 if (data.info.codError != 0) {
@@ -92,10 +93,12 @@
             });
         });
     }
+    function afterFillCombobox() { }
     function changeStore(recId, tiendaId, clienteId) {
         $('#modalPopChangeStoreLabel').html('Cambio de tienda');
         $('#modalPopChangeStore').modal();
-        fillComboboxWithValue('#divSpinList', '@this.Url.Action("GetStores", "HomeExtern")', '#cboList', 'tiendaId', 'descr', tiendaId);
+        fillComboboxWithValue('#divSpinList', '@this.Url.Action("GetStores", "HomeExtern")?IdUser=' + recId, '#cboList', 'tiendaId', 'descr', tiendaId);
+        $('#btnPopChangeStoreLabelOk').unbind('click');
         $('#btnPopChangeStoreLabelOk').on('click', function () {
             makeAjaxPost('@this.Url.Action("ChangeUserTienda", "HomeExtern")?IdUser=' + recId + '&TiendaId=' + $('#cboList').val(), function (data) {
                 if (data.info.codError != 0) {

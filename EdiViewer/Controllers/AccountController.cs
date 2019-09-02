@@ -211,6 +211,7 @@ namespace EdiViewer.Controllers
                     return View("Index", new Models.ErrorModel() { ErrorMessage = System.Net.WebUtility.HtmlEncode(HashId.Replace(Environment.NewLine, "<br />")) });
                 HttpContext.Session.SetObjSession("Session.HashId", HashId);
                 HttpContext.Session.SetObjSession("Session.CodUsr", TxtUser);
+                HttpContext.Session.SetObjSession("Session.IdUser", HashId.Split('|')[3]);
                 if (string.IsNullOrEmpty(HashId))
                     return LocalRedirect("/Account/?error=USER_INCORRECT");
                 if (IsExtern)
@@ -240,7 +241,7 @@ namespace EdiViewer.Controllers
                 if (string.IsNullOrEmpty(HashId))
                     return LocalRedirect("/Account/?error=USER_INCORRECT");
                 string HashIdDecrypted = Encoding.UTF8.GetString(CryptoHelper.DecryptData(Convert.FromBase64String(HashId)));
-                if (HashIdDecrypted.Split("|").Length != 8)
+                if (HashIdDecrypted.Split("|").Length != 10)
                     return View("Index", new Models.ErrorModel() { ErrorMessage = "Error en el sistema de auth." });
                 string[] HashIdDecryptedArray = HashIdDecrypted.Split("|");                
                 RetData<Tuple<IEnumerable<IenetGroups>, IEnumerable<IenetAccesses>, IEnumerable<IenetGroupsAccesses>, IEnumerable<IenetGroupsAccesses>>> LoginStruct = await ApiClientFactory.Instance.GetLoginStruct(HashIdDecryptedArray[1]);
@@ -253,6 +254,7 @@ namespace EdiViewer.Controllers
                 HttpContext.Session.SetObjSession("Session.HashId", HashIdDecryptedArray[5]);
                 HttpContext.Session.SetObjSession("Session.IdGroup", HashIdDecryptedArray[1]);
                 HttpContext.Session.SetObjSession("Session.CodUsr", TxtUser);
+                HttpContext.Session.SetObjSession("Session.IdUser", HashIdDecryptedArray[9]);
                 HttpContext.Session.SetObjSession("ListGroups", LoginStruct.Data.Item1);
                 HttpContext.Session.SetObjSession("ListAccesses", LoginStruct.Data.Item2);
                 HttpContext.Session.SetObjSession("ListGroupsAccesses", LoginStruct.Data.Item3);                

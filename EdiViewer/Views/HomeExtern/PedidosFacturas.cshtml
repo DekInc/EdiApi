@@ -13,6 +13,15 @@
                 <div class="card-body">
                     <form id="formSearch">
                         <div class="container">
+                            <div class="row">
+                                <div class="col-sm">
+                                    <span id="spanClientName2">
+                                        <span id="divSpinClientName" class="spinner-border spinner-border-sm text-danger" style="display: none" role="status">
+                                            <span class="sr-only">Loading...</span>
+                                        </span>
+                                    </span>
+                                </div>
+                            </div>
                             <div class="row margin5">
                                 <div class="col-sm">
                                     <button id="btnPrintAll" class="btn btn-primary" type="button">
@@ -82,6 +91,25 @@
         }
         return decodeURI(results[1]) || 0;
     }
+    var getClientName = new Promise(function (resolve, reject) {
+        $('#divSpinClientName').show();
+        $.ajax({
+            method: "GET",
+            url: "@this.Url.Action("GetClientNow", "HomeExtern")",
+            success: function (data) {
+                if (data.info.codError != 0) {
+                    menErrorEdi(data.info.mensaje, 'Error');
+                    return;
+                }
+                $('#spanClientName2').html(data.data);
+                $('#divSpinClientName').hide();
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                menErrorEdi(xhr.status, 'Error throw in js');
+                menErrorEdi(thrownError, 'Error throw in js');
+            }
+        });
+    });
     function reDrawObjects() {
         $('#spanClientName').css('display', 'block');
         if (window.mobileAndTabletcheck()) {

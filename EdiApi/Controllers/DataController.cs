@@ -32,6 +32,7 @@ namespace EdiApi.Controllers
         public readonly IConfiguration Config;
         IConfiguration IMapConfig => Config.GetSection("IMapConfig");
         IConfiguration IEdiFtpConfig => Config.GetSection("EdiFtp");
+        IConfiguration ConString => Config.GetSection("ConnectionStrings");
         string IMapHost => (string)IMapConfig.GetValue(typeof(string), "Host");
         int IMapPortIn => Convert.ToInt32(IMapConfig.GetValue(typeof(string), "PortIn"));
         int IMapPortOut => Convert.ToInt32(IMapConfig.GetValue(typeof(string), "PortOut"));
@@ -67,7 +68,7 @@ namespace EdiApi.Controllers
         }
         [HttpGet]
         public string GetVersion() {
-            return "1.1.4.0";
+            return "2.0.1.8";
         }
         [HttpGet]
         public string UpdateLinComments(string LinHashId, string TxtLinComData, string ListFst) {
@@ -859,7 +860,7 @@ namespace EdiApi.Controllers
                 UserO.HashId = EdiBase.GetHashId();
                 DbO.UsuariosExternos.Update(UserO);
                 DbO.SaveChanges();
-                return $"UserO.HashId|{UserO.ClienteId}";
+                return $"UserO.HashId|{UserO.ClienteId}|UserO.IdUser|{UserO.Id}";
             }
             catch (Exception e1)
             {
@@ -1339,7 +1340,7 @@ namespace EdiApi.Controllers
                     Info = new RetInfo()
                     {
                         CodError = 0,
-                        Mensaje = "ok",
+                        Mensaje = $"Se ha creado el pedido # {PedidoExterno.Id}",
                         ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
                     }
                 };
@@ -1648,10 +1649,10 @@ namespace EdiApi.Controllers
             }
         }
         [HttpPost]
-        public RetData<IEnumerable<PaylessProdPrioriDetModel>> GetPaylessProdPrioriAll(string TiendaId) {
+        public RetData<IEnumerable<PaylessProdPrioriDetModel>> GetPaylessProdPrioriAll(int ClienteId) {
             DateTime StartTime = DateTime.Now;
             try { // Para no olvidar, hago Fod del master porque no permito ingresar más de 1 archivo por periodo.
-                IEnumerable<PaylessProdPrioriDetModel> ListPaylessProdPrioriDet = ManualDB.SP_GetPaylessProdPrioriAll(ref DbO, TiendaId);
+                IEnumerable<PaylessProdPrioriDetModel> ListPaylessProdPrioriDet = ManualDB.SP_GetPaylessProdPrioriAll(ref DbO, ClienteId);
                 return new RetData<IEnumerable<PaylessProdPrioriDetModel>>() {
                     Data = ListPaylessProdPrioriDet,
                     Info = new RetInfo() {
@@ -1742,11 +1743,35 @@ namespace EdiApi.Controllers
                     }
                 };
             }
-        }        
+        }
+        [HttpGet]
+        public RetData<string> UpdateProductsLocal() {
+            DateTime StartTime = DateTime.Now;
+            try {
+                ManualDB.PaylessDeleteRepeated(ref DbOLong);
+                return new RetData<string> {
+                    Data = "",
+                    Info = new RetInfo() {
+                        CodError = 0,
+                        Mensaje = "ok",
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            } catch (Exception e1) {
+                return new RetData<string> {
+                    Info = new RetInfo() {
+                        CodError = -1,
+                        Mensaje = e1.ToString(),
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            }            
+        }
+        
         [HttpPost]
         public RetData<string> SetPaylessProdPriori(IEnumerable<PaylessUploadFileModel> ListUpload, int ClienteId, string Periodo, string codUsr, string transporte, bool ChkUpDelete)
         {
-            DateTime StartTime = DateTime.Now;
+            DateTime StartTime = DateTime.Now;            
             try
             {
                 IEnumerable<PaylessProdPrioriM> ListPaylessProdPrioriM = DbO.PaylessProdPrioriM.Where(Pp => Pp.Periodo == Periodo && Pp.ClienteId == ClienteId);
@@ -1771,7 +1796,8 @@ namespace EdiApi.Controllers
                     } else DbO.PaylessProdPrioriM.Add(NewMas);
                 }                
                 PaylessTransporte TransporteO = new PaylessTransporte() {
-                    Transporte = transporte
+                    Transporte = transporte,
+                    ClienteId = ClienteId
                 };
                 IEnumerable<PaylessTransporte> ListTrans = DbO.PaylessTransporte.Where(T => T.Transporte == transporte);
                 if (ListTrans.Count() > 0)
@@ -1815,6 +1841,7 @@ namespace EdiApi.Controllers
                     });
                 }
                 DbO.SaveChanges();
+                Utility.Funcs.StartBackgroundThread(delegate { UpdateProductsLocal(); });
                 return new RetData<string>
                 {
                     Data = "",
@@ -1840,12 +1867,12 @@ namespace EdiApi.Controllers
             }
         }
         [HttpGet]
-        public RetData<IEnumerable<string>> GetPaylessPeriodPriori()
+        public RetData<IEnumerable<string>> GetPaylessPeriodPriori(int ClienteId)
         {
             DateTime StartTime = DateTime.Now;
             try
             {
-                List<string> ListProdPriori = DbO.PaylessProdPrioriM.Select(O => O.Periodo).ToList();
+                List<string> ListProdPriori = DbO.PaylessProdPrioriM.Where(O => O.ClienteId == ClienteId).Select(O => O.Periodo).ToList();
                 if (ListProdPriori.Count > 0)
                     ListProdPriori = ListProdPriori.Distinct().ToList();
                 return new RetData<IEnumerable<string>>
@@ -1898,12 +1925,12 @@ namespace EdiApi.Controllers
             }
         }
         [HttpPost]
-        public RetData<PaylessProdPrioriArchM> SetPaylessProdPrioriFile(Tuple<IEnumerable<PaylessProdPrioriArchDet>, IEnumerable<PaylessProdPrioriArchDet>> TupleBarcodes, int IdTransporte, string Periodo, string codUsr, int cboTipo)
+        public RetData<PaylessProdPrioriArchM> SetPaylessProdPrioriFile(Tuple<IEnumerable<PaylessProdPrioriArchDet>, IEnumerable<PaylessProdPrioriArchDet>> TupleBarcodes, int IdTransporte, string Periodo, string codUsr, int cboTipo, int ClienteId)
         {
             DateTime StartTime = DateTime.Now;
             try
             {
-                IEnumerable<PaylessProdPrioriArchM> ListPaylessProdPrioriArchM = DbO.PaylessProdPrioriArchM.Where(Pp => Pp.Periodo == Periodo && Pp.IdTransporte == IdTransporte);
+                IEnumerable<PaylessProdPrioriArchM> ListPaylessProdPrioriArchM = DbO.PaylessProdPrioriArchM.Where(Pp => Pp.Periodo == Periodo && Pp.IdTransporte == IdTransporte && Pp.ClienteId == ClienteId);
                 if (ListPaylessProdPrioriArchM.Count() > 0 && cboTipo == 0)
                 {
                     IEnumerable<PaylessProdPrioriArchDet> ListPaylessProdPrioriArchDet = DbO.PaylessProdPrioriArchDet.Where(Pd => Pd.IdM == ListPaylessProdPrioriArchM.Fod().Id);
@@ -1924,7 +1951,8 @@ namespace EdiApi.Controllers
                         Periodo = Periodo,
                         InsertDate = DateTime.Now.ToString(ApplicationSettings.DateTimeFormat),
                         CodUsr = codUsr,
-                        Typ = cboTipo
+                        Typ = cboTipo,
+                        ClienteId = ClienteId
                     };
                     DbO.PaylessProdPrioriArchM.Add(NewMas);
                 }                
@@ -1972,7 +2000,7 @@ namespace EdiApi.Controllers
             }
         }
         [HttpPost]
-        public RetData<Tuple<IEnumerable<PaylessProdPrioriArchMModel>, IEnumerable<PaylessProdPrioriArchDet>>> GetPaylessPeriodPrioriFile()
+        public RetData<Tuple<IEnumerable<PaylessProdPrioriArchMModel>, IEnumerable<PaylessProdPrioriArchDet>>> GetPaylessPeriodPrioriFile(int ClienteId)
         {
             DateTime StartTime = DateTime.Now;
             try
@@ -1981,6 +2009,8 @@ namespace EdiApi.Controllers
                     from Pe in DbO.PaylessProdPrioriArchM
                     from T in DbO.PaylessTransporte
                     where Pe.IdTransporte == T.Id
+                    && Pe.ClienteId == ClienteId
+                    && T.ClienteId == ClienteId
                     orderby Pe.Id descending
                     select new PaylessProdPrioriArchMModel {
                         IdTransporte = Pe.IdTransporte,
@@ -2003,6 +2033,8 @@ namespace EdiApi.Controllers
                             from Pe in DbO.PaylessProdPrioriArchM
                             where Pe.Id == ListArchMaMo[Ci].Id
                             && Fu.Periodo == Pe.Periodo
+                            && Fu.ClienteId == ClienteId
+                            && Pe.ClienteId == ClienteId
                             && FuD.IdTransporte == Pe.IdTransporte
                             && FuD.IdPaylessProdPrioriM == Fu.Id
                             select FuD.Barcode
@@ -2014,6 +2046,8 @@ namespace EdiApi.Controllers
                             from Dp in DbO.PaylessProdPrioriArchDet
                             where Pe.Id == ListArchMaMo[Ci].Id
                             && Dp.IdM == Pe.Id
+                            && Fu.ClienteId == ClienteId
+                            && Pe.ClienteId == ClienteId
                             && Fu.Periodo == Pe.Periodo
                             && FuD.IdTransporte == Pe.IdTransporte
                             && FuD.IdPaylessProdPrioriM == Fu.Id
@@ -2025,6 +2059,7 @@ namespace EdiApi.Controllers
                             from Dp in DbO.PaylessProdPrioriArchDet
                             where Pe.Id == ListArchMaMo[Ci].Id
                             && Dp.IdM == Pe.Id
+                            && Pe.ClienteId == ClienteId
                             select Dp.Barcode
                             ).Distinct();
                         double PorcValidez = ((double)ListExcelEscaneados.Count() / (double)ListExcelOriginal.Count());
@@ -2157,7 +2192,7 @@ namespace EdiApi.Controllers
             }
         }
         [HttpGet]
-        public RetData<IEnumerable<PaylessProdPrioriDetModel>> GetPaylessFileDif(int idProdArch, int idData)
+        public RetData<IEnumerable<PaylessProdPrioriDetModel>> GetPaylessFileDif(int idProdArch, int idData, int ClienteId)
         {
             DateTime StartTime = DateTime.Now;
             if (idProdArch == 0)
@@ -2172,7 +2207,7 @@ namespace EdiApi.Controllers
             {
                 switch (idData) {
                     case 1:
-                        IEnumerable<PaylessProdPrioriDetModel> Ret = ManualDB.SP_GetPaylessProdPrioriFileDif(ref DbOLong, idData, idProdArch);
+                        IEnumerable<PaylessProdPrioriDetModel> Ret = ManualDB.SP_GetPaylessProdPrioriFileDif(ref DbOLong, idData, idProdArch, ClienteId);
                         return new RetData<IEnumerable<PaylessProdPrioriDetModel>> {
                             Data = Ret,
                             Info = new RetInfo() {
@@ -2182,8 +2217,8 @@ namespace EdiApi.Controllers
                             }
                         };
                     case 2:
-                        List<PaylessProdPrioriDetModel> ListOriginal = ManualDB.SP_GetPaylessProdPrioriFileDif(ref DbOLong, 2, idProdArch).ToList();
-                        List<PaylessProdPrioriDetModel> ListExcelEscaneado = ManualDB.SP_GetPaylessProdPrioriFileDif(ref DbO, 1, idProdArch).ToList();
+                        List<PaylessProdPrioriDetModel> ListOriginal = ManualDB.SP_GetPaylessProdPrioriFileDif(ref DbOLong, 2, idProdArch, ClienteId).ToList();
+                        List<PaylessProdPrioriDetModel> ListExcelEscaneado = ManualDB.SP_GetPaylessProdPrioriFileDif(ref DbO, 1, idProdArch, ClienteId).ToList();
                         ListExcelEscaneado.ForEach(Or => {
                             if (ListOriginal.Where(Oi => Oi.Barcode == Or.Barcode).Count() > 0)
                                 ListOriginal.Remove(ListOriginal.Where(Oi => Oi.Barcode == Or.Barcode).Fod());
@@ -2202,6 +2237,7 @@ namespace EdiApi.Controllers
                            from Dp in DbO.PaylessProdPrioriArchDet
                            where Pe.Id == idProdArch
                            && Dp.IdM == Pe.Id
+                           && Pe.ClienteId == ClienteId
                            select Dp.Barcode
                            ).Distinct().ToList();
                         List<string> ListExcelEscaneados3 = (
@@ -2211,6 +2247,8 @@ namespace EdiApi.Controllers
                             from Dp in DbO.PaylessProdPrioriArchDet
                             where Pe.Id == idProdArch
                             && Dp.IdM == Pe.Id
+                            && Pe.ClienteId == ClienteId
+                            && Fu.ClienteId == ClienteId
                             && Fu.Periodo == Pe.Periodo
                             && FuD.IdTransporte == Pe.IdTransporte
                             && FuD.IdPaylessProdPrioriM == Fu.Id
@@ -2349,13 +2387,37 @@ namespace EdiApi.Controllers
             }
         }
         [HttpGet]
-        public RetData<Tuple<IEnumerable<int>, IEnumerable<string>, IEnumerable<int>, IEnumerable<string>>> GetProductoTallaLoteCategoria() {
+        public RetData<Tuple<IEnumerable<int>, IEnumerable<string>, IEnumerable<int>, IEnumerable<string>>> GetProductoTallaLoteCategoria(int ClienteId) {
             DateTime StartTime = DateTime.Now;
             try {
-                IEnumerable<int> ListProduct = (from D in DbO.PaylessProdPrioriDet orderby D.Producto select Convert.ToInt32(D.Producto)).Distinct().OrderBy(O => O);
-                IEnumerable<string> ListTalla = (from D in DbO.PaylessProdPrioriDet orderby D.Talla select D.Talla).Distinct();
-                IEnumerable<int> ListLote = (from D in DbO.PaylessProdPrioriDet orderby D.Lote select Convert.ToInt32(D.Lote)).Distinct().OrderBy(O2 => O2);
-                IEnumerable<string> ListCat = (from D in DbO.PaylessProdPrioriDet orderby D.Categoria select D.Categoria).Distinct();
+                IEnumerable<int> ListProduct = (
+                    from D in DbO.PaylessProdPrioriDet
+                    from M in DbO.PaylessProdPrioriM
+                    where D.IdPaylessProdPrioriM == M.Id
+                    && M.ClienteId == ClienteId
+                    orderby D.Producto
+                    select Convert.ToInt32(D.Producto)).Distinct().OrderBy(O => O);
+                IEnumerable<string> ListTalla = (
+                    from D in DbO.PaylessProdPrioriDet
+                    from M in DbO.PaylessProdPrioriM
+                    where D.IdPaylessProdPrioriM == M.Id
+                    && M.ClienteId == ClienteId
+                    orderby D.Talla
+                    select D.Talla).Distinct();
+                IEnumerable<int> ListLote = (
+                    from D in DbO.PaylessProdPrioriDet
+                    from M in DbO.PaylessProdPrioriM
+                    where D.IdPaylessProdPrioriM == M.Id
+                    && M.ClienteId == ClienteId
+                    orderby D.Lote
+                    select Convert.ToInt32(D.Lote)).Distinct().OrderBy(O2 => O2);
+                IEnumerable<string> ListCat = (
+                    from D in DbO.PaylessProdPrioriDet
+                    from M in DbO.PaylessProdPrioriM
+                    where D.IdPaylessProdPrioriM == M.Id
+                    && M.ClienteId == ClienteId
+                    orderby D.Categoria
+                    select D.Categoria).Distinct();
                 return new RetData<Tuple<IEnumerable<int>, IEnumerable<string>, IEnumerable<int>, IEnumerable<string>>> {
                     Data = new Tuple<IEnumerable<int>, IEnumerable<string>, IEnumerable<int>, IEnumerable<string>>(ListProduct, ListTalla, ListLote, ListCat),
                     Info = new RetInfo() {
@@ -2511,10 +2573,10 @@ namespace EdiApi.Controllers
             }
         }
         [HttpGet]
-        public RetData<IEnumerable<PaylessReportes>> GetPaylessReportes() {            
+        public RetData<IEnumerable<PaylessReportes>> GetPaylessReportes(int ClienteId) {
             DateTime StartTime = DateTime.Now;
             try {
-                IEnumerable<PaylessReportes> ListReps = DbO.PaylessReportes;
+                IEnumerable<PaylessReportes> ListReps = DbO.PaylessReportes.Where(O => O.ClienteId == ClienteId);
                 return new RetData<IEnumerable<PaylessReportes>> {
                     Data = ListReps,
                     Info = new RetInfo() {
@@ -2772,13 +2834,14 @@ namespace EdiApi.Controllers
             }
         }
         [HttpPost]
-        public RetData<IEnumerable<PaylessPeriodoTransporteModel>> GetTransportByPeriod(string Period) {
+        public RetData<IEnumerable<PaylessPeriodoTransporteModel>> GetTransportByPeriod(string Period, int ClienteId) {
             DateTime StartTime = DateTime.Now;
             try {
                 IEnumerable<PaylessPeriodoTransporteModel> ListTransport = (
                     from M in DbO.PaylessPeriodoTransporte
                     from T in DbO.PaylessTransporte
                     where M.Periodo == Period
+                    && T.ClienteId == ClienteId
                     && T.Id == M.IdTransporte
                     select new PaylessPeriodoTransporteModel() {
                         IdTransporte = T.Id,
@@ -2833,6 +2896,28 @@ namespace EdiApi.Controllers
                 };
             }
         }
+        [HttpGet]
+        public RetData<IEnumerable<Locations>> GetWmsLocations() {
+            DateTime StartTime = DateTime.Now;
+            try {
+                return new RetData<IEnumerable<Locations>> {
+                    Data = WmsDbO.Locations,
+                    Info = new RetInfo() {
+                        CodError = 0,
+                        Mensaje = "ok",
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            } catch (Exception e1) {
+                return new RetData<IEnumerable<Locations>> {
+                    Info = new RetInfo() {
+                        CodError = -1,
+                        Mensaje = e1.ToString(),
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            }
+        }
         [HttpPost]
         public RetData<IEnumerable<Regimen>> GetWmsRegimen(int BodegaId) {
             DateTime StartTime = DateTime.Now;
@@ -2864,23 +2949,24 @@ namespace EdiApi.Controllers
             }
         }
         [HttpPost]
-        public RetData<string> SetIngresoExcelWms2(IEnumerable<WmsFileModel> ListProducts, int cboBodega, int cboRegimen, string CodUser) {
+        public RetData<string> SetIngresoExcelWmsCheck(IEnumerable<WmsFileModel> ListProducts, int cboBodega, int cboRegimen, string CodUser, int ClienteId) {
             DateTime StartTime = DateTime.Now;
-            int MaxTransaccionId = 0;
-            //int MaxInventarioId = 0;
-            if (ListProducts.Select(P => P.Barcode).Distinct().Count() != ListProducts.Count())
-                return new RetData<string> {
-                    Info = new RetInfo() {
-                        CodError = -2,
-                        Mensaje = "Error, el CodProducto debe ser único",
-                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
-                    }
-                };
-            List<string> ListSql = new List<string>();
-            AsyncStates ThisProc = new AsyncStates();            
             try {
-                List<Producto> ListProductsWms = (from P in WmsDbOLong.Producto where P.ClienteId == 1432 select new Producto() { CodProducto = P.CodProducto, Existencia = P.Existencia }).ToList();
-                List<Clientes> ListUploadClients = new List<Clientes>();
+                if (ListProducts.Select(P => P.Barcode).Distinct().Count() != ListProducts.Count())
+                    return new RetData<string> {
+                        Info = new RetInfo() {
+                            CodError = -2,
+                            Mensaje = "Error, el CodProducto debe ser único",
+                            ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                        }
+                    };
+                List<Producto> ListProductsWms = (
+                    from P in WmsDbOLong.Producto
+                    where P.ClienteId == ClienteId
+                    select new Producto() {
+                        CodProducto = P.CodProducto,
+                        Existencia = P.Existencia }
+                    ).ToList();
                 List<int> ListDocXTran = new List<int>();
                 if (ListProducts.Count() == 0)
                     return new RetData<string> {
@@ -2910,7 +2996,7 @@ namespace EdiApi.Controllers
                     return new RetData<string> {
                         Info = new RetInfo() {
                             CodError = -2,
-                            Mensaje = "Error, la columna está vacia.",
+                            Mensaje = "Error, la columna valor está vacia.",
                             ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
                         }
                     };
@@ -2938,7 +3024,7 @@ namespace EdiApi.Controllers
                                 ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
                             }
                         };
-                }                
+                }
                 if (ListProducts.Where(O => !O.ValorUnitario.HasValue).Count() > 0)
                     return new RetData<string> {
                         Info = new RetInfo() {
@@ -2955,12 +3041,13 @@ namespace EdiApi.Controllers
                             ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
                         }
                     };
-                string ReciboAlmacen = ListProducts.Fod().ReciboAlmacen;
+                IEnumerable<string> ReciboAlmacen = ListProducts.Select(O => O.ReciboAlmacen);
                 List<DocumentosxTransaccion> ListC1 = (
                     from D in WmsDbO.DocumentosxTransaccion
                     from T in WmsDbO.Transacciones
+                    from Ra in ReciboAlmacen
                     where D.TransaccionId == T.TransaccionId
-                    && D.InformeAlmacen == ReciboAlmacen
+                    && D.InformeAlmacen == Ra
                     select D
                     ).ToList();
                 if (ListC1.Count > 0)
@@ -2987,6 +3074,42 @@ namespace EdiApi.Controllers
                             ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
                         }
                     };
+                return new RetData<string> {
+                    Info = new RetInfo() {
+                        CodError = 0,
+                        Mensaje = "ok",
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            } catch (Exception e1) {
+                return new RetData<string> {
+                    Info = new RetInfo() {
+                        CodError = -1,
+                        Mensaje = e1.ToString(),
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            }            
+        }
+        [HttpPost]
+        public RetData<string> SetIngresoExcelWms2(IEnumerable<WmsFileModel> ListProducts, int cboBodega, int cboRegimen, string CodUser, int ClienteId) {
+            DateTime StartTime = DateTime.Now;
+            int MaxTransaccionId = 0;
+            //int MaxInventarioId = 0;            
+            List<string> ListSql = new List<string>();
+            AsyncStates ThisProc = new AsyncStates();            
+            try {
+                List<Producto> ListProductsWms = (from P in WmsDbOLong.Producto where P.ClienteId == 1432 select new Producto() { CodProducto = P.CodProducto, Existencia = P.Existencia }).ToList();
+                List<Clientes> ListUploadClients = new List<Clientes>();
+                string ReciboAlmacen = ListProducts.Select(O => O.ReciboAlmacen).Fod();
+                List<int> ListDocXTran = new List<int>();                                
+                List<int> ListC2Verif = ListProducts.Select(O3 => O3.Embalaje).Distinct().ToList();
+                IEnumerable<UnidadMedida> ListEmbalajes = (
+                    from Um in WmsDbO.UnidadMedida
+                    from Lp in ListProducts
+                    where Um.UnidadMedidaId == Lp.Embalaje
+                    select Um
+                    ).Distinct().ToList();                
                 List<Clientes> ListClientes = (from C in WmsDbO.Clientes orderby C.Nombre select C).ToList();
                 Transacciones TNew = new Transacciones();
                 //System.IO.StreamWriter Salida = new System.IO.StreamWriter("Errores.txt", false);
@@ -2995,12 +3118,14 @@ namespace EdiApi.Controllers
                 int NTran = 1;
                 IEnumerable<AsyncStates> ListAsyncs = (from A in DbO.AsyncStates where A.Typ == 0 && A.CodUser == CodUser select A);
                 if (ListAsyncs.Count() == 0) {
-                    ThisProc = new AsyncStates() { Typ = 0, Val = 0, Maximum = ListProducts.Count(), CodUser = CodUser };
+                    ThisProc = new AsyncStates() { Typ = 0, Val = 0, Maximum = ListProducts.Count(), CodUser = CodUser, Fecha = DateTime.Now.ToString(ApplicationSettings.DateTimeFormat) };
                     DbO.AsyncStates.Add(ThisProc);
                     DbO.SaveChanges();
                 } else {
                     ThisProc = ListAsyncs.Fod();
                     ThisProc.Mess = string.Empty;
+                    ThisProc.Maximum = ListProducts.Count();
+                    ThisProc.Fecha = DateTime.Now.ToString(ApplicationSettings.DateTimeFormat);
                     ThisProc.Val = 0;
                 }
                 foreach (WmsFileModel Product in ListProducts) {                    
@@ -3337,7 +3462,7 @@ SET XACT_ABORT OFF
             }
         }
         [HttpPost]
-        public RetData<string> SetSalidaWmsFromEscaner(IEnumerable<string> ListProducts2, string dtpPeriodo, int cboBodegas, int cboRegimen) {
+        public RetData<string> SetSalidaWmsFromEscaner(IEnumerable<string> ListProducts2, string dtpPeriodo, int cboBodegas, int cboRegimen, int ClienteId, string CodUser, int cboLocation) {
             DateTime StartTime = DateTime.Now;
             string ProductoSinExistencia = "";
             List<SpGeneraSalidaWMSModel> ListSp = new List<SpGeneraSalidaWMSModel>();
@@ -3355,8 +3480,8 @@ SET XACT_ABORT OFF
                 List<SysTempSalidas> ListSysSalidas = new List<SysTempSalidas>();
                 List<string> ListProducts = ListProducts2.ToList();
                 List<System.Data.DataTable> ListDt = new List<System.Data.DataTable>();
-                int ClienteID = 1432;
-                int LocationID = 7;
+                //int ClienteID = ClienteId;
+                int LocationID = cboLocation;
                 int RackID = 0;
                 string FechaSalida = dtpPeriodo.ToDateFromEspDate().ToString("dd-MM-yyyy");
                 //int TransaccionId = 116085;
@@ -3364,13 +3489,13 @@ SET XACT_ABORT OFF
                 //ListSql.Add($"SET @TransaccionID = {TransaccionId};{Environment.NewLine}");
                 Transacciones TNew = new Transacciones() {
                     IdtipoTransaccion = "SA",
-                    FechaTransaccion = dtpPeriodo.ToDateFromEspDate(),
+                    FechaTransaccion = dtpPeriodo.ToDateFromEspDate().AddHours(StartTime.Hour).AddMinutes(StartTime.Minute),
                     BodegaId = cboBodegas,
                     RegimenId = cboRegimen,
-                    ClienteId = ClienteID,
+                    ClienteId = ClienteId,
                     TipoIngreso = "XL",
                     Observacion = "",
-                    Usuariocrea = "Hilmer",
+                    Usuariocrea = CodUser,
                     Fechacrea = DateTime.Now,
                     EstatusId = 4
                 };
@@ -3382,11 +3507,11 @@ SET XACT_ABORT OFF
                 Pedido NewPedido = new Pedido() {
                     //PedidoId = MaxPedidoId,
                     Fechapedido = DateTime.Now,
-                    ClienteId = ClienteID,
+                    ClienteId = ClienteId,
                     TipoPedido = "XL",
-                    FechaRequerido = dtpPeriodo.ToDateFromEspDate(),
+                    FechaRequerido = dtpPeriodo.ToDateFromEspDate().AddHours(StartTime.Hour).AddMinutes(StartTime.Minute),
                     EstatusId = 8,
-                    Observacion = "SALIDA GENERADA DE XLS Intranet",
+                    Observacion = "SALIDA GENERADA DE XLS EXTRANET",
                     BodegaId = cboBodegas,
                     RegimenId = cboRegimen,
                     //PedidoBarcode = "PD" + MaxPedidoId.ToString().PadLeft(5, '0')
@@ -3407,7 +3532,7 @@ SET XACT_ABORT OFF
                 DbO.ProductoUbicacion.RemoveRange(DbO.ProductoUbicacion.Where(Pu => Pu.Typ == 4));
                 DbO.ProductoUbicacion.AddRange(ListPu);
                 DbO.SaveChanges();
-                System.Data.DataTable ListDtProdExistsWms = ManualDB.SpGeneraSalidaWMS2(ref DbO, FechaSalida, "", cboBodegas, cboRegimen, ClienteID, LocationID, RackID);
+                System.Data.DataTable ListDtProdExistsWms = ManualDB.SpGeneraSalidaWMS2(ref DbO, FechaSalida, "", cboBodegas, cboRegimen, ClienteId, LocationID, RackID);
                 for (int i = 0; i < ListProducts.Count(); i++) {
                     ProductoSinExistencia = ListProducts[i];
                     System.Data.DataRow[] DrProdExists = ListDtProdExistsWms.Select("CodProducto='" + ListProducts[i] + "'");
@@ -3462,7 +3587,7 @@ SET XACT_ABORT OFF
                         Cantidad = 1,
                         Precio = Convert.ToDouble(ListSp.LastOrDefault().Precio),
                         Fecha = DateTime.Now,
-                        Usuario = "HCAMPOS",
+                        Usuario = CodUser,
                         Lote = ListSp.LastOrDefault().Lote
                     };
                     ListSql.Add(SqlGenHelper.GetSqlWmsInsertSysTempSalidas(NewSysSalida));
@@ -3640,15 +3765,15 @@ SET XACT_ABORT OFF
                     && Pe.TiendaId == TiendaId
                     select Pe.Id
                     );
-                if (ListExistPedido.Count() > 0) {
-                    return new RetData<string> {
-                        Info = new RetInfo() {
-                            CodError = -1,
-                            Mensaje = "Error, Ya existe un pedido para la misma fecha.",
-                            ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
-                        }
-                    };
-                }
+                //if (ListExistPedido.Count() > 0) {
+                //    return new RetData<string> {
+                //        Info = new RetInfo() {
+                //            CodError = -1,
+                //            Mensaje = "Error, Ya existe un pedido para la misma fecha.",
+                //            ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                //        }
+                //    };
+                //}
                 if (StartTime.DayOfWeek == DayOfWeek.Sunday && dtpFechaEntrega.ToDateFromEspDate().DayOfWeek == DayOfWeek.Monday)
                     return new RetData<string> {
                         Info = new RetInfo() {
@@ -3872,7 +3997,7 @@ SET XACT_ABORT OFF
                     && Pe.TiendaId == TiendaId
                     select Pe.Id
                     );
-                if (ListExistPedido.Count() > 0) {
+                if (ListExistPedido.Count() > 0 && !(Divert ?? true)) {
                     return new RetData<string> {
                         Info = new RetInfo() {
                             CodError = -1,
@@ -3922,7 +4047,13 @@ SET XACT_ABORT OFF
         public RetData<IEnumerable<AsyncStates>> GetAsyncState(int Typ, string CodUser) {
             DateTime StartTime = DateTime.Now;
             try {
-                IEnumerable<AsyncStates> List = (from A in DbO.AsyncStates where A.Typ == Typ && A.CodUser == CodUser select A);
+                List<AsyncStates> List = (from A in DbO.AsyncStates where A.Typ == Typ && A.CodUser == CodUser select A).ToList();
+                if (List.Count() > 0) {
+                    if (List.Fod().Mess == "Se cargo el archivo") {
+                        DbO.AsyncStates.Remove(List.Fod());
+                        DbO.SaveChangesAsync();
+                    }
+                }                
                 return new RetData<IEnumerable<AsyncStates>> {
                     Data = List,
                     Info = new RetInfo() {
@@ -3942,10 +4073,16 @@ SET XACT_ABORT OFF
             }
         }
         [HttpGet]
-        public RetData<IEnumerable<PaylessTiendas>> GetStores() {
+        public RetData<IEnumerable<PaylessTiendas>> GetStores(int IdUser) {
             DateTime StartTime = DateTime.Now;
             try {
-                IEnumerable<PaylessTiendas> List = (from A in DbO.PaylessTiendas select A);
+                IEnumerable<PaylessTiendas> List = (
+                    from T in DbO.PaylessTiendas
+                    from U in DbO.IenetUsers
+                    where U.Id == IdUser
+                    && T.ClienteId == U.ClienteId
+                    select T
+                    );
                 return new RetData<IEnumerable<PaylessTiendas>> {
                     Data = List,
                     Info = new RetInfo() {
@@ -3988,7 +4125,7 @@ SET XACT_ABORT OFF
             }
         }
         [HttpGet]
-        public RetData<List<PedidosPendientesAdmin>> GetPedidosPendientesAdmin() {
+        public RetData<List<PedidosPendientesAdmin>> GetPedidosPendientesAdmin(int ClienteId) {
             DateTime StartTime = DateTime.Now;
             AsyncStates ThisProc = new AsyncStates();
             try {                
@@ -4006,7 +4143,7 @@ SET XACT_ABORT OFF
                         }
                     };
                 }
-                List<PedidosPendientesAdmin> Ret = ManualDB.SP_GetPedidosPendientesAdmin(ref DbOLong);
+                List<PedidosPendientesAdmin> Ret = ManualDB.SP_GetPedidosPendientesAdmin(ref DbOLong, ClienteId);
                 DbO.AsyncStates.Remove(ThisProc);
                 DbO.SaveChanges();
                 return new RetData<List<PedidosPendientesAdmin>> {
@@ -4109,10 +4246,10 @@ SET XACT_ABORT OFF
             }
         }
         [HttpGet]
-        public RetData<IEnumerable<PeticionesAdminBGModel>> GetPeticionesAdminB() {
+        public RetData<IEnumerable<PeticionesAdminBGModel>> GetPeticionesAdminB(int ClienteId) {
             DateTime StartTime = DateTime.Now;
             try {
-                IEnumerable<PeticionesAdminBGModel> ListOrders = ManualDB.SP_GetPeticionesAdminB(ref DbOLong);
+                IEnumerable<PeticionesAdminBGModel> ListOrders = ManualDB.SP_GetPeticionesAdminB(ref DbOLong, ClienteId);
                 return new RetData<IEnumerable<PeticionesAdminBGModel>> {
                     Data = ListOrders,
                     Info = new RetInfo() {
@@ -4306,13 +4443,13 @@ SET XACT_ABORT OFF
                         mailMessage.Subject = "GLC - " + "Archivo_RepJuevesPedidos_" + DateTime.Now.ToString("ddMMyyyy_HHmm");
                     else
                         mailMessage.Subject = "GLC - " + "Archivo_RepDomingoEnvios_" + DateTime.Now.ToString("ddMMyyyy_HHmm");
-                    System.Net.Mail.Attachment attachment;
+                    Attachment attachment;
                     //System.Net.Mime.ContentType ct = new System.Net.Mime.ContentType(System.Net.Mime.MediaTypeNames.Application.Xml);
                     Ms2.Position = 0;
                     if (IsDisp)
-                        attachment = new System.Net.Mail.Attachment(Ms2, "Archivo_RepJuevesPedidos_" + DateTime.Now.ToString("ddMMyyyy_HHmm") + ".xls");
+                        attachment = new Attachment(Ms2, "Archivo_RepJuevesPedidos_" + DateTime.Now.ToString("ddMMyyyy_HHmm") + ".xls");
                     else
-                        attachment = new System.Net.Mail.Attachment(Ms2, "Archivo_RepDomingoEnvios_" + DateTime.Now.ToString("ddMMyyyy_HHmm") + ".xls");
+                        attachment = new Attachment(Ms2, "Archivo_RepDomingoEnvios_" + DateTime.Now.ToString("ddMMyyyy_HHmm") + ".xls");
                     mailMessage.Attachments.Add(attachment);
                     client.Send(mailMessage);
                 }            
@@ -4321,30 +4458,27 @@ SET XACT_ABORT OFF
             }
         }        
         [HttpGet]
-        public RetData<string> MakeAutoReportsPayless() {
+        public RetData<string> MakeAutoReportsPayless(int ClienteId) {
             DateTime StartTime = DateTime.Now;
             try {
                 //Jueves
-                if ((StartTime.DayOfWeek == DayOfWeek.Thursday && StartTime.Hour >= 17)
-                    || StartTime.DayOfWeek == DayOfWeek.Friday
-                    || StartTime.DayOfWeek == DayOfWeek.Saturday
-                    || StartTime.DayOfWeek == DayOfWeek.Sunday
-                    || StartTime.DayOfWeek == DayOfWeek.Wednesday
-                    ) {
+                if (StartTime.DayOfWeek == DayOfWeek.Thursday && StartTime.Hour >= 19) {
                     //.Where(D => D <= (new DateTime(StartTime.Year, StartTime.Month, StartTime.Day, 23, 59, 59)).AddDays(7)
                     List<DateTime> ListThurs = Utility.Funcs.AllThursdaysInMonth(StartTime.Year, StartTime.Month).ToList();
+                    if (ListThurs.Count > (ListThurs.IndexOf(ListThurs.Where(O => O.Day == StartTime.Day).Fod()) + 2))
+                        ListThurs.RemoveAt(ListThurs.Count - 1);
                     if ((new DateTime(StartTime.Year, StartTime.Month, StartTime.Day, 23, 59, 59)).AddDays(8).Month != StartTime.Month
                         && (new DateTime(StartTime.Year, StartTime.Month, StartTime.Day, 23, 59, 59)).AddDays(8).Year == StartTime.Year) {
                         List<DateTime> ListThursNext = Utility.Funcs.AllThursdaysInMonth(StartTime.Year, StartTime.Month + 1).ToList();
                         ListThurs.Add(ListThursNext.Fod());
-                    }                    
+                    }
                     for (int I = 0; I < ListThurs.Count(); I++) {
-                        PaylessReportes NewRep = new PaylessReportes()
-                        {
+                        PaylessReportes NewRep = new PaylessReportes() {
                             Periodo = ListThurs[I].AddDays(-3).ToString(ApplicationSettings.DateTimeFormatShort),
                             PeriodoF = ListThurs[I].AddDays(1).ToString(ApplicationSettings.DateTimeFormatShort),
                             FechaGen = DateTime.Now.ToString(ApplicationSettings.DateTimeFormat),
-                            Tipo = "0"
+                            Tipo = "0",
+                            ClienteId = ClienteId
                         };
                         List<PaylessReportes> ListRep = (
                             from R in DbO.PaylessReportes
@@ -4352,182 +4486,142 @@ SET XACT_ABORT OFF
                             && R.Tipo == "0"
                             select R
                             ).ToList();
-                        if ((I == ListThurs.Count() - 1) && ListRep.Count() > 0)
-                        {
+                        Calendar Cal = (new CultureInfo("en-US")).Calendar;
+                        int ThisWeekDay = Cal.GetWeekOfYear(StartTime, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
+                        int ReportWeekDay = Cal.GetWeekOfYear(ListThurs[I], CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
+                        List<PeticionesAdminBGModel> ListOrders = new List<PeticionesAdminBGModel>();
+                        if (ReportWeekDay >= ThisWeekDay) {
                             bool TheSame = true;
-                            List<PeticionesAdminBGModel> ListOrders = ManualDB.SP_GetPeticionesAdminB(ref DbOLong).ToList();
+                            ListOrders = ManualDB.SP_GetPeticionesAdminB(ref DbOLong, ClienteId).ToList();
                             ListOrders = ListOrders.Where(Pe => Pe.FechaPedido.ToDateEsp() >= ListThurs[I].AddDays(-4)
                                 && Pe.FechaPedido.ToDateEsp() <= ListThurs[I].AddDays(3)).OrderByDescending(Pe2 => Pe2.FechaPedido.ToDateEsp()).ToList();
-                            List<PaylessReportesDet> ListRepDet = (from Rd in DbO.PaylessReportesDet where Rd.IdM == ListRep.Fod().Id select Rd).ToList();
-                            foreach (PeticionesAdminBGModel PedNuevo in ListOrders)
-                            {
-                                if (ListRepDet.Where(O1 =>
-                                    O1.Fecha1 == PedNuevo.FechaPedido
-                                    || O1.Fecha2 == PedNuevo.FechaPedido
-                                    || O1.Fecha3 == PedNuevo.FechaPedido
-                                    || O1.Fecha4 == PedNuevo.FechaPedido
-                                    || O1.Fecha5 == PedNuevo.FechaPedido
-                                    || O1.Fecha6 == PedNuevo.FechaPedido).Count() == 0)
-                                    TheSame = false;
+                            if (ListRep.Count() > 0) {
+                                List<PaylessReportesDet> ListRepDet = (from Rd in DbO.PaylessReportesDet where Rd.IdM == ListRep.Fod().Id select Rd).ToList();
+                                foreach (PeticionesAdminBGModel PedNuevo in ListOrders) {
+                                    if (ListRepDet.Where(O1 =>
+                                        O1.Fecha1 == PedNuevo.FechaPedido
+                                        || O1.Fecha2 == PedNuevo.FechaPedido
+                                        || O1.Fecha3 == PedNuevo.FechaPedido
+                                        || O1.Fecha4 == PedNuevo.FechaPedido
+                                        || O1.Fecha5 == PedNuevo.FechaPedido
+                                        || O1.Fecha6 == PedNuevo.FechaPedido).Count() == 0)
+                                        TheSame = false;
+                                }
+                                if (!TheSame) {
+                                    DbO.PaylessReportesDet.RemoveRange(DbO.PaylessReportesDet.Where(R1 => R1.IdM == ListRep.Fod().Id));
+                                    DbO.PaylessReportes.Remove(ListRep.Fod());
+                                    DbO.SaveChanges();
+                                    ListRep.Clear();
+                                    if (ListRepDet.Count > 0)
+                                        NewRep.MailEnviado = true;
+                                }
                             }
-                            if (!TheSame)
-                            {
-                                DbO.PaylessReportesDet.RemoveRange(DbO.PaylessReportesDet.Where(R1 => R1.IdM == ListRep.Fod().Id));
-                                DbO.PaylessReportes.Remove(ListRep.Fod());
+                            if (ListRep.Count() == 0) {
+                                DbO.PaylessReportes.Add(NewRep);
                                 DbO.SaveChanges();
-                                ListRep.Clear();
-                                NewRep.MailEnviado = true;
-                            }
-                        }
-                        if (ListRep.Count() == 0) {                            
-                            DbO.PaylessReportes.Add(NewRep);
-                            DbO.SaveChanges();
-                            List<PeticionesAdminBGModel> ListOrders = ManualDB.SP_GetPeticionesAdminB(ref DbOLong).ToList();
-                            ListOrders = ListOrders.Where(Pe => Pe.FechaPedido.ToDateEsp() >= ListThurs[I].AddDays(-4)
-                                && Pe.FechaPedido.ToDateEsp() <= ListThurs[I].AddDays(3)).OrderByDescending(Pe2 => Pe2.FechaPedido.ToDateEsp()).ToList();
-                            List<int?> ListTiendas = ListOrders.OrderBy(Pe2 => Pe2.FechaPedido.ToDateEsp()).Select(Lo => Lo.TiendaId).Distinct().ToList();
-                            List<PaylessReportesDet> ListSubOrders = new List<PaylessReportesDet>();
-                            for (int Ti = 0; Ti < ListTiendas.Count(); Ti++) {
-                                List<PeticionesAdminBGModel> ListOrdersByTienda = ListOrders.Where(Lo => Lo.TiendaId == ListTiendas.ElementAt(Ti)).OrderBy(Lo => Lo.FechaPedido.ToDateEsp()).ToList();
-                                int TotalWomanCp = 0, TotalManCp = 0, TotalKidsCp = 0, TotalAccCp = 0;
-                                ListSubOrders.Clear();
-                                for (int Pi = 0; Pi < ListOrdersByTienda.Count(); Pi++) {
-                                    ListSubOrders.Add(new PaylessReportesDet {
+                                ListOrders = ListOrders.Where(Pe => Pe.FechaPedido.ToDateEsp() >= ListThurs[I].AddDays(-4)
+                                    && Pe.FechaPedido.ToDateEsp() <= ListThurs[I].AddDays(3)).OrderByDescending(Pe2 => Pe2.FechaPedido.ToDateEsp()).ToList();
+                                List<int?> ListTiendas = ListOrders.OrderBy(Pe2 => Pe2.FechaPedido.ToDateEsp()).Select(Lo => Lo.TiendaId).Distinct().ToList();
+                                List<PaylessReportesDet> ListSubOrders = new List<PaylessReportesDet>();
+                                for (int Ti = 0; Ti < ListTiendas.Count(); Ti++) {
+                                    List<PeticionesAdminBGModel> ListOrdersByTienda = ListOrders.Where(Lo => Lo.TiendaId == ListTiendas.ElementAt(Ti)).OrderBy(Lo => Lo.FechaPedido.ToDateEsp()).ToList();
+                                    int TotalWomanCp = 0, TotalManCp = 0, TotalKidsCp = 0, TotalAccCp = 0;
+                                    ListSubOrders.Clear();
+                                    for (int Pi = 0; Pi < ListOrdersByTienda.Count(); Pi++) {
+                                        ListSubOrders.Add(new PaylessReportesDet {
+                                            TiendaId = ListTiendas.ElementAt(Ti),
+                                            Fecha1 = ListOrdersByTienda.ElementAt(Pi).FechaPedido,
+                                            TotalWomanQty = ListOrdersByTienda.ElementAt(Pi).WomanQty,
+                                            TotalManQty = ListOrdersByTienda.ElementAt(Pi).ManQty,
+                                            TotalKidQty = ListOrdersByTienda.ElementAt(Pi).KidQty,
+                                            TotalAccQty = ListOrdersByTienda.ElementAt(Pi).AccQty,
+                                            Total = ListOrdersByTienda.ElementAt(Pi).WomanQty
+                                                + ListOrdersByTienda.ElementAt(Pi).ManQty
+                                                + ListOrdersByTienda.ElementAt(Pi).KidQty
+                                                + ListOrdersByTienda.ElementAt(Pi).AccQty
+                                                + ListOrdersByTienda.ElementAt(Pi).TotalCp
+                                        });
+                                    }
+                                    PaylessReportesDet NewRepDet = new PaylessReportesDet() {
+                                        IdM = NewRep.Id,
                                         TiendaId = ListTiendas.ElementAt(Ti),
-                                        Fecha1 = ListOrdersByTienda.ElementAt(Pi).FechaPedido,
-                                        TotalWomanQty = ListOrdersByTienda.ElementAt(Pi).WomanQty,
-                                        TotalManQty = ListOrdersByTienda.ElementAt(Pi).ManQty,
-                                        TotalKidQty = ListOrdersByTienda.ElementAt(Pi).KidQty,
-                                        TotalAccQty = ListOrdersByTienda.ElementAt(Pi).AccQty,
-                                        Total = ListOrdersByTienda.ElementAt(Pi).WomanQty
-                                            + ListOrdersByTienda.ElementAt(Pi).ManQty
-                                            + ListOrdersByTienda.ElementAt(Pi).KidQty
-                                            + ListOrdersByTienda.ElementAt(Pi).AccQty
-                                            + ListOrdersByTienda.ElementAt(Pi).TotalCp
-                                    });
-                                    if (ListOrdersByTienda.ElementAt(Pi).TotalCp > 0) {
-                                        int WomanCp = 0, ManCp = 0, KidsCp = 0, AccCp = 0;
-                                        WomanCp = (
-                                            from Pu in DbO.ProductoUbicacion
-                                            where Pu.Rack == ListOrdersByTienda.ElementAt(Pi).Id
-                                            && Pu.NomBodega.ToUpper() == "DAMAS"
-                                            && (Pu.NombreRack == "A"
-                                            || Pu.Departamento == "9"
-                                            || Pu.Departamento == "10"
-                                            || Pu.Departamento == "11"
-                                            )
-                                            select Pu.Id
-                                            ).Count();
-                                        ManCp = (
-                                            from Pu in DbO.ProductoUbicacion
-                                            where Pu.Rack == ListOrdersByTienda.ElementAt(Pi).Id
-                                            && Pu.NomBodega.ToUpper() == "CABALLEROS"
-                                            && (Pu.NombreRack == "A"
-                                            || Pu.Departamento == "9"
-                                            || Pu.Departamento == "10"
-                                            || Pu.Departamento == "11"
-                                            )
-                                            select Pu.Id
-                                            ).Count();
-                                        KidsCp = (
-                                            from Pu in DbO.ProductoUbicacion
-                                            where Pu.Rack == ListOrdersByTienda.ElementAt(Pi).Id
-                                            && Pu.NomBodega.ToUpper() == "NIÑOS / AS"
-                                            && (Pu.NombreRack == "A"
-                                            || Pu.Departamento == "9"
-                                            || Pu.Departamento == "10"
-                                            || Pu.Departamento == "11"
-                                            )
-                                            select Pu.Id
-                                            ).Count();
-                                        AccCp = (
-                                            from Pu in DbO.ProductoUbicacion
-                                            where Pu.Rack == ListOrdersByTienda.ElementAt(Pi).Id
-                                            && Pu.NomBodega.ToUpper() == "ACCESORIOS"
-                                            && (Pu.NombreRack == "A"
-                                            || Pu.Departamento == "9"
-                                            || Pu.Departamento == "10"
-                                            || Pu.Departamento == "11"
-                                            )
-                                            select Pu.Id
-                                            ).Count();
-                                        TotalWomanCp += WomanCp;
-                                        TotalManCp += ManCp;
-                                        TotalKidsCp += KidsCp;
-                                        TotalAccCp += AccCp;
+                                        TotalWomanQty = ListSubOrders.Sum(O1 => O1.TotalWomanQty) + TotalWomanCp,
+                                        TotalManQty = ListSubOrders.Sum(O1 => O1.TotalManQty) + TotalManCp,
+                                        TotalKidQty = ListSubOrders.Sum(O1 => O1.TotalKidQty) + TotalKidsCp,
+                                        TotalAccQty = ListSubOrders.Sum(O1 => O1.TotalAccQty) + TotalAccCp,
+                                        Total = ListSubOrders.Sum(O1 => O1.Total)
+                                    };
+                                    for (int Z = 0; Z < ListSubOrders.Count; Z++) {
+                                        switch (Z) {
+                                            case 0:
+                                                NewRepDet.Fecha1 = ListSubOrders[Z].Fecha1;
+                                                NewRepDet.Cant1 = ListSubOrders[Z].Total;
+                                                break;
+                                            case 1:
+                                                NewRepDet.Fecha2 = ListSubOrders[Z].Fecha1;
+                                                NewRepDet.Cant2 = ListSubOrders[Z].Total;
+                                                break;
+                                            case 2:
+                                                NewRepDet.Fecha3 = ListSubOrders[Z].Fecha1;
+                                                NewRepDet.Cant3 = ListSubOrders[Z].Total;
+                                                break;
+                                            case 3:
+                                                NewRepDet.Fecha4 = ListSubOrders[Z].Fecha1;
+                                                NewRepDet.Cant4 = ListSubOrders[Z].Total;
+                                                break;
+                                            case 4:
+                                                NewRepDet.Fecha5 = ListSubOrders[Z].Fecha1;
+                                                NewRepDet.Cant5 = ListSubOrders[Z].Total;
+                                                break;
+                                            case 5:
+                                                NewRepDet.Fecha6 = ListSubOrders[Z].Fecha1;
+                                                NewRepDet.Cant6 = ListSubOrders[Z].Total;
+                                                break;
+                                            default:
+                                                break;
+                                        }
                                     }
+                                    DbO.PaylessReportesDet.Add(NewRepDet);
+                                    DbO.SaveChanges();
                                 }
-                                PaylessReportesDet NewRepDet = new PaylessReportesDet() {
-                                    IdM = NewRep.Id,
-                                    TiendaId = ListTiendas.ElementAt(Ti),
-                                    TotalWomanQty = ListSubOrders.Sum(O1 => O1.TotalWomanQty) + TotalWomanCp,
-                                    TotalManQty = ListSubOrders.Sum(O1 => O1.TotalManQty) + TotalManCp,
-                                    TotalKidQty = ListSubOrders.Sum(O1 => O1.TotalKidQty) + TotalKidsCp,
-                                    TotalAccQty = ListSubOrders.Sum(O1 => O1.TotalAccQty) + TotalAccCp,
-                                    Total = ListSubOrders.Sum(O1 => O1.Total)
-                                };
-                                for (int Z = 0; Z < ListSubOrders.Count; Z++) {
-                                    switch (Z) {
-                                        case 0:
-                                            NewRepDet.Fecha1 = ListSubOrders[Z].Fecha1;
-                                            NewRepDet.Cant1 = ListSubOrders[Z].Total;
-                                            break;
-                                        case 1:
-                                            NewRepDet.Fecha2 = ListSubOrders[Z].Fecha1;
-                                            NewRepDet.Cant2 = ListSubOrders[Z].Total;
-                                            break;
-                                        case 2:
-                                            NewRepDet.Fecha3 = ListSubOrders[Z].Fecha1;
-                                            NewRepDet.Cant3 = ListSubOrders[Z].Total;
-                                            break;
-                                        case 3:
-                                            NewRepDet.Fecha4 = ListSubOrders[Z].Fecha1;
-                                            NewRepDet.Cant4 = ListSubOrders[Z].Total;
-                                            break;
-                                        case 4:
-                                            NewRepDet.Fecha5 = ListSubOrders[Z].Fecha1;
-                                            NewRepDet.Cant5 = ListSubOrders[Z].Total;
-                                            break;
-                                        case 5:
-                                            NewRepDet.Fecha6 = ListSubOrders[Z].Fecha1;
-                                            NewRepDet.Cant6 = ListSubOrders[Z].Total;
-                                            break;
-                                        default:
-                                            break;
-                                    }
-                                }
-                                DbO.PaylessReportesDet.Add(NewRepDet);
-                                DbO.SaveChanges();
+                                DbO.ProductoUbicacion.RemoveRange(DbO.ProductoUbicacion.Where(Pu => Pu.Typ == 3));
+                                if (!NewRep.MailEnviado ?? true)
+                                    CreateExcelAutoRepAndSendByMail(NewRep, true);
                             }
-                            DbO.ProductoUbicacion.RemoveRange(DbO.ProductoUbicacion.Where(Pu => Pu.Typ == 3));
-                            if (!NewRep.MailEnviado ?? true)
-                                CreateExcelAutoRepAndSendByMail(NewRep, true);
                         }
                     }
                 }
                 //Fin jueves
-                if (StartTime.DayOfWeek == DayOfWeek.Saturday 
-                    && StartTime.Hour >= 10
-                    //|| StartTime.DayOfWeek == DayOfWeek.Monday
-                    ) {
-                    List<DateTime> ListSaturdays = Utility.Funcs.AllSaturdayInMonth(StartTime.Year, StartTime.Month).Where(D => D <= (new DateTime(StartTime.Year, StartTime.Month, StartTime.Day, 23, 59, 59)).AddDays(1)).ToList();
-                    for (int i = 0; i < ListSaturdays.Count; i++) {
+                //Reporte domingo
+                if (StartTime.DayOfWeek == DayOfWeek.Sunday) {
+                    //.Where(D => D <= (new DateTime(StartTime.Year, StartTime.Month, StartTime.Day, 23, 59, 59)).AddDays(1))
+                    List<DateTime> ListSundays = Utility.Funcs.AllSundayInMonth(StartTime.Year, StartTime.Month).ToList();
+                    ListSundays = ListSundays.Where(D => D.Day <= StartTime.Day).ToList();
+                    //if (ListSundays.Count > (ListSundays.IndexOf(ListSundays.Where(O => O.Day == StartTime.Day).Fod()) + 2)) {
+                    //    ListSundays.RemoveAt(ListSundays.Count - 1);
+                    //    ListSundays.RemoveAt(ListSundays.Count - 1);
+                    //}
+                    //if (ListSundays.Count > (ListSundays.IndexOf(ListSundays.Where(O => O.Day == StartTime.Day).Fod()) + 1)) {
+                    //    ListSundays.RemoveAt(ListSundays.Count - 1);
+                    //}
+                    for (int i = 0; i < ListSundays.Count; i++) {
                         List<PaylessReportes> ListRep = (
                             from R in DbO.PaylessReportes
-                            where R.Periodo == ListSaturdays[i].AddDays(-6).ToString(ApplicationSettings.DateTimeFormatShort)
+                            where R.Periodo == ListSundays[i].AddDays(-7).ToString(ApplicationSettings.DateTimeFormatShort)
                             && R.Tipo == "1"
                             select R
                             ).ToList();
                         if (ListRep.Count() == 0) {
                             PaylessReportes NewRep = new PaylessReportes() {
-                                Periodo = ListSaturdays[i].AddDays(-6).ToString(ApplicationSettings.DateTimeFormatShort),
-                                PeriodoF = ListSaturdays[i].AddDays(1).ToString(ApplicationSettings.DateTimeFormatShort),
+                                Periodo = ListSundays[i].AddDays(-7).ToString(ApplicationSettings.DateTimeFormatShort),
+                                PeriodoF = ListSundays[i].ToString(ApplicationSettings.DateTimeFormatShort),
                                 FechaGen = DateTime.Now.ToString(ApplicationSettings.DateTimeFormat),
-                                Tipo = "1"
+                                Tipo = "1",
+                                ClienteId = ClienteId
                             };
                             DbO.PaylessReportes.Add(NewRep);
                             DbO.SaveChanges();
-                            List<PeticionesAdminBGModel> ListOrders = ManualDB.SP_GetWmsGroupDispatchsSunday(ref DbO, 1432, ListSaturdays[i].AddDays(-6).ToString(ApplicationSettings.DateTimeFormatSqlServer), ListSaturdays[i].AddDays(1).ToString(ApplicationSettings.DateTimeFormatSqlServer)).ToList();
+                            List<PeticionesAdminBGModel> ListOrders = ManualDB.SP_GetWmsGroupDispatchsSunday(ref DbO, 1432, ListSundays[i].AddDays(-7).ToString(ApplicationSettings.DateTimeFormatSqlServer), ListSundays[i].ToString(ApplicationSettings.DateTimeFormatSqlServer)).ToList();
                             ListOrders = ListOrders.OrderByDescending(Pe2 => Pe2.FechaPedido.ToDateFromEspDate()).ToList();
                             List<int?> ListTiendas = (
                                 from Lo in ListOrders
@@ -4753,8 +4847,20 @@ SET XACT_ABORT OFF
                 };
             }
         }
+        private bool? ConstructQuestion(string Preg) {
+            switch (Preg) {
+                case "-":
+                    return null;
+                case "0":
+                    return false;
+                case "1":
+                    return true;
+                default:
+                    return null;
+            }
+        }
         [HttpGet]
-        public RetData<string> SetPaylessEncuestaPedidos(string TiendaId, string cboPedido, string CodUser, string preg0, string preg2, string preg2a, string preg2b, string preg2c, string preg3, string preg3a, string preg4, string preg4a, string preg5, string preg5a, string preg6, string preg7, string preg7a, string preg8, string preg9, string preg10, string preg11, string preg12, string preg13, string preg14, string preg15, string preg16, string preg17, string preg17a, string preg18) {
+        public RetData<string> SetPaylessEncuestaPedidos(string TiendaId, string cboPedido, string CodUser, string preg0, string preg2, string preg2a, string preg2b, string preg2c, string preg3, string preg3a, string preg4, string preg4a, string preg5, string preg5a, string preg6, string preg7, string preg7a, string preg8, string preg9, string preg10, string preg11, string preg12, string preg13, string preg14, string preg15, string preg16, string preg17, string preg17a, string preg18, string Nombre, string preg19, int ClienteId) {
             DateTime StartTime = DateTime.Now;
             try {
                 PaylessEncuestaResM NewEnc = new PaylessEncuestaResM {
@@ -4763,37 +4869,40 @@ SET XACT_ABORT OFF
                     CodUser = CodUser,
                     FechaCreacion = StartTime.ToString(ApplicationSettings.DateTimeFormat),
                     Sdr = preg0,
-                    Typ = 0
+                    Typ = 0,
+                    Nombre = Nombre,
+                    ClienteId = ClienteId
                 };
                 DbO.PaylessEncuestaResM.Add(NewEnc);
                 DbO.SaveChanges();
                 PaylessEncuestaResDet NewRes = new PaylessEncuestaResDet {
                     IdM = NewEnc.Id,
-                    Preg2 = preg2 == "0" ? false : true,
+                    Preg2 = ConstructQuestion(preg2),
                     Preg2a = preg2a,
                     Preg2b = preg2b,
                     Preg2c = preg2c,
-                    Preg3 = preg3 == "0" ? false : true,
+                    Preg3 = ConstructQuestion(preg3),
                     Preg3a = preg3a,
-                    Preg4 = preg4 == "0" ? false : true,
+                    Preg4 = ConstructQuestion(preg4),
                     Preg4a = preg4a,
-                    Preg5 = preg5 == "0" ? false : true,
+                    Preg5 = ConstructQuestion(preg5),
                     Preg5a = preg5a,
-                    Preg6 = preg6 == "0" ? false : true,
-                    Preg7 = preg7 == "0" ? false : true,
+                    Preg6 = ConstructQuestion(preg6),
+                    Preg7 = ConstructQuestion(preg7),
                     Preg7a = preg7a,
-                    Preg8 = preg8 == "0" ? false : true,
-                    Preg9 = preg9 == "0" ? false : true,
-                    Preg10 = preg10 == "0" ? false : true,
-                    Preg11 = preg11 == "0" ? false : true,
-                    Preg12 = preg12 == "0" ? false : true,
-                    Preg13 = preg13 == "0" ? false : true,
-                    Preg14 = preg14 == "0" ? false : true,
-                    Preg15 = preg15 == "0" ? false : true,
-                    Preg16 = preg16 == "0" ? false : true,
-                    Preg17 = preg17 == "0" ? false : true,
+                    Preg8 = ConstructQuestion(preg8),
+                    Preg9 = ConstructQuestion(preg9),
+                    Preg10 = ConstructQuestion(preg10),
+                    Preg11 = ConstructQuestion(preg11),
+                    Preg12 = ConstructQuestion(preg12),
+                    Preg13 = ConstructQuestion(preg13),
+                    Preg14 = ConstructQuestion(preg14),
+                    Preg15 = ConstructQuestion(preg15),
+                    Preg16 = ConstructQuestion(preg16),
+                    Preg17 = ConstructQuestion(preg17),
                     Preg17a = preg17a,
-                    Preg18 = preg18
+                    Preg18 = preg18,
+                    Preg19 = ConstructQuestion(preg19)
                 };
                 DbO.PaylessEncuestaResDet.Add(NewRes);                
                 DbO.SaveChanges();
@@ -4816,34 +4925,36 @@ SET XACT_ABORT OFF
             }
         }
         [HttpGet]
-        public RetData<string> SetPaylessEncuestaPedidos2(string CboPedido, string CodUser, string Preg2, string Preg2a, string Preg3, string Preg3a, string Preg4, string Preg4a, string Preg5, string Preg5a, string Preg6, string Preg6a, string Preg7, string Preg7a, string Preg8, string Preg8a, string Preg9, string Preg9a, string Preg18) {
+        public RetData<string> SetPaylessEncuestaPedidos2(string CboPedido, string CodUser, string Preg2, string Preg2a, string Preg3, string Preg3a, string Preg4, string Preg4a, string Preg5, string Preg5a, string Preg6, string Preg6a, string Preg7, string Preg7a, string Preg8, string Preg8a, string Preg9, string Preg9a, string Preg18, string Nombre, int ClienteId) {
             DateTime StartTime = DateTime.Now;
             try {
                 PaylessEncuestaResM NewEnc = new PaylessEncuestaResM {
                     Pedido = CboPedido.Replace("PD", ""),
                     CodUser = CodUser,
                     FechaCreacion = StartTime.ToString(ApplicationSettings.DateTimeFormat),
-                    Typ = 1
+                    Typ = 1,
+                    Nombre = Nombre,
+                    ClienteId = ClienteId
                 };
                 DbO.PaylessEncuestaResM.Add(NewEnc);
                 DbO.SaveChanges();
                 PaylessEncuestaResDet NewRes = new PaylessEncuestaResDet {
                     IdM = NewEnc.Id,
-                    Preg2 = Preg2 == "0" ? false : true,
+                    Preg2 = ConstructQuestion(Preg2),
                     Preg2a = Preg2a,
-                    Preg3 = Preg3 == "0" ? false : true,
+                    Preg3 = ConstructQuestion(Preg3),
                     Preg3a = Preg3a,
-                    Preg4 = Preg4 == "0" ? false : true,
+                    Preg4 = ConstructQuestion(Preg4),
                     Preg4a = Preg4a,
-                    Preg5 = Preg5 == "0" ? false : true,
+                    Preg5 = ConstructQuestion(Preg5),
                     Preg5a = Preg5a,
-                    Preg6 = Preg6 == "0" ? false : true,
+                    Preg6 = ConstructQuestion(Preg6),
                     Preg6a = Preg6a,
-                    Preg7 = Preg7 == "0" ? false : true,
+                    Preg7 = ConstructQuestion(Preg7),
                     Preg7a = Preg7a,
-                    Preg8 = Preg8 == "0" ? false : true,
+                    Preg8 = ConstructQuestion(Preg8),
                     Preg8a = Preg8a,
-                    Preg9 = Preg9 == "0" ? false : true,
+                    Preg9 = ConstructQuestion(Preg9),
                     Preg9a = Preg9a,
                     Preg18 = Preg18
                 };
@@ -4868,10 +4979,10 @@ SET XACT_ABORT OFF
             }
         }
         [HttpGet]
-        public RetData<IEnumerable<PaylessEncuestaRepMm>> GetPaylessEncuestaRepM(int Anio, int Mes, string CodUser) {
+        public RetData<IEnumerable<PaylessEncuestaRepMm>> GetPaylessEncuestaRepM(int Anio, int Mes, string CodUser, int ClienteId) {
             DateTime StartTime = DateTime.Now;
             try {
-                IEnumerable<PaylessEncuestaRepMm> ListSearch = DbO.PaylessEncuestaRepMm.Where(O => O.Anio == Anio);
+                IEnumerable<PaylessEncuestaRepMm> ListSearch = DbO.PaylessEncuestaRepMm.Where(O => O.Anio == Anio && O.ClienteId == ClienteId);
                 List<PaylessEncuestaRepMm> ListRet = new List<PaylessEncuestaRepMm>();
                 if (ListSearch.Count() == 0) {
                     DateTime StartDayMonth = new DateTime(Anio, 1, 1);
@@ -4912,7 +5023,8 @@ SET XACT_ABORT OFF
                                 FechaCreacion = StartTime.ToString(ApplicationSettings.DateTimeFormat),
                                 FechaI = StartDayMonth.ToString(ApplicationSettings.DateTimeFormat),
                                 FechaF = StartDayMonth.AddDays(Math.Abs(RestDays)).ToString(ApplicationSettings.DateTimeFormat),
-                                CodUser = CodUser
+                                CodUser = CodUser,
+                                ClienteId = ClienteId
                             });
                             if (StartDayMonth.AddDays(Math.Abs(RestDays)).Year > Anio)
                                 break;
@@ -4924,19 +5036,22 @@ SET XACT_ABORT OFF
                     DbO.SaveChanges();
                 }
                 ListRet.Clear();
-                ListRet = DbO.PaylessEncuestaRepMm.Where(O => O.Anio == Anio && O.Mes == Mes).ToList();
+                ListRet = DbO.PaylessEncuestaRepMm.Where(O => O.Anio == Anio && O.Mes == Mes && O.ClienteId == ClienteId).ToList();
                 if (ListRet.Count > 0) {
                     ListRet.ForEach(M => {
                         M.CantPedidos = (
                         from Mp in DbO.PedidosExternos
                         where Mp.FechaPedido.ToDateEsp() >= M.FechaI.ToDateEsp()
                         && Mp.FechaPedido.ToDateEsp() < M.FechaF.ToDateEsp()
+                        && Mp.ClienteId == ClienteId
                         select Mp.PedidoWms
                         ).Distinct().Count();                        
                         M.CantEncuestas = (
                             from Mr in DbO.PaylessEncuestaResM
                             from Mp in DbO.PedidosExternos
                             where Mp.Id == Convert.ToInt32(Mr.Pedido)
+                            && Mp.ClienteId == ClienteId
+                            && Mr.ClienteId == ClienteId
                             && Mp.FechaPedido.ToDateEsp() >= M.FechaI.ToDateEsp()
                             && Mp.FechaPedido.ToDateEsp() < M.FechaF.ToDateEsp()
                             select Mr.Id
@@ -4949,6 +5064,8 @@ SET XACT_ABORT OFF
                             from Mr in DbO.PaylessEncuestaResM
                             from Mp in DbO.PedidosExternos
                             where Mp.Id == Convert.ToInt32(Mr.Pedido)
+                            && Mp.ClienteId == ClienteId
+                            && Mr.ClienteId == ClienteId
                             && Mp.FechaPedido.ToDateEsp() >= Rep.FechaI.ToDateEsp()
                             && Mp.FechaPedido.ToDateEsp() < Rep.FechaF.ToDateEsp()
                             select Mr
@@ -5066,6 +5183,102 @@ SET XACT_ABORT OFF
             }
         }
         [HttpGet]
+        public RetData<IEnumerable<PaylessInvSnapshotDet>> GetPaylessInv(int ClienteId) {
+            DateTime StartTime = DateTime.Now;
+            try {
+                List<PaylessInvSnapshotDet> ListDet = new List<PaylessInvSnapshotDet>();
+                List<PaylessProdPrioriDet> ListProd = ManualDB.SP_GetSetInvToday(ref DbOLong, ClienteId, "InvNow").ToList();
+                List<PaylessPedidosCpT> ListTemporadaConfig = DbO.PaylessPedidosCpT.ToList();
+                PaylessInvSnapshotM SnapM = new PaylessInvSnapshotM {
+                    Id = 10,
+                    ClienteId = ClienteId,
+                    Periodo = StartTime.ToString(ApplicationSettings.DateTimeFormat),
+                    Cp = string.Join(',', DbO.PaylessPedidosCpT.Where(P => !string.IsNullOrEmpty(P.Cp)).Select(O => O.Cp).Distinct().ToArray()),
+                    TotalWoman = ListProd.Where(Tw => Tw.Categoria == "DAMAS").Select(O1 => O1.Barcode).Distinct().Count(),
+                    TotalMan = ListProd.Where(Tw => Tw.Categoria == "CABALLEROS").Select(O1 => O1.Barcode).Distinct().Count(),
+                    TotalKids = ListProd.Where(Tw => Tw.Categoria == "NIÑOS / AS").Select(O1 => O1.Barcode).Distinct().Count(),
+                    TotalAcc = ListProd.Where(Tw => Tw.Categoria == "ACCESORIOS").Select(O1 => O1.Barcode).Distinct().Count(),
+                    TotalSolicitado = (
+                        from Pm in DbO.PedidosExternos
+                        from Pd in DbO.PedidosDetExternos
+                        where Pd.PedidoId == Pm.Id
+                        && Pm.PedidoWms == null
+                        select Pd.CodProducto
+                    ).Distinct().Count(),
+                    TotalCp = (
+                        from P in ListProd
+                        from CpP in ListTemporadaConfig
+                        where !string.IsNullOrEmpty(CpP.Cp)
+                        && P.Cp == CpP.Cp
+                        select P.Barcode
+                    ).Distinct().Count(),
+                    Total = ListProd.Select(O1 => O1.Barcode).Distinct().Count()
+                };
+                SnapM.TotalDisponible = Math.Abs((SnapM.Total ?? 0) - (SnapM.TotalSolicitado ?? 0));
+                SnapM.TotalSinCp = Math.Abs((SnapM.Total ?? 0) - (SnapM.TotalCp ?? 0));
+                foreach (PaylessTiendas Tienda in DbO.PaylessTiendas.Where(T2 => T2.ClienteId == ClienteId)) {
+                    PaylessInvSnapshotDet D = new PaylessInvSnapshotDet {
+                        IdM = SnapM.Id,
+                        TiendaId = Tienda.TiendaId,
+                        Tienda = Tienda.Descr,
+                        WomanQty = ListProd.Where(Tw => Tw.Categoria == "DAMAS" && Tw.Barcode.Substring(0, 4) == Tienda.TiendaId.ToString()).Select(O1 => O1.Barcode).Distinct().Count(),
+                        ManQty = ListProd.Where(Tw => Tw.Categoria == "CABALLEROS" && Tw.Barcode.Substring(0, 4) == Tienda.TiendaId.ToString()).Select(O1 => O1.Barcode).Distinct().Count(),
+                        KidsQty = ListProd.Where(Tw => Tw.Categoria == "NIÑOS / AS" && Tw.Barcode.Substring(0, 4) == Tienda.TiendaId.ToString()).Select(O1 => O1.Barcode).Distinct().Count(),
+                        AccQty = ListProd.Where(Tw => Tw.Categoria == "ACCESORIOS" && Tw.Barcode.Substring(0, 4) == Tienda.TiendaId.ToString()).Select(O1 => O1.Barcode).Distinct().Count(),
+                        Total = ListProd.Where(Tw => Tw.Barcode.Substring(0, 4) == Tienda.TiendaId.ToString()).Select(O1 => O1.Barcode).Distinct().Count(),
+                        TotalSolicitado = (
+                            from Pm in DbO.PedidosExternos
+                            from Pd in DbO.PedidosDetExternos
+                            where Pd.PedidoId == Pm.Id
+                            && Pm.PedidoWms == null
+                            && Pm.TiendaId == Tienda.TiendaId
+                            select Pd.CodProducto
+                        ).Distinct().Count(),
+                        TotalCp = (
+                            from P in ListProd
+                            from CpP in ListTemporadaConfig
+                            where !string.IsNullOrEmpty(CpP.Cp)
+                            && P.Cp == CpP.Cp
+                            && P.Barcode.Substring(0, 4) == Tienda.TiendaId.ToString()
+                            select P.Barcode
+                        ).Distinct().Count(),
+                    };
+                    D.TotalDisponible = Math.Abs((D.Total ?? 0) - (D.TotalSolicitado ?? 0));
+                    D.TotalSinCp = Math.Abs((D.Total ?? 0) - (D.TotalCp ?? 0));
+                    ListDet.Add(D);
+                }
+                ListDet.Add(new PaylessInvSnapshotDet {
+                    Id = 666,
+                    Tienda = "TOTAL",
+                    WomanQty = SnapM.TotalWoman,
+                    ManQty = SnapM.TotalMan,
+                    KidsQty = SnapM.TotalKids,
+                    AccQty = SnapM.TotalAcc,
+                    TotalSinCp = SnapM.TotalSinCp,
+                    Total = SnapM.Total,
+                    TotalSolicitado = SnapM.TotalSolicitado,
+                    TotalDisponible = SnapM.TotalDisponible,
+                    TotalCp = SnapM.TotalCp
+                });
+                return new RetData<IEnumerable<PaylessInvSnapshotDet>> {
+                    Data = ListDet,
+                    Info = new RetInfo() {
+                        CodError = 0,
+                        Mensaje = "ok",
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            } catch (Exception e1) {
+                return new RetData<IEnumerable<PaylessInvSnapshotDet>> {
+                    Info = new RetInfo() {
+                        CodError = -1,
+                        Mensaje = e1.ToString(),
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            }
+        }
+        [HttpGet]
         public RetData<string> MakePaylessInvSnapshot(int ClienteId) {
             DateTime StartTime = DateTime.Now;
             try {
@@ -5079,9 +5292,9 @@ SET XACT_ABORT OFF
                 //};
                 //DbO.AsyncStates.Add(As1);
                 //DbO.SaveChanges();
-                IEnumerable<PaylessInvSnapshotM> ListSnapM = DbO.PaylessInvSnapshotM.Where(M => M.Periodo.Substring(0, 10) == StartTime.ToString(ApplicationSettings.DateTimeFormatShort));
+                IEnumerable<PaylessInvSnapshotM> ListSnapM = DbO.PaylessInvSnapshotM.Where(M => M.ClienteId == ClienteId && M.Periodo.Substring(0, 10) == StartTime.ToString(ApplicationSettings.DateTimeFormatShort));
                 if (ListSnapM.Count() == 0 && StartTime.Hour >= 9) {
-                    List<PaylessProdPrioriDet> ListProd = ManualDB.SP_GetSetInvToday(ref DbOLong, ClienteId).ToList();
+                    List<PaylessProdPrioriDet> ListProd = ManualDB.SP_GetSetInvToday(ref DbOLong, ClienteId, "BOT").ToList();
                     List<PaylessPedidosCpT> ListTemporadaConfig = DbO.PaylessPedidosCpT.ToList();
                     PaylessInvSnapshotM SnapM = new PaylessInvSnapshotM {
                         ClienteId = ClienteId,
@@ -5093,11 +5306,11 @@ SET XACT_ABORT OFF
                         TotalAcc = ListProd.Where(Tw => Tw.Categoria == "ACCESORIOS").Select(O1 => O1.Barcode).Distinct().Count(),
                         TotalSolicitado = (
                             from Pm in DbO.PedidosExternos
-                            from Pd in DbO.PedidosDetExternos
-                            where Pd.PedidoId == Pm.Id
+                            where Pm.ClienteId == ClienteId
                             && Pm.PedidoWms == null
-                            select Pd.CodProducto
-                        ).Distinct().Count(),
+                            
+                            select Pm.WomanQty + Pm.ManQty + Pm.KidQty + Pm.AccQty
+                        ).Sum(),
                         TotalCp = (
                             from P in ListProd
                             from CpP in ListTemporadaConfig
@@ -5105,15 +5318,47 @@ SET XACT_ABORT OFF
                             && P.Cp == CpP.Cp
                             select P.Barcode
                         ).Distinct().Count(),
-                        Total = ListProd.Select(O1 => O1.Barcode).Distinct().Count()
+                        Total = ListProd.Select(O1 => O1.Barcode).Distinct().Count(),
+                        AvaWomanQty = (
+                            from Pm in DbO.PedidosExternos
+                            where Pm.ClienteId == ClienteId
+                            && Pm.PedidoWms == null
+                            
+                            select Pm.WomanQty
+                        ).Sum(),
+                        AvaManQty = (
+                            from Pm in DbO.PedidosExternos
+                            where  Pm.ClienteId == ClienteId
+                            && Pm.PedidoWms == null
+                            
+                            select Pm.ManQty
+                        ).Sum(),
+                        AvaKidsQty = (
+                            from Pm in DbO.PedidosExternos
+                            where Pm.ClienteId == ClienteId
+                            && Pm.PedidoWms == null
+                            
+                            select Pm.KidQty
+                        ).Sum(),
+                        AvaAccQty = (
+                            from Pm in DbO.PedidosExternos
+                            where Pm.ClienteId == ClienteId
+                            && Pm.PedidoWms == null
+                            
+                            select Pm.AccQty
+                        ).Sum()
                     };
                     SnapM.TotalDisponible = Math.Abs((SnapM.Total ?? 0) - (SnapM.TotalSolicitado ?? 0));
                     SnapM.TotalSinCp = Math.Abs((SnapM.Total ?? 0) - (SnapM.TotalCp ?? 0));
+                    SnapM.AvaWomanQty = SnapM.TotalWoman - SnapM.AvaWomanQty;
+                    SnapM.AvaManQty = SnapM.TotalMan - SnapM.AvaManQty;
+                    SnapM.AvaKidsQty = SnapM.TotalKids - SnapM.AvaKidsQty;
+                    SnapM.AvaAccQty = SnapM.TotalAcc - SnapM.AvaAccQty;
                     DbO.PaylessInvSnapshotM.Add(SnapM);
                     DbO.SaveChanges();
                     foreach (int BodegaId in ListProd.Select(Lp => Lp.IdTransporte).Distinct()) {
                         foreach (PaylessTiendas Tienda in DbO.PaylessTiendas.Where(T2 => T2.ClienteId == ClienteId)) {
-                            if (WmsDbO.Bodegas.Where(B => B.BodegaId == BodegaId && B.Locationid == 7).Count() > 0) {
+                            if (WmsDbO.Bodegas.Where(B => B.BodegaId == BodegaId).Count() > 0) {
                                 PaylessInvSnapshotDet D = new PaylessInvSnapshotDet {
                                     IdM = SnapM.Id,
                                     BodegaId = BodegaId,
@@ -5127,13 +5372,12 @@ SET XACT_ABORT OFF
                                     Total = ListProd.Where(Tw => Tw.IdTransporte == BodegaId && Tw.Barcode.Substring(0, 4) == Tienda.TiendaId.ToString()).Select(O1 => O1.Barcode).Distinct().Count(),
                                     TotalSolicitado = (
                                         from Pm in DbO.PedidosExternos
-                                        from Pd in DbO.PedidosDetExternos
-                                        where Pd.PedidoId == Pm.Id
-                                        && Pm.PedidoWms == null
+                                        where Pm.PedidoWms == null
                                         && Pm.TiendaId == Tienda.TiendaId
-                                        && BodegaId == Tienda.BodegaId
-                                        select Pd.CodProducto
-                                    ).Distinct().Count(),
+                                        && Pm.ClienteId == ClienteId
+                                        
+                                        select Pm.WomanQty + Pm.ManQty + Pm.KidQty + Pm.AccQty
+                                    ).Sum(),
                                     TotalCp = (
                                         from P in ListProd
                                         from CpP in ListTemporadaConfig
@@ -5143,9 +5387,66 @@ SET XACT_ABORT OFF
                                         && P.Barcode.Substring(0, 4) == Tienda.TiendaId.ToString()
                                         select P.Barcode
                                     ).Distinct().Count(),
+                                    AvaWomanQty = (
+                                        from Pm in DbO.PedidosExternos
+                                        where Pm.PedidoWms == null
+                                        && Pm.TiendaId == Tienda.TiendaId
+                                        && Tienda.BodegaId == BodegaId
+                                        && Pm.ClienteId == ClienteId
+                                        
+                                        select Pm.WomanQty
+                                    ).Sum(),
+                                    AvaManQty = (
+                                        from Pm in DbO.PedidosExternos
+                                        where Pm.PedidoWms == null
+                                        && Pm.TiendaId == Tienda.TiendaId
+                                        && Tienda.BodegaId == BodegaId
+                                        && Pm.ClienteId == ClienteId
+                                        
+                                        select Pm.ManQty
+                                    ).Sum(),
+                                    AvaKidsQty = (
+                                        from Pm in DbO.PedidosExternos
+                                        where Pm.PedidoWms == null
+                                        && Pm.TiendaId == Tienda.TiendaId
+                                        && Tienda.BodegaId == BodegaId
+                                        && Pm.ClienteId == ClienteId
+                                        
+                                        select Pm.KidQty
+                                    ).Sum(),
+                                    AvaAccQty = (
+                                        from Pm in DbO.PedidosExternos
+                                        where Pm.PedidoWms == null
+                                        && Pm.TiendaId == Tienda.TiendaId
+                                        && Tienda.BodegaId == BodegaId
+                                        && Pm.ClienteId == ClienteId
+                                        
+                                        select Pm.AccQty
+                                    ).Sum(),
                                 };
+                                if (D.Total == 0)
+                                    D.TotalSolicitado = 0;
+                                if (Tienda.BodegaId != BodegaId) {
+                                    D.TotalSolicitado = 0;
+                                    D.AvaWomanQty = D.WomanQty;
+                                    D.AvaManQty = D.ManQty;
+                                    D.AvaKidsQty = D.KidsQty;
+                                    D.AvaAccQty = D.AccQty;
+                                }
                                 D.TotalDisponible = Math.Abs((D.Total ?? 0) - (D.TotalSolicitado ?? 0));
                                 D.TotalSinCp = Math.Abs((D.Total ?? 0) - (D.TotalCp ?? 0));
+                                D.AvaWomanQty = D.WomanQty - D.AvaWomanQty;
+                                D.AvaManQty = D.ManQty - D.AvaManQty;
+                                D.AvaKidsQty = D.KidsQty - D.AvaKidsQty;
+                                D.AvaAccQty = D.AccQty - D.AvaAccQty;
+                                if (D.AvaWomanQty < 0)
+                                    D.AvaWomanQty = 0;
+                                if (D.AvaManQty < 0)
+                                    D.AvaManQty = 0;
+                                if (D.AvaKidsQty < 0)
+                                    D.AvaKidsQty = 0;
+                                if (D.AvaAccQty < 0)
+                                    D.AvaAccQty = 0;
                                 DbO.PaylessInvSnapshotDet.Add(D);
                                 DbO.SaveChanges();
                             }
@@ -5245,7 +5546,7 @@ SET XACT_ABORT OFF
             }
         }
         [HttpGet]
-        public RetData<string> SetDeleteDis(int PedidoId) {
+        public RetData<string> SetDeleteDis(int PedidoId, string CodUser) {
             DateTime StartTime = DateTime.Now;
             if (PedidoId == 0)
                 return new RetData<string> {
@@ -5257,6 +5558,7 @@ SET XACT_ABORT OFF
                 };
             try {
                 PedidosExternosDel Ped = (from P in DbO.PedidosExternos where P.Id == PedidoId select P).Select(O => Utility.Funcs.Reflect(O, new PedidosExternosDel())).Fod();
+                Ped.CodUser = CodUser;
                 Ped.FechaBorrado = StartTime.ToString(ApplicationSettings.DateTimeFormat);
                 DbO.PedidosExternosDel.AddRange(Ped);
                 IEnumerable<PedidosDetExternosDel> ListPedDet = (
@@ -5267,7 +5569,7 @@ SET XACT_ABORT OFF
                         CantPedir = Pd.CantPedir,
                         CodProducto = Pd.CodProducto,
                         PedidoId = Pd.PedidoId,
-                        Producto = Pd.Producto
+                        Producto = Pd.Producto                        
                     }
                     );
                 DbO.PedidosDetExternosDel.AddRange(ListPedDet);
@@ -5307,7 +5609,7 @@ SET XACT_ABORT OFF
                 };
             try {
                 PedidosExternos Ped = (from P in DbO.PedidosExternos where P.Id == PedidoId select P).Fod();
-                Ped.IdEstado = 3;
+                Ped.IdEstado = 2;
                 DbO.PedidosExternos.Update(Ped);
                 DbO.SaveChanges();
                 return new RetData<string> {
@@ -5342,6 +5644,48 @@ SET XACT_ABORT OFF
                 };
             } catch (Exception e1) {
                 return new RetData<IEnumerable<PedidosExternosDel>> {
+                    Info = new RetInfo() {
+                        CodError = -1,
+                        Mensaje = e1.ToString(),
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            }
+        }
+        [HttpGet]
+        public RetData<IEnumerable<WmsInOutGModel>> GetEntradasSalidasWms(int ClienteId, int BodegaId, int RegimenId) {
+            DateTime StartTime = DateTime.Now;
+            try {
+                IEnumerable<AsyncStates> ProcFind = DbO.AsyncStates.Where(A => A.Typ == 8 && A.CodUser == ClienteId.ToString());
+                bool Gen = false;
+                if (ProcFind.Count() == 0)
+                    Gen = true;
+                else if ((StartTime - ProcFind.Fod().Fecha.ToDateEsp()).TotalMinutes > 9)
+                    Gen = true;
+                if (Gen) {
+                    ManualDB.GetEntradasSalidasWms(ref DbO, ClienteId);
+                    if (ProcFind.Count() == 0) {
+                        AsyncStates ThisProc = new AsyncStates() { Typ = 8, Val = 0, Maximum = 1, CodUser = ClienteId.ToString(), Fecha = StartTime.ToString(ApplicationSettings.DateTimeFormat) };
+                        DbO.AsyncStates.Add(ThisProc);
+                    } else {
+                        AsyncStates ThisProc = ProcFind.Fod();
+                        ThisProc.Mess = string.Empty;
+                        ThisProc.Maximum = 1;
+                        ThisProc.Fecha = StartTime.ToString(ApplicationSettings.DateTimeFormat);
+                        ThisProc.Val = 0;
+                    }
+                    DbO.SaveChanges();
+                }
+                return new RetData<IEnumerable<WmsInOutGModel>> {
+                    Data = DbO.WmsInOut.Where(W => W.ClienteId == ClienteId && W.BodegaId == BodegaId && W.RegimenId == RegimenId).Select(O => Utility.Funcs.Reflect(O, new WmsInOutGModel())).OrderByDescending(O1 => O1.TransaccionId),
+                    Info = new RetInfo() {
+                        CodError = 0,
+                        Mensaje = "ok",
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            } catch (Exception e1) {
+                return new RetData<IEnumerable<WmsInOutGModel>> {
                     Info = new RetInfo() {
                         CodError = -1,
                         Mensaje = e1.ToString(),
