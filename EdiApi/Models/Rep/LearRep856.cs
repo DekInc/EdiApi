@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using EdiApi.Models.EdiDB;
+using ComModels.Models.EdiDB;
 namespace EdiApi
 {
     //Solo ver 2040

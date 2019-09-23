@@ -1,0 +1,52 @@
+﻿<div class="modal fade2" id="modalPopDeletePedido" tabindex="-1" role="dialog" aria-labelledby="modalPopDeletePedidoLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content modal-content-normal">
+            <div class="modal-header">
+                <h5 class="modal-title">Modificar pedido</h5>
+            </div>
+            <div class="modal-body">
+                <div id="divPopDeletePedidoContent">
+                    <form method="post" enctype="multipart/form-data">
+                        <div class="row">
+                            <div class="col">
+                                <div>
+                                    Seleccione una opción para modificar el pedido, puede borrar el pedido, devolverlo a pendiente y además cambiar la fecha del pedido, siempre y cuando no sea la misma fecha de otro pedido.
+                                </div>
+                            </div>
+                        </div>
+                        <br />
+                        <div class="row">
+                            <div class="col-4">
+                                <div style="display: flex;">
+                                    <label for="dtpFechaEntrega">Fecha esperada de entrega</label><br />&nbsp;&nbsp;
+                                </div>
+                            </div>
+                            <div class="col-sm">
+                                <div style="display: flex;">
+                                    <input class="form-control datepicker" data-date-format="dd/mm/yyyy hh:ii" id="dtpFechaEntrega" name="dtpFechaEntrega" placeholder="dd/mm/yyyy HH:mm" maxlength="10" autocorrect="off" autocapitalize="off" autocomplete="off" style="max-width: 240px;" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-4">
+                                <div style="display: flex;">
+                                    <label for="txtObservaciones">Observaciones</label><br />&nbsp;&nbsp;
+                                </div>
+                            </div>
+                            <div class="col-sm">
+                                <div style="display: flex;">
+                                    <textarea id="txtObservaciones" name="txtObservaciones" class="txtObservaciones" cols="60" rows="4"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="modal-footer text-center">
+                <button id="btnPopDeletePedidoLabelBorrar" type="button" class="btn btn-success btnModal" data-dismiss="modal">Borrar</button>
+                <button id="btnPopDeletePedidoLabelPendiente" type="button" class="btn btn-primary btnModal" data-dismiss="modal">Pasar a pendiente</button>
+                <button id="btnPopDeletePedidoLabelClose" type="button" class="btn btn-primary btnModal" data-dismiss="modal">Cancelar</button>
+            </div>
+        </div>
+    </div>
+</div>

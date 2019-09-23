@@ -8,6 +8,8 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using ComModels;
+using ComModels.Models.EdiDB;
+using ComModels.Models.WmsDB;
 using EdiViewer.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -68,6 +70,19 @@ namespace EdiViewer.Controllers
         public IActionResult VerSalidasWMS() {
             return View();
         }
+        public IActionResult CrudTiendas() {
+            return View();
+        }
+        public IActionResult CrudRutas() {
+            return View();
+        }
+        public IActionResult CrudRacks() {
+            return View();
+        }
+        public IActionResult VerIngresosWMSDet() {
+            ViewBag.TransaccionId = HttpContext.Request.Query["TransaccionId"].ToString();
+            return View();
+        }        
         [HttpGet]
         public async Task<string> MakePaylessInvSnapshot(int ClienteId) {            
             try {
@@ -100,6 +115,8 @@ namespace EdiViewer.Controllers
         //}
         public IActionResult Peticiones()
         {
+            if (Request.Query.Count > 1)
+                return View(new ErrorModel { Typ = Convert.ToInt32(Request.Query["Type"]), ErrorMessage = Request.Query["ErrorMessage"] });
             return View(new ErrorModel());
         }
         public IActionResult PeticionesAdmin() {
@@ -187,7 +204,8 @@ namespace EdiViewer.Controllers
 
             RetData<string> Ret = await ApiClientFactory.Instance.SetNewDisPayless(dtpFechaEntrega, txtWomanQty, txtManQty, txtKidQty, txtAccQty, radInvType, HttpContext.Session.GetObjSession<int>("Session.ClientId"), HttpContext.Session.GetObjSession<int>("Session.TiendaId"), null, (FullPed == false? null : FullPed), null, txtWomanQtyT, txtManQtyT, txtKidQtyT, txtAccQtyT, HttpContext.Session.GetObjSession<string>("Session.CodUsr"));
             if (Ret.Info.CodError == 0) {
-                return View("Peticiones", new ErrorModel() { Typ = 1, ErrorMessage = Ret.Data });
+                return RedirectToAction("Peticiones", new ErrorModel() { Typ = 1, ErrorMessage = Ret.Data });
+                //return View("Peticiones", new ErrorModel() { Typ = 1, ErrorMessage = Ret.Data });
             } else {
                 return View("PedidosPayless3", new ErrorModel() { ErrorMessage = Ret.Info.Mensaje });
             }
@@ -532,15 +550,15 @@ namespace EdiViewer.Controllers
                 };
             }
         }
-        public async Task<RetData<Tuple<string, string>>> GetClientNameScheduleById() {
+        public async Task<RetData<Tuple<string, string, string, bool>>> GetClientNameScheduleById() {
             DateTime StartTime = DateTime.Now;
             try {
                 if (HttpContext.Session.GetObjSession<int?>("Session.TiendaId") != null) {
-                    RetData<Tuple<string, string>> ClienteP = await ApiClientFactory.Instance.GetClientNameScheduleById(HttpContext.Session.GetObjSession<int>("Session.TiendaId"));
+                    RetData<Tuple<string, string, string, bool>> ClienteP = await ApiClientFactory.Instance.GetClientNameScheduleById(HttpContext.Session.GetObjSession<int>("Session.TiendaId"));
                     return ClienteP;
                 }                
-                return new RetData<Tuple<string, string>>() {
-                    Data = new Tuple<string, string>("", ""),
+                return new RetData<Tuple<string, string, string, bool>>() {
+                    Data = new Tuple<string, string, string, bool>("", "", "", true),
                     Info = new RetInfo() {
                         CodError = -1,
                         Mensaje = "El usuario no tiene una tienda asignada, tiene que establecerla para usar está pantalla.",
@@ -548,8 +566,8 @@ namespace EdiViewer.Controllers
                     }
                 };                
             } catch (Exception e2) {
-                return new RetData<Tuple<string, string>> {
-                    Data = new Tuple<string, string>("", ""),
+                return new RetData<Tuple<string, string, string, bool>> {
+                    Data = new Tuple<string, string, string, bool>("", "", "", true),
                     Info = new RetInfo() {
                         CodError = -1,
                         Mensaje = e2.ToString(),
@@ -560,7 +578,7 @@ namespace EdiViewer.Controllers
         }
         public async Task<IActionResult> PedidosPayless() {
             try {
-                ApiClientFactory.Instance.GetSetExistenciasByCliente(HttpContext.Session.GetObjSession<int>("Session.ClientId"), HttpContext.Session.GetObjSession<string>("Session.CodUsr"));
+                await ApiClientFactory.Instance.GetSetExistenciasByCliente(HttpContext.Session.GetObjSession<int>("Session.ClientId"), HttpContext.Session.GetObjSession<string>("Session.CodUsr"));
                 ViewBag.ListOldDis = null;
                 ViewBag.DateLastDis = DateTime.Now.ToString(ApplicationSettings.DateTimeFormatT);
                 ViewBag.PedidoId = null;
@@ -1757,56 +1775,145 @@ namespace EdiViewer.Controllers
                 });
             }
         }
-        public async Task<RetData<string>> SetSalidaWmsFromEscaner(string dtpPeriodo, int cboBodegas, int cboRegimen, int cboLocation) {
+        public async Task<RetData<string>> SetSalidaWmsFromEscaner(string dtpPeriodo, int cboBodegas, int cboRegimen, int cboLocation, int cboTipo) {
             DateTime StartTime = DateTime.Now;
             List<string> ListBarcodes = new List<string>();
             try {
-                IFormFile FileUploaded = Request.Form.Files[0];
-                StringBuilder sb = new StringBuilder();
-                if (FileUploaded.Length > 0) {
-                    string FileExtension = Path.GetExtension(FileUploaded.FileName).ToLower();
-                    using (MemoryStream stream = new MemoryStream()) {
-                        FileUploaded.CopyTo(stream);
-                        stream.Position = 0;
-                        if (!(FileExtension == ".xml" || FileExtension == ".XML")) {
-                            return new RetData<string> { 
-                                Info = new RetInfo() {
-                                    CodError = -1,
-                                    Mensaje = "El archivo no tiene la extensión .xml",
-                                    ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                IFormFile FileUploaded = null;
+                IFormFile FileUploadedExcel = null;                
+                if (Request.Form.Files.Count > 0)
+                    FileUploaded = Request.Form.Files[0];
+                if (Request.Form.Files.Count > 1)
+                    FileUploadedExcel = Request.Form.Files[1];
+                if (FileUploadedExcel != null) {
+                    if (FileUploadedExcel.Length > 0) {
+                        string FileExtension = Path.GetExtension(FileUploadedExcel.FileName).ToLower();
+                        ISheet Sheet, Sheet2 = null;
+                        using (MemoryStream stream = new MemoryStream()) {
+                            FileUploadedExcel.CopyTo(stream);
+                            stream.Position = 0;
+                            if (FileExtension.ToLower() == ".xls") {
+                                try {
+                                    HSSFWorkbook hssfwb = new HSSFWorkbook(stream);
+                                    Sheet = hssfwb.GetSheetAt(0);
+                                    try {
+                                        Sheet2 = hssfwb.GetSheetAt(1);
+                                    } catch {
+                                    }
+                                } catch (Exception e2) {
+                                    throw new Exception("El archivo no es de Excel. Utilice un formato propio de Microsoft Excel. " + e2.ToString());
                                 }
-                            };
+                            } else if (FileExtension.ToLower() == ".xlsx") {
+                                try {
+                                    XSSFWorkbook hssfwb = new XSSFWorkbook(stream);
+                                    Sheet = hssfwb.GetSheetAt(0);
+                                    try {
+                                        Sheet2 = hssfwb.GetSheetAt(1);
+                                    } catch {
+                                    }
+                                } catch (Exception e3) {
+                                    throw new Exception("El archivo no es de Excel. Utilice un formato propio de Microsoft Excel. " + e3.ToString());
+                                }
+                            } else {
+                                return new RetData<string>() {
+                                    Data = "",
+                                    Info = new RetInfo() {
+                                        CodError = -2,
+                                        Mensaje = "El archivo no tiene la extensión .xls o .xlsx",
+                                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                                    }
+                                };
+                            }
+                            if (Sheet2 != null) {
+                                return new RetData<string>() {
+                                    Data = "",
+                                    Info = new RetInfo() {
+                                        CodError = -2,
+                                        Mensaje = "El archivo contiene más de una hoja, por favor coloque la información en la primera hoja y borre la segunda.",
+                                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                                    }
+                                };
+                            }
+                            IRow HeaderRow = Sheet.GetRow(0);
+                            for (int i = (Sheet.FirstRowNum + 1); i <= Sheet.LastRowNum; i++) {
+                                IRow row = Sheet.GetRow(i);
+                                if (row == null) continue;
+                                if (row.Cells.All(d => d.CellType == CellType.Blank)) continue;
+                                try {
+                                    long Barcode = Convert.ToInt64(row.GetCell(0).ToString());
+                                    if (!ListBarcodes.Contains(Barcode.ToString()))
+                                        ListBarcodes.Add(Barcode.ToString());
+                                } catch {
+                                    return new RetData<string>() {
+                                        Data = "",
+                                        Info = new RetInfo() {
+                                            CodError = -2,
+                                            Mensaje = $"Error en conversión de tipo para el campo {row.GetCell(0).ToString()}, tiene que ser un número",
+                                            ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                                        }
+                                    };
+                                }
+
+                            }
                         }
-                        System.Data.DataSet FileUploadDs = new System.Data.DataSet();
-                        FileUploadDs.ReadXml(stream);
-                        if (FileUploadDs.Tables.Count > 3 && FileUploadDs.Tables[1].Columns[0].ColumnName == "OriginType") {
-                            if (FileUploadDs.Tables[3].TableName == "CaseDetail") {
-                                foreach (System.Data.DataRow FileCod in FileUploadDs.Tables[3].Rows) {
-                                    if (ListBarcodes.Where(Bc => Bc == FileCod["CaseNumber"].ToString()).Count() == 0)
-                                        ListBarcodes.Add(FileCod["CaseNumber"].ToString());
+                    }
+                }
+                //
+                StringBuilder sb = new StringBuilder();
+                if (FileUploaded != null) {
+                    if (FileUploaded.Length > 0) {
+                        string FileExtension = Path.GetExtension(FileUploaded.FileName).ToLower();
+                        using (MemoryStream stream = new MemoryStream()) {
+                            FileUploaded.CopyTo(stream);
+                            stream.Position = 0;
+                            if (!(FileExtension == ".xml" || FileExtension == ".XML")) {
+                                return new RetData<string> {
+                                    Info = new RetInfo() {
+                                        CodError = -1,
+                                        Mensaje = "El archivo no tiene la extensión .xml",
+                                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                                    }
+                                };
+                            }
+                            System.Data.DataSet FileUploadDs = new System.Data.DataSet();
+                            FileUploadDs.ReadXml(stream);
+                            if (FileUploadDs.Tables.Count > 3 && FileUploadDs.Tables[1].Columns[0].ColumnName == "OriginType") {
+                                if (FileUploadDs.Tables[3].TableName == "CaseDetail") {
+                                    foreach (System.Data.DataRow FileCod in FileUploadDs.Tables[3].Rows) {
+                                        if (ListBarcodes.Where(Bc => Bc == FileCod["CaseNumber"].ToString()).Count() == 0)
+                                            ListBarcodes.Add(FileCod["CaseNumber"].ToString());
+                                    }
+                                } else {
+                                    return new RetData<string> {
+                                        Info = new RetInfo() {
+                                            CodError = -1,
+                                            Mensaje = "El archivo no es correcto. CaseDetail. ",
+                                            ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                                        }
+                                    };
                                 }
                             } else {
                                 return new RetData<string> {
                                     Info = new RetInfo() {
                                         CodError = -1,
-                                        Mensaje = "El archivo no es correcto",
+                                        Mensaje = "El archivo no es correcto. OriginType.",
                                         ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
                                     }
                                 };
                             }
-                        } else {
-                            return new RetData<string> {
-                                Info = new RetInfo() {
-                                    CodError = -1,
-                                    Mensaje = "El archivo no es correcto",
-                                    ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
-                                }
-                            };
                         }
                     }
                 }
-                RetData<string> Ret = await ApiLongClientFactory.Instance.SetSalidaWmsFromEscaner(ListBarcodes, dtpPeriodo, cboBodegas, cboRegimen, HttpContext.Session.GetObjSession<int>("Session.ClientId"), HttpContext.Session.GetObjSession<string>("Session.CodUsr"), cboLocation);
-                return Ret;
+                if (ListBarcodes.Count > 0) {
+                    RetData<string> Ret = await ApiLongClientFactory.Instance.SetSalidaWmsFromEscaner(ListBarcodes, dtpPeriodo, cboBodegas, cboRegimen, HttpContext.Session.GetObjSession<int>("Session.ClientId"), HttpContext.Session.GetObjSession<string>("Session.CodUsr"), cboLocation, cboTipo);
+                    return Ret;
+                } else return new RetData<string> {
+                    Info = new RetInfo() {
+                        CodError = -1,
+                        Mensaje = "No hay productos válidos.",
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
             } catch (Exception ex1) {
                 return new RetData<string> {
                     Info = new RetInfo() {
@@ -1817,10 +1924,13 @@ namespace EdiViewer.Controllers
                 };
             }
         }
-        public async Task<RetData<IEnumerable<PaylessTiendas>>> GetStores(int IdUser) {
+        public async Task<RetData<IEnumerable<PaylessTiendas>>> GetStores(int ClienteId) {
             DateTime StartTime = DateTime.Now;
             try {
-                RetData<IEnumerable<PaylessTiendas>> ListStores = await ApiClientFactory.Instance.GetStores(HttpContext.Session.GetObjSession<int>("Session.IdUser"));
+                if (ClienteId == -1 || ClienteId == 0) {
+                    ClienteId = HttpContext.Session.GetObjSession<int>("Session.ClientId");
+                }
+                RetData<IEnumerable<PaylessTiendas>> ListStores = await ApiClientFactory.Instance.GetStores(ClienteId);
                 return ListStores;
             } catch (Exception e2) {
                 return new RetData<IEnumerable<PaylessTiendas>>() {
@@ -1862,10 +1972,10 @@ namespace EdiViewer.Controllers
                 };
             }
         }
-        public async Task<RetData<string>> SetDeleteDis(int PedidoId) {
+        public async Task<RetData<string>> SetDeleteDis(int PedidoId, string Observaciones, string FechaEntrega) {
             DateTime StartTime = DateTime.Now;
             try {
-                RetData<string> List = await ApiClientFactory.Instance.SetDeleteDis(PedidoId);
+                RetData<string> List = await ApiClientFactory.Instance.SetDeleteDis(PedidoId, HttpContext.Session.GetObjSession<string>("Session.CodUsr"), Observaciones, FechaEntrega);
                 return List;
             } catch (Exception e2) {
                 return new RetData<string> {
@@ -1877,10 +1987,10 @@ namespace EdiViewer.Controllers
                 };
             }
         }
-        public async Task<RetData<string>> SetRestoreDis(int PedidoId) {
+        public async Task<RetData<string>> SetRestoreDis(int PedidoId, string Observaciones, string FechaEntrega) {
             DateTime StartTime = DateTime.Now;
             try {
-                RetData<string> List = await ApiClientFactory.Instance.SetRestoreDis(PedidoId);
+                RetData<string> List = await ApiClientFactory.Instance.SetRestoreDis(PedidoId, HttpContext.Session.GetObjSession<string>("Session.CodUsr"), Observaciones, FechaEntrega);
                 return List;
             } catch (Exception e2) {
                 return new RetData<string> {
@@ -2146,6 +2256,21 @@ namespace EdiViewer.Controllers
                 };
             }
         }
+        public async Task<RetData<string>> ChangeRutaAllowed(int Id) {
+            DateTime StartTime = DateTime.Now;
+            try {
+                RetData<string> Ret = await ApiClientFactory.Instance.ChangeRutaAllowed(Id);
+                return Ret;
+            } catch (Exception e2) {
+                return new RetData<string>() {
+                    Info = new RetInfo() {
+                        CodError = -1,
+                        Mensaje = e2.ToString(),
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            }
+        }        
         public async Task<RetData<string>> SetPaylessEncuestaPedidos(
             string preg0, 
             string cboPedido,
@@ -2440,5 +2565,80 @@ namespace EdiViewer.Controllers
                 return Json(JsonConvert.SerializeObject(e1));
             }
         }
+        public async Task<RetData<IEnumerable<PaylessRutas>>> GetRutas(int ClienteId) {
+            DateTime StartTime = DateTime.Now;
+            try {
+                RetData<IEnumerable<PaylessRutas>> List = await ApiClientFactory.Instance.GetPaylessRutas(ClienteId);
+                return List;
+            } catch (Exception e1) {
+                return new RetData<IEnumerable<PaylessRutas>>() {
+                    Info = new RetInfo() {
+                        CodError = -1,
+                        Mensaje = e1.ToString(),
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            }
+        }
+        public async Task<RetData<string>> ChangeTiendaRutaId(int Id, int RutaId) {
+            DateTime StartTime = DateTime.Now;
+            try {
+                RetData<string> List = await ApiClientFactory.Instance.ChangeTiendaRutaId(Id, RutaId);
+                return List;
+            } catch (Exception e2) {
+                return new RetData<string> {
+                    Info = new RetInfo() {
+                        CodError = -1,
+                        Mensaje = e2.ToString(),
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            }
+        }
+        public async Task<RetData<string>> AddRuta(int? NumRuta, string Horario, int? ClienteId, bool? CambioHorario) {
+            DateTime StartTime = DateTime.Now;
+            try {
+                RetData<string> List = await ApiClientFactory.Instance.AddRuta(NumRuta, Horario, ClienteId, CambioHorario);
+                return List;
+            } catch (Exception e2) {
+                return new RetData<string> {
+                    Info = new RetInfo() {
+                        CodError = -1,
+                        Mensaje = e2.ToString(),
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            }
+        }
+        public async Task<RetData<string>> DeleteRuta(int Id) {
+            DateTime StartTime = DateTime.Now;
+            try {
+                RetData<string> List = await ApiClientFactory.Instance.DeleteRuta(Id);
+                return List;
+            } catch (Exception e2) {
+                return new RetData<string> {
+                    Info = new RetInfo() {
+                        CodError = -1,
+                        Mensaje = e2.ToString(),
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            }
+        }
+        public async Task<RetData<string>> GetNotificaciones() {
+            DateTime StartTime = DateTime.Now;
+            try {
+                RetData<string> List = await ApiClientFactory.Instance.GetNotificaciones(HttpContext.Session.GetObjSession<string>("Session.CodUsr"));
+                return List;
+            } catch (Exception e2) {
+                return new RetData<string> {
+                    Info = new RetInfo() {
+                        CodError = -1,
+                        Mensaje = e2.ToString(),
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            }
+        }        
     }
 }

@@ -10,6 +10,7 @@ using EdiViewer.Models;
 using Microsoft.Extensions.Configuration;
 using ComModels;
 using Microsoft.AspNetCore.Http;
+using ComModels.Models.EdiDB;
 
 namespace EdiViewer.Controllers
 {

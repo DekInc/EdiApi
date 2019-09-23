@@ -86,6 +86,7 @@
     </div>
 </div>
 @await Html.PartialAsync("_PopChangePedido")
+@await Html.PartialAsync("_PopDeletePedido")
 <script>
     var ModalPopPeticionDet = null;
     var domtblReportes = null;
@@ -133,41 +134,9 @@
             });
         });
     }    
-    function borrarPedido(pedidoId) {
-        var confirm1 = confirm('¿Está seguro/a  de borrar el pedido?');
-        if (confirm1 === true) {
-            $.ajax({
-                method: "GET",
-                url: "@this.Url.Action("SetDeleteDis", "HomeExtern")?PedidoId=" + pedidoId,
-                success: function (json) {
-                    if (json.info.codError != 0)
-                        menErrorEdi(json.info.mensaje, 'Error en petición');
-                    else
-                        menErrorEdi(json.data, 'Información');
-                    gridOrdenes.reload2('@this.Url.Action("GetPeticionesAdminB", "Grids")?ClienteId=' + $('#cbClient').val() + '&dtp1=' + $('#dtp1').val() + '&chkPending=' + $('#chkPending').prop('checked'));
-                },
-                error: function (xhr, ajaxOptions, thrownError) {
-                    menErrorEdi(xhr.status, 'Error throw in js');
-                    menErrorEdi(thrownError, 'Error throw in js');
-                }
-            });
-        } else {
-            $.ajax({
-                method: "GET",
-                url: "@this.Url.Action("SetRestoreDis", "HomeExtern")?PedidoId=" + pedidoId,
-                success: function (json) {
-                    if (json.info.codError != 0)
-                        menErrorEdi(json.info.mensaje, 'Error en petición');
-                    else
-                        menErrorEdi(json.data, 'Información');
-                    gridOrdenes.reload2('@this.Url.Action("GetPeticionesAdminB", "Grids")?ClienteId=' + $('#cbClient').val() + '&dtp1=' + $('#dtp1').val() + '&chkPending=' + $('#chkPending').prop('checked'));
-                },
-                error: function (xhr, ajaxOptions, thrownError) {
-                    menErrorEdi(xhr.status, 'Error throw in js');
-                    menErrorEdi(thrownError, 'Error throw in js');
-                }
-            });
-        }
+    function borrarPedido(pedId) {
+        pedidoId = pedId;
+        $('#modalPopDeletePedido').modal();
     }
     function crearGrid() {
         var config = {
@@ -285,7 +254,8 @@
     }
     $(document).ready(function () {        
         fillComboboxPromise('#divSpinCliente', '@this.Url.Action("getClients", "HomeExtern")', '#cbClient', 'clienteId', 'nombre', 1432);
-        $('#dtp1').datepicker();        
+        $('#dtp1').datepicker();
+        $('#dtpFechaEntrega').datetimepicker({ format: 'dd/mm/yyyy hh:ii' });
         $('#btnFiltrar').on("click", function () {
             if (gridOrdenes == null)
                 crearGrid();
@@ -296,6 +266,48 @@
         });
         $('#btnLimpiar').on("click", function () {
             window.location.href = window.location.href;
+        });
+        $('#btnPopDeletePedidoLabelBorrar').on("click", function () {
+            if ($('#txtObservaciones').val() == '') {
+                menErrorEdi('Las observaciones están vacías.', 'Error');
+                return;
+            }
+            $.ajax({
+                method: "GET",
+                url: "@this.Url.Action("SetDeleteDis", "HomeExtern")?PedidoId=" + pedidoId + '&Observaciones=' + $('#txtObservaciones').val() + '&FechaEntrega=' + $('#dtpFechaEntrega').val(),
+                success: function (json) {
+                    if (json.info.codError != 0)
+                        menErrorEdi(json.info.mensaje, 'Error en petición');
+                    else
+                        menErrorEdi(json.data, 'Información');
+                    gridOrdenes.reload2('@this.Url.Action("GetPeticionesAdminB", "Grids")?ClienteId=' + $('#cbClient').val() + '&dtp1=' + $('#dtp1').val() + '&chkPending=' + $('#chkPending').prop('checked'));
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    menErrorEdi(xhr.status, 'Error throw in js');
+                    menErrorEdi(thrownError, 'Error throw in js');
+                }
+            });
+        });
+        $('#btnPopDeletePedidoLabelPendiente').on("click", function () {
+            if ($('#txtObservaciones').val() == '') {
+                menErrorEdi('Las observaciones están vacías.', 'Error');
+                return;
+            }
+            $.ajax({
+                method: "GET",
+                url: "@this.Url.Action("SetRestoreDis", "HomeExtern")?PedidoId=" + pedidoId + '&Observaciones=' + $('#txtObservaciones').val() + '&FechaEntrega=' + $('#dtpFechaEntrega').val(),
+                success: function (json) {
+                    if (json.info.codError != 0)
+                        menErrorEdi(json.info.mensaje, 'Error en petición');
+                    else
+                        menErrorEdi(json.data, 'Información');
+                    gridOrdenes.reload2('@this.Url.Action("GetPeticionesAdminB", "Grids")?ClienteId=' + $('#cbClient').val() + '&dtp1=' + $('#dtp1').val() + '&chkPending=' + $('#chkPending').prop('checked'));
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    menErrorEdi(xhr.status, 'Error throw in js');
+                    menErrorEdi(thrownError, 'Error throw in js');
+                }
+            });
         });
         $('#btnPrintAll').on("click", function () {
             $('#divSpinPrintAll').show();

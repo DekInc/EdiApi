@@ -14,6 +14,39 @@ CREATE PROCEDURE [dbo].SP_GetPaylessProdTallaLoteFil
 @BodegaId int
 AS
 BEGIN
+	INSERT INTO EdiDB.dbo.WmsProductoExistencia(BodegaId, CodProducto, Existencia, CodUser)
+	SELECT 
+		t.BodegaId,
+		ii.CodProducto,
+		SUM(ii.CantidadInicial - isnull(Sy_1.reservado, 0)) AS existencia,
+		@CodUser CodUser
+	FROM wms.dbo.ItemInventario AS ii WITH(NOLOCK)
+	JOIN wms.dbo.inventario AS i WITH(NOLOCK)
+		ON i.InventarioID=ii.InventarioID
+	JOIN wms.dbo.producto AS p WITH(NOLOCK) 
+		ON p.codproducto=ii.codproducto		
+	JOIN wms.dbo.DetalleTransacciones AS d1 WITH(NOLOCK)
+		ON d1.InventarioID=i.InventarioID
+	JOIN wms.dbo.transacciones AS T WITH(NOLOCK) 
+		ON t.TransaccionID=d1.TransaccionID		
+	LEFT OUTER JOIN
+	  (SELECT Sy.InventarioID,
+			  Sy.ItemInventarioID,
+			  Sy.CodProducto,
+			  SUM(ISNULL(Sy.Cantidad, 0)) AS Reservado
+	   FROM wms.dbo.SysTempSalidas AS Sy WITH(NOLOCK)
+	   INNER JOIN wms.dbo.Pedido AS Pe WITH(NOLOCK) 
+			ON Pe.PedidoID = Sy.PedidoID
+	   GROUP BY Sy.InventarioID,
+				sy.ItemInventarioID,
+				Sy.CodProducto) AS Sy_1 ON Sy_1.InventarioID = I.InventarioID
+	AND Sy_1.ItemInventarioID = II.ItemInventarioID
+	AND Sy_1.CodProducto = II.CodProducto
+	WHERE II.existencia > 0 AND 
+	  T.IDTipoTransaccion IN ('IN')
+	GROUP BY t.BodegaId, ii.CodProducto
+	ORDER BY t.BodegaId, ii.CodProducto
+
 	SELECT DISTINCT
 		D.Barcode,
 		D.Producto,
@@ -41,6 +74,6 @@ BEGIN
 END
 GO
 
-exec EdiDB.dbo.SP_GetPaylessProdTallaLoteFil '', '', '', '', '', 'Admin', 81
+exec EdiDB.dbo.SP_GetPaylessProdTallaLoteFil '', '', '', '', '1', 'Admin', 81
 
 select * from EdiDB.dbo.WmsProductoExistencia where CodUser = 'Admin'

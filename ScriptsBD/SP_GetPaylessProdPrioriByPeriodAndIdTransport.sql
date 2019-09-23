@@ -15,7 +15,7 @@ BEGIN
 		Ex.OID,
 		Ex.Barcode,
 		Ex.Estado,
-		(SUBSTRING(Ex.Barcode, 1, 4) + ' - ' + 'payless shoe source - ' + (CASE Ti.BodegaId WHEN 81 THEN 'sps' WHEN 82 THEN 'tgu' END)) Tienda,
+		(SUBSTRING(Ex.Barcode, 1, 4) + ' - ' + 'payless shoe source ' + (CASE Ti.BodegaId WHEN 81 THEN '- sps' WHEN 82 THEN '- tgu' ELSE '' END)) Tienda,
 		Ex.PoolP,
 		Ex.Producto,
 		Ex.Talla,
@@ -45,11 +45,11 @@ join EdiDb.dbo.PAYLESS_Tiendas Ti WITH(NOLOCK)
 	ON CONVERT(VARCHAR(4), Ti.TiendaId) = SUBSTRING(Ex.Barcode, 1, 4)
 LEFT JOIN EdiDb.dbo.PAYLESS_Transporte T WITH(NOLOCK)
 		ON T.Id = Ex.IdTransporte
-ORDER BY Ex.Barcode
+ORDER BY Ad.Id
 END
 GO
 --1592
-exec EdiDb.dbo.SP_GetPaylessProdPrioriByPeriodAndIdTransport '07/08/2019', 46
+exec EdiDb.dbo.SP_GetPaylessProdPrioriByPeriodAndIdTransport '20/09/2019', 79
 --EXEC SP_GetPaylessProdPrioriByPeriodAndIdTransport '13/05/2019', 6
 --select * from EdiDb.dbo.PAYLESS_Transporte
 --select * from EdiDb.dbo.PAYLESS_Tiendas where TiendaId = 7366

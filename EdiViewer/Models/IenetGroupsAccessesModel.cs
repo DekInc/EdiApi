@@ -1,7 +1,6 @@
-﻿using ComModels;
+﻿using ComModels.Models.EdiDB;
 
-namespace EdiViewer.Models
-{
+namespace EdiViewer.Models {
     public class IenetGroupsAccessesModel : IenetGroupsAccesses
     {
         public int recid { get { return Id; } }

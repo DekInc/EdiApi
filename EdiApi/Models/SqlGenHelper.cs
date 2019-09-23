@@ -1,4 +1,4 @@
-﻿using EdiApi.Models.WmsDB;
+﻿using ComModels.Models.WmsDB;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -77,7 +77,7 @@ namespace EdiApi.Models {
         }
         public static string GetSqlWmsInsertTransaccionesOut(Transacciones T) {
             return $"INSERT INTO dbo.Transacciones(TransaccionID, NoTransaccion, IDTipoTransaccion, FechaTransaccion, BodegaID, RegimenID, ClienteID, TipoIngreso, Observacion, Usuariocrea, Fechacrea, EstatusID) " +
-                $"SELECT @TransaccionID, 'SA' + RIGHT('000000'+ CONVERT(VARCHAR(64), @TransaccionID), 6), '{T.IdtipoTransaccion}', {T.FechaTransaccion.ToSqlDate()}, {T.BodegaId}, {T.RegimenId}, {T.ClienteId}, '{T.TipoIngreso}', '{T.Observacion}', '{T.Usuariocrea}', {T.Fechacrea.ToSqlDate()}, {T.EstatusId}; {Temp}";
+                $"SELECT @TransaccionID, '{T.IdtipoTransaccion}' + RIGHT('000000'+ CONVERT(VARCHAR(64), @TransaccionID), 6), '{T.IdtipoTransaccion}', {T.FechaTransaccion.ToSqlDate()}, {T.BodegaId}, {T.RegimenId}, {T.ClienteId}, '{T.TipoIngreso}', '{T.Observacion}', '{T.Usuariocrea}', {T.Fechacrea.ToSqlDate()}, {T.EstatusId}; {Temp}";
         }
     }
 }

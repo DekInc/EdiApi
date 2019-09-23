@@ -31,7 +31,9 @@ BEGIN
 		ON Ti.TiendaId = @TiendaId
 	JOIN wms.dbo.transacciones AS T WITH(NOLOCK)
 		ON t.TransaccionID=d1.TransaccionID
-		AND T.BodegaId = Ti.BodegaId
+		AND (T.BodegaId = Ti.BodegaId
+			OR Ti.BodegaID IS NULL
+		)
 	LEFT OUTER JOIN
 	  (SELECT Sy.InventarioID,
 			  Sy.ItemInventarioID,
@@ -126,9 +128,71 @@ BEGIN
 	AND D.CP NOT IN (SELECT DISTINCT Ppt.CP FROM EdiDB.dbo.PaylessPedidosCpT Ppt WITH(NOLOCK) WHERE Ppt.CP IS NOT NULL)
 END
 
-EXEC EdiDb.dbo.SP_GetPaylessSellQtys 1432, '7373', 'Admin'
+EXEC EdiDb.dbo.SP_GetPaylessSellQtys 385, '7665', 'Admin'
+select * from wms.dbo.Producto where CodProducto like '7665%'
 SELECT * FROM EdiDB.dbo.PaylessPedidosCpT
-SELECT * from EdiDB.dbo.WmsProductoExistencia where CodUser = 'Admin' AND CodProducto like '7373%'
+SELECT * from EdiDB.dbo.WmsProductoExistencia where CodUser = 'Admin' AND CodProducto like '7665%'
 
 
 
+
+
+
+SELECT 
+		t.BodegaId,
+		ii.CodProducto,
+		SUM(ii.CantidadInicial - isnull(Sy_1.reservado, 0)) AS existencia
+	FROM wms.dbo.ItemInventario AS ii WITH(NOLOCK)
+	JOIN wms.dbo.inventario AS i WITH(NOLOCK)
+		ON i.InventarioID=ii.InventarioID
+	JOIN wms.dbo.producto AS p WITH(NOLOCK) 
+		ON p.codproducto=ii.codproducto		
+	JOIN wms.dbo.DetalleTransacciones AS d1 WITH(NOLOCK)
+		ON d1.InventarioID=i.InventarioID
+	JOIN EdiDB.dbo.PAYLESS_Tiendas Ti WITH(NOLOCK)
+		ON Ti.TiendaId = '7665'
+	JOIN wms.dbo.transacciones AS T WITH(NOLOCK)
+		ON t.TransaccionID=d1.TransaccionID
+		AND (T.BodegaId = Ti.BodegaId
+			OR Ti.BodegaId IS NULL
+		)
+	LEFT OUTER JOIN
+	  (SELECT Sy.InventarioID,
+			  Sy.ItemInventarioID,
+			  Sy.CodProducto,
+			  SUM(ISNULL(Sy.Cantidad, 0)) AS Reservado
+	   FROM wms.dbo.SysTempSalidas AS Sy WITH(NOLOCK)
+	   INNER JOIN wms.dbo.Pedido AS Pe WITH(NOLOCK) 
+			ON Pe.PedidoID = Sy.PedidoID
+	   GROUP BY Sy.InventarioID,
+				sy.ItemInventarioID,
+				Sy.CodProducto) AS Sy_1 ON Sy_1.InventarioID = I.InventarioID
+	AND Sy_1.ItemInventarioID = II.ItemInventarioID
+	AND Sy_1.CodProducto = II.CodProducto
+	WHERE II.existencia > 0 
+	AND T.IDTipoTransaccion IN ('IN')
+	AND T.ClienteID = 385
+	AND p.CodProducto like '7665%'
+	GROUP BY t.BodegaId, ii.CodProducto
+	ORDER BY t.BodegaId, ii.CodProducto
+
+
+	SELECT DISTINCT
+		D.Barcode,
+		D.Categoria,
+		D.Cp,
+		D.Producto,
+		D.Talla,
+		D.Lote,
+		D.Departamento,
+		1 Typ
+	FROM EdiDB.dbo.WmsProductoExistencia Wpe WITH(NOLOCK)
+	JOIN EdiDB.dbo.PAYLESS_ProdPrioriDet D WITH(NOLOCK)
+		ON Wpe.CodProducto = D.Barcode	
+	WHERE Wpe.CodUser = 'Admin'
+	AND D.Producto NOT IN (SELECT DISTINCT Ppt.Producto FROM EdiDB.dbo.PaylessPedidosCpT Ppt WITH(NOLOCK) WHERE Ppt.Producto IS NOT NULL)
+	AND D.Talla NOT IN (SELECT DISTINCT Ppt.Talla FROM EdiDB.dbo.PaylessPedidosCpT Ppt WITH(NOLOCK) WHERE Ppt.Talla IS NOT NULL)
+	AND D.Lote NOT IN (SELECT DISTINCT Ppt.Lote FROM EdiDB.dbo.PaylessPedidosCpT Ppt WITH(NOLOCK) WHERE Ppt.Lote IS NOT NULL)
+	AND D.Categoria NOT IN (SELECT DISTINCT Ppt.Categoria FROM EdiDB.dbo.PaylessPedidosCpT Ppt WITH(NOLOCK) WHERE Ppt.Categoria IS NOT NULL)
+	AND D.Departamento NOT IN (SELECT DISTINCT Ppt.Departamento FROM EdiDB.dbo.PaylessPedidosCpT Ppt WITH(NOLOCK) WHERE Ppt.Departamento IS NOT NULL)
+	AND D.CP NOT IN (SELECT DISTINCT Ppt.CP FROM EdiDB.dbo.PaylessPedidosCpT Ppt WITH(NOLOCK) WHERE Ppt.CP IS NOT NULL)

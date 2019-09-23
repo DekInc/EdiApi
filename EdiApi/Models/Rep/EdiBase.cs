@@ -7,7 +7,7 @@ using System.ComponentModel;
 using System.Security.Cryptography;
 using EdiApi.Models;
 using System.Reflection;
-using EdiApi.Models.EdiDB;
+using ComModels.Models.EdiDB;
 
 namespace EdiApi
 {

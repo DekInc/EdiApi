@@ -1,9 +1,11 @@
 ﻿using EdiApi.Models;
-using EdiApi.Models.EdiDB;
+using ComModels.Models.EdiDB;
+using ComModels.Models.WmsDB;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using ComModels;
 
 namespace EdiApi
 {
@@ -38,10 +40,10 @@ namespace EdiApi
         public NTE830 NTEO { get; set; }
         public CTT830 CTTO { get; set; }
         private EdiDBContext DbO;
-        private readonly Models.WmsDB.WmsContext WmsDb;
+        private readonly WmsContext WmsDb;
         public LearPureEdi LearPureEdiO { get; set; }
         public LearRep830(ref EdiDBContext _DbO) { DbO = _DbO; }
-        public LearRep830(ref EdiDBContext _DbO, ref Models.WmsDB.WmsContext _WmsDB) { DbO = _DbO; WmsDb = _WmsDB; }
+        public LearRep830(ref EdiDBContext _DbO, ref WmsContext _WmsDB) { DbO = _DbO; WmsDb = _WmsDB; }
         public LearRep830(UInt16 _RepType, int _ControlNumber, ref LearIsa830 _LearIsaO, ref LearGs830 _LearGsO, ref LearBfr830 _LearBfrO)
         {
             RepType = _RepType;

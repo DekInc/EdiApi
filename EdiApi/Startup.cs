@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using EdiApi.Models.EdiDB;
-using EdiApi.Models.WmsDB;
+using ComModels.Models.EdiDB;
+using ComModels.Models.WmsDB;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;

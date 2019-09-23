@@ -1,0 +1,100 @@
+﻿@using ComModels
+@{
+    ViewData["Title"] = "Ver detalle de ingresos-salidas WMS";
+    Layout = "_Layout";
+}
+<div id="mainDiv">
+    <div class="container">
+        <div class="card-deck cardMain">
+            <div class="card box-shadow">
+                <div class="card-header">
+                    <h4 class="my-0 font-weight-normal">Ver detalle de  ingresos / salidas WMS&nbsp;<img class="imgHeaderHelp" src="~/images/help.png" title="Ver detalle ingresos / salidas del WMS" alt="Ver detalle ingresos / salidas del WMS"></h4>
+                </div>
+                <div class="card-body">
+                    <form id="formSearch">
+                        <div class="container div856Search">
+                            <div class="row margin5">
+                                <div class="col-sm">
+                                    <button class="btn btn-primary" type="button" id="btnRegresar">
+                                        &nbsp;&nbsp;&nbsp;Regresar&nbsp;&nbsp;&nbsp;
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                    <br />
+                    <div class="clearfix"></div>
+                    <div id="gridWms" style="min-height: 460px; width: 100%;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    var tblReportes = null;
+    var gridWms = null;
+    var stopAsync = false;
+    //function afterFillCombobox() {
+    //}    
+    var crearGrid = new Promise(function (resolve, reject) {
+        var config = {
+            grid: {
+                name: 'gridWms',
+                selectType: 'row',
+                bResponsive: true,
+                bMobile: window.mobileAndTabletcheck(),
+                url: '@this.Url.Action("GetIngresosWMSDet", "Grids")?TransaccionId=' + '@ViewBag.TransaccionId',
+                show: {
+                    footer: true,
+                    toolbar: true,
+                    expandColumn: window.mobileAndTabletcheck()
+                },
+                searches: [
+                    { field: 'noTransaccion', caption: 'NoTransaccion', type: 'text' },
+                    { field: 'nomUsr', caption: 'Nombre usuario', type: 'text' },
+                    { field: 'tiendaId', caption: 'Tienda', type: 'text' },
+                    { field: 'cliente', caption: 'Cliente', type: 'text' }
+                ],
+                colShowResponsive: [
+                    { field: 'ienetGroup' },
+                    { field: 'codUsr' }
+                ],
+                columns: [
+                    { field: "codProducto", caption: "Código producto", sortable: true, hidden: false },
+                    { field: "barcode", caption: "Barcode", sortable: true, hidden: false },
+                    { field: "tipoBulto", caption: "Tipo bulto", sortable: true, hidden: false },
+                    { field: "unidadMedida", caption: "Unidad de medida", sortable: true, hidden: false },
+                    { field: "cantidad", caption: "Cantidad", sortable: true, hidden: false },
+                    { field: "cp", caption: "Cp", sortable: true, hidden: false },
+                    { field: "categoria", caption: "Categoria", sortable: true, hidden: false },
+                    { field: "departamento", caption: "Departamento", sortable: true, hidden: false },
+                    { field: "producto", caption: "Producto", sortable: true, hidden: false },
+                    { field: "talla", caption: "Talla", sortable: true, hidden: false }
+                ]
+            }
+        };
+        gridWms = $('#gridWms').w2grid(config.grid);
+        arrayGrids['gridWms'] = gridWms;
+    });
+    $(document).ready(function () {
+        $('.imgHeaderHelp').tooltip();
+        fillComboboxPromise('#divSpinCboClients', '@this.Url.Action("getClients", "HomeExtern")', '#cboClients', 'clienteId', 'nombre', 1432);
+        crearGrid.then();
+        $('#cboBodegas').on('change', function (Event) {
+            fillComboboxPromise('#divSpinCboRegimen', '@this.Url.Action("GetWmsRegimen", "HomeExtern")?BodegaId=' + $('#cboBodegas').val(), '#cboRegimen', 'idregimen', 'regimen1', 0).then();
+        });
+        $('#cboLocation').on('change', function (Event) {            
+            fillComboboxPromise('#divSpinCboBodegas', '@this.Url.Action("GetWmsBodegas", "HomeExtern")?LocationId=' + $('#cboLocation').val(), '#cboBodegas', 'bodegaId', 'nomBodega', 0)
+                .then(function () {
+                    fillComboboxPromise('#divSpinCboRegimen', '@this.Url.Action("GetWmsRegimen", "HomeExtern")?BodegaId=' + $('#cboBodegas').val(), '#cboRegimen', 'idregimen', 'regimen1', 0).then();
+                });
+        });
+        fillComboboxPromise('#divSpinCboLocation', '@this.Url.Action("GetWmsLocations", "HomeExtern")', '#cboLocation', 'locationid', 'dsclocation', 7)
+            .then(function () {
+                fillComboboxPromise('#divSpinCboBodegas', '@this.Url.Action("GetWmsBodegas", "HomeExtern")?LocationId=' + $('#cboLocation').val(), '#cboBodegas', 'bodegaId', 'nomBodega', 0)
+            });
+        $('#btnRegresar').on('click', function (Event) {
+            location.href = '@this.Url.Action("VerIngresosWMS", "HomeExtern")';
+        })
+    });
+</script>

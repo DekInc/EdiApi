@@ -20,4 +20,4 @@ BEGIN
 END
 GO
 
-EXEC [SP_GetPedidosDetExternos] 1432
+EXEC [SP_GetPedidosDetExternos] 385

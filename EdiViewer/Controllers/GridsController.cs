@@ -7,6 +7,8 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using ComModels;
+using ComModels.Models.EdiDB;
+using ComModels.Models.WmsDB;
 using EdiViewer.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -692,7 +694,7 @@ namespace EdiViewer.Controllers
                 int ClienteId = HttpContext.Session.GetObjSession<int>("Session.ClientId");
                 RetData<IEnumerable<PaylessProdPrioriDetModel>> ListProd = await ApiLongClientFactory.Instance.GetPaylessProdPrioriAll(ClienteId);
                 List<string> List7650 = ListProd.Data.Where(D => D.Barcode.StartsWith("7650")).Select(O => O.Barcode).Distinct().ToList();
-                RetData<IEnumerable<PaylessTiendas>> ListStores2 = await ApiClientFactory.Instance.GetStores(HttpContext.Session.GetObjSession<int>("Session.IdUser"));
+                RetData<IEnumerable<PaylessTiendas>> ListStores2 = await ApiClientFactory.Instance.GetStores(HttpContext.Session.GetObjSession<int>("Session.ClientId"));
                 if (ListProd.Info.CodError != 0)
                     return Json(new { total = 0, records = "", errorMessage = ListProd.Info.Mensaje });
                 if (ListProd.Data == null)
@@ -1089,6 +1091,118 @@ namespace EdiViewer.Controllers
                 return Json(new { total = 0, records = "", errorMessage = e1.ToString() });
             }
 
+        }
+        public async Task<IActionResult> GetTiendas(int ClienteId) {
+            DateTime StartTime = DateTime.Now;
+            try {
+                RetData<IEnumerable<PaylessTiendasGModel>> List = await ApiClientFactory.Instance.GetPaylessTiendas(ClienteId);
+                if (List.Info.CodError != 0)
+                    return Json(new { total = 0, records = "", errorMessage = List.Info.Mensaje });
+                if (List.Data == null)
+                    return Json(new { total = 0, records = "", errorMessage = (List.Info.CodError != 0 ? List.Info.Mensaje : string.Empty) });
+                List<PaylessTiendasGModel> Records = List.Data.ToList();
+                List<PaylessTiendasGModel> AllRecords = new List<PaylessTiendasGModel>();
+                int Total = Records.Count;
+                bool HaveForm = true;
+                try {
+                    if (Request.Form != null) {
+                        IFormCollection GridForm = Request.Form;
+                    }
+                } catch {
+                    HaveForm = false;
+                }
+                if (Records.Count() > 0 && HaveForm) {
+                    AllRecords = Utility.ExpressionBuilderHelper.W2uiSearchNoSkip(Records, Request.Form);
+                    Records = Utility.ExpressionBuilderHelper.W2uiSearch(Records, Request.Form);
+                }
+                return Json(new { Total, Records, errorMessage = "", AllRecords });
+            } catch (Exception e1) {
+                return Json(new { total = 0, records = "", errorMessage = e1.ToString() });
+            }
+        }
+        public async Task<IActionResult> GetRutas(int ClienteId) {
+            DateTime StartTime = DateTime.Now;
+            try {
+                RetData<IEnumerable<PaylessRutas>> List = await ApiClientFactory.Instance.GetPaylessRutas(ClienteId);
+                if (List.Info.CodError != 0)
+                    return Json(new { total = 0, records = "", errorMessage = List.Info.Mensaje });
+                if (List.Data == null)
+                    return Json(new { total = 0, records = "", errorMessage = (List.Info.CodError != 0 ? List.Info.Mensaje : string.Empty) });
+                List<PaylessRutas> Records = List.Data.ToList();
+                List<PaylessRutas> AllRecords = new List<PaylessRutas>();
+                int Total = Records.Count;
+                bool HaveForm = true;
+                try {
+                    if (Request.Form != null) {
+                        IFormCollection GridForm = Request.Form;
+                    }
+                } catch {
+                    HaveForm = false;
+                }
+                if (Records.Count() > 0 && HaveForm) {
+                    AllRecords = Utility.ExpressionBuilderHelper.W2uiSearchNoSkip(Records, Request.Form);
+                    Records = Utility.ExpressionBuilderHelper.W2uiSearch(Records, Request.Form);
+                }
+                return Json(new { Total, Records, errorMessage = "", AllRecords });
+            } catch (Exception e1) {
+                return Json(new { total = 0, records = "", errorMessage = e1.ToString() });
+            }
+        }
+        public async Task<IActionResult> GetIngresosWMSDet(long TransaccionId) {
+            DateTime StartTime = DateTime.Now;
+            try {
+                RetData<IEnumerable<WmsDispatch>> List = await ApiClientFactory.Instance.GetIngresosWMSDet(TransaccionId);
+                if (List.Info.CodError != 0)
+                    return Json(new { total = 0, records = "", errorMessage = List.Info.Mensaje });
+                if (List.Data == null)
+                    return Json(new { total = 0, records = "", errorMessage = (List.Info.CodError != 0 ? List.Info.Mensaje : string.Empty) });
+                List<WmsDispatch> Records = List.Data.ToList();
+                List<WmsDispatch> AllRecords = new List<WmsDispatch>();
+                int Total = Records.Count;
+                bool HaveForm = true;
+                try {
+                    if (Request.Form != null) {
+                        IFormCollection GridForm = Request.Form;
+                    }
+                } catch {
+                    HaveForm = false;
+                }
+                if (Records.Count() > 0 && HaveForm) {
+                    AllRecords = Utility.ExpressionBuilderHelper.W2uiSearchNoSkip(Records, Request.Form);
+                    Records = Utility.ExpressionBuilderHelper.W2uiSearch(Records, Request.Form);
+                }
+                return Json(new { Total, Records, errorMessage = "", AllRecords });
+            } catch (Exception e1) {
+                return Json(new { total = 0, records = "", errorMessage = e1.ToString() });
+            }
+        }
+        public async Task<IActionResult> GetRacks(int BodegaId, int RegimenId) {
+            DateTime StartTime = DateTime.Now;
+            try {
+                RetData<IEnumerable<Racks>> List = await ApiClientFactory.Instance.GetRacks(BodegaId, RegimenId);
+                if (List.Info.CodError != 0)
+                    return Json(new { total = 0, records = "", errorMessage = List.Info.Mensaje });
+                if (List.Data == null)
+                    return Json(new { total = 0, records = "", errorMessage = (List.Info.CodError != 0 ? List.Info.Mensaje : string.Empty) });
+                List<Racks> Records = List.Data.ToList();
+                List<Racks> AllRecords = new List<Racks>();
+                int Total = Records.Count;
+                bool HaveForm = true;
+                try {
+                    if (Request.Form != null) {
+                        IFormCollection GridForm = Request.Form;
+                    }
+                } catch {
+                    HaveForm = false;
+                }
+                if (Records.Count() > 0 && HaveForm) {
+                    AllRecords = Utility.ExpressionBuilderHelper.W2uiSearchNoSkip(Records, Request.Form);
+                    Records = Utility.ExpressionBuilderHelper.W2uiSearch(Records, Request.Form);
+                }
+                return Json(new { Total, Records, errorMessage = "", AllRecords });
+            } catch (Exception e1) {
+                return Json(new { total = 0, records = "", errorMessage = e1.ToString() });
+            }
         }
     }
 }

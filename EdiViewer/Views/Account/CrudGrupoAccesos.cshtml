@@ -101,6 +101,18 @@
             }
         });
     }    
+    function borrarGa(gaId) {
+        makeAjaxPost('@this.Url.Action("GaDelete", "Account")?GaId=' + gaId, function (data) {
+            if (data.info.codError != 0) {
+                menErrorEdi(data.info.mensaje);
+                return;
+            } else {
+                menErrorEdi(data.data, 'Información');
+                mainGrid.clear();
+                mainGrid.reload();
+            }
+        });
+    }
     function crearGrid() {
         var config = {
             grid: {
@@ -129,7 +141,7 @@
                     { field: "access", caption: "Acceso", sortable: true },
                     {
                         field: "", caption: "", sortable: true, render: function (record) {
-                            return '<a href="javascript:borrar(' + "'" + record.id + "'" + ')">Borrar</a>';
+                            return '<a href="javascript:borrarGa(' + "'" + record.id + "'" + ')">Borrar</a>';
                         }
                     }
                 ]

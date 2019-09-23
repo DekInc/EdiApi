@@ -1,24 +1,14 @@
-﻿using System;
+﻿using ComModels;
+using ComModels.Models.EdiDB;
+using ComModels.Models.WmsDB;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
-using EdiApi.Models;
-using EdiApi.Models.EdiDB;
-using EdiApi.Models.WmsDB;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
-using Microsoft.EntityFrameworkCore;
-using System.Data.Common;
-using System.Text;
-using System.Net.Mail;
-using System.Net;
-using System.IO;
-using NPOI.HSSF.UserModel;
-using NPOI.SS.UserModel;
 
-namespace EdiApi.Controllers
-{
+namespace EdiApi.Controllers {
     [Route("[controller]/[action]")]
     [ApiController]
     public class CboController : ControllerBase {

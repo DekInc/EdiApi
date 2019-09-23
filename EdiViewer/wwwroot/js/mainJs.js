@@ -53,7 +53,6 @@ function miAlive() {
     });
 }
 function sleepMs(ms) { const start = performance.now(); while (performance.now() - start < ms); }
-
 function fillCombobox(divSpin, serverUrl, comboName, valueName, textName, valueDef) {
     $(divSpin).show();
     $(comboName).empty();
@@ -84,7 +83,6 @@ function fillCombobox(divSpin, serverUrl, comboName, valueName, textName, valueD
         }
     });
 }
-
 var fillComboboxPromise = function (divSpin, serverUrl, comboName, valueName, textName, valueDef) {
     return new Promise(function (resolve, reject) {
         $(divSpin).show();
@@ -117,7 +115,6 @@ var fillComboboxPromise = function (divSpin, serverUrl, comboName, valueName, te
         });
     });
 };
-
 function fillComboboxWithValue(divSpin, serverUrl, comboName, valueName, textName, valueDef) {
     $(divSpin).show();
     $(comboName).empty();
@@ -148,10 +145,24 @@ function fillComboboxWithValue(divSpin, serverUrl, comboName, valueName, textNam
         }
     });
 }
-
-function makeAjaxPost(serverUrl, successFunc) {
+function makeAjaxPost(serverUrl, successFunc, postData = null) {
     $.ajax({
         method: "POST",
+        data: postData,
+        url: serverUrl,
+        success: successFunc,
+        error: function (xhr, ajaxOptions, thrownError) {
+            menErrorEdi(xhr.status, 'Error throw in js');
+            menErrorEdi(thrownError, 'Error throw in js');
+        }
+    });
+}
+function makeAjaxPostJson(serverUrl, successFunc, postData) {
+    $.ajax({
+        method: "POST",
+        data: postData,
+        dataType: "json",
+        contentType: 'application/json',
         url: serverUrl,
         success: successFunc,
         error: function (xhr, ajaxOptions, thrownError) {

@@ -1,25 +1,22 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using ComModels;
+using ComModels.Models.EdiDB;
+using ComModels.Models.WmsDB;
 using EdiApi.Models;
-using EdiApi.Models.EdiDB;
-using EdiApi.Models.WmsDB;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
 using Microsoft.EntityFrameworkCore;
-using System.Data.Common;
-using System.Text;
-using System.Net.Mail;
-using System.Net;
-using System.IO;
+using Microsoft.Extensions.Configuration;
 using NPOI.HSSF.UserModel;
 using NPOI.SS.UserModel;
+using System;
+using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
+using System.Linq;
+using System.Net;
+using System.Net.Mail;
+using System.Text;
 
-namespace EdiApi.Controllers
-{
+namespace EdiApi.Controllers {
     [Route("[controller]/[action]")]
     [ApiController]
     public class DataController : ControllerBase
@@ -903,19 +900,71 @@ namespace EdiApi.Controllers
             }
         }
         [HttpGet]
-        public RetData<Tuple<string, string>> GetClientNameScheduleById(int TiendaId)
+        public RetData<Tuple<string, string, string, bool>> GetClientNameScheduleById(int TiendaId)
         {
             DateTime StartTime = DateTime.Now;
-            try
-            {
+            try {
                 PaylessTiendas Tienda = (
                     from T in DbO.PaylessTiendas
                     where T.TiendaId == TiendaId
                     select T
                     ).Fod();
-                return new RetData<Tuple<string, string>>
+                PaylessRutas Ruta = (
+                    from R in DbO.PaylessRutas
+                    where R.Id == Tienda.RutaId
+                    select R
+                    ).Fod();
+                string HorarioEntrega = string.Empty, DetalleTemporadas = string.Empty;
+                bool CambioHorario = true;
+                DetalleTemporadas = "Códigos CP: " + string.Join(",", (
+                    from C in DbO.PaylessPedidosCpT
+                    where !string.IsNullOrEmpty(C.Cp)
+                    select C.Cp
+                    ));
+                IEnumerable<string> ListProducto = (
+                    from C in DbO.PaylessPedidosCpT
+                    where !string.IsNullOrEmpty(C.Producto)
+                    select C.Producto
+                    ).Distinct();
+                IEnumerable<string> ListTalla = (
+                    from C in DbO.PaylessPedidosCpT
+                    where !string.IsNullOrEmpty(C.Talla)
+                    select C.Talla
+                    ).Distinct();
+                IEnumerable<string> ListLote = (
+                    from C in DbO.PaylessPedidosCpT
+                    where !string.IsNullOrEmpty(C.Lote)
+                    select C.Lote
+                    ).Distinct();
+                IEnumerable<string> ListCategoria = (
+                    from C in DbO.PaylessPedidosCpT
+                    where !string.IsNullOrEmpty(C.Categoria)
+                    select C.Categoria
+                    ).Distinct();
+                if (ListProducto.Count() > 0 || ListTalla.Count() > 0 || ListLote.Count() > 0 || ListCategoria.Count() > 0)
+                    DetalleTemporadas += $". Productos de temporada por filtro de {string.Join(",", ListProducto)}";
+                if (ListProducto.Count() > 0)
+                    DetalleTemporadas += $" producto: {string.Join(",", ListProducto)}.";
+                if (ListTalla.Count() > 0)
+                    DetalleTemporadas += $" talla: {string.Join(",", ListTalla)}.";
+                if (ListLote.Count() > 0)
+                    DetalleTemporadas += $" lote: {string.Join(",", ListLote)}.";
+                if (ListCategoria.Count() > 0)
+                    DetalleTemporadas += $" categoria: {string.Join(",", ListCategoria)}.";
+                IEnumerable<string> ListDepartamento = (
+                    from C in DbO.PaylessPedidosCpT
+                    where !string.IsNullOrEmpty(C.Departamento)
+                    select C.Departamento
+                    ).Distinct();
+                if (ListDepartamento.Count() > 0)
+                    DetalleTemporadas += ". " + string.Join(",", ListDepartamento);
+                if (Ruta != null) {
+                    HorarioEntrega = Ruta.Horario;
+                    CambioHorario = Ruta.CambioHorario ?? true;
+                }
+                return new RetData<Tuple<string, string, string, bool>>
                 {
-                    Data = new Tuple<string, string>($"{Tienda.TiendaId} - {Tienda.Descr}", Tienda.HorarioEntrega),
+                    Data = new Tuple<string, string, string, bool>($"{Tienda.TiendaId} - {Tienda.Descr}", HorarioEntrega, DetalleTemporadas, CambioHorario),
                     Info = new RetInfo()
                     {
                         CodError = 0,
@@ -926,7 +975,7 @@ namespace EdiApi.Controllers
             }
             catch (Exception e1)
             {
-                return new RetData<Tuple<string, string>> {
+                return new RetData<Tuple<string, string, string, bool>> {
                     Info = new RetInfo()
                     {
                         CodError = -1,
@@ -1266,8 +1315,8 @@ namespace EdiApi.Controllers
                     throw new Exception("No hay productos en la lista. WebAPI.");
                 string DateProm = "";
                 foreach (PaylessProdPrioriDetModel Pem in ListDis) {
-                    if (!string.IsNullOrEmpty(Pem.dateProm)) {
-                        DateProm = Pem.dateProm;
+                    if (!string.IsNullOrEmpty(Pem.DateProm)) {
+                        DateProm = Pem.DateProm;
                         break;
                     }
                 }
@@ -1767,7 +1816,31 @@ namespace EdiApi.Controllers
                 };
             }            
         }
-        
+        [HttpGet]
+        public RetData<string> GaDelete(int gaId) {
+            DateTime StartTime = DateTime.Now;
+            try {
+                IenetGroupsAccesses Ga = DbO.IenetGroupsAccesses.Where(O => O.Id == gaId).Fod();
+                DbO.IenetGroupsAccesses.Remove(Ga);
+                DbO.SaveChanges();
+                return new RetData<string> {
+                    Data = "El acceso ha sido borrado",
+                    Info = new RetInfo() {
+                        CodError = 0,
+                        Mensaje = "ok",
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            } catch (Exception e1) {
+                return new RetData<string> {
+                    Info = new RetInfo() {
+                        CodError = -1,
+                        Mensaje = e1.ToString(),
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            }
+        }
         [HttpPost]
         public RetData<string> SetPaylessProdPriori(IEnumerable<PaylessUploadFileModel> ListUpload, int ClienteId, string Periodo, string codUsr, string transporte, bool ChkUpDelete)
         {
@@ -2026,7 +2099,7 @@ namespace EdiApi.Controllers
                     }).ToList();                
                 for(int Ci = 0; Ci < ListArchMaMo.Count(); Ci++)
                 {
-                    if (ListArchMaMo[Ci].PorValid == null && ListArchMaMo[Ci].Typ == 0) {
+                    if (ListArchMaMo[Ci].PorValid == 0 || (ListArchMaMo[Ci].PorValid == null && ListArchMaMo[Ci].Typ == 0)) {
                         IEnumerable<string> ListExcelOriginal = (
                             from Fu in DbO.PaylessProdPrioriM
                             from FuD in DbO.PaylessProdPrioriDet
@@ -2066,6 +2139,8 @@ namespace EdiApi.Controllers
                         if (ListEscaneados.Count() > ListExcelOriginal.Count())
                             PorcValidez -= (double)(ListEscaneados.Count() - ListExcelOriginal.Count())/(double)ListExcelOriginal.Count();
                         PaylessProdPrioriArchM Am = DbO.PaylessProdPrioriArchM.Where(O => O.Id == ListArchMaMo[Ci].Id).Fod();
+                        if (!(PorcValidez > 0))
+                            PorcValidez = 0;
                         Am.PorcValidez = Math.Round(PorcValidez * 100, 3);
                         Am.CantExcel = ListExcelOriginal.Count();
                         Am.CantEscaner = ListEscaneados.Count();
@@ -2617,7 +2692,7 @@ namespace EdiApi.Controllers
                             CodigoLocalizacion = "STAGE-01",
                             Peso = G.Sum(Lin => Lin.Ex.Peso),
                             Volumen = G.Fod().Ex.M3,
-                            Cliente = G.Fod().Ex.dateProm,
+                            Cliente = G.Fod().Ex.DateProm,
                             UOM = 1,
                             Exportador = 435,
                             Destino = 35308,
@@ -3281,7 +3356,7 @@ namespace EdiApi.Controllers
                             CodEquivale = Product.CodEquivalente,
                             PaisOrig = Product.PaisOrigen,
                             Lote = Product.Lote,
-                            NumeroOc = Product.OrdenDeCompra.ToString(),
+                            NumeroOc = Product.OrdenDeCompra,
                             Modelo = Product.Modelo,
                             Color = Product.Color,
                             Estilo = Product.Estilo
@@ -3462,7 +3537,7 @@ SET XACT_ABORT OFF
             }
         }
         [HttpPost]
-        public RetData<string> SetSalidaWmsFromEscaner(IEnumerable<string> ListProducts2, string dtpPeriodo, int cboBodegas, int cboRegimen, int ClienteId, string CodUser, int cboLocation) {
+        public RetData<string> SetSalidaWmsFromEscaner(IEnumerable<string> ListProducts2, string dtpPeriodo, int cboBodegas, int cboRegimen, int ClienteId, string CodUser, int cboLocation, int cboTipo) {
             DateTime StartTime = DateTime.Now;
             string ProductoSinExistencia = "";
             List<SpGeneraSalidaWMSModel> ListSp = new List<SpGeneraSalidaWMSModel>();
@@ -3488,7 +3563,7 @@ SET XACT_ABORT OFF
                 ListSql.Add(SqlGenHelper.GetSqlWmsMaxTbl("Transacciones", "TransaccionId", "TransaccionID"));
                 //ListSql.Add($"SET @TransaccionID = {TransaccionId};{Environment.NewLine}");
                 Transacciones TNew = new Transacciones() {
-                    IdtipoTransaccion = "SA",
+                    IdtipoTransaccion = (cboTipo == 1? "SA": "TR"),
                     FechaTransaccion = dtpPeriodo.ToDateFromEspDate().AddHours(StartTime.Hour).AddMinutes(StartTime.Minute),
                     BodegaId = cboBodegas,
                     RegimenId = cboRegimen,
@@ -3532,7 +3607,7 @@ SET XACT_ABORT OFF
                 DbO.ProductoUbicacion.RemoveRange(DbO.ProductoUbicacion.Where(Pu => Pu.Typ == 4));
                 DbO.ProductoUbicacion.AddRange(ListPu);
                 DbO.SaveChanges();
-                System.Data.DataTable ListDtProdExistsWms = ManualDB.SpGeneraSalidaWMS2(ref DbO, FechaSalida, "", cboBodegas, cboRegimen, ClienteId, LocationID, RackID);
+                System.Data.DataTable ListDtProdExistsWms = ManualDB.SpGeneraSalidaWMS2(ref DbO, FechaSalida, "", cboBodegas, cboRegimen, ClienteId, LocationID, RackID);                
                 for (int i = 0; i < ListProducts.Count(); i++) {
                     ProductoSinExistencia = ListProducts[i];
                     System.Data.DataRow[] DrProdExists = ListDtProdExistsWms.Select("CodProducto='" + ListProducts[i] + "'");
@@ -3598,6 +3673,7 @@ SET XACT_ABORT OFF
                     //    "InventarioID, DtllPedidoID, ItemInventarioID, CodProducto, " +
                     //    "Cantidad, Precio, Fecha, Usuario,doc_fac,lote) Values(" + Valores + ")";
                 }
+                ListDtProdExistsWms.Dispose();
                 if (ListSp.Count != ListProducts.Count) {
                     return new RetData<string> {
                         Info = new RetInfo() {
@@ -3845,7 +3921,7 @@ SET XACT_ABORT OFF
                             && P2.Departamento != "11"
                             )
                             && P2.Categoria.ToUpper() == "DAMAS"
-                            orderby P2.dateProm.ToDateFromEspDate() descending
+                            orderby P2.DateProm.ToDateFromEspDate() descending
                             select P2
                             ).Take(txtWomanQty).Distinct().ToList());
                         ListProdPedido.AddRange((
@@ -3856,7 +3932,7 @@ SET XACT_ABORT OFF
                             && P2.Departamento != "11"
                             )
                             && P2.Categoria.ToUpper() == "CABALLEROS"
-                            orderby P2.dateProm.ToDateFromEspDate() descending
+                            orderby P2.DateProm.ToDateFromEspDate() descending
                             select P2
                             ).Take(txtManQty).Distinct().ToList());
                         ListProdPedido.AddRange((
@@ -3867,7 +3943,7 @@ SET XACT_ABORT OFF
                             && P2.Departamento != "11"
                             )
                             && P2.Categoria.ToUpper() == "NIÑOS / AS"
-                            orderby P2.dateProm.ToDateFromEspDate() descending
+                            orderby P2.DateProm.ToDateFromEspDate() descending
                             select P2
                             ).Take(txtKidQty).Distinct().ToList());
                         ListProdPedido.AddRange((
@@ -3878,7 +3954,7 @@ SET XACT_ABORT OFF
                             && P2.Departamento != "11"
                             )
                             && P2.Categoria.ToUpper() == "ACCESORIOS"
-                            orderby P2.dateProm.ToDateFromEspDate() descending
+                            orderby P2.DateProm.ToDateFromEspDate() descending
                             select P2
                             ).Take(txtAccQty).Distinct().ToList());
                         break;
@@ -3891,7 +3967,7 @@ SET XACT_ABORT OFF
                             && P2.Departamento != "11"
                             )
                             && P2.Categoria.ToUpper() == "DAMAS"
-                            orderby P2.dateProm.ToDateFromEspDate() ascending
+                            orderby P2.DateProm.ToDateFromEspDate() ascending
                             select P2
                             ).Take(txtWomanQty).Distinct().ToList());
                         ListProdPedido.AddRange((
@@ -3902,7 +3978,7 @@ SET XACT_ABORT OFF
                             && P2.Departamento != "11"
                             )
                             && P2.Categoria.ToUpper() == "CABALLEROS"
-                            orderby P2.dateProm.ToDateFromEspDate() ascending
+                            orderby P2.DateProm.ToDateFromEspDate() ascending
                             select P2
                             ).Take(txtManQty).Distinct().ToList());
                         ListProdPedido.AddRange((
@@ -3913,7 +3989,7 @@ SET XACT_ABORT OFF
                             && P2.Departamento != "11"
                             )
                             && P2.Categoria.ToUpper() == "NIÑOS / AS"
-                            orderby P2.dateProm.ToDateFromEspDate() ascending
+                            orderby P2.DateProm.ToDateFromEspDate() ascending
                             select P2
                             ).Take(txtKidQty).Distinct().ToList());
                         ListProdPedido.AddRange((
@@ -3924,7 +4000,7 @@ SET XACT_ABORT OFF
                             && P2.Departamento != "11"
                             )
                             && P2.Categoria.ToUpper() == "ACCESORIOS"
-                            orderby P2.dateProm.ToDateFromEspDate() ascending
+                            orderby P2.DateProm.ToDateFromEspDate() ascending
                             select P2
                             ).Take(txtAccQty).Distinct().ToList());
                         break;
@@ -3997,7 +4073,7 @@ SET XACT_ABORT OFF
                     && Pe.TiendaId == TiendaId
                     select Pe.Id
                     );
-                if (ListExistPedido.Count() > 0 && !(Divert ?? true)) {
+                if (ListExistPedido.Count() > 0 && Divert != true) {
                     return new RetData<string> {
                         Info = new RetInfo() {
                             CodError = -1,
@@ -4073,14 +4149,12 @@ SET XACT_ABORT OFF
             }
         }
         [HttpGet]
-        public RetData<IEnumerable<PaylessTiendas>> GetStores(int IdUser) {
+        public RetData<IEnumerable<PaylessTiendas>> GetStores(int ClienteId) {
             DateTime StartTime = DateTime.Now;
             try {
                 IEnumerable<PaylessTiendas> List = (
                     from T in DbO.PaylessTiendas
-                    from U in DbO.IenetUsers
-                    where U.Id == IdUser
-                    && T.ClienteId == U.ClienteId
+                    where T.ClienteId == ClienteId
                     select T
                     );
                 return new RetData<IEnumerable<PaylessTiendas>> {
@@ -4429,7 +4503,7 @@ SET XACT_ABORT OFF
                 }
                 MemoryStream Ms2 = new MemoryStream();
                 ExcelO.ExcelWorkBook.Write(Ms2);
-                IEnumerable<PaylessReportesMails> ListMails = DbO.PaylessReportesMails;                
+                IEnumerable<PaylessReportesMails> ListMails = DbO.PaylessReportesMails.Where(M => M.Typ == 1);                
                 using (SmtpClient client = new SmtpClient("10.240.34.119")) {
                     client.UseDefaultCredentials = false;
                     client.Credentials = new NetworkCredential("hilmer.campos@glcweb.ddns.net", "HilmerServer2019");
@@ -5518,6 +5592,7 @@ SET XACT_ABORT OFF
                     Pedido.IdEstado = 4;
                     DbO.PedidosExternos.Update(Pedido);
                     DbO.SaveChanges();
+                    SetNotificacionesBorrado(PedidoId);
                     return new RetData<string> {
                         Data = "Se ha marcado el pedido para ser borrado, bodega tendrá que confirmar la eliminación para que ya no aparezca.",
                         Info = new RetInfo() {
@@ -5546,7 +5621,7 @@ SET XACT_ABORT OFF
             }
         }
         [HttpGet]
-        public RetData<string> SetDeleteDis(int PedidoId, string CodUser) {
+        public RetData<string> SetDeleteDis(int PedidoId, string CodUser, string Observaciones, string FechaEntrega) {
             DateTime StartTime = DateTime.Now;
             if (PedidoId == 0)
                 return new RetData<string> {
@@ -5559,8 +5634,9 @@ SET XACT_ABORT OFF
             try {
                 PedidosExternosDel Ped = (from P in DbO.PedidosExternos where P.Id == PedidoId select P).Select(O => Utility.Funcs.Reflect(O, new PedidosExternosDel())).Fod();
                 Ped.CodUser = CodUser;
-                Ped.FechaBorrado = StartTime.ToString(ApplicationSettings.DateTimeFormat);
+                Ped.FechaBorrado = StartTime.ToString(ApplicationSettings.DateTimeFormat);                
                 DbO.PedidosExternosDel.AddRange(Ped);
+                Ped.Observaciones = Observaciones;                
                 IEnumerable<PedidosDetExternosDel> ListPedDet = (
                     from Pd in DbO.PedidosDetExternos
                     where Pd.PedidoId == PedidoId
@@ -5597,7 +5673,7 @@ SET XACT_ABORT OFF
             }
         }
         [HttpGet]
-        public RetData<string> SetRestoreDis(int PedidoId) {
+        public RetData<string> SetRestoreDis(int PedidoId, string CodUser, string Observaciones, string FechaEntrega) {
             DateTime StartTime = DateTime.Now;
             if (PedidoId == 0)
                 return new RetData<string> {
@@ -5610,6 +5686,11 @@ SET XACT_ABORT OFF
             try {
                 PedidosExternos Ped = (from P in DbO.PedidosExternos where P.Id == PedidoId select P).Fod();
                 Ped.IdEstado = 2;
+                Ped.CodUserLastUpdate = CodUser;
+                Ped.Observaciones = Observaciones;
+                if (!string.IsNullOrEmpty(FechaEntrega))
+                    Ped.FechaPedido = FechaEntrega;
+                Ped.FechaUltActualizacion = StartTime.ToString(ApplicationSettings.DateTimeFormat);
                 DbO.PedidosExternos.Update(Ped);
                 DbO.SaveChanges();
                 return new RetData<string> {
@@ -5692,6 +5773,350 @@ SET XACT_ABORT OFF
                         ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
                     }
                 };
+            }
+        }
+        [HttpGet]
+        public RetData<IEnumerable<PaylessTiendasGModel>> GetPaylessTiendas(int ClienteId) {
+            DateTime StartTime = DateTime.Now;
+            try {
+                //IEnumerable<PaylessTiendasGModel> ListTiendas1 = DbO.PaylessTiendas.Where(O => O.ClienteId == ClienteId).Select(O => Utility.Funcs.Reflect(O, new PaylessTiendasGModel()));
+                List<PaylessTiendas> ListTiendas1 = (
+                    from T in DbO.PaylessTiendas
+                    where T.ClienteId == ClienteId
+                    select T
+                    ).ToList();
+                    //DbO.PaylessTiendas.Where(O => O.ClienteId == ClienteId).Select(O => Utility.Funcs.Reflect(O, new PaylessTiendasGModel()));
+                List<PaylessTiendasGModel> ListTiendas2 = new List<PaylessTiendasGModel>();
+                foreach (PaylessTiendas Tienda in ListTiendas1) {
+                    PaylessTiendasGModel NTienda = Utility.Funcs.Reflect(Tienda, new PaylessTiendasGModel());
+                    PaylessRutas Ruta = DbO.PaylessRutas.Where(R => R.Id == Tienda.RutaId).Fod();
+                    if (Ruta == null) {
+                        NTienda.HorarioEntrega = string.Empty;
+                        NTienda.NumRuta = null;
+                    } else {
+                        NTienda.HorarioEntrega = Ruta.Horario;
+                        NTienda.NumRuta = Ruta.NumRuta;
+                    }
+                    ListTiendas2.Add(NTienda);
+                }                
+                return new RetData<IEnumerable<PaylessTiendasGModel>> {
+                    Data = ListTiendas2,
+                    Info = new RetInfo() {
+                        CodError = 0,
+                        Mensaje = "ok",
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            } catch (Exception e1) {
+                return new RetData<IEnumerable<PaylessTiendasGModel>> {
+                    Info = new RetInfo() {
+                        CodError = -1,
+                        Mensaje = e1.ToString(),
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            }
+        }
+        [HttpGet]
+        public RetData<IEnumerable<PaylessRutas>> GetPaylessRutas(int ClienteId) {
+            DateTime StartTime = DateTime.Now;
+            try {
+                return new RetData<IEnumerable<PaylessRutas>> {
+                    Data = DbO.PaylessRutas.Where(O => O.ClienteId == ClienteId),
+                    Info = new RetInfo() {
+                        CodError = 0,
+                        Mensaje = "ok",
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            } catch (Exception e1) {
+                return new RetData<IEnumerable<PaylessRutas>> {
+                    Info = new RetInfo() {
+                        CodError = -1,
+                        Mensaje = e1.ToString(),
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            }
+        }
+        [HttpGet]
+        public RetData<string> ChangeRutaAllowed(int Id) {
+            DateTime StartTime = DateTime.Now;
+            try {
+                PaylessRutas Ruta = DbO.PaylessRutas.Where(O => O.Id == Id).Fod();
+                Ruta.CambioHorario = !Ruta.CambioHorario;
+                DbO.PaylessRutas.Update(Ruta);
+                DbO.SaveChanges();
+                return new RetData<string> {
+                    Data = "Se ha cambiado la información",
+                    Info = new RetInfo() {
+                        CodError = 0,
+                        Mensaje = "ok",
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            } catch (Exception e1) {
+                return new RetData<string> {
+                    Info = new RetInfo() {
+                        CodError = -1,
+                        Mensaje = e1.ToString(),
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            }
+        }
+        [HttpGet]
+        public RetData<string> ChangeTiendaRutaId(int Id, int RutaId) {
+            DateTime StartTime = DateTime.Now;
+            try {
+                PaylessTiendas Tienda = DbO.PaylessTiendas.Where(O => O.Id == Id).Fod();
+                Tienda.RutaId = RutaId;
+                DbO.PaylessTiendas.Update(Tienda);
+                DbO.SaveChanges();
+                return new RetData<string> {
+                    Data = "Se ha cambiado la información",
+                    Info = new RetInfo() {
+                        CodError = 0,
+                        Mensaje = "ok",
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            } catch (Exception e1) {
+                return new RetData<string> {
+                    Info = new RetInfo() {
+                        CodError = -1,
+                        Mensaje = e1.ToString(),
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            }
+        }
+        [HttpGet]
+        public RetData<string> AddRuta(int? NumRuta, string Horario, int? ClienteId, bool? CambioHorario) {
+            DateTime StartTime = DateTime.Now;
+            try {
+                if (DbO.PaylessRutas.Where(O => O.NumRuta == NumRuta && O.ClienteId == ClienteId).Count() > 0)
+                    return new RetData<string> {
+                        Data = "Ya existe el número de ruta",
+                        Info = new RetInfo() {
+                            CodError = -1,
+                            Mensaje = "Ya existe el número de ruta",
+                            ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                        }
+                    };
+                PaylessRutas NewRuta = new PaylessRutas() {
+                    NumRuta = NumRuta,
+                    Horario = Horario,
+                    ClienteId = ClienteId,
+                    CambioHorario = CambioHorario
+                };
+                DbO.PaylessRutas.Add(NewRuta);
+                DbO.SaveChanges();
+                return new RetData<string> {
+                    Data = "Se ha guardado la información",
+                    Info = new RetInfo() {
+                        CodError = 0,
+                        Mensaje = "ok",
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            } catch (Exception e1) {
+                return new RetData<string> {
+                    Info = new RetInfo() {
+                        CodError = -1,
+                        Mensaje = e1.ToString(),
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            }
+        }
+        [HttpGet]
+        public RetData<string> DeleteRuta(int Id) {
+            DateTime StartTime = DateTime.Now;
+            try {
+                if (DbO.PaylessRutas.Where(O => O.Id == Id).Count() == 0)
+                    return new RetData<string> {
+                        Data = "No existe el número de ruta",
+                        Info = new RetInfo() {
+                            CodError = -1,
+                            Mensaje = "No existe el número de ruta",
+                            ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                        }
+                    };                
+                DbO.PaylessRutas.Remove(DbO.PaylessRutas.Where(O => O.Id == Id).Fod());
+                DbO.SaveChanges();
+                return new RetData<string> {
+                    Data = "Se ha borrado la información",
+                    Info = new RetInfo() {
+                        CodError = 0,
+                        Mensaje = "ok",
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            } catch (Exception e1) {
+                return new RetData<string> {
+                    Info = new RetInfo() {
+                        CodError = -1,
+                        Mensaje = e1.ToString(),
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            }
+        }
+        [HttpGet]
+        public RetData<IEnumerable<WmsDispatch>> GetIngresosWMSDet(long TransaccionId) {
+            DateTime StartTime = DateTime.Now;
+            try {
+                return new RetData<IEnumerable<WmsDispatch>> {
+                    Data = ManualDB.WmsGetDisDet(ref DbO, TransaccionId),
+                    Info = new RetInfo() {
+                        CodError = 0,
+                        Mensaje = "ok",
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            } catch (Exception e1) {
+                return new RetData<IEnumerable<WmsDispatch>> {
+                    Info = new RetInfo() {
+                        CodError = -1,
+                        Mensaje = e1.ToString(),
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            }
+        }
+        [HttpGet]
+        public RetData<IEnumerable<Racks>> GetRacks(int BodegaId, int RegimenId) {
+            DateTime StartTime = DateTime.Now;
+            try {
+                return new RetData<IEnumerable<Racks>> {
+                    Data = (from R in WmsDbO.Racks
+                            where R.BodegaId == BodegaId 
+                            && R.RegimenId == RegimenId
+                            select R),
+                    Info = new RetInfo() {
+                        CodError = 0,
+                        Mensaje = "ok",
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            } catch (Exception e1) {
+                return new RetData<IEnumerable<Racks>> {
+                    Info = new RetInfo() {
+                        CodError = -1,
+                        Mensaje = e1.ToString(),
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            }
+        }
+        [HttpGet]
+        public RetData<string> GetNotificaciones(string CodUser) {
+            DateTime StartTime = DateTime.Now;
+            try {
+                List<Notificaciones> ListNotificaciones = (
+                    from N in DbO.Notificaciones
+                    where N.CodUsr == CodUser
+                    select N).ToList();
+                DbO.Notificaciones.RemoveRange(ListNotificaciones);
+                DbO.SaveChangesAsync();
+                string Notificaciones = string.Join("", ListNotificaciones.Select(O => $"{O.Mensaje}. "));
+                return new RetData<string> {
+                    Data = Notificaciones,
+                    Info = new RetInfo() {
+                        CodError = 0,
+                        Mensaje = "ok",
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            } catch (Exception e1) {
+                return new RetData<string> {
+                    Info = new RetInfo() {
+                        CodError = -1,
+                        Mensaje = e1.ToString(),
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            }
+        }
+        [HttpGet]
+        public RetData<string> SetNotificacion(string CodUser, string Mensaje) {
+            DateTime StartTime = DateTime.Now;
+            try {
+                Notificaciones NNotif = new Notificaciones {
+                    CodUsr = CodUser,
+                    Mensaje = Mensaje
+                };
+                DbO.Notificaciones.Add(NNotif);
+                DbO.SaveChangesAsync();                
+                return new RetData<string> {
+                    Data = "Se guardo la información",
+                    Info = new RetInfo() {
+                        CodError = 0,
+                        Mensaje = "ok",
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            } catch (Exception e1) {
+                return new RetData<string> {
+                    Info = new RetInfo() {
+                        CodError = -1,
+                        Mensaje = e1.ToString(),
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            }
+        }
+        [HttpGet]
+        public RetData<string> SetNotificacionesBorrado(int PedidoId) {
+            DateTime StartTime = DateTime.Now;
+            try {
+                PedidosExternos Pe = DbO.PedidosExternos.Where(O => O.Id == PedidoId).Fod();
+                if (Pe.IdEstado != 4) return null;
+                IEnumerable<PaylessReportesMails> ListUserMails = DbO.PaylessReportesMails.Where(M => M.Typ == 2);
+                IEnumerable<IenetUsers> ListUsuariosNotif = DbO.IenetUsers.Where(I => I.IdIenetGroup == 1 || I.IdIenetGroup == 2);
+                List<Notificaciones> ListNotificaciones = new List<Notificaciones>();
+                foreach (IenetUsers UsuarioO in ListUsuariosNotif) {
+                    Notificaciones NNotif = new Notificaciones {
+                        CodUsr = UsuarioO.CodUsr,
+                        Mensaje = $"Existe un pedido con petición de borrado, el número de pedido es el {PedidoId}."
+                    };
+                    ListNotificaciones.Add(NNotif);
+                }
+                DbO.Notificaciones.AddRange(ListNotificaciones);
+                DbO.SaveChangesAsync();
+                SendEmail(ListUserMails, "Petición de borrado de pedido", $"Existe un pedido con petición de borrado, el número de pedido es el {PedidoId}.");
+                return new RetData<string> {
+                    Data = "Se guardo la información",
+                    Info = new RetInfo() {
+                        CodError = 0,
+                        Mensaje = "ok",
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            } catch (Exception e1) {
+                return new RetData<string> {
+                    Info = new RetInfo() {
+                        CodError = -1,
+                        Mensaje = e1.ToString(),
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
+            }
+        }
+
+        private void SendEmail(IEnumerable<PaylessReportesMails> ListMails, string Subject, string Body) {
+            using (SmtpClient client = new SmtpClient("10.240.34.119")) {
+                client.UseDefaultCredentials = false;
+                client.Credentials = new NetworkCredential("hilmer.campos@glcweb.ddns.net", "HilmerServer2019");
+                MailMessage mailMessage = new MailMessage {
+                    From = new MailAddress("hilmer.campos@glcweb.ddns.net")
+                };
+                foreach (PaylessReportesMails MO in ListMails)
+                    mailMessage.To.Add(MO.MailDir);
+                mailMessage.Body = Body;
+                mailMessage.Subject = Subject;
+                client.Send(mailMessage);
             }
         }
     }

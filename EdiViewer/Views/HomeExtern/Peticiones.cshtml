@@ -123,7 +123,7 @@
                         field: "periodo", caption: "", sortable: true, render: function (record) {
                             var strBtn = '<div class="w2ui-buttons"><a href="javascript:verDetalle(' + record.id + ')">Ver detalle</a>';
                             if (record.idEstado == 2 && record.changeState)
-                                strBtn += ' | <a href="javascript:ModifyDis(' + record.id + ')">Borrar</a>';
+                                strBtn += ' | <a href="javascript:borrarDis(' + record.id + ')">Borrar</a>';
                             strBtn += '</div>';
                             return strBtn;
                         }
@@ -177,7 +177,7 @@
         gridOrdenesDet = $('#gridOrdenesDet').w2grid(config.grid);
         arrayGrids['gridOrdenesDet'] = gridOrdenesDet;
     }    
-    function ModifyDis(pedidoId) {
+    function borrarDis(pedidoId) {
         $.ajax({
             method: "GET",
             url: "@this.Url.Action("SetChangeDis", "HomeExtern")?PedidoId=" + pedidoId,

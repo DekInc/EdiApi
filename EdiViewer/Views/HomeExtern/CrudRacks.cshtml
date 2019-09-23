@@ -1,0 +1,154 @@
+﻿@using ComModels
+@{
+    ViewData["Title"] = "Mantenimiento de Racks";
+    Layout = "_Layout";
+}
+<div id="mainDiv">
+    <div class="container">
+        <div class="card-deck cardMain">
+            <div class="card box-shadow">
+                <div class="card-header">
+                    <h4 class="my-0 font-weight-normal">Mantenimiento de Racks</h4>
+                </div>
+                <div class="card-body">
+                    <div class="container">                        
+                        <div class="row">
+                            <div class="col-3">
+                                <label for="cboLocation">Lugar</label>
+                                <div id="divSpinCboLocation" class="spinner-border spinner-border-sm text-danger" style="display: none" role="status">
+                                    <span class="sr-only">Loading...</span>
+                                </div>
+                                <select class="form-control" id="cboLocation" name="cboLocation"></select>
+                            </div>
+                            <div class="col-3">
+                                <label for="cboBodegas">Bodega</label>
+                                <select class="form-control" id="cboBodegas" name="cboBodegas"></select>
+                            </div>
+                            <div class="col-3">
+                                <label for="cboRegimen">Regimen</label>
+                                <div id="divSpinCboRegimen" class="spinner-border spinner-border-sm text-danger" style="display: none" role="status">
+                                    <span class="sr-only">Loading...</span>
+                                </div>
+                                <select class="form-control" id="cboRegimen" name="cboRegimen"></select>
+                            </div>
+                        </div>
+                        <div class="row marginTop10">
+                            <div class="col-1">
+                                <button type="button" id="btnMostrar" class="btn btn-primary">Mostrar</button>
+                            </div>
+                        </div>
+                        <br />
+                        <div class="clearfix"></div>
+                    </div>
+                    <div id="gridRacks" style="min-height: 460px; width: 100%;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    var gridRacks = null;
+    var foo = function () {
+    };
+    $.urlParam = function (name) {
+        var results = new RegExp('[\?&]' + name + '=([^&#]*)').exec(window.location.href);
+        if (results == null) {
+            return null;
+        }
+        return decodeURI(results[1]) || 0;
+    }
+    function refreshGrid(auto) {
+        w2ui.grid.autoLoad = auto;
+        w2ui.grid.skip(0);
+    }
+    function crearGrid() {
+        var config = {
+            grid: {
+                name: 'gridRacks',
+                selectType: 'cell',
+                bResponsive: true,
+                bMobile: window.mobileAndTabletcheck(),
+                url: '@this.Url.Action("GetRacks", "Grids")?BodegaId=' + $('#cboBodegas').val() + '&RegimenId=' + $('#cboRegimen').val(),
+                show: {
+                    footer: true,
+                    toolbar: true,
+                    expandColumn: window.mobileAndTabletcheck()
+                },                
+                searches: [
+                    { field: "bodegaId", caption: "BodegaId", type: 'text' },
+                    { field: "regimenID", caption: "RegimenID", type: 'text' },
+                    { field: "rack", caption: "RackId", type: 'text' },
+                    { field: "nombreRack", caption: "NombreRack", type: 'text' },
+                    { field: "barcode", caption: "Barcode", type: 'text' },
+                    { field: "estatusID", caption: "EstatusID", type: 'text' }
+                ],
+                colShowResponsive: [
+                    { field: 'bodegaId' },
+                    { field: 'rack' }
+                ],
+                columns: [
+                    { field: "bodegaId", caption: "BodegaId", sortable: true, hidden: true },
+                    { field: "regimenId", caption: "RegimenID", sortable: true, hidden: true, sortable: true },
+                    { field: "rack", caption: "RackId", sortable: true, hidden: false, sortable: true },
+                    { field: "observacion", caption: "Observacion", sortable: true, hidden: false, sortable: true },
+                    { field: "nombreRack", caption: "NombreRack", sortable: true, hidden: false, sortable: true },
+                    { field: "barcode", caption: "Barcode", sortable: true, hidden: false, sortable: true },
+                    { field: "fecha", caption: "Fecha", sortable: true, hidden: false, sortable: true },
+                    { field: "estatusId", caption: "EstatusID", sortable: true, hidden: true, sortable: true },
+                    { field: "alto", caption: "Alto", sortable: true, hidden: false, sortable: true },
+                    { field: "largo", caption: "Largo", sortable: true, hidden: false, sortable: true },
+                    { field: "ancho", caption: "Ancho", sortable: true, hidden: false, sortable: true }                    
+                ]
+            }
+        };
+        gridRacks = $('#gridRacks').w2grid(config.grid);
+        arrayGrids['gridRacks'] = gridRacks;
+    }
+    function borrarRuta(id) {
+        makeAjaxPost('@this.Url.Action("DeleteRuta", "HomeExtern")?Id=' + id, function (data) {
+            if (data.info.codError != 0) {
+                menErrorEdi(data.info.mensaje);
+                return;
+            } else {
+                menErrorEdi(data.data, 'Información');
+                gridRacks.reload2('@this.Url.Action("GetRutas", "Grids")?ClienteId=' + $('#cbClient').val());
+            }
+        });
+    }
+    function changeHor(recId) {        
+        makeAjaxPost('@this.Url.Action("ChangeRutaAllowed", "HomeExtern")?Id=' + recId, function (data) {
+            if (data.info.codError != 0) {
+                menErrorEdi(data.info.mensaje);
+                return;
+            } else {
+                menErrorEdi(data.data, 'Información');
+                gridRacks.reload2('@this.Url.Action("GetRutas", "Grids")?ClienteId=' + $('#cbClient').val());
+            }
+        });
+    }
+    function afterFillCombobox() { }    
+    $(document).ready(function () {
+        $('#cboBodegas').on('change', function (Event) {
+            fillComboboxPromise('#divSpinCboRegimen', '@this.Url.Action("GetWmsRegimen", "HomeExtern")?BodegaId=' + $('#cboBodegas').val(), '#cboRegimen', 'idregimen', 'regimen1', 0).then();
+        });
+        $('#cboLocation').on('change', function (Event) {            
+            fillComboboxPromise('#divSpinCboBodegas', '@this.Url.Action("GetWmsBodegas", "HomeExtern")?LocationId=' + $('#cboLocation').val(), '#cboBodegas', 'bodegaId', 'nomBodega', 0)
+                .then(function () {
+                    fillComboboxPromise('#divSpinCboRegimen', '@this.Url.Action("GetWmsRegimen", "HomeExtern")?BodegaId=' + $('#cboBodegas').val(), '#cboRegimen', 'idregimen', 'regimen1', 0).then();
+                });
+        });
+        fillComboboxPromise('#divSpinCboLocation', '@this.Url.Action("GetWmsLocations", "HomeExtern")', '#cboLocation', 'locationid', 'dsclocation', 7)
+            .then(function () {
+                fillComboboxPromise('#divSpinCboBodegas', '@this.Url.Action("GetWmsBodegas", "HomeExtern")?LocationId=' + $('#cboLocation').val(), '#cboBodegas', 'bodegaId', 'nomBodega', 0)
+            });
+        $('#btnMostrar').on('click', function () {
+            if (gridRacks == null) {
+                crearGrid();
+            } else {
+                gridRacks.reload2('@this.Url.Action("GetRacks", "Grids")?BodegaId=' + $('#cboBodegas').val() + '&RegimenId=' + $('#cboRegimen').val());
+            }
+        });
+    });
+</script>
+
+

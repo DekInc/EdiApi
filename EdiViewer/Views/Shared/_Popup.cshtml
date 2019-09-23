@@ -24,7 +24,7 @@
         $('#btnOkMessageBox').focus();
     });
     $('#btnOkMessageBox').on('click', function () {
-        if (funcbtnOkMessageBox != null)
+        if (typeof funcbtnOkMessageBox == 'function')
             funcbtnOkMessageBox();
     });
 </script>

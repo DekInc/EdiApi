@@ -12,6 +12,8 @@ using System.Net;
 using ComModels;
 using EdiViewer.Models;
 using Microsoft.AspNetCore.Http;
+using ComModels.Models.EdiDB;
+using ComModels.Models.WmsDB;
 
 namespace EdiViewer.Controllers
 {
@@ -266,6 +268,21 @@ namespace EdiViewer.Controllers
             catch (Exception e1)
             {
                 return View("Index", new Models.ErrorModel() { ErrorMessage = e1.ToString().Replace("'", "") });
+            }
+        }
+        public async Task<RetData<string>> GaDelete(int gaId) {
+            DateTime StartTime = DateTime.Now;
+            try {
+                RetData<string> Ret = await ApiClientFactory.Instance.GaDelete(gaId);
+                return Ret;
+            } catch (Exception e1) {
+                return new RetData<string>() {
+                    Info = new RetInfo() {
+                        CodError = -1,
+                        Mensaje = e1.ToString(),
+                        ResponseTimeSeconds = (DateTime.Now - StartTime).TotalSeconds
+                    }
+                };
             }
         }
     }

@@ -175,7 +175,8 @@
                             url: '@this.Url.Action("GetAsyncState0", "HomeExtern")',
                             type: 'GET',
                             dataType: 'JSON',
-                            success: function (json) {                                
+                            success: function (json) {
+                                $('#divSpinUploadFile').hide();
                                 if (json.info.codError != 0) {
                                     menErrorEdi(json.info.mensaje);
                                     stopAsync = true;
@@ -187,8 +188,7 @@
                                     else {
                                         $('#spanCont').text(json.data[0].val + ' / ' + json.data[0].maximum);
                                         if (json.data[0].mess != null) {
-                                            if (json.data[0].mess != '') {
-                                                $('#divSpinUploadFile').hide();
+                                            if (json.data[0].mess != '') {                                                
                                                 menErrorEdi(json.data[0].mess, 'Información');
                                                 stopAsync = true;
                                             }

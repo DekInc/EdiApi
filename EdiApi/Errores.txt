@@ -82,3 +82,31 @@ SET XACT_ABORT OFF
                         
 
 TotalSeconds = 93.5580352
+System.NullReferenceException: Object reference not set to an instance of an object.
+   at EdiApi.Controllers.DataController.SetIngresoExcelWms2(IEnumerable`1 ListProducts, Int32 cboBodega, Int32 cboRegimen, String CodUser, Int32 ClienteId) in C:\Users\Hilmer\source\repos\GlcWeb\EdiApi\Controllers\DataController.cs:line 3290
+SET XACT_ABORT ON
+--BEGIN TRANSACTION TRAN2
+DECLARE @MaxTransaccionId INT;
+DECLARE @MaxInventarioId INT;
+DECLARE @MaxDTId INT;
+DECLARE @MaxItemInventario INT;
+DECLARE @MaxDetItemTran INT;
+DECLARE @MaxDocTran INT;
+BEGIN TRY
+SET @MaxTransaccionId = 127872; 
+INSERT INTO dbo.Producto(CodProducto, Descripcion, UnidadMedida, ClienteID, EstatusID, CategoriaID, CantMinima, Fecha, Comentario, stock_maximo, descargoid, partida) SELECT '7650826372', 'DAMAS', 1, 385, 1, 10, 0, CONVERT(DATETIME, '2019-09-18 13:49', 120), 'INGRESOS DESDE INTRANET', 0, 1, '0'; SELECT @MaxInventarioId = ISNULL(MAX(InventarioId), 0) + 5 FROM dbo.Inventario; INSERT INTO dbo.Inventario(InventarioID, Barcode, FechaCreacion, ClienteID, Descripcion, Declarado, Valor, Articulos, Peso, Volumen, EstatusID, IsAgranel, TipoBulto, existencia, auditado, cantidadinicial, Rack)SELECT @MaxInventarioId, 'BRC' + RIGHT('0000000'+ CONVERT(VARCHAR(64), @MaxInventarioId), 7), CONVERT(DATETIME, '2019-09-18 13:49', 120), 385, 'DAMAS', 1, 46.68, 1, 4.68, 0.04486, 2, 0, 70, 1, 1, 1, 948; SELECT @MaxDTId = ISNULL(MAX(DtllTrnsaccionId), 0) + 5 FROM dbo.DetalleTransacciones; INSERT INTO dbo.DetalleTransacciones(DtllTrnsaccionID, TransaccionID, InventarioID, Conteo, Cantidad, Valor, fechaitem, rack, embalaje, IsEscaneado) SELECT @MaxDTId, @MaxTransaccionId, @MaxInventarioId, 1, 1, 46.68, CONVERT(DATETIME, '2019-09-13 00:00', 120), 948, 'CS', 1; SELECT @MaxItemInventario = ISNULL(MAX(ItemInventarioId), 0) + 5 FROM dbo.ItemInventario; 
+TotalSeconds = 6.7893008
+System.NullReferenceException: Object reference not set to an instance of an object.
+   at EdiApi.Controllers.DataController.SetIngresoExcelWms2(IEnumerable`1 ListProducts, Int32 cboBodega, Int32 cboRegimen, String CodUser, Int32 ClienteId) in C:\Users\Hilmer\source\repos\GlcWeb\EdiApi\Controllers\DataController.cs:line 3290
+SET XACT_ABORT ON
+--BEGIN TRANSACTION TRAN2
+DECLARE @MaxTransaccionId INT;
+DECLARE @MaxInventarioId INT;
+DECLARE @MaxDTId INT;
+DECLARE @MaxItemInventario INT;
+DECLARE @MaxDetItemTran INT;
+DECLARE @MaxDocTran INT;
+BEGIN TRY
+SET @MaxTransaccionId = 127871; 
+INSERT INTO dbo.Producto(CodProducto, Descripcion, UnidadMedida, ClienteID, EstatusID, CategoriaID, CantMinima, Fecha, Comentario, stock_maximo, descargoid, partida) SELECT '7650826372', 'DAMAS', 1, 385, 1, 10, 0, CONVERT(DATETIME, '2019-09-18 14:05', 120), 'INGRESOS DESDE INTRANET', 0, 1, '0'; SELECT @MaxInventarioId = ISNULL(MAX(InventarioId), 0) + 5 FROM dbo.Inventario; INSERT INTO dbo.Inventario(InventarioID, Barcode, FechaCreacion, ClienteID, Descripcion, Declarado, Valor, Articulos, Peso, Volumen, EstatusID, IsAgranel, TipoBulto, existencia, auditado, cantidadinicial, Rack)SELECT @MaxInventarioId, 'BRC' + RIGHT('0000000'+ CONVERT(VARCHAR(64), @MaxInventarioId), 7), CONVERT(DATETIME, '2019-09-18 14:05', 120), 385, 'DAMAS', 1, 46.68, 1, 4.68, 0.04486, 2, 0, 70, 1, 1, 1, 948; SELECT @MaxDTId = ISNULL(MAX(DtllTrnsaccionId), 0) + 5 FROM dbo.DetalleTransacciones; INSERT INTO dbo.DetalleTransacciones(DtllTrnsaccionID, TransaccionID, InventarioID, Conteo, Cantidad, Valor, fechaitem, rack, embalaje, IsEscaneado) SELECT @MaxDTId, @MaxTransaccionId, @MaxInventarioId, 1, 1, 46.68, CONVERT(DATETIME, '2019-09-13 00:00', 120), 948, 'CS', 1; SELECT @MaxItemInventario = ISNULL(MAX(ItemInventarioId), 0) + 5 FROM dbo.ItemInventario; 
+TotalSeconds = 30.2988438

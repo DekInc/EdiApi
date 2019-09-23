@@ -1,11 +1,7 @@
-﻿using System;
+﻿using ComModels.Models.EdiDB;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using ComModels;
 
-namespace EdiViewer.Models
-{
+namespace EdiViewer.Models {
     public class EdiViewerModel
     {
         public string EdiPureHashId { get; set; }

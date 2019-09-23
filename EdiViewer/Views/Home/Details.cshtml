@@ -1,4 +1,6 @@
-﻿@model EdiViewer.Models.EdiDetailModel
+﻿@using ComModels;
+@using ComModels.Models.EdiDB;
+@model EdiViewer.Models.EdiDetailModel
 
 @{
     ViewData["Title"] = "Detalle de reporte 830 LEAR";
@@ -13,7 +15,7 @@
         text-shadow: unset !important;
     }
 </style>
-@using ComModels;
+
 <div id="mainDiv">
     <div class="container">
         <div class="card-deck cardMain">
@@ -70,8 +72,7 @@
                     </div>
                     <hr />
                     <div class="accordion" id="divAccor">
-                        @foreach (LearBfr830 Bfr in Model.Data.ListStBfr)
-                        {
+                        @foreach (LearBfr830 Bfr in Model.Data.ListStBfr) {
                             @await Html.PartialAsync("_DetailsOnBfr830",
                            new Tuple<LearBfr830, IEnumerable<EdiSegName>, IEnumerable<LearCodes>>(
                                Bfr,
@@ -79,8 +80,7 @@
                                Model.Data.ListCodes))
                             <hr />
                         }
-                        @if (Model.Data.ListStN1.Count() > 0)
-                        {
+                        @if (Model.Data.ListStN1.Count() > 0) {
                             <div class="card box-shadow">
                                 <div class="card-header card-cn1 cursor" data-toggle="collapse" data-target="#@Model.Data.ListStN1.Fod().HashId" aria-expanded="false" aria-controls="@Model.Data.ListStN1.Fod().HashId" title="@Model.Data.ListEdiSegName.Where(Sn => Sn.Segment == "N1").Fod().DescEng">
                                     N1 - @Model.Data.ListEdiSegName.Where(Sn => Sn.Segment == "N1").Fod().Eng
@@ -88,8 +88,7 @@
                                 <div class="collapse" id="@Model.Data.ListStN1.Fod().HashId">
                                     <div class="card-body">
                                         <div class="container">
-                                            @foreach (LearN1830 N1 in Model.Data.ListStN1)
-                                            {
+                                            @foreach (LearN1830 N1 in Model.Data.ListStN1) {
                                                 @await Html.PartialAsync("_DetailsOnN1830",
                                                         new Tuple<LearN1830, IEnumerable<EdiSegName>, IEnumerable<LearCodes>>(
                                                             N1,
@@ -102,8 +101,7 @@
                             </div>
                             <hr />
                         }
-                        @foreach (LearN4830 N4 in Model.Data.ListStN4)
-                        {
+                        @foreach (LearN4830 N4 in Model.Data.ListStN4) {
                             @await Html.PartialAsync("_DetailsOnN4830",
                            new Tuple<LearN4830, IEnumerable<EdiSegName>, IEnumerable<LearCodes>>(
                                N4,
@@ -111,8 +109,7 @@
                                Model.Data.ListCodes))
                             <hr />
                         }
-                        @foreach (LearNte830 Nte in Model.Data.ListStNte)
-                        {
+                        @foreach (LearNte830 Nte in Model.Data.ListStNte) {
                             @await Html.PartialAsync("_DetailsOnNte830",
                            new Tuple<LearNte830, IEnumerable<EdiSegName>, IEnumerable<LearCodes>>(
                                Nte,
@@ -120,8 +117,7 @@
                                Model.Data.ListCodes))
                             <hr />
                         }
-                        @foreach (LearLin830 Lin in Model.Data.ListStLin)
-                        {
+                        @foreach (LearLin830 Lin in Model.Data.ListStLin) {
                             @await Html.PartialAsync("_DetailsOnLin830",
                             new Tuple<LearLin830, IEnumerable<EdiSegName>, EdiViewer.Models.EdiDetailModel>(
                                 Lin,

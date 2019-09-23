@@ -9,7 +9,9 @@ using System.Net.Mail;
 using S22.Imap;
 using Microsoft.Extensions.Configuration;
 using Microsoft.EntityFrameworkCore;
-using EdiApi.Models.EdiDB;
+using ComModels.Models.EdiDB;
+using ComModels.Models.WmsDB;
+using ComModels;
 
 namespace EdiApi.Controllers
 {
@@ -19,7 +21,7 @@ namespace EdiApi.Controllers
     {
         public EdiDBContext DbO;
         public EdiDBContext DbOEx;
-        private Models.WmsDB.WmsContext WmsDb;
+        private WmsContext WmsDb;
         public readonly IConfiguration Config;
         IConfiguration IMapConfig => Config.GetSection("IMapConfig");
         IConfiguration IEdiFtpConfig => Config.GetSection("EdiFtp");
@@ -39,7 +41,7 @@ namespace EdiApi.Controllers
         object MaxEdiComs => Config.GetSection("MaxEdiComs").GetValue(typeof(object), "Value");
         StreamReader Rep830File { set; get; }
         //public EdiController(EdiDBContext _DbO) { DbO = _DbO; }
-        public EdiController(EdiDBContext _DbO, Models.WmsDB.WmsContext _WmsDb, IConfiguration _Config) {
+        public EdiController(EdiDBContext _DbO, WmsContext _WmsDb, IConfiguration _Config) {
             DbO = _DbO;
             WmsDb = _WmsDb;
             Config = _Config;
@@ -102,8 +104,11 @@ namespace EdiApi.Controllers
                 DateTime DateLastAsync = As.Fecha.ToDateEsp();
                 if ((StartTime - DateLastAsync).TotalMinutes < 28) {
                     As.Mess = "Async truncation detected, returning.";
-                    DbO.AsyncStates.Update(As);
-                    DbO.SaveChanges();
+                    try {
+                        DbO.AsyncStates.Update(As);
+                        DbO.SaveChanges();
+                    } catch {
+                    }                    
                     return new RetReporte() {
                         Info = new RetInfo() {
                             CodError = -1,

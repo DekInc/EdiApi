@@ -33,7 +33,9 @@ BEGIN
 		ON Ti.TiendaId = Pe.TiendaId
 	JOIN wms.dbo.transacciones AS T WITH(NOLOCK) 
 		ON T.TransaccionID=d1.TransaccionID
-		AND T.BodegaId = Ti.BodegaId	
+		AND (T.BodegaId = Ti.BodegaId
+			OR Ti.BodegaId IS NULL
+		)
 		AND Pe.ClienteID = T.ClienteID
 	LEFT OUTER JOIN
 	  (SELECT Sy.InventarioID,

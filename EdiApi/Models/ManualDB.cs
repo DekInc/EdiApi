@@ -4,15 +4,16 @@ using System.Data;
 using System.Data.Common;
 using System.Linq;
 using System.Threading.Tasks;
-using EdiApi.Models.EdiDB;
-using EdiApi.Models.WmsDB;
+using ComModels;
+using ComModels.Models.EdiDB;
+using ComModels.Models.WmsDB;
 using Microsoft.EntityFrameworkCore;
 
 namespace EdiApi.Models
 {
     public static class ManualDB
     {
-        public static IEnumerable<TsqlDespachosWmsComplex> SP_GetSN(ref Models.EdiDB.EdiDBContext _DbO)
+        public static IEnumerable<TsqlDespachosWmsComplex> SP_GetSN(ref EdiDBContext _DbO)
         {
             List<TsqlDespachosWmsComplex> ListSn = new List<TsqlDespachosWmsComplex>();
             using (DbCommand Cmd = _DbO.Database.GetDbConnection().CreateCommand())
@@ -48,7 +49,7 @@ namespace EdiApi.Models
             //List<GetSNSP> L = await WmsDbO.Query<GetSNSP>().FromSql("EXEC [dbo].[GetSN]").ToListAsync();
             return ListSn;
         }
-        public static IEnumerable<TsqlDespachosWmsComplex> SP_GetSNDet(ref Models.EdiDB.EdiDBContext _DbO, int PedidoId)
+        public static IEnumerable<TsqlDespachosWmsComplex> SP_GetSNDet(ref EdiDBContext _DbO, int PedidoId)
         {
             List<TsqlDespachosWmsComplex> ListSn = new List<TsqlDespachosWmsComplex>();
             using (DbCommand Cmd = _DbO.Database.GetDbConnection().CreateCommand())
@@ -94,7 +95,7 @@ namespace EdiApi.Models
             //List<GetSNSP> L = await WmsDbO.Query<GetSNSP>().FromSql("EXEC [dbo].[GetSN]").ToListAsync();
             return ListSn;
         }
-        public static IEnumerable<FE830DataAux> SP_GetExistencias(ref Models.EdiDB.EdiDBContext _DbO, int _IdClient)
+        public static IEnumerable<FE830DataAux> SP_GetExistencias(ref EdiDBContext _DbO, int _IdClient)
         {
             List<FE830DataAux> ListExists = new List<FE830DataAux>();
             using (DbCommand Cmd = _DbO.Database.GetDbConnection().CreateCommand())
@@ -122,7 +123,7 @@ namespace EdiApi.Models
             }
             return ListExists;
         }
-        public static IEnumerable<ExistenciasExternModel> SP_GetExistenciasExtern(ref Models.EdiDB.EdiDBContext _DbO, int _IdClient)
+        public static IEnumerable<ExistenciasExternModel> SP_GetExistenciasExtern(ref EdiDBContext _DbO, int _IdClient)
         {
             List<ExistenciasExternModel> ListExists = new List<ExistenciasExternModel>();
             using (DbCommand Cmd = _DbO.Database.GetDbConnection().CreateCommand())
@@ -160,7 +161,7 @@ namespace EdiApi.Models
             }
             return ListExists;
         }
-        public static IEnumerable<PedidosWmsModel> SP_GetPedidosWms(ref Models.EdiDB.EdiDBContext _DbO, int _IdClient)
+        public static IEnumerable<PedidosWmsModel> SP_GetPedidosWms(ref EdiDBContext _DbO, int _IdClient)
         {
             List<PedidosWmsModel> ListExists = new List<PedidosWmsModel>();
             using (DbCommand Cmd = _DbO.Database.GetDbConnection().CreateCommand())
@@ -193,7 +194,7 @@ namespace EdiApi.Models
             }
             return ListExists;
         }
-        public static IEnumerable<PedidosWmsModel> GetWmsGroupDispatchs(ref Models.EdiDB.EdiDBContext _DbO, int ClienteId) {
+        public static IEnumerable<PedidosWmsModel> GetWmsGroupDispatchs(ref EdiDBContext _DbO, int ClienteId) {
             List<PedidosWmsModel> ListExists = new List<PedidosWmsModel>();
             using (DbCommand Cmd = _DbO.Database.GetDbConnection().CreateCommand()) {
                 Cmd.CommandText = $"[dbo].[SP_GetWmsGroupDispatchs] {ClienteId}";
@@ -224,7 +225,7 @@ namespace EdiApi.Models
             }
             return ListExists;
         }
-        public static IEnumerable<PedidosWmsModel> GetWmsGroupDispatchsBills(ref Models.EdiDB.EdiDBContext _DbO, int ClienteId) {
+        public static IEnumerable<PedidosWmsModel> GetWmsGroupDispatchsBills(ref EdiDBContext _DbO, int ClienteId) {
             List<PedidosWmsModel> ListExists = new List<PedidosWmsModel>();
             using (DbCommand Cmd = _DbO.Database.GetDbConnection().CreateCommand()) {
                 Cmd.CommandText = $"[dbo].[SP_GetWmsGroupDispatchsBills] {ClienteId}";
@@ -256,7 +257,7 @@ namespace EdiApi.Models
             }
             return ListExists;
         }
-        public static IEnumerable<PedidosWmsModel> GetWmsDetDispatchsBills(ref Models.EdiDB.EdiDBContext _DbO, int ClienteId) {
+        public static IEnumerable<PedidosWmsModel> GetWmsDetDispatchsBills(ref EdiDBContext _DbO, int ClienteId) {
             List<PedidosWmsModel> ListExists = new List<PedidosWmsModel>();
             using (DbCommand Cmd = _DbO.Database.GetDbConnection().CreateCommand()) {
                 Cmd.CommandText = $"[dbo].[SP_GetWmsDetDispatchsBills] {ClienteId}";
@@ -286,7 +287,7 @@ namespace EdiApi.Models
             }
             return ListExists;
         }
-        public static IEnumerable<PedidosDetExternos> SP_GetPedidosDetExternos(ref Models.EdiDB.EdiDBContext _DbO, int _IdClient)
+        public static IEnumerable<PedidosDetExternos> SP_GetPedidosDetExternos(ref EdiDBContext _DbO, int _IdClient)
         {
             List<PedidosDetExternos> ListExists = new List<PedidosDetExternos>();
             using (DbCommand Cmd = _DbO.Database.GetDbConnection().CreateCommand())
@@ -314,7 +315,7 @@ namespace EdiApi.Models
             }
             return ListExists;
         }
-        public static IEnumerable<PedidosDetExternos> SP_GetPedidosDetExternosByTienda(ref Models.EdiDB.EdiDBContext _DbO, int ClienteId, int TiendaId) {
+        public static IEnumerable<PedidosDetExternos> SP_GetPedidosDetExternosByTienda(ref EdiDBContext _DbO, int ClienteId, int TiendaId) {
             List<PedidosDetExternos> ListExists = new List<PedidosDetExternos>();
             using (DbCommand Cmd = _DbO.Database.GetDbConnection().CreateCommand()) {
                 Cmd.CommandText = $"[dbo].[SP_GetPedidosDetExternosByTienda] {ClienteId}, {TiendaId}";
@@ -337,7 +338,7 @@ namespace EdiApi.Models
             }
             return ListExists;
         }
-        public static IEnumerable<PedidosDetExternos> SP_GetPedidosDetExternosPendientesByTienda(ref Models.EdiDB.EdiDBContext _DbO, int ClienteId, int TiendaId) {
+        public static IEnumerable<PedidosDetExternos> SP_GetPedidosDetExternosPendientesByTienda(ref EdiDBContext _DbO, int ClienteId, int TiendaId) {
             List<PedidosDetExternos> ListExists = new List<PedidosDetExternos>();
             using (DbCommand Cmd = _DbO.Database.GetDbConnection().CreateCommand()) {
                 Cmd.CommandText = $"dbo.SP_GetPedidosDetExternosPendientesByTienda {ClienteId}, {TiendaId}";
@@ -360,7 +361,7 @@ namespace EdiApi.Models
             }
             return ListExists;
         }
-        public static IEnumerable<PaylessProdPrioriDetModel> SP_GetPedidosExternosDetById(ref Models.EdiDB.EdiDBContext _DbO, int PedidoId) {
+        public static IEnumerable<PaylessProdPrioriDetModel> SP_GetPedidosExternosDetById(ref EdiDBContext _DbO, int PedidoId) {
             List<PaylessProdPrioriDetModel> List = new List<PaylessProdPrioriDetModel>();
             using (DbCommand Cmd = _DbO.Database.GetDbConnection().CreateCommand()) {
                 Cmd.CommandText = $"[dbo].[SP_GetPedidosExternosDetById] {PedidoId}";
@@ -400,7 +401,7 @@ namespace EdiApi.Models
             }
             return List;
         }
-        public static IEnumerable<PedidosDetExternos> SP_GetPedidosDetExternosGuardados(ref Models.EdiDB.EdiDBContext _DbO, int _IdClient) {
+        public static IEnumerable<PedidosDetExternos> SP_GetPedidosDetExternosGuardados(ref EdiDBContext _DbO, int _IdClient) {
             List<PedidosDetExternos> ListExists = new List<PedidosDetExternos>();
             using (DbCommand Cmd = _DbO.Database.GetDbConnection().CreateCommand()) {
                 Cmd.CommandText = $"[dbo].[SP_GetPedidosDetExternosGuardados] {_IdClient}";
@@ -423,7 +424,7 @@ namespace EdiApi.Models
             }
             return ListExists;
         }
-        public static IEnumerable<PedidosDetExternos> SP_GetPedidosDetExternosByDate(ref Models.EdiDB.EdiDBContext _DbO, DateTime DateInit, DateTime DateEnd, int Typ) {
+        public static IEnumerable<PedidosDetExternos> SP_GetPedidosDetExternosByDate(ref EdiDBContext _DbO, DateTime DateInit, DateTime DateEnd, int Typ) {
             List<PedidosDetExternos> ListExists = new List<PedidosDetExternos>();
             using (DbCommand Cmd = _DbO.Database.GetDbConnection().CreateCommand()) {
                 Cmd.CommandText = $"[dbo].[SP_GetPedidosDetExternosByDate] '{DateInit.ToString(ApplicationSettings.DateTimeFormatShort)}', '{DateEnd.ToString(ApplicationSettings.DateTimeFormatShort)}', {Typ}";
@@ -444,7 +445,7 @@ namespace EdiApi.Models
             }
             return ListExists;
         }
-        public static IEnumerable<PaylessProdPrioriDetModel> SP_GetPaylessProdPrioriByPeriod(ref Models.EdiDB.EdiDBContext _DbO, string Period)
+        public static IEnumerable<PaylessProdPrioriDetModel> SP_GetPaylessProdPrioriByPeriod(ref EdiDBContext _DbO, string Period)
         {
             List<PaylessProdPrioriDetModel> ListProdDet = new List<PaylessProdPrioriDetModel>();
             using (DbCommand Cmd = _DbO.Database.GetDbConnection().CreateCommand())
@@ -488,7 +489,7 @@ namespace EdiApi.Models
             }
             return ListProdDet;
         }        
-        public static IEnumerable<PaylessProdPrioriDetModel> SP_GetPaylessProdPrioriByPeriodAndIdTransport(ref Models.EdiDB.EdiDBContext _DbO, string Period, int IdTransport) {
+        public static IEnumerable<PaylessProdPrioriDetModel> SP_GetPaylessProdPrioriByPeriodAndIdTransport(ref EdiDBContext _DbO, string Period, int IdTransport) {
             List<PaylessProdPrioriDetModel> ListProdDet = new List<PaylessProdPrioriDetModel>();
             using (DbCommand Cmd = _DbO.Database.GetDbConnection().CreateCommand()) {
                 Cmd.CommandText = $"[dbo].[SP_GetPaylessProdPrioriByPeriodAndIdTransport] '{Period}', {IdTransport}";
@@ -518,7 +519,7 @@ namespace EdiApi.Models
                             Peso = Convert.ToDouble(Dr.GetValue(18)),
                             IdTransporte = Convert.ToInt32(Dr.GetValue(19)),
                             Transporte = Convert.ToString(Dr.GetValue(20)),
-                            dateProm = Convert.ToString(Dr.GetValue(21)) //Realmente NomCliente
+                            DateProm = Convert.ToString(Dr.GetValue(21)) //Realmente NomCliente
                         });
                     }
                 }
@@ -528,7 +529,7 @@ namespace EdiApi.Models
             }
             return ListProdDet;
         }
-        public static IEnumerable<PaylessProdPrioriDetModel> GetWmsFileById(ref Models.EdiDB.EdiDBContext _DbO, int IdM) {
+        public static IEnumerable<PaylessProdPrioriDetModel> GetWmsFileById(ref EdiDBContext _DbO, int IdM) {
             List<PaylessProdPrioriDetModel> ListProdDet = new List<PaylessProdPrioriDetModel>();
             using (DbCommand Cmd = _DbO.Database.GetDbConnection().CreateCommand()) {
                 Cmd.CommandText = $"dbo.GetWmsFileById {IdM}";
@@ -548,7 +549,7 @@ namespace EdiApi.Models
                             Cp = Dr.Gr<string>(6),
                             IdTransporte = Dr.Gr<int?>(7),
                             //Transporte = Dr.Gr<string>(8),
-                            dateProm = Dr.Gr<string>(9),
+                            DateProm = Dr.Gr<string>(9),
                             Pri = Dr.Gr<string>(10),
                             Peso = Dr.Gr<double?>(11),
                             M3 = Dr.Gr<double?>(12)
@@ -561,7 +562,7 @@ namespace EdiApi.Models
             }
             return ListProdDet;
         }
-        public static int UploadBatch(ref Models.WmsDB.WmsContext _Wms, string Batch) {
+        public static int UploadBatch(ref WmsContext _Wms, string Batch) {
             int Res = 0;
             using (DbCommand Cmd = _Wms.Database.GetDbConnection().CreateCommand()) {
                 Cmd.CommandText = Batch;
@@ -572,7 +573,7 @@ namespace EdiApi.Models
             }
             return Res;
         }
-        public static DataTable SpGeneraSalidaWMS(ref Models.WmsDB.WmsContext _Wms, string FechaSalida, string CodProducto, int BodegaId, int RegimenId, int ClienteId, int LocationId, int RackId) {
+        public static DataTable SpGeneraSalidaWMS(ref WmsContext _Wms, string FechaSalida, string CodProducto, int BodegaId, int RegimenId, int ClienteId, int LocationId, int RackId) {
             DataTable Dt = new DataTable();
             using (DbCommand Cmd = _Wms.Database.GetDbConnection().CreateCommand()) {
                 Cmd.CommandText = $"[dbo].[spGeneraSalida] '{FechaSalida}', '{CodProducto}', {BodegaId}, {RegimenId}, {ClienteId}, {LocationId}, {RackId} ";
@@ -586,7 +587,7 @@ namespace EdiApi.Models
             }
             return Dt;
         }
-        public static DataTable SpGeneraSalidaWMS2(ref Models.EdiDB.EdiDBContext _Dbo, string FechaSalida, string CodProducto, int BodegaId, int RegimenId, int ClienteId, int LocationId, int RackId) {
+        public static DataTable SpGeneraSalidaWMS2(ref EdiDBContext _Dbo, string FechaSalida, string CodProducto, int BodegaId, int RegimenId, int ClienteId, int LocationId, int RackId) {
             DataTable Dt = new DataTable();
             using (DbCommand Cmd = _Dbo.Database.GetDbConnection().CreateCommand()) {
                 Cmd.CommandText = $"[dbo].[SP_GeneraSalidaWms] '{FechaSalida}', '{CodProducto}', {BodegaId}, {RegimenId}, {ClienteId}, {LocationId}, {RackId} ";
@@ -675,7 +676,7 @@ namespace EdiApi.Models
             }
             return List;
         }
-        public static IEnumerable<PaylessProdPrioriDetModel> SP_GetPaylessProdPrioriFileDif(ref Models.EdiDB.EdiDBContext _DbO, int IdData, int IdProdArch, int ClienteId) {
+        public static IEnumerable<PaylessProdPrioriDetModel> SP_GetPaylessProdPrioriFileDif(ref EdiDBContext _DbO, int IdData, int IdProdArch, int ClienteId) {
             List<PaylessProdPrioriDetModel> ListProdDet = new List<PaylessProdPrioriDetModel>();
             using (DbCommand Cmd = _DbO.Database.GetDbConnection().CreateCommand()) {
                 Cmd.CommandText = $"dbo.SP_GetPaylessProdPrioriFileDif {IdData}, {IdProdArch}, {ClienteId}";
@@ -716,7 +717,7 @@ namespace EdiApi.Models
             }
             return ListProdDet;
         }
-        public static IEnumerable<PaylessProdPrioriDetModel> SP_GetPaylessProdPrioriAll(ref Models.EdiDB.EdiDBContext _DbO, int ClienteId) {
+        public static IEnumerable<PaylessProdPrioriDetModel> SP_GetPaylessProdPrioriAll(ref EdiDBContext _DbO, int ClienteId) {
             List<PaylessProdPrioriDetModel> ListProdDet = new List<PaylessProdPrioriDetModel>();
             using (DbCommand Cmd = _DbO.Database.GetDbConnection().CreateCommand()) {
                 Cmd.CommandText = $"[dbo].[SP_GetPaylessProdPrioriAll] '{ClienteId}'";
@@ -755,7 +756,7 @@ namespace EdiApi.Models
             }
             return ListProdDet;
         }
-        public static IEnumerable<PaylessProdPrioriDetModel> SP_GetPaylessSellQtys(ref Models.EdiDB.EdiDBContext _DbO, int ClienteId, string TiendaId, string CodUser)
+        public static IEnumerable<PaylessProdPrioriDetModel> SP_GetPaylessSellQtys(ref EdiDBContext _DbO, int ClienteId, string TiendaId, string CodUser)
         {
             List<PaylessProdPrioriDetModel> ListProdDet = new List<PaylessProdPrioriDetModel>();
             using (DbCommand Cmd = _DbO.Database.GetDbConnection().CreateCommand())
@@ -788,7 +789,7 @@ namespace EdiApi.Models
             }
             return ListProdDet;
         }
-        public static IEnumerable<FE830DataAux> SP_GetExistenciasByTienda(ref Models.EdiDB.EdiDBContext _DbO, int ClienteId, int TiendaId) {
+        public static IEnumerable<FE830DataAux> SP_GetExistenciasByTienda(ref EdiDBContext _DbO, int ClienteId, int TiendaId) {
             List<FE830DataAux> ListProdDet = new List<FE830DataAux>();
             using (DbCommand Cmd = _DbO.Database.GetDbConnection().CreateCommand()) {
                 Cmd.CommandText = $"[dbo].[SP_GetExistenciasByTienda] {ClienteId}, '{TiendaId}'";
@@ -809,7 +810,7 @@ namespace EdiApi.Models
             }
             return ListProdDet;
         }
-        public static IEnumerable<FE830DataAux> SP_GetExistenciasByCliente(ref Models.EdiDB.EdiDBContext _DbO, int ClienteId) {
+        public static IEnumerable<FE830DataAux> SP_GetExistenciasByCliente(ref EdiDBContext _DbO, int ClienteId) {
             List<FE830DataAux> ListProdDet = new List<FE830DataAux>();
             using (DbCommand Cmd = _DbO.Database.GetDbConnection().CreateCommand()) {
                 Cmd.CommandText = $"dbo.SP_GetExistenciasByCliente {ClienteId}";
@@ -830,7 +831,7 @@ namespace EdiApi.Models
             }
             return ListProdDet;
         }
-        public static List<PaylessProdPrioriDetModel> SP_GetPaylessProdSinPedido(ref Models.EdiDB.EdiDBContext _DbO, int ClienteId, int TiendaId) {
+        public static List<PaylessProdPrioriDetModel> SP_GetPaylessProdSinPedido(ref EdiDBContext _DbO, int ClienteId, int TiendaId) {
             List<PaylessProdPrioriDetModel> ListProdDet = new List<PaylessProdPrioriDetModel>();
             using (DbCommand Cmd = _DbO.Database.GetDbConnection().CreateCommand()) {
                 Cmd.CommandText = $"dbo.SP_GetPaylessProdSinPedido {ClienteId}, '{TiendaId}'";
@@ -843,7 +844,7 @@ namespace EdiApi.Models
                             Cp = Dr.Gr<string>(1),
                             Categoria = Dr.Gr<string>(2),
                             IdPaylessProdPrioriM = Dr.Gr<int>(3),
-                            dateProm = Dr.Gr<string>(4),
+                            DateProm = Dr.Gr<string>(4),
                             Departamento = Dr.Gr<string>(5),
                         });
                     }
@@ -854,7 +855,7 @@ namespace EdiApi.Models
             }
             return ListProdDet;
         }
-        public static List<PedidosExternos> SP_SetPaylessNewDis(ref Models.EdiDB.EdiDBContext _DbO, int PedidoId, string CodUser) {            
+        public static List<PedidosExternos> SP_SetPaylessNewDis(ref EdiDBContext _DbO, int PedidoId, string CodUser) {            
             List<PedidosExternos> ListProdDet = new List<PedidosExternos>();
             using (DbCommand Cmd = _DbO.Database.GetDbConnection().CreateCommand()) {
                 Cmd.CommandText = $"dbo.SP_SetPaylessNewDis {PedidoId}, '{CodUser}'";
@@ -873,7 +874,7 @@ namespace EdiApi.Models
             }
             return ListProdDet;
         }
-        public static List<PedidosPendientesAdmin> SP_GetPedidosPendientesAdmin(ref Models.EdiDB.EdiDBContext _DbO, int ClienteId) {
+        public static List<PedidosPendientesAdmin> SP_GetPedidosPendientesAdmin(ref EdiDBContext _DbO, int ClienteId) {
             List<PedidosPendientesAdmin> ListProdDet = new List<PedidosPendientesAdmin>();
             using (DbCommand Cmd = _DbO.Database.GetDbConnection().CreateCommand()) {
                 Cmd.CommandText = $"dbo.SP_GetPedidosPendientesAdmin {ClienteId}";
@@ -909,7 +910,7 @@ namespace EdiApi.Models
             }
             return ListProdDet;
         }
-        public static List<PeticionesAdminBGModel> SP_GetPeticionesAdminB(ref Models.EdiDB.EdiDBContext _DbO, int ClienteId) {
+        public static List<PeticionesAdminBGModel> SP_GetPeticionesAdminB(ref EdiDBContext _DbO, int ClienteId) {
             List<PeticionesAdminBGModel> ListProdDet = new List<PeticionesAdminBGModel>();
             using (DbCommand Cmd = _DbO.Database.GetDbConnection().CreateCommand()) {
                 Cmd.CommandText = $"dbo.SP_GetPeticionesAdminB {ClienteId}";
@@ -954,7 +955,7 @@ namespace EdiApi.Models
             }
             return ListProdDet;
         }
-        public static IEnumerable<PedidosWmsModel> SP_GetPedidosMWmsByTienda(ref Models.EdiDB.EdiDBContext _DbO, int IdClient, int TiendaId) {
+        public static IEnumerable<PedidosWmsModel> SP_GetPedidosMWmsByTienda(ref EdiDBContext _DbO, int IdClient, int TiendaId) {
             List<PedidosWmsModel> ListExists = new List<PedidosWmsModel>();
             using (DbCommand Cmd = _DbO.Database.GetDbConnection().CreateCommand()) {
                 Cmd.CommandText = $"[dbo].[SP_GetPedidosMWmsByTienda] {IdClient}, '{TiendaId}'";
@@ -981,7 +982,7 @@ namespace EdiApi.Models
             }
             return ListExists;
         }
-        public static IEnumerable<PeticionesAdminBGModel> SP_GetWmsGroupDispatchsSunday(ref Models.EdiDB.EdiDBContext _DbO, int ClienteId, string FechaI, string FechaF) {
+        public static IEnumerable<PeticionesAdminBGModel> SP_GetWmsGroupDispatchsSunday(ref EdiDBContext _DbO, int ClienteId, string FechaI, string FechaF) {
             List<PeticionesAdminBGModel> ListExists = new List<PeticionesAdminBGModel>();
             using (DbCommand Cmd = _DbO.Database.GetDbConnection().CreateCommand()) {
                 Cmd.CommandText = $"[dbo].[SP_GetWmsGroupDispatchsSunday] {ClienteId}, '{FechaI}', '{FechaF}'";
@@ -1008,7 +1009,7 @@ namespace EdiApi.Models
             }
             return ListExists;
         }
-        public static IEnumerable<PaylessProdPrioriDetModel> SP_GetTransDif(ref Models.EdiDB.EdiDBContext _DbO, int IdM) {
+        public static IEnumerable<PaylessProdPrioriDetModel> SP_GetTransDif(ref EdiDBContext _DbO, int IdM) {
             List<PaylessProdPrioriDetModel> ListExists = new List<PaylessProdPrioriDetModel>();
             using (DbCommand Cmd = _DbO.Database.GetDbConnection().CreateCommand()) {
                 Cmd.CommandText = $"dbo.GetTransDif {IdM}";
@@ -1030,7 +1031,7 @@ namespace EdiApi.Models
             }
             return ListExists;
         }
-        public static IEnumerable<PaylessProdPrioriDetModel> SP_GetPaylessProdTallaLoteFil(ref Models.EdiDB.EdiDBContext _DbO, string TxtBarcode, string CboProducto, string CboTalla, string CboLote, string CboCategoria, string CodUser, int BodegaId) {
+        public static IEnumerable<PaylessProdPrioriDetModel> SP_GetPaylessProdTallaLoteFil(ref EdiDBContext _DbO, string TxtBarcode, string CboProducto, string CboTalla, string CboLote, string CboCategoria, string CodUser, int BodegaId) {
             List<PaylessProdPrioriDetModel> ListExists = new List<PaylessProdPrioriDetModel>();
             using (DbCommand Cmd = _DbO.Database.GetDbConnection().CreateCommand()) {
                 Cmd.CommandText = $"dbo.SP_GetPaylessProdTallaLoteFil '{TxtBarcode}', '{CboProducto}', '{CboTalla}', '{CboLote}', '{CboCategoria}', '{CodUser}', {BodegaId}";
@@ -1056,7 +1057,7 @@ namespace EdiApi.Models
             }
             return ListExists;
         }
-        public static void SP_GetSetExistenciasByCliente(ref Models.EdiDB.EdiDBContext _DbO, int ClienteId, string CodUser) {
+        public static void SP_GetSetExistenciasByCliente(ref EdiDBContext _DbO, int ClienteId, string CodUser) {
             List<PaylessProdPrioriDetModel> ListExists = new List<PaylessProdPrioriDetModel>();
             using (DbCommand Cmd = _DbO.Database.GetDbConnection().CreateCommand()) {
                 Cmd.CommandText = $"dbo.SP_GetSetExistenciasByCliente {ClienteId}, '{CodUser}'";
@@ -1065,7 +1066,6 @@ namespace EdiApi.Models
                 _DbO.Database.CloseConnection();
             }
         }
-
         public static IEnumerable<PaylessProdPrioriDet> SP_GetSetInvToday(ref EdiDBContext _DbO, int ClienteId, string CodUser) {
             List<PaylessProdPrioriDet> ListExists = new List<PaylessProdPrioriDet>();
             using (DbCommand Cmd = _DbO.Database.GetDbConnection().CreateCommand()) {
@@ -1088,7 +1088,6 @@ namespace EdiApi.Models
             }
             return ListExists;
         }
-
         public static void GetEntradasSalidasWms(ref EdiDBContext _DbO, int ClienteId) {
             List<PaylessProdPrioriDet> ListExists = new List<PaylessProdPrioriDet>();
             using (DbCommand Cmd = _DbO.Database.GetDbConnection().CreateCommand()) {
@@ -1098,7 +1097,6 @@ namespace EdiApi.Models
                 _DbO.Database.CloseConnection();
             }
         }
-
         public static void PaylessDeleteRepeated(ref EdiDBContext _DbO) {
             using (DbCommand Cmd = _DbO.Database.GetDbConnection().CreateCommand()) {
                 Cmd.CommandText = $"SP_PaylessDeleteRepeated";
@@ -1106,6 +1104,34 @@ namespace EdiApi.Models
                 Cmd.ExecuteNonQuery();
                 _DbO.Database.CloseConnection();
             }
+        }
+        public static IEnumerable<WmsDispatch> WmsGetDisDet(ref EdiDBContext _DbO, long TransaccionId) {
+            List<WmsDispatch> ListExists = new List<WmsDispatch>();
+            using (DbCommand Cmd = _DbO.Database.GetDbConnection().CreateCommand()) {
+                Cmd.CommandText = $"SP_WmsGetDisDet {TransaccionId}";
+                _DbO.Database.OpenConnection();
+                DbDataReader Dr = Cmd.ExecuteReader();
+                if (Dr.HasRows) {
+                    while (Dr.Read()) {
+                        ListExists.Add(new WmsDispatch() {
+                            CodProducto = Dr.Gr<string>(0),
+                            Barcode = Dr.Gr<string>(1),
+                            TipoBulto = Dr.Gr<int>(2),
+                            UnidadMedida = Dr.Gr<string>(3),
+                            Cantidad = Dr.Gr<int>(4),
+                            Cp = Dr.Gr<string>(5),
+                            Categoria = Dr.Gr<string>(6),
+                            Departamento = Dr.Gr<string>(7),
+                            Producto = Dr.Gr<string>(8),
+                            Talla = Dr.Gr<string>(9)
+                        });
+                    }
+                }
+                _DbO.Database.CloseConnection();
+                if (!Dr.IsClosed)
+                    Dr.Close();
+            }
+            return ListExists;
         }
     }
 }

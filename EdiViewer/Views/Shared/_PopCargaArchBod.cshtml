@@ -36,16 +36,46 @@
                                     <select class="form-control" id="cboTransporte" name="cboTransporte"></select>
                                 </div>
                             </div>
-                            <div class="row">
-                                <div class="col-sm custom-file divUpload">
-                                    <input type="file" class="custom-file-input inputUpload" id="fUpload" name="fUpload">
-                                    <label id="lblFile" class="custom-file-label" for="fUpload">Archivo de entrada SPS</label>
-                                </div>
-                                <div id="divArchEntrada" class="col-sm custom-file divUpload noShow">
-                                    <input type="file" class="custom-file-input inputUpload" id="fUpload2" name="fUpload2">
-                                    <label id="lblFile2" class="custom-file-label" for="fUpload2">Archivo</label>
-                                </div>
+                            <br />
+                            <div class="row justify-content-center maxWidth99">
+                                <fieldset class="col-10 col-md-12 px-3">
+                                    <legend>Archivo de entrada (.xml o .xls)</legend>
+                                    <div class="row justify-content-center">
+                                        <div class="form-group col-sm-9 col-lg-6">
+                                            <label class="pt-2" for="price">Archivo .xml</label>
+                                            <div class="input-group">
+                                                <input type="file" class="" id="fUploadXml1" name="fUploadXml1" />
+                                            </div>
+                                        </div>
+                                        <div class="form-group col-sm-9 col-lg-6">
+                                            <label class="pt-2" for="cost">Archivo .xls</label>
+                                            <div class="input-group">
+                                                <input type="file" class="" id="fUploadXls1" name="fUploadXls1" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </fieldset>
                             </div>
+                            <br />
+                            <div id="divArchEntrada" class="row justify-content-center maxWidth99 noShow">
+                                <fieldset class="col-10 col-md-12 px-3">
+                                    <legend>Archivo de salida (.xml o .xls)</legend>
+                                    <div class="row justify-content-center">
+                                        <div class="form-group col-sm-9 col-lg-6">
+                                            <label class="pt-2" for="price">Archivo .xml</label>
+                                            <div class="input-group">
+                                                <input type="file" class="" id="fUploadXml1" name="fUploadXml1" />
+                                            </div>
+                                        </div>
+                                        <div class="form-group col-sm-9 col-lg-6">
+                                            <label class="pt-2" for="cost">Archivo .xls</label>
+                                            <div class="input-group">
+                                                <input type="file" class="" id="fUploadXls1" name="fUploadXls1" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </fieldset>
+                            </div>                            
                         </div>
                     </form>
                 </div>

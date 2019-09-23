@@ -73,10 +73,10 @@ BEGIN
 	) SB2
 		ON SB2.CodProducto = Dp.CodProducto
 	WHERE T3.ClienteID = @ClienteId
-	and T3.Fechacrea > = (GETDATE() - 62)
+	and T3.Fechacrea > = (GETDATE() - 35)
 	ORDER BY P.PedidoID, Dp.CodProducto DESC
 END
 GO
 
-EXEC SP_GetWmsDetDispatchsBills 1432
+EXEC EdiDB.dbo.SP_GetWmsDetDispatchsBills 1432
 --25011

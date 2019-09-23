@@ -1,0 +1,134 @@
+﻿@using ComModels
+@{
+    ViewData["Title"] = "Mantenimiento de tiendas";
+    Layout = "_Layout";
+}
+<div id="mainDiv">
+    <div class="container">
+        <div class="card-deck cardMain">
+            <div class="card box-shadow">
+                <div class="card-header">
+                    <h4 class="my-0 font-weight-normal">Mantenimiento de tiendas</h4>
+                </div>
+                <div class="card-body">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-5">
+                                <label>Cliente</label>
+                                <div id="divSpinCliente" class="spinner-border spinner-border-sm text-danger" style="display: none" role="status">
+                                    <span class="sr-only">Loading...</span>
+                                </div>
+                                <br />
+                                <select class="form-control" id="cbClient" name="cbClient"></select>
+                            </div>
+                        </div>
+                        <div class="row marginTop10">
+                            <div class="col-sm">
+                                <button type="button" id="btnMostrar" class="btn btn-primary">Mostrar</button>
+                            </div>
+                        </div>
+                        <br />
+                        <div class="clearfix"></div>
+                    </div>
+                    <div id="gridTiendas" style="min-height: 460px; width: 100%;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@await Html.PartialAsync("_PopChangeClientStore")
+<script>
+    var gridTiendas = null;
+    var foo = function () {
+    };
+    $.urlParam = function (name) {
+        var results = new RegExp('[\?&]' + name + '=([^&#]*)').exec(window.location.href);
+        if (results == null) {
+            return null;
+        }
+        return decodeURI(results[1]) || 0;
+    }
+    function refreshGrid(auto) {
+        w2ui.grid.autoLoad = auto;
+        w2ui.grid.skip(0);
+    }
+    function crearGrid() {
+        var config = {
+            grid: {
+                name: 'gridTiendas',
+                selectType: 'cell',
+                bResponsive: true,
+                bMobile: window.mobileAndTabletcheck(),
+                url: '@this.Url.Action("GetTiendas", "Grids")?ClienteId=' + $('#cbClient').val(),
+                show: {
+                    footer: true,
+                    toolbar: true,
+                    expandColumn: window.mobileAndTabletcheck()
+                },
+                //searches: [
+                //    { field: 'codUsr', caption: 'Cod. usuario', type: 'text' },
+                //    { field: 'nomUsr', caption: 'Nombre usuario', type: 'text' },
+                //    { field: 'tiendaId', caption: 'Tienda', type: 'text' },
+                //    { field: 'cliente', caption: 'Cliente', type: 'text' }
+                //],
+                colShowResponsive: [
+                    { field: 'ienetGroup' },
+                    { field: 'codUsr' }
+                ],
+                columns: [
+                    { field: "id", caption: "Id", sortable: true, hidden: true },
+                    { field: "rutaId", caption: "RutaId", sortable: true, hidden: true },
+                    { field: "clienteId", caption: "ClienteId", sortable: true, hidden: true },
+                    { field: "tiendaId", caption: "Tienda", sortable: true, hidden: false },
+                    { field: "distrito", caption: "Distrito", sortable: true },
+                    { field: "descr", caption: "Descr", sortable: true },
+                    { field: "direc", caption: "Direc", sortable: true },
+                    { field: "tel", caption: "Tel", sortable: true },
+                    { field: "cel", caption: "Cel", sortable: true },
+                    { field: "lider", caption: "Lider", sortable: true },
+                    { field: "bodegaId", caption: "BodegaId", sortable: true, hidden: true },
+                    { field: "numRuta", caption: "Ruta", sortable: true, hidden: false },
+                    { field: "horarioEntrega", caption: "HorarioEntrega", sortable: true },
+                    {
+                        field: "", caption: "", render: function (record) {
+                            return '<a href="javascript:changeUbi(' + record.id + ', ' + record.clienteId + ')">Cambiar ruta</a>';
+                        }
+                    }
+                ]
+            }
+        };
+        gridTiendas = $('#gridTiendas').w2grid(config.grid);
+        arrayGrids['gridTiendas'] = gridTiendas;
+    }
+    function changeUbi(recId, clienteId) {
+        $('#modalPopChangeStoreLabel').html('Cambio de ruta');
+        $('#modalPopChangeStore').modal();
+        fillComboboxWithValue('#divSpinList', '@this.Url.Action("GetRutas", "HomeExtern")?ClienteId=' + $('#cbClient').val(), '#cboList', 'numRuta', 'horario', clienteId);
+        $('#btnPopChangeStoreLabelOk').unbind('click');
+        $('#btnPopChangeStoreLabelOk').on('click', function () {
+            makeAjaxPost('@this.Url.Action("ChangeTiendaRutaId", "HomeExtern")?Id=' + recId + '&RutaId=' + $('#cboList').val(), function (data) {
+                if (data.info.codError != 0) {
+                    menErrorEdi(data.info.mensaje);
+                    return;
+                } else {
+                    menErrorEdi(data.data, 'Información');
+                    gridTiendas.reload2('@this.Url.Action("GetTiendas", "Grids")?ClienteId=' + $('#cbClient').val());
+                }
+            });
+        });
+    }
+    function afterFillCombobox() { }    
+    $(document).ready(function () {
+        fillComboboxPromise('#divSpinCliente', '@this.Url.Action("getClients", "HomeExtern")', '#cbClient', 'clienteId', 'nombre', 1432);
+        //crearGrid();        
+        $('#btnMostrar').on('click', function () {
+            if (gridTiendas == null) {
+                crearGrid();
+            } else {
+                gridTiendas.reload2('@this.Url.Action("GetTiendas", "Grids")?ClienteId=' + $('#cbClient').val());
+            }
+        });
+    });
+</script>
+
+

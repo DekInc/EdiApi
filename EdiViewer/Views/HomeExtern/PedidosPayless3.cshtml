@@ -1,6 +1,6 @@
 ﻿@model ErrorModel
 @{
-    ViewData["Title"] = "Pedidos Payless v3";
+    ViewData["Title"] = "Pedidos Payless";
     Layout = "_Layout";
 }
 <style>
@@ -21,23 +21,31 @@
                         <h4 class="my-0 font-weight-normal">Pedidos Payless</h4>
                     </div>
                     <div class="card-body">
-                        <div>
-                            <span id="spanClientName">
-                                <span id="divSpinClientName" class="spinner-border spinner-border-sm text-danger" style="display: none" role="status">
-                                    <span class="sr-only">Loading...</span>
-                                </span>
-                            </span>
-                            <b>Horario programado de entrega:</b>
-                            <span id="spanClientSchedule">
-                                <span id="divSpinClientSchedule" class="spinner-border spinner-border-sm text-danger" style="display: none" role="status">
-                                    <span class="sr-only">Loading...</span>
-                                </span>
-                            </span>
-                        </div>
                         <div class="container div856Search">
                             <div class="row">
                                 <div class="col-sm">
-                                    <label for="dtpFechaEntrega">Fecha esperada de entrega</label>
+                                    <span id="spanClientName">
+                                        <span id="divSpinClientName" class="spinner-border spinner-border-sm text-danger" style="display: none" role="status">
+                                            <span class="sr-only">Loading...</span>
+                                        </span>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm">
+                                    <b>Horario programado de entrega:</b>
+                                    <span id="spanClientSchedule">
+                                        <span id="divSpinClientSchedule" class="spinner-border spinner-border-sm text-danger" style="display: none" role="status">
+                                            <span class="sr-only">Loading...</span>
+                                        </span>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm">
+                                    <span id="labelWarning" style="display: none; color:brown">(El tiempo de entrega será coordinado por el equipo de GLC)<br /></span>
+                                    <span id="labelTemporada" style="display: none;"></span><br />
+                                    <label for="dtpFechaEntrega">Fecha esperada de entrega</label>&nbsp;
                                     <input class="form-control datepicker" data-date-format="dd/mm/yyyy hh:ii" id="dtpFechaEntrega" name="dtpFechaEntrega" placeholder="dd/mm/yyyy HH:mm" maxlength="10" autocorrect="off" autocapitalize="off" autocomplete="off" />
                                 </div>
                             </div>
@@ -48,9 +56,9 @@
                                         <label class="form-check-label" for="radFifo">FIFO</label>
                                     </div>
                                     @*<div class="form-check margin5">
-                                        <input class="form-check-input" id="radLifo" name="radInvType" type="radio" value="lifo" />
-                                        <label class="form-check-label" for="radLifo">LIFO</label>
-                                    </div>*@
+                    <input class="form-check-input" id="radLifo" name="radInvType" type="radio" value="lifo" />
+                    <label class="form-check-label" for="radLifo">LIFO</label>
+                </div>*@
                                 </div>
                             </div>
                             <br />
@@ -281,7 +289,13 @@
                 }
                 $('#spanClientName').html(data.data.item1);
                 $('#divSpinClientName').hide();
-                $('#spanClientSchedule').html(data.data.item2);
+                $('#spanClientSchedule').html(data.data.item2);                
+                if (data.data.item4 === false)
+                    $('#labelWarning').show();
+                if (data.data.item3 != '') {
+                    $('#labelTemporada').html(data.data.item3);
+                    $('#labelTemporada').show();
+                }
             },
             error: function (xhr, ajaxOptions, thrownError) {
                 menErrorEdi(xhr.status, 'Error throw in js');

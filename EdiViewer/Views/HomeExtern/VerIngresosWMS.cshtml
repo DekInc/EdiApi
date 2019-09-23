@@ -69,6 +69,9 @@
     var stopAsync = false;
     //function afterFillCombobox() {
     //}
+    function verDetalle(Id) {
+        location.href = '@this.Url.Action("VerIngresosWMSDet", "HomeExtern")?TransaccionId=' + Id;
+    }
     var crearGrid = new Promise(function (resolve, reject) {
         var config = {
             grid: {
@@ -84,16 +87,21 @@
                 },
                 searches: [
                     { field: 'noTransaccion', caption: 'NoTransaccion', type: 'text' },
-                    { field: 'nomUsr', caption: 'Nombre usuario', type: 'text' },
-                    { field: 'tiendaId', caption: 'Tienda', type: 'text' },
-                    { field: 'cliente', caption: 'Cliente', type: 'text' }
+                    { field: 'tipoTransaccion', caption: 'Tipo transaccion', type: 'text' },
+                    { field: 'pedidoId', caption: '# Pedido', type: 'text' },
+                    { field: 'nomBodega', caption: 'Bodega', type: 'text' }
                 ],
                 colShowResponsive: [
-                    { field: 'ienetGroup' },
-                    { field: 'codUsr' }
+                    { field: 'transaccionId' },
+                    { field: 'tipoTransaccion' }
                 ],
                 columns: [
                     { field: "id", caption: "Id", sortable: true, hidden: true },
+                    {
+                        field: "", caption: "", size: "100px", render: function (record) {
+                            return '<a href="javascript:verDetalle(' + record.transaccionId + ')">Ver detalle</a>';
+                        }
+                    },
                     { field: "transaccionId", caption: "TransaccionId", sortable: true, hidden: true },
                     { field: "noTransaccion", caption: "NoTransaccion", sortable: true, hidden: false },
                     { field: "fechaTran", caption: "Fecha transaccion", sortable: true, hidden: false },

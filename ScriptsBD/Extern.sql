@@ -3,12 +3,13 @@ saddasdasd
 select * from wms_test_29_01_2019.dbo.Paises where NomPais like'%pana%'
 --487	TIENDAS CARRION, S.A. DE C.V.(TRANSITO A GUATEMAL)
 select * from wms.dbo.Clientes with(nolock) where nombre like '%payl%' OR ClienteID = 7667 order by ClienteID asc
-select * from edidb.dbo.IEnetUsers where Id > 4 order by CodUsr
+select * from edidb.dbo.IEnetUsers where Id > 4 order by Id desc
 select * from edidb.dbo.IEnetUsers order by CodUsr
 select * from edidb.dbo.IEnetUsers where HashId like '%160820%' order by HashId desc
 select * from edidb.dbo.IEnetGroupsAccesses
+select * from edidb.dbo.IEnetGroups
 select * from edidb.dbo.IEnetAccesses
---delete from edidb.dbo.IEnetUsers where Id = 42
+--delete from edidb.dbo.IEnetUsers where Id = 45
 --delete from edidb.dbo.IEnetAccesses where Id = 24
 --delete from edidb.dbo.IEnetGroupsAccesses where Id = 46
 select * from edidb.dbo.IEnetGroupsAccesses
@@ -20,7 +21,10 @@ select * from EdiDB.dbo.PaylessInvSnapshotDet where AvaWomanQty is not null orde
 select * from EdiDB.dbo.PaylessInvSnapshotDet where IdM = 53 and TiendaId = 7366
 
 select * from EdiDB.dbo.PedidosExternos  order by id desc
---update EdiDB.dbo.PedidosExternos SET IdEstado = 2, PedidoWMS = null where Id = 448
+select * from EdiDB.dbo.PedidosDetExternos where PedidoId = 572
+select * from EdiDB.dbo.PedidosDetExternos  order by id desc
+select * from EdiDB.dbo.PedidosExternos where id in (485, 486)
+--update EdiDB.dbo.PedidosExternos SET FechaPedido = '03/09/2019 07:30' where Id in (485, 486)
 select sum(P.AccQty) from EdiDB.dbo.PedidosExternos P where P.ClienteId = 1432 AND P.PedidoWMS IS NULL and TiendaId = 7365
 select sum(P.WomanQty) Tw, sum(P.ManQty) Tm, sum(P.KidQty) Tk, sum(P.AccQty) Ta from EdiDB.dbo.PedidosExternos P where P.ClienteId = 1432 AND P.PedidoWMS IS NULL and TiendaId = 7372
 select * from EdiDB.dbo.PedidosExternos P where P.ClienteId = 1432 AND P.PedidoWMS IS NULL and TiendaId = 7372
@@ -33,7 +37,7 @@ select sum(P.WomanQty) + sum(P.ManQty) + sum(P.KidQty) + sum(P.AccQty) from EdiD
 select Pe.* FROM EdiDB.dbo.PedidosExternos Pe, EdiDB.dbo.PedidosDetExternos Pde where Pde.PedidoId = Pe.Id AND Pe.ClienteID = 1432 AND Pe.PedidoWMS IS NULL 
 
 select * from wms.dbo.Regimen
-select * from wms.dbo.Bodegas b where BodegaId in (81, 82)
+select * from wms.dbo.Bodegas b where BodegaId in (81, 82, 77, 4, 9)
 delete from EdiDB.dbo.PaylessInvSnapshotM  where Id = 22
 delete from EdiDB.dbo.PaylessInvSnapshotDet  where IdM = 22
 --update EdiDB.dbo.PaylessInvSnapshotDet
@@ -126,7 +130,7 @@ SELECT CodProducto FROM EdiDB.dbo.PedidosDetExternos where PedidoId = 235
 )
 SELECT * FROM EdiDB.dbo.PAYLESS_ProdPrioriM where Periodo = '13/08/2019'
 SELECT * FROM EdiDB.dbo.PAYLESS_ProdPrioriM where ClienteId = 385
-SELECT * FROM EdiDB.dbo.PAYLESS_ProdPrioriDet WHERE IdPAYLESS_ProdPrioriM = 30
+SELECT * FROM EdiDB.dbo.PAYLESS_ProdPrioriDet WHERE IdPAYLESS_ProdPrioriM = 42
 SELECT * FROM EdiDB.dbo.PAYLESS_ProdPrioriM 
 SELECT distinct Barcode, Categoria FROM EdiDB.dbo.PAYLESS_ProdPrioriDet where Barcode like '7365%' order by Barcode
 update EdiDb.dbo.PAYLESS_ProdPrioriDet SET Categoria = 'DAMAS' WHERE Categoria = 'WOMEN'
@@ -218,13 +222,20 @@ select * from EdiDB.[dbo].[PAYLESS_PeriodoTransporte]
 select * from EdiDB.dbo.PAYLESS_ProdPrioriDet Ppd where Ppd.[IdPAYLESS_ProdPrioriM] = 16
 select * from EdiDB.dbo.PAYLESS_Transporte
 --delete from EdiDB.dbo.PAYLESS_Transporte where Id = 54
-select * from EdiDB.dbo.PAYLESS_ProdPrioriM
+select * from EdiDB.dbo.PAYLESS_ProdPrioriM order by id desc
 select * from EdiDB.dbo.PAYLESS_ProdPrioriDet where lote like '569862'
-select * from EdiDB.dbo.PAYLESS_ProdPrioriDet where barcode = '7392820104'
-select * from EdiDB.dbo.PAYLESS_ProdPrioriDet where IdPAYLESS_ProdPrioriM = 22
+select * from EdiDB.dbo.PAYLESS_ProdPrioriDet where barcode = '7665876995'
+select * from EdiDB.dbo.PAYLESS_ProdPrioriDet where IdPAYLESS_ProdPrioriM = 50
+select * from EdiDB.dbo.PAYLESS_ProdPrioriArchM order by Id desc
 select * from EdiDB.dbo.PAYLESS_ProdPrioriArchM
+select * from EdiDB.dbo.PAYLESS_ProdPrioriArchM where ClienteId = 385
+select * from EdiDB.dbo.PAYLESS_ProdPrioriArchDet where IdM = 100
 select * from EdiDB.dbo.PAYLESS_ProdPrioriArchDet
-select * from EdiDB.dbo.PAYLESS_ProdPrioriArchDet where IdM = 64
+--delete from EdiDB.dbo.PAYLESS_ProdPrioriArchDet where IdM > 97
+--delete from EdiDB.dbo.PAYLESS_ProdPrioriArchM where Id > 97
+--delete from EdiDB.dbo.PAYLESS_ProdPrioriDet where IdPAYLESS_ProdPrioriM = 42
+--delete from EdiDB.dbo.PAYLESS_ProdPrioriM where Id = 42
+select * from EdiDB.dbo.PAYLESS_ProdPrioriArchDet where IdM = 48 and barcode like '%7665876998%'
 --update EdiDB.dbo.PAYLESS_ProdPrioriArchDet SET Barcode = 'Hilmer1409' where Id = 137801
 --update EdiDB.dbo.PAYLESS_ProdPrioriArchM SET PorcValidez = null where Id = 64
 --delete from EdiDB.dbo.PAYLESS_ProdPrioriArchM WHERE Id = 65
@@ -290,6 +301,8 @@ ORDER BY M.Periodo, SB2.Barcode
 --truncate table EdiDB.dbo.PedidosDetExternos
 
 select * from wms.dbo.Racks where Rack = 8221
+select BodegaId, RegimenID, Rack, Observacion, NombreRack, Barcode, Fecha, EstatusID, Alto, Largo, Ancho 
+from wms.dbo.Racks where Rack = 8221
 
 select * from wms.dbo.Racks where NombreRack = 'StageTGU'
 select * from wms.dbo.Racks order by Rack DESC
@@ -438,6 +451,15 @@ AND T.IDTipoTransaccion = 'SA'
 select top 20 * from wms.dbo.DocumentosxTransaccion order by IDDocxTransaccion desc
 select top 20 * from wms.dbo.Inventario
 select top 20 * from wms.dbo.Transacciones where TransaccionID = 119336
+select top 20 Ii.*
+from wms.dbo.Transacciones T
+JOIN wms.dbo.DetalleTransacciones Dt
+	ON Dt.TransaccionID = T.TransaccionID
+JOIN wms.dbo.Inventario I
+	ON I.InventarioID = Dt.InventarioID
+JOIN wms.dbo.ItemInventario Ii
+	ON Ii.InventarioID = I.InventarioID
+where T.TransaccionID = 119336
 select * from wms.dbo.SysTempSalidas where TransaccionID = 124320
 select * from wms.dbo.SysTempSalidas where CodProducto like '7650893139%'
 select * from wms.dbo.Producto where CodProducto like '7651%'
@@ -580,7 +602,9 @@ select barcode from  PAYLESS_ProdPrioriDet
 ) order by D.barcode
 
 select distinct barcode from EdiDb.dbo.PAYLESS_ProdPrioriDet where barcode like '7393%' and IdTransporte = 4
+update EdiDb.dbo.PAYLESS_Tiendas SET BodegaId = null where ClienteId = 385
 select * from EdiDb.dbo.PAYLESS_Tiendas order by TiendaID
+select * from EdiDb.dbo.PAYLESS_Tiendas where BodegaId is null
 select * from EdiDb.dbo.PAYLESS_Tiendas where TiendaId = 7671
 --delete from EdiDb.dbo.PAYLESS_Tiendas where Id = 48
 select * from EdiDb.dbo.PAYLESS_Tiendas where TiendaId = 7393
@@ -793,9 +817,12 @@ select * from wms.dbo.Producto where CodProducto = 'TS8CACC16-900-155'
 select * from wms.dbo.Transacciones T where ClienteID = 1181
 select * from wms.dbo.Locations
 select * from wms.dbo.Bodegas where LocationId =7
+select * from wms.dbo.Bodegas where BodegaId =9
 select * from wms_test.dbo.Racks where BodegaId = 81
-select * from wms_test.dbo.Racks order by Rack desc
+select * from wms_test.dbo.Racks where Rack = 8221
+order by Rack desc
 select * from wms.dbo.UnidadMedida where UnidadMedida like'%bult%'
+select * from wms.dbo.UnidadMedida where UnidadMedidaID = 70
 select * from wms.dbo.Transacciones T where T.Usuariocrea = 'Hilmer'
 select count(*) from wms_test_29_01_2019.dbo.Producto
 select  * from wms_test_29_01_2019.dbo.Producto order by Fecha DESC
@@ -809,7 +836,7 @@ select count(*)
 select * from wms.dbo.DocumentosxTransaccion where INFORME_ALMACEN like'%GLCHN33-5-001%' order by IDDocxTransaccion desc
 select top 100 * from wms.dbo.Bodegas
 select top 10 * from wms.dbo.Regimen
-select top 10 * from wms.dbo.Producto where CodProducto = '7380872774'
+select top 10 * from wms.dbo.Producto where CodProducto = '7650895208'
 select top 10 * from wms.dbo.Producto where Descripcion = '19003833B PORTA ANILLOS MANOS GRD'
 --delete from wms.dbo.Producto where Descripcion = '19003833B PORTA ANILLOS MANOS GRD'
 select top 1 * from wms.dbo.Inventario where CodProducto = '7365822071'
@@ -914,7 +941,7 @@ select count(*) from EdiDb.dbo.PAYLESS_ProdPrioriDet where [IdPAYLESS_ProdPriori
 --3441
 --4739
 --6882
-select * from EdiDb.dbo.PAYLESS_ProdPrioriArchDet where Barcode = '7365822070'
+select * from EdiDb.dbo.PAYLESS_ProdPrioriArchDet where Barcode = '7650895208'
 select * from EdiDb.dbo.PAYLESS_ProdPrioriDet where Barcode = '7377820804'
 
 select * from EdiDb.dbo.PAYLESS_ProdPrioriDet where Barcode
@@ -952,6 +979,7 @@ IDTipoTransaccion = 'IN' and ClienteID = 1432 order by TransaccionID DESC
 select * from wms.dbo.Transacciones WITH(NOLOCK) where usuarioCrea = 'Hilmer' order by FechaCrea DESC
 select * from wms.dbo.DetalleTransacciones where TransaccionID = 122609
 select * from wms.dbo.Transacciones WITH(NOLOCK) where usuarioCrea = 'Admin' order by TransaccionID DESC
+select * from wms.dbo.Transacciones WITH(NOLOCK) where ClienteId = 385 order by TransaccionID DESC
 select * from wms.dbo.Transacciones WITH(NOLOCK) where-- IDTipoTransaccion = 'IN' and 
 ClienteID = 1432 order by FechaCrea DESC
 select top 40 * from wms.dbo.Transacciones WITH(NOLOCK) where 
@@ -1182,4 +1210,42 @@ END
 CLOSE ProdCur
 DEALLOCATE ProdCur
 END
+
+
+
+
+
+------------------------------------- Remps-------------------------------------
+--select * from ReMPS_Global.dbo.GLBtrackEvent
+--select * from ReMPS_Global.dbo.GLBOrderTracking
+--select * from ReMPS_Global.dbo.GLBRemark
+--select * from ReMPS_Global.dbo.GLBLocation
+--select * from ReMPS_Global.dbo.GLBTrackingNotification
+--select * from ReMPS_Global.dbo.GLBNotiCenter
+select * from ReMPS_Global.dbo.GLBMediaNotification
+
+declare @IdRemark BIGINT = null
+select @IdRemark
+
+SELECT * FROM EdiDb.dbo.PaylessRutas
+--delete from EdiDb.dbo.PaylessRutas where Id = 3
+--truncate table EdiDb.dbo.PaylessRutas
+select * from EdiDb.dbo.PAYLESS_Tiendas
+--update EdiDb.dbo.PAYLESS_Tiendas SET RutaId = 5 where ClienteId = 1432
+
+INSERT INTO EdiDb.dbo.PaylessRutas(NumRuta, Horario, ClienteId, CambioHorario)
+VALUES(1, 'Martes a las 06:00am, opcional segunda entrega para el día Jueves', 385, 1)
+GO
+INSERT INTO EdiDb.dbo.PaylessRutas(NumRuta, Horario, ClienteId, CambioHorario)
+VALUES(2, 'Miércoles a las 06:00am, opcional segunda entrega para el día Viernes', 385, 2)
+GO
+--truncate table EdiDb.dbo.Notificaciones
+select * from EdiDb.dbo.Notificaciones
+INSERT INTO  EdiDb.dbo.Notificaciones(CodUsr, Mensaje)
+VALUES('Admin', 'Hola mundo')
+GO
+INSERT INTO  EdiDb.dbo.Notificaciones(CodUsr, Mensaje)
+VALUES('Admin', 'Tiene un mensaje')
+GO
+
 

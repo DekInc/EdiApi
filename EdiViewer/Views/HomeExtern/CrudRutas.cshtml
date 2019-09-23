@@ -1,0 +1,157 @@
+﻿@using ComModels
+@{
+    ViewData["Title"] = "Mantenimiento de rutas";
+    Layout = "_Layout";
+}
+<div id="mainDiv">
+    <div class="container">
+        <div class="card-deck cardMain">
+            <div class="card box-shadow">
+                <div class="card-header">
+                    <h4 class="my-0 font-weight-normal">Mantenimiento de rutas</h4>
+                </div>
+                <div class="card-body">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-5">
+                                <label>Cliente</label>
+                                <div id="divSpinCliente" class="spinner-border spinner-border-sm text-danger" style="display: none" role="status">
+                                    <span class="sr-only">Loading...</span>
+                                </div>
+                                <br />
+                                <select class="form-control" id="cbClient" name="cbClient"></select>
+                            </div>
+                        </div>
+                        <div class="row marginTop10">
+                            <div class="col-1">
+                                <button type="button" id="btnMostrar" class="btn btn-primary">Mostrar</button>                                
+                            </div>
+                        </div>
+                        <br />
+                        <div class="clearfix"></div>
+                    </div>
+                    <div id="gridRutas" style="min-height: 460px; width: 100%;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@await Html.PartialAsync("_PopChangeClientStore")
+@await Html.PartialAsync("Cruds/_PopAddRuta")
+<script>
+    var gridRutas = null;
+    var foo = function () {
+    };
+    $.urlParam = function (name) {
+        var results = new RegExp('[\?&]' + name + '=([^&#]*)').exec(window.location.href);
+        if (results == null) {
+            return null;
+        }
+        return decodeURI(results[1]) || 0;
+    }
+    function refreshGrid(auto) {
+        w2ui.grid.autoLoad = auto;
+        w2ui.grid.skip(0);
+    }
+    function crearGrid() {
+        var config = {
+            grid: {
+                name: 'gridRutas',
+                selectType: 'cell',
+                bResponsive: true,
+                bMobile: window.mobileAndTabletcheck(),
+                url: '@this.Url.Action("GetRutas", "Grids")?ClienteId=' + $('#cbClient').val(),
+                show: {
+                    footer: true,
+                    toolbar: true,
+                    expandColumn: window.mobileAndTabletcheck()
+                },
+                toolbar: {
+                    items: [
+                        { id: 'add', type: 'button', caption: 'Agregar', icon: 'w2ui-icon-plus' }
+                    ],
+                    onClick: function (event) {
+                        if (event.target == 'add') {
+                            $('#modalPopAddRuta').modal();
+                            $('#btnPopAddRutaLabelOk').off('click');
+                            $('#btnPopAddRutaLabelOk').on('click', function () {
+                                makeAjaxPost('@this.Url.Action("AddRuta", "HomeExtern")?NumRuta=' + $('#NumRuta').val() + '&Horario=' + $('#Horario').val() + '&ClienteId=' + $('#cbClient').val() + '&CambioHorario=' + $('#chkHorario').prop('checked'), function (data) {
+                                    if (data.info.codError != 0) {
+                                        menErrorEdi(data.info.mensaje);
+                                        return;
+                                    } else {
+                                        menErrorEdi(data.data, 'Información');
+                                        gridRutas.reload2('@this.Url.Action("GetRutas", "Grids")?ClienteId=' + $('#cbClient').val());
+                                    }
+                                });
+                            });
+                        }
+                    }
+                },
+                //searches: [
+                //    { field: 'codUsr', caption: 'Cod. usuario', type: 'text' },
+                //    { field: 'nomUsr', caption: 'Nombre usuario', type: 'text' },
+                //    { field: 'tiendaId', caption: 'Tienda', type: 'text' },
+                //    { field: 'cliente', caption: 'Cliente', type: 'text' }
+                //],
+                colShowResponsive: [
+                    { field: 'ienetGroup' },
+                    { field: 'codUsr' }
+                ],
+                columns: [
+                    { field: "id", caption: "Id", sortable: true, hidden: true },
+                    { field: "numRuta", caption: "Ruta", sortable: true, hidden: false, sortable: true },
+                    { field: "horario", caption: "Horario", sortable: true, hidden: false, sortable: true },
+                    {
+                        field: "cambiohorario", caption: "Puede cambiar horario", render: function (record) {
+                            return '<input type="checkbox" ' + (record.cambioHorario == 1? 'checked="checked"' : '') + '" onclick="changeHor(' + record.id + ')">';
+                        }
+                    },
+                    {
+                        field: "", caption: "", render: function (record) {
+                            return '<a href="javascript:borrarRuta(' + record.id + ')">Borrar</a>';
+                        }
+                    }
+                ]
+            }
+        };
+        gridRutas = $('#gridRutas').w2grid(config.grid);
+        arrayGrids['gridRutas'] = gridRutas;
+    }
+    function borrarRuta(id) {
+        makeAjaxPost('@this.Url.Action("DeleteRuta", "HomeExtern")?Id=' + id, function (data) {
+            if (data.info.codError != 0) {
+                menErrorEdi(data.info.mensaje);
+                return;
+            } else {
+                menErrorEdi(data.data, 'Información');
+                gridRutas.reload2('@this.Url.Action("GetRutas", "Grids")?ClienteId=' + $('#cbClient').val());
+            }
+        });
+    }
+    function changeHor(recId) {        
+        makeAjaxPost('@this.Url.Action("ChangeRutaAllowed", "HomeExtern")?Id=' + recId, function (data) {
+            if (data.info.codError != 0) {
+                menErrorEdi(data.info.mensaje);
+                return;
+            } else {
+                menErrorEdi(data.data, 'Información');
+                gridRutas.reload2('@this.Url.Action("GetRutas", "Grids")?ClienteId=' + $('#cbClient').val());
+            }
+        });
+    }
+    function afterFillCombobox() { }    
+    $(document).ready(function () {
+        fillComboboxPromise('#divSpinCliente', '@this.Url.Action("getClients", "HomeExtern")', '#cbClient', 'clienteId', 'nombre', 1432);
+        //crearGrid();        
+        $('#btnMostrar').on('click', function () {
+            if (gridRutas == null) {
+                crearGrid();
+            } else {
+                gridRutas.reload2('@this.Url.Action("GetRutas", "Grids")?ClienteId=' + $('#cbClient').val());
+            }
+        });
+    });
+</script>
+
+

@@ -1,19 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using EdiApi.Models;
-using EdiApi.Models.EdiDB;
-using EdiApi.Models.WmsDB;
-using Microsoft.AspNetCore.Http;
+﻿using ComModels;
+using ComModels.Models.EdiDB;
+using ComModels.Models.WmsDB;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
-using Microsoft.EntityFrameworkCore;
-using System.Data.Common;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
-namespace EdiApi.Controllers
-{
+namespace EdiApi.Controllers {
     [Route("[controller]/[action]")]
     [ApiController]
     public class AccountController : ControllerBase

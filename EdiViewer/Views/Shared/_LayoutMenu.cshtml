@@ -27,6 +27,8 @@
                             @if (Context.Session.GetObjSession<List<string>>("ListPermits").Where(O => O == "Admin_Payless_Temporadas").Count() > 0) {
                                 <a class="dropdown-item" asp-area="" asp-controller="HomeExtern" asp-action="CrudPaylessTemporadas">Payless temporadas</a>
                             }
+                            <a class="dropdown-item" asp-area="" asp-controller="HomeExtern" asp-action="CrudRutas">Rutas</a>
+                            <a class="dropdown-item" asp-area="" asp-controller="HomeExtern" asp-action="CrudTiendas">Tiendas</a>
                         </div>
                     </li>
                     <li class="nav-item dropdown">
@@ -37,6 +39,7 @@
                             <a class="dropdown-item" asp-area="" asp-controller="HomeExtern" asp-action="CargaWmsIngreso">Cargar ingreso WMS</a>
                             <a class="dropdown-item" asp-area="" asp-controller="HomeExtern" asp-action="VerIngresosWMS">Ingresos / salidas WMS</a>
                             <a class="dropdown-item" asp-area="" asp-controller="HomeExtern" asp-action="CrearWmsSalida">Escaner Salida WMS</a>
+                            <a class="dropdown-item" asp-area="" asp-controller="HomeExtern" asp-action="CrudRacks">Racks</a>
                         </div>
                     </li>
                 }
@@ -52,7 +55,7 @@
                             @if (Context.Session.GetObjSession<List<string>>("ListPermits").Where(O => O == "Admin_Pedidos_Payless").Count() > 0) {
                                 <a class="dropdown-item" asp-area="" asp-controller="HomeExtern" asp-action="PeticionesAdminB">Pedidos Payless</a>
                                 <a class="dropdown-item" asp-area="" asp-controller="HomeExtern" asp-action="PaylessPedidosHist">Pedidos borrados</a>
-                            }
+                            }                            
                         </div>
                     </li>
                 }

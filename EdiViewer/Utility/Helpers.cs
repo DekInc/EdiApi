@@ -1,4 +1,5 @@
 ﻿using ComModels;
+using ComModels.Models.EdiDB;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System;
 using System.Collections.Generic;
@@ -45,16 +46,16 @@ namespace EdiViewer.Utility.Helper
                 || (ThisTime.DayOfWeek == DayOfWeek.Wednesday)
                 || (ThisTime.DayOfWeek == DayOfWeek.Friday));
         }
-        public static string CodeToStr(this IHtmlHelper htmlHelper, string _Str, string _Param, IEnumerable<ComModels.LearCodes> _LearCodes, bool _Eng = true)
+        public static string CodeToStr(this IHtmlHelper htmlHelper, string _Str, string _Param, IEnumerable<LearCodes> _LearCodes, bool _Eng = true)
         {
             if (string.IsNullOrEmpty(_Param)) return string.Empty;
-            IEnumerable<ComModels.LearCodes> Lc = _LearCodes.Where(C => C.Str == _Str && C.Param == _Param);
+            IEnumerable<LearCodes> Lc = _LearCodes.Where(C => C.Str == _Str && C.Param == _Param);
             if (Lc.Count() == 0)
                 return $"{_Param} - Valor no mapeado";
             else
                 return (_Eng ? Lc.Fod().Value : Lc.Fod().ValueEsp);
         }
-        public static string QtyToMil(this IHtmlHelper htmlHelper, string _Str, IEnumerable<ComModels.LearUit830> _ListUits)
+        public static string QtyToMil(this IHtmlHelper htmlHelper, string _Str, IEnumerable<LearUit830> _ListUits)
         {
             try
             {
@@ -80,7 +81,7 @@ namespace EdiViewer.Utility.Helper
                 return _Str.ToString("N0");
             }
         }
-        public static string QtyToLocal(this IHtmlHelper htmlHelper, string _StrQty, IEnumerable<ComModels.LearShp830> _ShpQty, IEnumerable<ComModels.LearUit830> _ListUits, string _Date, IEnumerable<EdiViewer.Models.EdiDetailQtysModel> _ListFstQtys, string _ParentHashId)
+        public static string QtyToLocal(this IHtmlHelper htmlHelper, string _StrQty, IEnumerable<LearShp830> _ShpQty, IEnumerable<LearUit830> _ListUits, string _Date, IEnumerable<EdiViewer.Models.EdiDetailQtysModel> _ListFstQtys, string _ParentHashId)
         {
             try
             {
@@ -127,12 +128,12 @@ namespace EdiViewer.Utility.Helper
                 return _StrQty;
             }
         }
-        public static object ShowLabel(this IHtmlHelper htmlHelper, string _ObjectLabel, IEnumerable<ComModels.LearCodes> _LearCodes)
+        public static object ShowLabel(this IHtmlHelper htmlHelper, string _ObjectLabel, IEnumerable<LearCodes> _LearCodes)
         {
             var Div = new TagBuilder("span");
             Div.AddCssClass("dtColName");
             if (string.IsNullOrEmpty(_ObjectLabel)) return string.Empty;
-            IEnumerable<ComModels.LearCodes> Lc = _LearCodes.Where(C => C.Str == _ObjectLabel);
+            IEnumerable<LearCodes> Lc = _LearCodes.Where(C => C.Str == _ObjectLabel);
             if (Lc.Count() == 0)
                 Div.InnerHtml.AppendHtml($"[{_ObjectLabel}] - valor no mapeado<br/>");
             else
@@ -156,7 +157,7 @@ namespace EdiViewer.Utility.Helper
         }
         public static string ShowVersion(this IHtmlHelper htmlHelper)
         {
-            return "versión 1.1.6.0";
+            return "versión 2.1.1.1";
         }
     }
 }

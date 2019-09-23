@@ -1,0 +1,48 @@
+﻿<div class="modal fade2" id="modalPopAddRuta" tabindex="-1" role="dialog" aria-labelledby="modalPopAddRutaLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content modal-content-normal">
+            <form id="formAddRuta" method="post" enctype="multipart/form-data" class="container" asp-controller="HomeExtern" asp-action="AddRuta">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalPopAddRutaLabel">Agregar ruta</h5>
+                </div>
+                <div class="modal-body">
+                    <div id="divPopAddRutaContent">
+                        <div class="row mt-1">
+                            <div class="col-4">
+                                Número de Ruta
+                            </div>
+                            <div class="col">
+                                <input name="NumRuta" id="NumRuta" class="form-control" type="number" min="0" value="0" />
+                            </div>
+                        </div>
+                        <div class="row mt-1">
+                            <div class="col-4">
+                                Horario
+                            </div>
+                            <div class="col">
+                                <input type="text" name="Horario" id="Horario" class="form-control" maxlength="320" />
+                            </div>
+                        </div>
+                        <div class="row mt-1">
+                            <div class="col-4">
+                                Puede cambiar horario
+                            </div>
+                            <div class="col">
+                                <input type="checkbox" name="chkHorario" id="chkHorario" class="checkbox-inline" checked />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer text-center">
+                    <button id="btnPopAddRutaLabelOk" type="submit" class="btn btn-success btnModal" data-dismiss="modal">Guardar</button>
+                    <button id="btnPopAddRutaLabelClose" type="button" class="btn btn-success btnModal" data-dismiss="modal">Cerrar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<script>        
+    $('#modalPopAddRuta').on("shown.bs.modal", function () {        
+        $('#cboList').focus();
+    });    
+</script>

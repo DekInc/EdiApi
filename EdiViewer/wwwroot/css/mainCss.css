@@ -621,6 +621,11 @@ table.dataTable.dtr-inline.collapsed > tbody > tr[role="row"] > td:first-child:b
     font-weight: bold !important;
     padding-bottom: 16px;
 }
+#spanClientName3 {
+    font-size: 14pt !important;
+    font-weight: bold !important;
+    padding-bottom: 10px;
+}
 #tblReportes_paginate {
     /*max-width: 460px;*/
 }
@@ -637,6 +642,9 @@ table.dataTable.dtr-inline.collapsed > tbody > tr[role="row"] > td:first-child:b
 }
 .maxWidth320 {
     max-width: 320px;
+}
+.maxWidth99 {
+    max-width: 99%;
 }
 .datepicker {
     z-index: 9999 !important;
@@ -805,4 +813,33 @@ label {
 }
 .textNotice {
     border: 1px dashed;    
+}
+.bothSide5Margins {
+    padding-left: 5px;
+    padding-right: 5px;
+}
+.bothSide10Margins {
+    padding-left: 10px;
+    padding-right: 10px;
+}
+.bothSide15Margins {
+    padding-left: 15px;
+    padding-right: 15px;
+}
+#labelTemporada {
+    font-weight: bold;
+}
+fieldset {
+    background-color: rgba(139, 188, 242, 0.30);
+    border-radius: 4px;
+}
+legend {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    color: rgb(81, 116, 155);
+    font-size: 14pt;
+    font-weight: bold;
+    padding: 3px 5px 3px 7px;
+    width: auto;
 }

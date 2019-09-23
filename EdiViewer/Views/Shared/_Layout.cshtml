@@ -31,6 +31,30 @@
     <script src="~/js/push.min.js"></script>
     <script src="~/js/jquery.tableToExcel.js"></script>
     <script src="~/js/mainJS.js" asp-append-version="true"></script>
+    <script>
+        function GetNotificaciones() {
+            $.ajax({
+            method: "GET",
+            url: '@this.Url.Action("GetNotificaciones", "HomeExtern")',
+            success: function (json) {
+                if (json.info.codError != 0) {
+                    //menErrorEdi(json.info.mensaje, 'Error en notificaciones');
+                }
+                else {
+                    if (json.data != '') {
+                        menErrorEdi(json.data, 'Notificaciones');
+                        throwPush(json.data);
+                    }
+                }
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                //menErrorEdi(xhr.status, 'Error throw in js');
+                //menErrorEdi(thrownError, 'Error throw in js');
+            }
+        });
+        }
+        setInterval(GetNotificaciones, 23666);
+    </script>
     <!--[if IE]>
           <style>
             .tblReportes thead {

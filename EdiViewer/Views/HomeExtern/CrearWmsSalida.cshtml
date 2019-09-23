@@ -36,11 +36,24 @@
                                     <label for="dtpPeriodo">Periodo</label>
                                     <input class="form-control datepicker" data-date-format="dd/mm/yyyy" id="dtpPeriodo" placeholder="dd/mm/yyyy" maxlength="10" autocorrect="off" autocapitalize="off" autocomplete="off" />
                                 </div>
+                                <div class="col-sm">
+                                    <label for="cboTipo">Tipo</label>
+                                    <select class="form-control" id="cboTipo" name="cboTipo">
+                                        <option value="1">Salida a tienda</option>
+                                        <option value="2">Traslado</option>
+                                    </select>
+                                </div>
                             </div>
                             <div class="row">
                                 <div class="col-sm custom-file divUpload" style="max-width: unset !important; margin-bottom: 10px;">
                                     <input type="file" class="custom-file-input" id="fUpload" name="fUpload">
                                     <label id="lblFile" class="custom-file-label" for="fUpload">Archivo de salida de escaners</label>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm custom-file divUpload" style="max-width: unset !important; margin-bottom: 10px;">
+                                    <input type="file" class="custom-file-input" id="fUploadExcel" name="fUploadExcel">
+                                    <label id="lblFileExcel" class="custom-file-label" for="fUploadExcel">Archivo de salida en Excel (barcodes en columna A)</label>
                                 </div>
                             </div>
                             <div class="row margin5">
@@ -98,6 +111,17 @@
                 $('#lblFile').text(filename);
             }
         });
+        $('#fUploadExcel').on('change', function (event) {
+            var fullPath = $('#fUploadExcel').val();
+            if (fullPath) {
+                var startIndex = (fullPath.indexOf('\\') >= 0 ? fullPath.lastIndexOf('\\') : fullPath.lastIndexOf('/'));
+                var filename = fullPath.substring(startIndex);
+                if (filename.indexOf('\\') === 0 || filename.indexOf('/') === 0) {
+                    filename = filename.substring(1);
+                }
+                $('#lblFileExcel').text(filename);
+            }
+        });
         $('#btnGenSalidaWms').on('click', function () {
             if ($('#dtpPeriodo').val() == '') {
                 menErrorEdi('El periodo es necesario', 'Error');
@@ -112,7 +136,9 @@
                 return;
             }
             var fileExtension = ['xml', 'XML'];
+            var fileExtensionExcel = ['xls', 'xlsx', 'XLS', 'XLSX'];
             var filename = $('#fUpload').val();
+            var filenameExcel = $('#fUploadExcel').val();
             if (filename.length == 0) {
                 menErrorEdi('Por favor seleccione un archivo', 'Error');
                 return false;
@@ -124,16 +150,27 @@
                     return false;
                 }
             }
+            if (filenameExcel.length != 0) {
+                var extension = filenameExcel.replace(/^.*\./, '');
+                if ($.inArray(extension, fileExtensionExcel) == -1) {
+                    menErrorEdi('Solo se permiten archivos de Excel', 'Error');
+                    return false;
+                }
+            }
             $('#btnGenSalidaWms').prop('disabled', true);
             $('#divSpinGenSalidaWms').show();
             var fdata = new FormData();
             var fileUpload = $("#fUpload").get(0);
+            var fileUploadExcel = $("#fUploadExcel").get(0);
             var files = fileUpload.files;
+            var filesExcel = fileUploadExcel.files;
             fdata.append(files[0].name, files[0]);
+            if (filesExcel.length != 0)
+                fdata.append(filesExcel[0].name, filesExcel[0]);
             $.ajax({
                 type: "POST",
                 timeout: 600000,
-                url: '@this.Url.Action("SetSalidaWmsFromEscaner", "HomeExtern")?dtpPeriodo=' + $('#dtpPeriodo').val() + '&cboBodegas=' + $('#cboBodegas').val() + '&cboRegimen=' + $('#cboRegimen').val() + '&cboLocation=' + $('#cboLocation').val(),
+                url: '@this.Url.Action("SetSalidaWmsFromEscaner", "HomeExtern")?dtpPeriodo=' + $('#dtpPeriodo').val() + '&cboBodegas=' + $('#cboBodegas').val() + '&cboRegimen=' + $('#cboRegimen').val() + '&cboLocation=' + $('#cboLocation').val() + '&cboTipo=' + $('#cboTipo').val(),
                 beforeSend: function (xhr) {
                     xhr.setRequestHeader("XSRF-TOKEN",
                         $('input:hidden[name="__RequestVerificationToken"]').val());

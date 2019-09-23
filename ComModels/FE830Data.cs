@@ -1,10 +1,7 @@
-﻿using System;
+﻿using ComModels.Models.EdiDB;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
-namespace ComModels
-{
+namespace ComModels {
     public class FE830Data
     {
         public LearIsa830 ISA { set; get; }
